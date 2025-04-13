@@ -14,19 +14,7 @@
                     <div>Дата похорон</div>
                     <div>Статус</div>
                 </div>
-                <nuxt-link to="/" class="rip-table__content">
-                    <div class="rip-table__content-val">Доставка покойного</div>
-                    <div class="rip-table__content-val">Бақадыр Нұрбике Бекзатқызыg</div>
-                    <div class="rip-table__content-val">12.12.2025</div>
-                    <div class="rip-table__content-val flex items-center gap-[15px]"><span class="status status-close">Завершена</span> <img src="/icons/link.svg" alt="arrow"> </div>
-                </nuxt-link>
-                <nuxt-link to="/" class="rip-table__content">
-                    <div class="rip-table__content-val">Доставка покойного</div>
-                    <div class="rip-table__content-val">Бақадыр Нұрбике Бекзатқызыg</div>
-                    <div class="rip-table__content-val">12.12.2025</div>
-                    <div class="rip-table__content-val flex items-center gap-[15px]"><span class="status status-close">Завершена</span> <img src="/icons/link.svg" alt="arrow"> </div>
-                </nuxt-link>
-                <nuxt-link to="/" class="rip-table__content">
+                <nuxt-link to="/supplier/tickets/archive/1" class="rip-table__content">
                     <div class="rip-table__content-val">Доставка покойного</div>
                     <div class="rip-table__content-val">Бақадыр Нұрбике Бекзатқызыg</div>
                     <div class="rip-table__content-val">12.12.2025</div>

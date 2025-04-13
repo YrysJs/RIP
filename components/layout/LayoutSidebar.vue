@@ -22,22 +22,22 @@ const supplierMenu = [
         childs: [
             {
                 title: "Активные",
-                path: "/3",
+                path: "/supplier/services/active",
                 count: 0
             },
             {
                 title: "На рассмотрении",
-                path: "/4",
+                path: "/supplier/services/consideration",
                 count: 0
             },
             {
                 title: "Требует дороботки",
-                path: "/5",
+                path: "/supplier/services/improvement",
                 count: 0
             },
             {
                 title: "Не активные",
-                path: "/6",
+                path: "/supplier/services/inactive",
                 count: 0
             }
         ]
