@@ -1,0 +1,25 @@
+.input {
+  position: relative;
+  padding: 18px 12px;
+  width: 100%;
+  outline: 0;
+
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+
+  border-radius: 8px;
+  font-family: 'Roboto';
+  box-sizing: border-box;
+  border: 1px solid #222222;
+  touch-action: manipulation;
+  cursor: text;
+  resize: none;
+
+
+  &.textarea {
+    height: 100px;
+  }
+
+}

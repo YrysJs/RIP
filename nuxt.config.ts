@@ -18,6 +18,10 @@ export default defineNuxtConfig({
     'nuxt-swiper'
   ],
 
+
+  css: [
+    "~/css/main.scss",
+  ],
   i18n: {
     locales: [
       { code: 'ru', language: 'ru-RU', file: 'ru.json' },
