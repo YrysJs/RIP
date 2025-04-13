@@ -52,11 +52,14 @@ const burials = [
     <div class="burial-list">
       <div v-for="burial in burials" :key="burial.name" class="burial-card">
         <div class="burial-header">
-          <span>Захоронение: <a href="#">{{ burial.id }}</a></span>
-          <span class="burial-date">Дата брони: {{ burial.bookingDate }}</span>
-          <span class="burial-date">Дата похорон: {{ burial.burialDate }} {{ burial.burialTime }}</span>
+          <div class="flex items-center gap-4">
+            <span>Захоронение: <a href="#">{{ burial.id }}</a></span>
+            <span class="burial-date">Дата брони: {{ burial.bookingDate }}</span>
+          </div>
+
+          <span class="burial-date__bold">Дата похорон: {{ burial.burialDate }} {{ burial.burialTime }}</span>
         </div>
-        <div class="font-medium text-base mt-2">ФИО покойного: {{ burial.name }}</div>
+        <div class="font-medium text-base mt-2">ФИО покойного: <span class="font-bold ml-1">{{ burial.name }}</span></div>
 
         <div class="flex justify-between items-center mt-4">
           <div class="burial-info">
@@ -64,6 +67,8 @@ const burials = [
             <span class="badge">Сектор: <span class="font-medium ml-1">{{ burial.sector }}</span></span>
             <span class="badge">Место: <span class="font-medium ml-1">{{ burial.place }}</span> </span>
 
+          </div>
+          <div class="flex items-center gap-4">
             <span
                 class="status"
                 :class="{
@@ -73,9 +78,9 @@ const burials = [
             >
               {{ burial.status === 'pending' ? 'Ожидает подтверждения' : 'Подтверждено' }}
             </span>
+            <button class="details-btn">Подробнее</button>
           </div>
 
-          <button class="details-btn">Подробнее</button>
         </div>
       </div>
     </div>
@@ -97,6 +102,7 @@ const burials = [
     .burial-header {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       flex-wrap: wrap;
       font-weight: 500;
       font-size: 18px;
@@ -108,9 +114,14 @@ const burials = [
       }
 
       .burial-date {
-        color: #555;
+        color: #222;
         font-weight: 400;
         font-size: 14px;
+
+        &__bold {
+          font-size: 16px;
+          font-weight: 500;
+        }
       }
     }
 
@@ -131,25 +142,6 @@ const burials = [
         align-items: center;
       }
 
-      .status {
-        padding: 8px 10px;
-        font-size: 14px;
-        font-weight: 600;
-        border-radius: 8px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-
-        &--pending {
-          background-color: #fef3e2;
-          color: #cb5600;
-        }
-
-        &--confirmed {
-          background-color: #d2f5dc;
-          color: #007c3d;
-        }
-      }
     }
 
     .details-btn {
@@ -165,6 +157,27 @@ const burials = [
       font-weight: 600;
       align-items: center;
     }
+  }
+}
+
+.status {
+  padding: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 4px;
+  height: 24px;
+  display: flex;
+  letter-spacing: 0.56px;
+  align-items: center;
+
+  &--pending {
+    background-color: #fef3e2;
+    color: #cb5600;
+  }
+
+  &--confirmed {
+    background-color: #d2f5dc;
+    color: #007c3d;
   }
 }
 </style>

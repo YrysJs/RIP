@@ -11,12 +11,14 @@ const form = reactive({
   phone: 'Северное кладбище',
   status: true
 });
+
+const router = useRouter();
 </script>
 
 <template>
   <NuxtLayout name="form">
     <div class="flex items-center bg-white p-5 rounded-2xl mb-4">
-      <button class="btn btn-back mr-4">
+      <button class="btn btn-back mr-4" @click="router.push('/manager/cemetery')">
         <img class="w-4 h-4 mr-[10px]" src="/icons/arrow-left-primary.svg" alt="">
         Назад
       </button>

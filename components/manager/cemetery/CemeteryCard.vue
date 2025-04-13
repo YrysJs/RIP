@@ -1,0 +1,92 @@
+<template>
+  <div class="cemetery-card mb-4">
+    <div class="cemetery-card__header">
+      <h3 class="cemetery-card__title">{{ cemetery.name }}</h3>
+      <p class="cemetery-card__type">{{ cemetery.type }}</p>
+    </div>
+
+    <div class="cemetery-card__info">
+      <div class="cemetery-card__info-item">
+        <img src="/icons/map-pin.svg" alt="map" class="cemetery-card__icon" />
+        <span>{{ cemetery.address }} ({{ cemetery.distance }} км от вас)</span>
+      </div>
+      <div class="cemetery-card__info-item">
+        <img src="/icons/phone.svg" alt="phone" class="cemetery-card__icon" />
+        <span>{{ cemetery.phone }}</span>
+      </div>
+    </div>
+
+    <div class="cemetery-card__stats">
+      <span> <strong>Вместимость: {{ cemetery.capacity.toLocaleString() }}</strong></span>
+      <span> <strong>Свободных мест: {{ cemetery.free.toLocaleString() }}</strong></span>
+    </div>
+
+    <div class="cemetery-card__footer flex justify-end">
+      <button class="btn cemetery-card__edit-button" @click="router.push('/manager/cemetery/3')">Редактировать</button>
+    </div>
+  </div>
+</template>
+
+<script setup>
+defineProps(['cemetery'])
+const router = useRouter();
+
+</script>
+
+
+<style lang="scss" scoped>
+.cemetery-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  &__type {
+    font-size: 14px;
+    color: #999;
+  }
+
+  &__info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 14px;
+    color: #444;
+  }
+
+  &__info-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  &__stats {
+    display: flex;
+    gap: 24px;
+    font-size: 14px;
+  }
+
+  &__edit-button {
+    height: 32px;
+    background: #224C4F;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 16px;
+  }
+}
+</style>
