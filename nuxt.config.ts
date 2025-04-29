@@ -17,7 +17,9 @@ export default defineNuxtConfig({
     'nuxt-schema-org',
     'nuxt-swiper'
   ],
-
+  plugins: [
+    '~/plugins/v-mask.js',
+  ],
 
   css: [
     "~/css/main.scss",

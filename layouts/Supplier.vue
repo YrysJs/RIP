@@ -6,8 +6,8 @@ import SuccessModal from '~/components/layout/modals/SuccessModal.vue';
 
 <template>
     <section class="supplier bg-[#FAFAFA]">
-        <SuccessModal title="Заявка завершена!" text="Заявка завершена!" @close="true"/>
-        <LayoutTop />
+        <!-- <SuccessModal title="Заявка завершена!" text="Заявка завершена!" @close="true"/> -->
+        <LayoutTop title="Кабинет Поставщика Услуг" :hide="false"/>
         <main class="supplier-content max-w-[1175px] mx-auto w-full flex gap-[20px] min-h-[100vh] my-[20px] rounded-[12px]">
             <LayoutSidebar />
             <div class="w-full">

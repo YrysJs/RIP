@@ -44,7 +44,7 @@ const supplierMenu = [
     },
     {
         title: "Добавить товар/услугу",
-        path: "/7",
+        path: "/supplier/services/add-service",
         childs: []
     },
     {
