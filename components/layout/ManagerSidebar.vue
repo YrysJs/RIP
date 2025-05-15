@@ -4,22 +4,22 @@ import LayoutSidebarDropDown from './LayoutSidebarDropDown.vue';
 const managerMenu = [
   {
     title: "Бронирование мест",
-    path: '/1',
+    path: '/manager/booking',
     childs: []
   },
   {
     title: "Заявки на захоронение",
-    path: '/1',
+    path: '/manager/burial',
     childs: []
   },
   {
     title: "Запрос на облагораживание",
-    path: "/7",
+    path: "/manager/ennoblement",
     childs: []
   },
   {
     title: "Управление кладбищами",
-    path: "/supplier/reviews",
+    path: "/manager/cemetery",
     childs: [
       {
         title: "Кладбище",
@@ -54,6 +54,7 @@ const managerMenu = [
 
 <template>
   <div class="layout-sidebar bg-white max-w-[375px] w-full max-h-fit py-[36px] px-[12px]">
-    <LayoutSidebarDropDown v-for="(item, index) of managerMenu" :key="index" :title="item.title" :childs="item.childs" :item="item"/>
+    <LayoutSidebarDropDown v-for="(item, index) of managerMenu" :key="index" :title="item.title" :childs="item.childs"
+                           :item="item"/>
   </div>
 </template>
