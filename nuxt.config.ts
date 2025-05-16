@@ -31,7 +31,11 @@ export default defineNuxtConfig({
     ],
     defaultLocale: 'ru',
   },
-
+  runtimeConfig: {
+    public: {
+      twoGisApiKey: 'ca092971-0505-4489-a478-a875c6dcbd2f',
+    },
+  },
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
     config: {},

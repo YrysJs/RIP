@@ -1,63 +1,75 @@
 <script setup>
-import { onMounted, watch, toRefs } from 'vue'
+import {onMounted, ref} from 'vue';
+import {useRuntimeConfig} from '#imports';
 
 const props = defineProps({
   polygons: {
     type: Array,
     required: true,
   },
-})
+});
 
-const { polygons } = toRefs(props)
+const selectedPolygonId = ref(null);
+const mapContainerId = 'map-container';
+const mapInstance = ref(null);
+const polygonObjects = ref([]);
 
-function drawPolygons(data) {
-  data.forEach(entry => {
-    const poly = DG.polygon(entry.polygon_data.coordinates, {
-      color: entry.polygon_data.strokeColor,
-      weight: entry.polygon_data.strokeWidth,
-      fillColor: entry.polygon_data.color,
-      fillOpacity: 0.5,
-    }).bindPopup(`
-      <strong>${entry.full_name}</strong><br/>
-      Статус: ${entry.polygon_data.status}
-    `)
-
-    poly.addTo(DG._mapInstance)
-  })
-}
+const config = useRuntimeConfig();
+const apiKey = config.public.twoGisApiKey;
 
 onMounted(() => {
-  if (typeof DG === 'undefined') {
-    const script = document.createElement('script')
-    script.src = 'https://maps.api.2gis.ru/2.0/loader.js?pkg=full'
-    script.onload = () => {
-      DG.then(() => {
-        initMap()
-        drawPolygons(polygons.value)
-      })
+  const checkMapGL = setInterval(() => {
+    if (window.mapgl) {
+      clearInterval(checkMapGL);
+      initializeMap();
     }
-    document.head.appendChild(script)
-  } else {
-    DG.then(() => {
-      initMap()
-      drawPolygons(polygons.value)
-    })
-  }
-})
+  }, 100);
+});
 
-function initMap() {
-  const center = [polygons.value?.[0]?.polygon_data.coordinates[0][0][1] || 25.2, polygons.value?.[0]?.polygon_data.coordinates[0][0][0] || 55.2]
+function initializeMap() {
+  const firstPolygon = props.polygons[0];
+  const center = firstPolygon?.polygon_data?.coordinates[0][0] || [76.889709, 43.238949];
 
-  const map = DG.map('map', {
+  mapInstance.value = new window.mapgl.Map(mapContainerId, {
     center,
-    zoom: 15,
-  })
+    zoom: 13,
+    key: apiKey,
+  });
 
-  // сохраняем глобально, чтобы использовать позже
-  DG._mapInstance = map
+  drawPolygons();
+}
+
+function drawPolygons() {
+  props.polygons.forEach((item) => {
+    const {coordinates, color, strokeColor, strokeWidth} = item.polygon_data;
+
+    const polygon = new window.mapgl.Polygon(mapInstance.value, {
+      coordinates,
+      color,
+      strokeColor,
+      strokeWidth,
+    });
+
+    polygon.on('click', () => {
+      selectPolygon(item.id);
+    });
+
+    polygonObjects.value.push({id: item.id, polygon, originalColor: color});
+  });
+}
+
+function selectPolygon(id) {
+  selectedPolygonId.value = id;
+
+  polygonObjects.value.forEach(({id: polygonId, polygon, originalColor}) => {
+    const isSelected = polygonId === id;
+    polygon.setOptions({
+      color: isSelected ? '#00FF00' : originalColor,
+    });
+  });
 }
 </script>
 
 <template>
-  <div id="map" style="width: 100%; height: 600px;"></div>
+  <div :id="mapContainerId" style="width: 100%; height: 600px;"></div>
 </template>
