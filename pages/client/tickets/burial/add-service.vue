@@ -1,5 +1,64 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+import { getProducts, addToCart } from '~/services/client'
 
+const products = ref([])
+const loading = ref(true)
+const error = ref(null)
+const totalStars = 5
+const rating = 3.5
+const addingToCart = ref(false)
+const cartMessage = ref('')
+
+// Функция для определения класса звезды (полная, половина, пустая)
+const getStarClass = (position) => {
+  if (position <= Math.floor(rating)) {
+    return 'full'
+  } else if (position === Math.ceil(rating) && !Number.isInteger(rating)) {
+    return 'half'
+  } else {
+    return 'empty'
+  }
+}
+
+// Функция для добавления товара в корзину
+const addProductToCart = async (productId) => {
+  addingToCart.value = true
+  cartMessage.value = ''
+  
+  try {
+    const cartData = {
+      delivery_arrival_time: "2025-05-17T09:00:00Z",
+      delivery_destination_address: "Алматы, ул. Еревагская 157",
+      product_id: productId,
+      quantity: 1
+    }
+    
+    await addToCart(cartData)
+    cartMessage.value = 'Товар добавлен в корзину'
+    setTimeout(() => {
+      cartMessage.value = ''
+    }, 3000)
+  } catch (err) {
+    cartMessage.value = 'Ошибка при добавлении товара'
+    console.error('Ошибка при добавлении в корзину:', err)
+  } finally {
+    addingToCart.value = false
+  }
+}
+
+// Загрузка данных при монтировании компонента
+onMounted(async () => {
+  try {
+    const response = await getProducts()
+    products.value = response.data.items
+  } catch (err) {
+    error.value = 'Ошибка при загрузке услуг'
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <template>
@@ -12,14 +71,34 @@
           </button>
           <h3 class="text-4xl font-medium">Захоронение: <span class="text-[#38949B]">0000023</span></h3>
         </div>
+        
+        <!-- Уведомление о добавлении в корзину -->
+        <div v-if="cartMessage" class="mt-4 p-3 rounded-lg text-center" :class="cartMessage.includes('Ошибка') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'">
+          {{ cartMessage }}
+        </div>
+        
         <div class="mt-[24px]">
           <h3 class="text-[#222222] font-medium text-xl font-roboto">Дополнительные услуги</h3>
-          <div class="grid grid-cols-2 gap-[12px] mt-[24px]">
-            <div class="p-[9px] rounded-lg max-w-[376px] w-full bg-white">
+          
+          <!-- Отображение загрузки -->
+          <div v-if="loading" class="mt-[24px] text-center">
+            <p>Загрузка услуг...</p>
+          </div>
+          
+          <!-- Отображение ошибки -->
+          <div v-else-if="error" class="mt-[24px] text-center text-red-500">
+            <p>{{ error }}</p>
+          </div>
+          
+          <!-- Отображение услуг -->
+          <div v-else class="grid grid-cols-2 gap-[12px] mt-[24px]">
+            <div v-for="product in products" :key="product.id" class="p-[9px] rounded-lg max-w-[376px] w-full bg-white">
               <div>
-                <img class="rounded-lg overflow-hidden w-full h-[189px] object-cover" src="/images/client/banner.jpg" alt="">
-                <h3 class="text-lg font-roboto font-medium text-[#222222] mt-[10px]">Доставка покойного</h3>
-                <h4 class="text-2xl font-roboto font-medium text-[#222222] mb-[4px]">100 000 ₸</h4>
+                <img class="rounded-lg overflow-hidden w-full h-[189px] object-cover" 
+                     :src="product.image_urls && product.image_urls.length > 0 ? product.image_urls[0] : '/images/client/banner.jpg'" 
+                     alt="">
+                <h3 class="text-lg font-roboto font-medium text-[#222222] mt-[10px]">{{ product.name }}</h3>
+                <h4 class="text-2xl font-roboto font-medium text-[#222222] mb-[4px]">{{ product.price.toLocaleString() }} ₸</h4>
                 <div class="flex items-center mb-[4px]">
                     <div class="flex space-x-1">
                         <template v-for="n in totalStars" :key="n">
@@ -46,89 +125,18 @@
                     <span class="font-roboto text-sm text-[#38949B]">(42 отзыва)</span>
                 </div>
                 <div class="flex gap-[12px] text-sm font-roboto text-[#5C5C5C]">
-                    <img src="/icons/calendar-icon.svg" alt=""> <span>Срок выполнения: 1 день</span>
+                    <img src="/icons/calendar-icon.svg" alt=""> 
+                    <span>Срок выполнения: {{ product.service_time || '1 день' }}</span>
                 </div>
                 <div class="flex gap-[10px] mt-[10px]">
                     <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold">Подробнее</button>
-                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold">Добавить</button>
-                </div>
-              </div>
-            </div>
-            <div class="p-[9px] rounded-lg max-w-[376px] w-full bg-white">
-              <div>
-                <img class="rounded-lg overflow-hidden w-full h-[189px] object-cover" src="/images/client/banner.jpg" alt="">
-                <h3 class="text-lg font-roboto font-medium text-[#222222] mt-[10px]">Доставка покойного</h3>
-                <h4 class="text-2xl font-roboto font-medium text-[#222222] mb-[4px]">100 000 ₸</h4>
-                <div class="flex items-center mb-[4px]">
-                    <div class="flex space-x-1">
-                        <template v-for="n in totalStars" :key="n">
-                            <div class="relative text-2xl select-none">
-                                <span v-if="getStarClass(n) === 'half'" class="text-gray-300">★</span>
-                                <span 
-                                    v-else :class="{
-                                    'text-orange-400': getStarClass(n) === 'full',
-                                    'text-gray-300': getStarClass(n) === 'empty'
-                                    }"
-                                >
-                                    ★
-                                </span>
-                                <span
-                                    v-if="getStarClass(n) === 'half'"
-                                    class="absolute inset-0 overflow-hidden text-orange-400"
-                                    :style="{ width: '50%' }"
-                                >
-                                    ★
-                                </span>
-                            </div>
-                        </template>
-                    </div>
-                    <span class="font-roboto text-sm text-[#38949B]">(42 отзыва)</span>
-                </div>
-                <div class="flex gap-[12px] text-sm font-roboto text-[#5C5C5C]">
-                    <img src="/icons/calendar-icon.svg" alt=""> <span>Срок выполнения: 1 день</span>
-                </div>
-                <div class="flex gap-[10px] mt-[10px]">
-                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold">Подробнее</button>
-                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold">Добавить</button>
-                </div>
-              </div>
-            </div>
-            <div class="p-[9px] rounded-lg max-w-[376px] w-full bg-white">
-              <div>
-                <img class="rounded-lg overflow-hidden w-full h-[189px] object-cover" src="/images/client/banner.jpg" alt="">
-                <h3 class="text-lg font-roboto font-medium text-[#222222] mt-[10px]">Доставка покойного</h3>
-                <h4 class="text-2xl font-roboto font-medium text-[#222222] mb-[4px]">100 000 ₸</h4>
-                <div class="flex items-center mb-[4px]">
-                    <div class="flex space-x-1">
-                        <template v-for="n in totalStars" :key="n">
-                            <div class="relative text-2xl select-none">
-                                <span v-if="getStarClass(n) === 'half'" class="text-gray-300">★</span>
-                                <span 
-                                    v-else :class="{
-                                    'text-orange-400': getStarClass(n) === 'full',
-                                    'text-gray-300': getStarClass(n) === 'empty'
-                                    }"
-                                >
-                                    ★
-                                </span>
-                                <span
-                                    v-if="getStarClass(n) === 'half'"
-                                    class="absolute inset-0 overflow-hidden text-orange-400"
-                                    :style="{ width: '50%' }"
-                                >
-                                    ★
-                                </span>
-                            </div>
-                        </template>
-                    </div>
-                    <span class="font-roboto text-sm text-[#38949B]">(42 отзыва)</span>
-                </div>
-                <div class="flex gap-[12px] text-sm font-roboto text-[#5C5C5C]">
-                    <img src="/icons/calendar-icon.svg" alt=""> <span>Срок выполнения: 1 день</span>
-                </div>
-                <div class="flex gap-[10px] mt-[10px]">
-                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold">Подробнее</button>
-                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold">Добавить</button>
+                    <button 
+                      class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold"
+                      @click="addProductToCart(product.id)"
+                      :disabled="addingToCart"
+                    >
+                      {{ addingToCart ? 'Добавление...' : 'Добавить' }}
+                    </button>
                 </div>
               </div>
             </div>

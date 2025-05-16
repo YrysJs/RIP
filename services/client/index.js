@@ -16,6 +16,7 @@ function getProducts(params) {
         url: 'http://194.32.140.209:8080/api/v1/products',
         params,
         headers: {
+            'Authorization': null,
             'accept': 'application/json'
         }
     })
@@ -124,7 +125,7 @@ function addToCart(data) {
         data,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer 11_provider_provider@example.com',
+            'Authorization': 'Bearer 14_provider_provider@example.com',
             'Content-Type': 'application/json'
         }
     })
@@ -174,6 +175,7 @@ function getBurialRequests(params) {
         url: 'http://194.32.140.209:8082/api/v1/burial-requests',
         params,
         headers: {
+            'Authorization': 'Bearer 11_provider_provider@example.com',
             'accept': 'application/json'
         }
     })

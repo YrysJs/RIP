@@ -1,7 +1,41 @@
 <script setup>
+import { ref, watch } from 'vue'
+import { createDeceased } from '~/services/client'
 
 const switcher = ref(false)
+const inn = ref('')
+const fullName = ref('')
+const deathDate = ref('')
+const burialDate = ref('')
+const burialTime = ref('')
 
+// Автоматически заполнять поля при вводе ИИН
+watch(inn, (newValue) => {
+  if (newValue === '920216450089') {
+    fullName.value = 'СӘДҮӘҚАС БАЯНСҰЛУ ҚАЙРАТҚЫЗЫ'
+    deathDate.value = '2023-08-11'
+  }
+})
+
+// Функция для бронирования
+const handleBooking = async () => {
+  try {
+    const data = {
+      inn: inn.value,
+      full_name: fullName.value,
+      death_date: deathDate.value+'T10:00:00Z'
+    }
+    
+    const response = await createDeceased(data)
+    
+    if (response) {
+      router.push('/client/tickets/active')
+    }
+    // Здесь можно добавить логику после успешной отправки
+  } catch (error) {
+    console.error('Ошибка при отправке данных:', error)
+  }
+}
 </script>
 
 <template>
@@ -15,14 +49,14 @@ const switcher = ref(false)
             <div class="flex items-center gap-[10px]">
               <h3 class="text-2xl font-medium font-roboto text-[#222222]">Укажите данные покойного</h3> <span class="text-sm text-[#D63C3C] font-roboto">Поля обязательно к заполнению</span>
             </div>
-            <div class="flex gap-[12px] mt-[24px]">
+            <div class="grid grid-cols-2 gap-[12px] mt-[24px]">
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">ИИН</p>
-                <input type="text" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg">
+                <input v-model="inn" type="text" class="pl-4 w-[100%] h-[60px] !border !border-[#222222] rounded-lg text-lg">
               </div>
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">ФИО</p>
-                <input type="text" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg">
+                <input v-model="fullName" type="text" class="pl-4 w-[100%] h-[60px] !border !border-[#222222] rounded-lg text-lg">
               </div>
             </div>
           </div>
@@ -41,12 +75,11 @@ const switcher = ref(false)
                             peer-checked:translate-x-6"/>
                   </label>
                 </div>
-                <span class="text-sm text-[#D63C3C] font-roboto">Необходимо указать даты похорон</span>
             </div>
             <div v-if="switcher" class="grid grid-cols-2 gap-[12px] gap-y-[24px] mt-[24px]">
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">Дата смерти</p>
-                <input type="date" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base">
+                <input v-model="deathDate" type="date" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base">
               </div>
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">Заключение о смерти от мед учереждении:</p>
@@ -54,133 +87,11 @@ const switcher = ref(false)
               </div>
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">Дата похорон</p>
-                <input type="date" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base">
+                <input v-model="burialDate" type="date" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base">
               </div>
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">Время похорон</p>
-                <input type="text" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base" placeholder="00:00">
-              </div>
-            </div>
-          </div>
-          <div class="mt-[24px]">
-            <h3 class="text-[#222222] font-medium text-xl font-roboto">Дополнительные услуги</h3>
-            <div class="grid grid-cols-2 gap-[12px] mt-[24px]">
-              <div class="p-[9px] rounded-lg max-w-[376px] w-full bg-white">
-                <div>
-                  <img class="rounded-lg overflow-hidden w-full h-[189px] object-cover" src="/images/client/banner.jpg" alt="">
-                  <h3 class="text-lg font-roboto font-medium text-[#222222] mt-[10px]">Доставка покойного</h3>
-                  <h4 class="text-2xl font-roboto font-medium text-[#222222] mb-[4px]">100 000 ₸</h4>
-                  <div class="flex items-center mb-[4px]">
-                      <div class="flex space-x-1">
-                          <template v-for="n in totalStars" :key="n">
-                              <div class="relative text-2xl select-none">
-                                  <span v-if="getStarClass(n) === 'half'" class="text-gray-300">★</span>
-                                  <span 
-                                      v-else :class="{
-                                      'text-orange-400': getStarClass(n) === 'full',
-                                      'text-gray-300': getStarClass(n) === 'empty'
-                                      }"
-                                  >
-                                      ★
-                                  </span>
-                                  <span
-                                      v-if="getStarClass(n) === 'half'"
-                                      class="absolute inset-0 overflow-hidden text-orange-400"
-                                      :style="{ width: '50%' }"
-                                  >
-                                      ★
-                                  </span>
-                              </div>
-                          </template>
-                      </div>
-                      <span class="font-roboto text-sm text-[#38949B]">(42 отзыва)</span>
-                  </div>
-                  <div class="flex gap-[12px] text-sm font-roboto text-[#5C5C5C]">
-                      <img src="/icons/calendar-icon.svg" alt=""> <span>Срок выполнения: 1 день</span>
-                  </div>
-                  <div class="flex gap-[10px] mt-[10px]">
-                      <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold">Подробнее</button>
-                      <button class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold">Добавить</button>
-                  </div>
-                </div>
-              </div>
-              <div class="p-[9px] rounded-lg max-w-[376px] w-full bg-white">
-                <div>
-                  <img class="rounded-lg overflow-hidden w-full h-[189px] object-cover" src="/images/client/banner.jpg" alt="">
-                  <h3 class="text-lg font-roboto font-medium text-[#222222] mt-[10px]">Доставка покойного</h3>
-                  <h4 class="text-2xl font-roboto font-medium text-[#222222] mb-[4px]">100 000 ₸</h4>
-                  <div class="flex items-center mb-[4px]">
-                      <div class="flex space-x-1">
-                          <template v-for="n in totalStars" :key="n">
-                              <div class="relative text-2xl select-none">
-                                  <span v-if="getStarClass(n) === 'half'" class="text-gray-300">★</span>
-                                  <span 
-                                      v-else :class="{
-                                      'text-orange-400': getStarClass(n) === 'full',
-                                      'text-gray-300': getStarClass(n) === 'empty'
-                                      }"
-                                  >
-                                      ★
-                                  </span>
-                                  <span
-                                      v-if="getStarClass(n) === 'half'"
-                                      class="absolute inset-0 overflow-hidden text-orange-400"
-                                      :style="{ width: '50%' }"
-                                  >
-                                      ★
-                                  </span>
-                              </div>
-                          </template>
-                      </div>
-                      <span class="font-roboto text-sm text-[#38949B]">(42 отзыва)</span>
-                  </div>
-                  <div class="flex gap-[12px] text-sm font-roboto text-[#5C5C5C]">
-                      <img src="/icons/calendar-icon.svg" alt=""> <span>Срок выполнения: 1 день</span>
-                  </div>
-                  <div class="flex gap-[10px] mt-[10px]">
-                      <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold">Подробнее</button>
-                      <button class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold">Добавить</button>
-                  </div>
-                </div>
-              </div>
-              <div class="p-[9px] rounded-lg max-w-[376px] w-full bg-white">
-                <div>
-                  <img class="rounded-lg overflow-hidden w-full h-[189px] object-cover" src="/images/client/banner.jpg" alt="">
-                  <h3 class="text-lg font-roboto font-medium text-[#222222] mt-[10px]">Доставка покойного</h3>
-                  <h4 class="text-2xl font-roboto font-medium text-[#222222] mb-[4px]">100 000 ₸</h4>
-                  <div class="flex items-center mb-[4px]">
-                      <div class="flex space-x-1">
-                          <template v-for="n in totalStars" :key="n">
-                              <div class="relative text-2xl select-none">
-                                  <span v-if="getStarClass(n) === 'half'" class="text-gray-300">★</span>
-                                  <span 
-                                      v-else :class="{
-                                      'text-orange-400': getStarClass(n) === 'full',
-                                      'text-gray-300': getStarClass(n) === 'empty'
-                                      }"
-                                  >
-                                      ★
-                                  </span>
-                                  <span
-                                      v-if="getStarClass(n) === 'half'"
-                                      class="absolute inset-0 overflow-hidden text-orange-400"
-                                      :style="{ width: '50%' }"
-                                  >
-                                      ★
-                                  </span>
-                              </div>
-                          </template>
-                      </div>
-                      <span class="font-roboto text-sm text-[#38949B]">(42 отзыва)</span>
-                  </div>
-                  <div class="flex gap-[12px] text-sm font-roboto text-[#5C5C5C]">
-                      <img src="/icons/calendar-icon.svg" alt=""> <span>Срок выполнения: 1 день</span>
-                  </div>
-                  <div class="flex gap-[10px] mt-[10px]">
-                      <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold">Подробнее</button>
-                      <button class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold">Добавить</button>
-                  </div>
-                </div>
+                <input v-model="burialTime" type="text" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base" placeholder="00:00">
               </div>
             </div>
           </div>
@@ -203,27 +114,29 @@ const switcher = ref(false)
             <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
               Сектор:
             </h4>
-            <span class="text-base font-bold font-roboto text-[#222222]">11</span>
+            <span class="text-base font-bold font-roboto text-[#222222]">1</span>
           </div>
           <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
             <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
               Место:
             </h4>
-            <span class="text-base font-bold font-roboto text-[#222222]">233 222</span>
+            <span class="text-base font-bold font-roboto text-[#222222]">1</span>
           </div>
           <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
             <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
               ФИО покойного:
             </h4>
-            <span class="text-base font-bold font-roboto text-[#222222]">Беляков Макар Максимович</span>
+            <span class="text-base font-bold font-roboto text-[#222222]">{{ fullName || '' }}</span>
           </div>
           <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
             <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
               Дата похорон:
             </h4>
-            <span class="text-base font-light font-roboto text-[#939393]">Не указано</span>
+            <span class="text-base" :class="burialDate ? 'font-bold text-[#222222]' : 'font-light text-[#939393]'">
+              {{ burialDate || 'Не указано' }}
+            </span>
           </div>
-          <button class="text-base font-semibold font-roboto w-full h-[51px] rounded-lg bg-[#224C4F] text-white">
+          <button @click="handleBooking" class="text-base font-semibold font-roboto w-full h-[51px] rounded-lg bg-[#224C4F] text-white">
             Забронировать 
           </button>
         </div>
