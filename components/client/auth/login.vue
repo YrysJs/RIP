@@ -17,6 +17,35 @@ function run () {
     router.push('client/client')
 }
 
+
+
+const fakeTimer = ref(10)
+let interval = null
+
+const fakePhone = () => {
+  step.value++
+  fakeTimer.value = 10
+
+  if (interval) {
+    clearInterval(interval)
+  }
+
+  interval = setInterval(() => {
+    if (fakeTimer.value > 0) {
+      fakeTimer.value -= 1
+    } else {
+      clearInterval(interval)
+      interval = null
+    }
+  }, 1000)
+}
+
+const fakePhoneConfirm = () => {
+    setTimeout(() => {
+        step.value++
+    }, 5000);
+}
+
 </script>
 
 <template>
@@ -31,8 +60,8 @@ function run () {
                     Введите  номер мобильного телефона - мы пришлем код
                 </p>
                 <input v-model="phone_number" v-mask="'+7 (###) ###-##-##'" class="border-2 border-[#939393] mt-[24px] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите номер телефона">
-                <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto my-[21px]" :class="{ '!bg-[#38949B] text-white': phone_number.length >= 18 }" @click="step++">Получить код в WhatsApp </button>
-                <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': phone_number.length >= 18 }" @click="step++">Получить код по СМС</button>
+                <!-- <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto my-[21px]" :class="{ '!bg-[#38949B] text-white': phone_number.length >= 18 }" @click="step++">Получить код в WhatsApp </button> -->
+                <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto my-[21px]" :class="{ '!bg-[#38949B] text-white': phone_number.length >= 18 }" @click="fakePhone">Получить код по СМС</button>
             </div>
             <div v-if="step == 1" class="flex flex-col">
                 <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
@@ -44,10 +73,10 @@ function run () {
                 </p>
                 <input v-model="code" class="border-2 border-[#939393] mt-[24px] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите код">
                 <div class="mt-[24px] mb-[18px]">
-                    <p v-if="true" class="text-base font-semibold font-roboto text-[#939393]">Отправить код повторно: через 00:03</p>
+                    <p v-if="true" class="text-base font-semibold font-roboto text-[#939393]">Отправить код повторно: через {{ fakeTimer }}</p>
                     <button v-else>Отправить еще раз</button>
                 </div>
-                <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': code >= 4 }" @click="step++">Подтвердить</button>
+                <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': code >= 4 }" @click="fakePhoneConfirm">Подтвердить</button>
             </div>
             <div v-if="step == 2" class="flex flex-col">
                 <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
