@@ -19,6 +19,7 @@ export default defineNuxtConfig({
   ],
   plugins: [
     '~/plugins/v-mask.js',
+    '~/plugins/axios.js',
   ],
 
   css: [

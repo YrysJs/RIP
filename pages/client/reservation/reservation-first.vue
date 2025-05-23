@@ -1,6 +1,9 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { createDeceased } from '~/services/client'
+import { createDeceased, createBurialRequest } from '~/services/client'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const switcher = ref(false)
 const inn = ref('')
@@ -12,26 +15,40 @@ const burialTime = ref('')
 // Автоматически заполнять поля при вводе ИИН
 watch(inn, (newValue) => {
   if (newValue === '920216450089') {
-    fullName.value = 'СӘДҮӘҚАС БАЯНСҰЛУ ҚАЙРАТҚЫЗЫ'
-    deathDate.value = '2023-08-11'
+    setTimeout(() => {
+      fullName.value = 'СӘДҮӘҚАС БАЯНСҰЛУ ҚАЙРАТҚЫЗЫ'
+      deathDate.value = '2023-08-11'
+    }, 3000)
   }
 })
 
 // Функция для бронирования
 const handleBooking = async () => {
   try {
+    // const data = {
+    //   inn: inn.value,
+    //   full_name: fullName.value,
+    //   death_date: deathDate.value+'T10:00:00Z',
+    //   grave_id: 2
+    // }
+    
+    // const response = await createDeceased(data)
+
     const data = {
-      inn: inn.value,
-      full_name: fullName.value,
-      death_date: deathDate.value+'T10:00:00Z'
+      burial_date: "2023-08-11T00:00:00Z",
+      burial_time: "9:00",
+      cemetery_id: 1,
+      deceased: {
+        death_date: "2023-08-11T00:00:00Z",
+        full_name: "СӘДҮӘҚАС БАЯНСҰЛУ ҚАЙРАТҚЫЗЫ",
+        inn: "920216450089"
+      },
+      grave_id: 1
     }
-    
-    const response = await createDeceased(data)
-    
-    if (response) {
-      router.push('/client/tickets/active')
-    }
-    // Здесь можно добавить логику после успешной отправки
+
+    const burialRequest = await createBurialRequest(data)
+
+    router.push('/client/tickets/active')
   } catch (error) {
     console.error('Ошибка при отправке данных:', error)
   }
