@@ -61,7 +61,7 @@ function getGraves(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8082/api/v1/graves',
+        url: 'http://194.32.140.209:8092/api/v1/graves',
         params,
         headers: {
             'accept': 'application/json'
@@ -73,7 +73,7 @@ function getGraveById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://194.32.140.209:8082/api/v1/graves/${id}`,
+        url: `http://194.32.140.209:8092/api/v1/graves/${id}`,
         headers: {
             'accept': 'application/json'
         }
@@ -84,11 +84,11 @@ function createDeceased(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://194.32.140.209:8082/api/v1/admin/deceased',
+        url: 'http://194.32.140.209:8092/api/v1/admin/deceased',
         data,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer 10_manager_manager@example.com',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE4NDc3NTYzMzAsInJvbGUiOiJ1c2VyIiwic3ViIjoiNzc3NzczMTgyNDMifQ.TfOXJl5U5KxiPaA1J9ZHF-O_LlYCxcEs13my5Ucs0oc',
             'Content-Type': 'application/json'
         }
     })
@@ -98,7 +98,7 @@ function getDeceasedById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://194.32.140.209:8082/api/v1/deceased/${id}`,
+        url: `http://194.32.140.209:8092/api/v1/deceased/${id}`,
         headers: {
             'accept': 'application/json'
         }
@@ -172,10 +172,10 @@ function getBurialRequests(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8082/api/v1/burial-requests',
+        url: 'http://194.32.140.209:8092/api/v1/burial-requests',
         params,
         headers: {
-            'Authorization': 'Bearer 11_provider_provider@example.com',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE4NDc3NTYzMzAsInJvbGUiOiJ1c2VyIiwic3ViIjoiNzc3NzczMTgyNDMifQ.TfOXJl5U5KxiPaA1J9ZHF-O_LlYCxcEs13my5Ucs0oc',
             'accept': 'application/json'
         }
     })
@@ -185,7 +185,7 @@ function updateBurialRequestStatus(requestId, data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PATCH',
-        url: `http://194.32.140.209:8082/api/v1/burial-requests/${requestId}/status`,
+        url: `http://194.32.140.209:8092/api/v1/burial-requests/${requestId}/status`,
         data,
         headers: {
             'accept': 'application/json',
@@ -202,7 +202,7 @@ function uploadBurialRequestDocument(requestId, document) {
     
     return $axios({
         method: 'POST',
-        url: `http://194.32.140.209:8082/api/v1/burial-requests/${requestId}/document`,
+        url: `http://194.32.140.209:8092/api/v1/burial-requests/${requestId}/document`,
         data: formData,
         headers: {
             'accept': 'application/json',
@@ -215,7 +215,7 @@ function createBurialRequest(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://194.32.140.209:8082/api/v1/burial-requests',
+        url: 'http://194.32.140.209:8090/api/v1/burial-requests',
         data,
         headers: {
             'accept': 'application/json',

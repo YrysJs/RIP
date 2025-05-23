@@ -1,4 +1,5 @@
 <script setup>
+import { getProducts } from '~/services/supplier'
 
 const props = defineProps({
     value: {
@@ -12,6 +13,29 @@ const props = defineProps({
     },
 });
 
+// Состояние для хранения данных
+const products = ref([])
+const loading = ref(true)
+const error = ref(null)
+
+// Функция для получения данных товаров/услуг требующих доработки
+const fetchProducts = async () => {
+    try {
+        loading.value = true
+        const response = await getProducts({ status: 'requires_fix' })
+        products.value = response.data || []
+    } catch (err) {
+        error.value = err
+        console.error('Ошибка при загрузке продуктов требующих доработки:', err)
+    } finally {
+        loading.value = false
+    }
+}
+
+// Загружаем данные при монтировании компонента
+onMounted(() => {
+    fetchProducts()
+})
 
 function getStarClass(n) {
     if (props.value >= n) return "full";
@@ -19,26 +43,71 @@ function getStarClass(n) {
     return "empty";
 }
 
+// Функция для форматирования цены
+const formatPrice = (price) => {
+    return new Intl.NumberFormat('ru-RU').format(price)
+}
+
+// Функция для получения URL изображения
+const getImageUrl = (imageUrls) => {
+    if (imageUrls && imageUrls.length > 0) {
+        return imageUrls[0]
+    }
+    return '/images/test-card-image.jpg' // fallback изображение
+}
+
+// Функция для форматирования даты
+const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    })
+}
 </script>
 
 <template>
     <NuxtLayout name="supplier">
         <div class="w-full h-[61px] pl-[20px] flex items-center bg-white rounded-[16px] text-lg font-semibold">
-            Требует дороботки
+            Требует доработки
         </div>
-        <div class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
+        
+        <!-- Лоадер -->
+        <div v-if="loading" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px] text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#224C4F] mx-auto"></div>
+            <p class="mt-4 text-gray-600">Загрузка товаров и услуг требующих доработки...</p>
+        </div>
+
+        <!-- Ошибка -->
+        <div v-if="error && !loading" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px] text-center">
+            <div class="text-red-500">
+                <p>Ошибка при загрузке данных</p>
+                <button @click="fetchProducts" class="mt-4 px-4 py-2 bg-[#224C4F] text-white rounded hover:bg-[#1a3a3d]">
+                    Попробовать снова
+                </button>
+            </div>
+        </div>
+
+        <!-- Пустое состояние -->
+        <div v-if="!loading && !error && products.length === 0" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px] text-center">
+            <p class="text-gray-600">У вас пока нет товаров и услуг требующих доработки</p>
+        </div>
+
+        <!-- Список товаров/услуг требующих доработки -->
+        <div v-for="product in products" :key="product.id" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
             <div class="w-full flex gap-[20px]">
                 <div class="min-w-[320px] w-[320px] rounded-lg overflow-hidden">
-                    <img class="w-full h-full object-cover" src="/images/test-card-image.jpg" alt="">
+                    <img class="w-full h-full object-cover" :src="getImageUrl(product.image_urls)" :alt="product.name">
                 </div>
                 <div class="w-full">
                     <div class="flex justify-between items-start mb-[3px]">
                         <div>
-                            <h3 class="font-medium text-lg">Уборка могил</h3>
-                            <p class="text-sm text-[#939393]">Облагораживание</p>
+                            <h3 class="font-medium text-lg">{{ product.name }}</h3>
+                            <p class="text-sm text-[#939393]">{{ product.description }}</p>
                         </div>
                         <div class="font-medium text-xl">
-                            от 20 000 ₸
+                            от {{ formatPrice(product.price) }} ₸
                         </div>
                     </div>
                     <div>
@@ -65,25 +134,33 @@ function getStarClass(n) {
                             </template>
                         </div>
                         <div class="flex items-center gap-[10px] text-sm font-normal mb-[8px] text-[#5C5C5C] mt-[8px]">
-                            <img src="/icons/calendar-icon.svg" alt="calendar-icon"> Срок выполнения: 1 день
+                            <img src="/icons/calendar-icon.svg" alt="calendar-icon"> 
+                            Срок выполнения: {{ product.service_time }} {{ product.service_time === '1' ? 'день' : 'дня/дней' }}
                         </div>
                         <div class="flex items-center gap-[10px] text-sm font-normal text-[#224C4F]">
-                            <img src="/icons/geo-icon.svg" alt="geo-icon"> Казахстан, Алматы
+                            <img src="/icons/geo-icon.svg" alt="geo-icon"> 
+                            {{ product.country }}, {{ product.city }}
                         </div>
                     </div>
                     <div class="flex justify-between items-center mt-[40px]">
                         <div class="flex items-center gap-[10px] text-sm font-normal mb-[5px] text-[#5C5C5C]">
-                            <img src="/icons/calendar-icon.svg" alt="calendar-icon"> Дата подачи: 27.06.2023
+                            <img src="/icons/calendar-icon.svg" alt="calendar-icon"> 
+                            Дата подачи: {{ formatDate(product.created_at) }}
                         </div>
-                        <nuxt-link to="/supplier/services/consideration" class="py-[8px] px-[16px] rounded-md bg-[#224C4F] text-white font-semibold">Редактировать</nuxt-link>
+                        <nuxt-link 
+                            :to="`/supplier/services/add-service/${product.id}`" 
+                            class="py-[8px] px-[16px] rounded-md bg-[#224C4F] text-white font-semibold hover:bg-[#1a3a3d] transition-colors"
+                        >
+                            Редактировать
+                        </nuxt-link>
                     </div>
                 </div>
             </div>
             <div class="bg-[#DC6E2926] p-[10px] rounded-md mt-[10px] flex items-center gap-3 text-base">
-                <img src="/icons/attention-icon.svg" alt="icon"> Услуга требует доработки, укажите точное описание и прикрепите фотографии
+                <img src="/icons/attention-icon.svg" alt="icon"> 
+                Услуга требует доработки, укажите точное описание и прикрепите фотографии
             </div>
         </div>
-        
     </NuxtLayout>
 </template>
 
