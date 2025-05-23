@@ -2,27 +2,27 @@
   <div class="cemetery-card mb-4">
     <div class="cemetery-card__header">
       <h3 class="cemetery-card__title">{{ cemetery.name }}</h3>
-      <p class="cemetery-card__type">{{ cemetery.type }}</p>
+      <p class="cemetery-card__type">{{ cemetery.religion }}</p>
     </div>
 
     <div class="cemetery-card__info">
       <div class="cemetery-card__info-item">
         <img src="/icons/map-pin.svg" alt="map" class="cemetery-card__icon" />
-        <span>{{ cemetery.address }} ({{ cemetery.distance }} км от вас)</span>
+        <span>{{ cemetery.country }}, {{cemetery.city}}, {{cemetery.street_name}}</span>
       </div>
-      <div class="cemetery-card__info-item">
-        <img src="/icons/phone.svg" alt="phone" class="cemetery-card__icon" />
-        <span>{{ cemetery.phone }}</span>
-      </div>
+<!--      <div class="cemetery-card__info-item">-->
+<!--        <img src="/icons/phone.svg" alt="phone" class="cemetery-card__icon" />-->
+<!--        <span>{{ cemetery.phone }}</span>-->
+<!--      </div>-->
     </div>
 
     <div class="cemetery-card__stats">
-      <span> <strong>Вместимость: {{ cemetery.capacity.toLocaleString() }}</strong></span>
-      <span> <strong>Свободных мест: {{ cemetery.free.toLocaleString() }}</strong></span>
+      <span> <strong>Вместимость: {{ cemetery.capacity }}</strong></span>
+      <span> <strong>Свободных мест: {{ cemetery.free_spaces }}</strong></span>
     </div>
 
     <div class="cemetery-card__footer flex justify-end">
-      <button class="btn cemetery-card__edit-button" @click="router.push('/manager/cemetery/3')">Редактировать</button>
+      <button class="btn cemetery-card__edit-button" @click="router.push(`/manager/cemetery/${cemetery.id}`)">Редактировать</button>
     </div>
   </div>
 </template>

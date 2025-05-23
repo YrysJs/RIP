@@ -20,28 +20,7 @@ const managerMenu = [
   {
     title: "Управление кладбищами",
     path: "/manager/cemetery",
-    childs: [
-      {
-        title: "Кладбище",
-        path: "/3",
-        count: 4
-      },
-      {
-        title: "На рассмотрении",
-        path: "/4",
-        count: 1
-      },
-      {
-        title: "Требует дороботки",
-        path: "/5",
-        count: 1
-      },
-      {
-        title: "Не активные",
-        path: "/6",
-        count: 0
-      }
-    ]
+    childs: []
   },
   {
     title: "Отчеты",

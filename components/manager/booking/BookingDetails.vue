@@ -6,20 +6,20 @@
     </button>
 
     <div class="flex justify-between items-center border-b-2 border-[#EEEEEE] pb-[16px] mt-[16px]">
-      <h3 class="text-lg font-medium">Бронирование: <span class="text-[#0091EA]">{{ booking.id }}</span></h3>
-      <p class="text-sm">{{ booking.date }}</p>
+      <h3 class="text-lg font-medium">Бронирование: <span class="text-[#0091EA]">{{ booking.request_number }}</span></h3>
+      <p class="text-sm">{{ new Date(booking.created_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</p>
     </div>
 
     <div class="flex justify-between items-start mt-[16px] border-b-1 border-[#EEEEEE] pb-[16px]">
       <div class="min-w-[580px] font-medium flex flex-col gap-[10px] w-full">
         <div class="flex text-base">
           <p class="min-w-[150px]">Заказчик:</p>
-          <p class="font-bold">{{ booking.client }}</p>
+          <p class="font-bold">Бақадыр Нұрбике Бекзатқызыg</p>
         </div>
         <div class="flex text-base items-center gap-2 justify-between w-full">
           <div class="flex text-base items-center">
             <p class="min-w-[150px] max-w-[150px]">Контакты заказчика:</p>
-            <p class="font-bold">{{ booking.phone }}</p>
+            <p class="font-bold">{{ booking.user_phone }}</p>
           </div>
 
           <div class="flex gap-1">
@@ -36,7 +36,7 @@
         </div>
         <div class="flex text-base items-center gap-1">
           <p class="min-w-[150px]">Срок брони:</p>
-          <p class="font-bold">Осталось: <strong>{{ booking.daysLeft }}</strong></p>
+          <p class="font-bold">Осталось: <strong>3</strong></p>
           <img src="/icons/info.svg" class="w-[18px] h-[18px] ml-4" />
         </div>
       </div>
@@ -46,15 +46,15 @@
       <div class="min-w-[580px] font-medium flex flex-col gap-[10px]">
         <div class="flex text-base">
           <p class="min-w-[150px]">Кладбище:</p>
-          <p class="font-bold">{{ booking.cemetery }}</p>
+          <p class="font-bold">{{ booking.cemetery ? booking.cemetery : 'Северное кладбище' }}</p>
         </div>
-        <div class="flex text-base">
-          <p class="min-w-[150px]">Сектор</p>
-          <p class="font-bold">{{ booking.sector }}</p>
-        </div>
+<!--        <div class="flex text-base">-->
+<!--          <p class="min-w-[150px]">Сектор</p>-->
+<!--          <p class="font-bold">{{ booking.sector }}</p>-->
+<!--        </div>-->
         <div class="flex text-base">
           <p class="min-w-[150px]">Место:</p>
-          <p class="font-bold">{{ booking.place }}</p>
+          <p class="font-bold">{{ booking.grave_id }}</p>
         </div>
       </div>
       <button class="rounded-md w-[140px] h-[30px] text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]">Данные участка</button>
@@ -63,7 +63,7 @@
     <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
         <div class="flex text-base">
           <p class="min-w-[150px] font-medium">ФИО покойного:</p>
-          <p class="font-bold">{{ booking.deceased }}</p>
+          <p class="font-bold">{{ booking.deceased.full_name }}</p>
         </div>
 
     </div>
@@ -71,7 +71,8 @@
     <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
       <div class="flex text-base">
         <p class="min-w-[150px] font-medium">Дата похорон:</p>
-        <p class="text-sm text-[#DC2626]">Необходимо указать даты похорон</p>
+        <p v-if="booking.burial_date" class="font-bold">{{ new Date(booking.burial_date).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) }} {{booking.burial_time}}</p>
+        <p v-else class="text-sm text-[#DC2626]">Необходимо указать даты похорон</p>
       </div>
     </div>
     <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
@@ -90,7 +91,7 @@
     </div>
 
 
-    <button class="block w-[225px] h-[51px] rounded-md bg-[#F1F5F9] text-[#1F2937] text-base font-semibold ml-auto mt-[16px]">
+    <button class="block w-[225px] h-[51px] rounded-md bg-[#F1F5F9] text-[#1F2937] text-base font-semibold ml-auto mt-[16px]" @click="$emit('cancel', booking.id)">
       Отменить бронь
     </button>
   </div>
@@ -98,6 +99,8 @@
 
 <script setup>
 defineProps(['booking'])
+
+defineEmits(['cancel'])
 
 const router = useRouter();
 </script>
