@@ -32,7 +32,7 @@ const managerMenu = [
 </script>
 
 <template>
-  <div class="layout-sidebar bg-white max-w-[375px] w-full max-h-fit py-[36px] px-[12px]">
+  <div class="layout-sidebar bg-white max-w-[320px] w-full max-h-fit py-[36px] px-[12px]">
     <UserLayoutSideBar :items="managerMenu"/>
   </div>
 </template>

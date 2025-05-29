@@ -93,6 +93,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import  { getRequests } from '@/services/akimat'
 
 const activeTab = ref('relocation');
 
@@ -100,6 +101,10 @@ const router = useRouter();
 
 const relocationCount = 5;
 const akimatCount = 0;
+
+onMounted(() => {
+  getRequests()
+})
 
 const requests = [
   {

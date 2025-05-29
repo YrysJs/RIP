@@ -12,21 +12,21 @@ const managerMenu = [
     path: '/manager/burial',
     childs: []
   },
-  {
-    title: "Запрос на облагораживание",
-    path: "/manager/ennoblement",
-    childs: []
-  },
+  // {
+  //   title: "Запрос на облагораживание",
+  //   path: "/manager/ennoblement",
+  //   childs: []
+  // },
   {
     title: "Управление кладбищами",
     path: "/manager/cemetery",
     childs: []
   },
-  {
-    title: "Отчеты",
-    path: "/supplier/reports",
-    childs: []
-  },
+  // {
+  //   title: "Отчеты",
+  //   path: "/supplier/reports",
+  //   childs: []
+  // },
 ]
 
 </script>

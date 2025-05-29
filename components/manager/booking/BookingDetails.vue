@@ -1,5 +1,6 @@
 <template>
   <div class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
+
     <button class="btn btn-back mr-4" @click="router.push('/manager/booking')">
       <img class="w-4 h-4 mr-[10px]" src="/icons/arrow-left-primary.svg" alt="">
       Назад
@@ -19,7 +20,7 @@
         <div class="flex text-base items-center gap-2 justify-between w-full">
           <div class="flex text-base items-center">
             <p class="min-w-[150px] max-w-[150px]">Контакты заказчика:</p>
-            <p class="font-bold">{{ booking.user_phone }}</p>
+            <p class="font-bold">{{ formatPhoneNumber(booking.user_phone) }}</p>
           </div>
 
           <div class="flex gap-1">
@@ -31,13 +32,11 @@
             </div>
           </div>
 
-
-
         </div>
         <div class="flex text-base items-center gap-1">
           <p class="min-w-[150px]">Срок брони:</p>
-          <p class="font-bold">Осталось: <strong>3</strong></p>
-          <img src="/icons/info.svg" class="w-[18px] h-[18px] ml-4" />
+          <p class="font-bold">Осталось: <strong>{{getTimeRemaining(booking.reservation_expires_at)}}</strong></p>
+<!--          <img src="/icons/info.svg" class="w-[18px] h-[18px] ml-4" />-->
         </div>
       </div>
     </div>
@@ -46,12 +45,12 @@
       <div class="min-w-[580px] font-medium flex flex-col gap-[10px]">
         <div class="flex text-base">
           <p class="min-w-[150px]">Кладбище:</p>
-          <p class="font-bold">{{ booking.cemetery ? booking.cemetery : 'Северное кладбище' }}</p>
+          <p class="font-bold">{{ booking.cemetery_name }}</p>
         </div>
-<!--        <div class="flex text-base">-->
-<!--          <p class="min-w-[150px]">Сектор</p>-->
-<!--          <p class="font-bold">{{ booking.sector }}</p>-->
-<!--        </div>-->
+        <div class="flex text-base">
+          <p class="min-w-[150px]">Сектор</p>
+          <p class="font-bold">{{ booking.sector_number }}</p>
+        </div>
         <div class="flex text-base">
           <p class="min-w-[150px]">Место:</p>
           <p class="font-bold">{{ booking.grave_id }}</p>
@@ -63,7 +62,7 @@
     <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
         <div class="flex text-base">
           <p class="min-w-[150px] font-medium">ФИО покойного:</p>
-          <p class="font-bold">{{ booking.deceased.full_name }}</p>
+          <p class="font-bold">{{ booking.deceased?.full_name }}</p>
         </div>
 
     </div>
@@ -79,7 +78,7 @@
       <div class="flex text-base">
         <p class="min-w-[150px] font-medium">Статус:</p>
         <p class="p-[4px] rounded-md bg-[#DC6E29] text-sm font-bold text-white mr-4">
-          {{ booking.status }}
+          {{ booking.status === 'pending' ? 'Ожидает оплаты' : booking.status }}
         </p>
       </div>
     </div>
@@ -101,6 +100,28 @@
 defineProps(['booking'])
 
 defineEmits(['cancel'])
+
+function formatPhoneNumber(phone) {
+  if (!/^\d{11}$/.test(phone)) return 'Неверный формат номера';
+
+  return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(4, 7)} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
+}
+
+function getTimeRemaining(reservation_expires_at) {
+  const now = new Date();
+  const expiresAt = new Date(reservation_expires_at);
+
+  const diffMs = expiresAt - now;
+
+  if (diffMs <= 0) {
+    return 'Срок истёк';
+  }
+
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+  return `${diffDays} дн. ${diffHours} ч.`;
+}
 
 const router = useRouter();
 </script>
