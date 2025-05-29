@@ -88,7 +88,7 @@ function createDeceased(data) {
         data,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE4NDc3NTYzMzAsInJvbGUiOiJ1c2VyIiwic3ViIjoiNzc3NzczMTgyNDMifQ.TfOXJl5U5KxiPaA1J9ZHF-O_LlYCxcEs13my5Ucs0oc',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ',
             'Content-Type': 'application/json'
         }
     })
@@ -112,7 +112,7 @@ function getCart() {
         url: 'http://194.32.140.209:8080/api/v1/cart',
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer 11_provider_provider@example.com'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
         }
     })
 }
@@ -125,7 +125,7 @@ function addToCart(data) {
         data,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer 14_provider_provider@example.com',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ',
             'Content-Type': 'application/json'
         }
     })
@@ -138,7 +138,7 @@ function removeFromCart(productId) {
         url: `http://194.32.140.209:8080/api/v1/cart/${productId}`,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer 11_provider_provider@example.com'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
         }
     })
 }
@@ -150,7 +150,7 @@ function clearCart() {
         url: 'http://194.32.140.209:8080/api/v1/cart',
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer 11_provider_provider@example.com'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
         }
     })
 }
@@ -163,7 +163,7 @@ function getOrders(params) {
         params,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer 11_provider_provider@example.com'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
         }
     })
 }
@@ -175,7 +175,7 @@ function getBurialRequests(params) {
         url: 'http://194.32.140.209:8092/api/v1/burial-requests',
         params,
         headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE4NDc3NTYzMzAsInJvbGUiOiJ1c2VyIiwic3ViIjoiNzc3NzczMTgyNDMifQ.TfOXJl5U5KxiPaA1J9ZHF-O_LlYCxcEs13my5Ucs0oc',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ',
             'accept': 'application/json'
         }
     })
@@ -232,7 +232,7 @@ function createOrder(data) {
         data,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer 11_provider_provider@example.com',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ',
             'Content-Type': 'application/json'
         }
     })
@@ -262,7 +262,7 @@ function postReview(data) {
         data: formData,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer 11_provider_provider@example.com',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ',
             'Content-Type': 'multipart/form-data'
         }
     })
