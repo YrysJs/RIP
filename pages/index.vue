@@ -1,11 +1,69 @@
 <script setup>
 import Login from '~/components/client/auth/login.vue';
+import GraveDetailModal from '~/components/layout/modals/GraveDetailModal.vue';
+import ServiceDetailModal from '~/components/layout/modals/ServiceDetailModal.vue';
+
+const serviceDelivery = {
+  title: 'Доставка покойного',
+  rating: 4.7,
+  price: 100000,
+  image: 'https://i.makeagif.com/media/7-29-2022/r3Mm6k.gif',
+  description: 'Профессиональная транспортировка покойного осуществляется с соблюдением всех санитарных и этических норм. Мы обеспечиваем бережное отношение к усопшему на всех этапах перевозки для вас период. Услуга включает транспортировку тела в специализированном автомобиле, оформление сопроводительной документации и при необходимости, сопровождение близких.',
+  buttonText: 'Добавить',
+  provider: {
+    name: 'Ритуальный Центр "Покой и Уважение"',
+    address: 'Улица Бейсекбаева, Алматы',
+    phone: '+7 777 777 77 77'
+  },
+  reviews: [
+    {
+      name: 'Иван К.',
+      date: '16.07.2023',
+      rating: 4.5,
+      text: 'Огромное спасибо за чуткость и профессионализм. Все было организовано на высшем уровне'
+    },
+    {
+      name: 'Мария С.',
+      date: '14.07.2023',
+      rating: 4.5,
+      text: 'Оперативно, с уважением к памяти близкого человека. Благодарим за помощь'
+    },
+    {
+      name: 'Алексей В.',
+      date: '10.07.2023',
+      rating: 4.5,
+      text: 'Рекомендуем'
+    }
+  ]
+}
+
+const graveNorth = {
+  title: 'Северное кладбище',
+  sector: 'N',
+  place: '233',
+  area: '2.5 x 1.5 м',
+  images: [
+    'https://images.satu.kz/213275582_w600_h600_213275582.jpg',
+    'https://sh-rikm.mo.muzkult.ru/media/2022/04/15/1294088537/Burcevo_-_Kachanovskij_-_2021_3.jpeg',
+    'https://belgranstil.by/project-105.jpg'
+  ],
+  description: 'Участок расположен на ровной местности, что обеспечивает устойчивость и простоту в уходе за территорией. Сохранены все необходимые параметры согласно стандартам для индивидуального захоронения. Территория находится в солнечной части кладбища с легким уклоном, обеспечивающим естественный дренаж. Участок доступен для посещения, имеется удобный подъезд.',
+  notes: 'Участок расположен в небольшой низине, защищенной от ветров.',
+  coordinates: {
+    lat: 43.2567,
+    lng: 76.9456
+  }
+}
+
+
 const login = ref(false)
 </script>
 
 <template>
     <div>
         <Login v-if="login" @close="login = false"/>
+        <GraveDetailModal :visible="true" :grave="graveNorth" @close="graveDetailModalVisible = false" />
+        <ServiceDetailModal :visible="false" :service="serviceDelivery" @close="serviceDetailModalVisible = false" />
         <div class="main">
             <div class="container">
                 <div class="py-[210px] max-w-[476px]">
