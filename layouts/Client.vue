@@ -4,6 +4,7 @@ import ClientSidebar from '~/components/layout/ClientSidebar.vue';
 import AppHeader from "~/components/layout/AppHeader.vue";
 </script>
 
+
 <template>
   <section class="supplier bg-[#FAFAFA] relative mt-[77px]">
     <AppHeader type="client" />

@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps } from 'vue';
-const props = defineProps(['service', 'visible'])
+const props = defineProps(['service', 'visible', 'reviews', 'supplier'])
 
 const emit = defineEmits(['close', 'order'])
 
@@ -36,6 +36,13 @@ const renderStars = (rating) => {
 const formatPrice = (price) => {
   return new Intl.NumberFormat('ru-RU').format(price)
 }
+
+function formatPhoneNumber(phone) {
+  if (!/^\d{11}$/.test(phone)) return 'Неверный формат номера';
+
+  return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(4, 7)} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
+}
+
 </script>
 
 <template>
@@ -45,11 +52,11 @@ const formatPrice = (price) => {
       <div class="flex justify-between items-start pt-6 pl-6 pr-6 pb-0 border-b">
         <div class="flex-1">
           <div class="flex items-center gap-2 mb-2">
-            <h2 class="text-xl font-bold">{{ service?.title || 'Доставка покойного' }}</h2>
-            <div class="flex items-center">
-              <span class="text-orange-400 text-sm">{{ renderStars(service?.rating || 4.7) }}</span>
-              <span class="text-sm text-gray-600 ml-1">{{ service?.rating || 4.7 }}</span>
-            </div>
+            <h2 class="text-xl font-bold">{{ service?.name || 'Доставка покойного' }}</h2>
+<!--            <div class="flex items-center">-->
+<!--              <span class="text-orange-400 text-sm">{{ renderStars(service?.rating || 4.7) }}</span>-->
+<!--              <span class="text-sm text-gray-600 ml-1">{{ service?.rating || 4.7 }}</span>-->
+<!--            </div>-->
           </div>
           <div class="text-2xl font-bold">
             {{ formatPrice(service?.price || 100000) }} ₸
@@ -64,10 +71,10 @@ const formatPrice = (price) => {
       <div class="pt-2 pl-6 pr-6 pb-6">
         <!-- Service Image -->
         <div class="flex gap-[12px]">
-            <div v-if="service?.image" class="mb-6">
-                <div class="min-w-[330px] w-full h-[221px] rounded-lg overflow-hidden bg-gray-100">
+            <div v-if="service?.image_urls" class="mb-6">
+                <div class="min-w-[330px] w-full h-[221px] rounded-lg overflow-hidden bg-gray-100" v-for="image in service.image_urls" :key="image">
                     <img 
-                    :src="service.image" 
+                    :src="image"
                     :alt="service.title"
                     class="w-full h-full object-cover"
                     />
@@ -85,32 +92,31 @@ const formatPrice = (price) => {
         <!-- Provider Info -->
         <div class="mb-6 rounded-lg">
           <h3 class="font-semibold text-sm text-[#939393]">Поставщик услуг</h3>
-          <p class="text-sm font-medium">{{ service?.provider?.name || 'Ритуальный Центр "Покой и Уважение"' }}</p>
-          <p class="text-sm">{{ service?.provider?.address || 'Улица Бейсекбаева, Алматы' }} <a href="" class="ml-3">{{ service?.provider?.phone || '+7 777 777 77 77' }}</a></p>
+          <p class="text-sm font-medium">{{ supplier?.name || 'Ритуальный Центр "Покой и Уважение"' }}</p>
+          <p class="text-sm">{{ supplier?.city || 'Улица Бейсекбаева, Алматы' }} <a href="" class="ml-3">{{ formatPhoneNumber(service?.supplier_phone) }}</a></p>
         </div>
 
         <!-- Reviews -->
         <div class="mb-6">
           <h3 class="text-lg font-semibold mb-4">Отзывы</h3>
-          <div class="space-y-4">
-            <div 
-              v-for="(review, index) in service?.reviews || [
-                { name: 'Иван К.', date: '16.07.2023', rating: 4.5, text: 'Огромное спасибо за чуткость и профессионализм. Все было организовано на высшем уровне' },
-                { name: 'Иван К.', date: '14.07.2023', rating: 4.5, text: 'Оперативно, с уважением к памяти близкого человека. Благодарим за помощь' },
-                { name: 'Иван К.', date: '10.07.2023', rating: 4.5, text: 'Рекомендуем' }
-              ]" 
-              :key="index"
+          <div v-if="reviews && reviews.length" class="space-y-4">
+            <div
+              v-for="review in reviews"
+              :key="review.id"
               class="border-b border-gray-100 pb-3 last:border-b-0"
             >
               <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center gap-2">
                   <span class="font-medium text-sm">{{ review.name }}</span>
-                  <span class="text-xs text-gray-500">{{ review.date }}</span>
+                  <span class="text-xs text-gray-500">{{ new Date(review.created_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</span>
                 </div>
                 <span class="text-orange-400 text-sm">{{ renderStars(review.rating) }}</span>
               </div>
-              <p class="text-sm text-gray-600">{{ review.text }}</p>
+              <p class="text-sm text-gray-600">{{ review.comment }}</p>
             </div>
+          </div>
+          <div v-else class="">
+              Отзывы отсутствуют
           </div>
         </div>
 
