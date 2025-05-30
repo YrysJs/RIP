@@ -1,12 +1,10 @@
 <script setup>
-import Login from '~/components/client/auth/login.vue';
 import { useRouter } from "vue-router";
 import MapSecond from "~/components/map/MapV2.vue";
 import { useCemeteryStore } from '~/store/cemetery.js'
 import { getCemeteries } from '~/services/cemetery';
 
 const router = useRouter()
-const login = ref(false)
 
 const selectedReligios = ref('Не выбрано')
 const sities = [
@@ -92,7 +90,6 @@ onMounted(async () => {
 </script>
 
 <template>
-   <Login v-if="login" @close="login = false"/>
     <div class="bg-[#FAFAFA] py-[24px] min-h-[100vh] rounded-lg flex gap-[24px]">
         <div class="bg-white p-[20px] max-w-[408px] w-full relative">
             <h3 class="text-2xl font-bold font-roboto text-[#222222]">Забронировать место</h3>

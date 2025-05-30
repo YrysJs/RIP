@@ -26,7 +26,7 @@ function getProductById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://194.32.140.209:8080/api/v1/products/${id}`,
+        url: `http://194.32.140.209:8090/api/v1/products/${id}`,
         headers: {
             'accept': 'application/json'
         }
@@ -37,7 +37,7 @@ function getProductReviews(productId, params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://194.32.140.209:8080/api/v1/reviews/products/${productId}`,
+        url: `http://194.32.140.209:8090/api/v1/reviews/products/${productId}`,
         params,
         headers: {
             'accept': 'application/json'

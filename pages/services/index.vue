@@ -2,6 +2,15 @@
 import { ref, watch, onMounted } from 'vue';
 import LayoutTop from '~/components/layout/LayoutTop.vue';
 import { getAllProducts, getCategories } from '~/services/supplier';
+import { getProductById, getProductReviews } from '~/services/client'
+import { getSupplier } from '~/services/login';
+import ServiceDetailModal from "~/components/layout/modals/ServiceDetailModal.vue";
+
+const serviceDetailModalVisible = ref(false);
+
+const serviceDelivery = ref({})
+const serviceReviews = ref([])
+const serviceSupplier = ref({})
 
 const props = defineProps({
     value: {
@@ -33,6 +42,23 @@ const loading = ref(false);
 // Функция для форматирования цены
 function formatPrice(price) {
     return new Intl.NumberFormat('ru-RU').format(price);
+}
+
+const fetchProduct = async (id) => {
+  try {
+    const response = await getProductById(id)
+    serviceDelivery.value = response.data
+    const reviews = await getProductReviews(id)
+    serviceReviews.value = reviews.data
+    const supplierRes = await getSupplier({
+      phone: serviceDelivery.value.supplier_phone
+    })
+    serviceSupplier.value = supplierRes.value
+  } catch (error) {
+    console.error('Ошибка при услуги:', error)
+  } finally {
+    serviceDetailModalVisible.value = true
+  }
 }
 
 // Функция для получения URL изображения
@@ -267,31 +293,31 @@ function updatePriceRange(event) {
                                 >
                                 <h3 class="text-lg font-roboto font-medium text-[#222222] mt-[10px]">{{ product.name }}</h3>
                                 <h4 class="text-2xl font-roboto font-medium text-[#222222] mb-[4px]">{{ formatPrice(product.price) }} ₸</h4>
-                                <div class="flex items-center mb-[4px]">
-                                    <div class="flex space-x-1">
-                                        <template v-for="n in totalStars" :key="n">
-                                            <div class="relative text-2xl select-none">
-                                                <span v-if="getStarClass(n) === 'half'" class="text-gray-300">★</span>
-                                                <span 
-                                                    v-else :class="{
-                                                    'text-orange-400': getStarClass(n) === 'full',
-                                                    'text-gray-300': getStarClass(n) === 'empty'
-                                                    }"
-                                                >
-                                                    ★
-                                                </span>
-                                                <span
-                                                    v-if="getStarClass(n) === 'half'"
-                                                    class="absolute inset-0 overflow-hidden text-orange-400"
-                                                    :style="{ width: '50%' }"
-                                                >
-                                                    ★
-                                                </span>
-                                            </div>
-                                        </template>
-                                    </div>
-                                    <span class="font-roboto text-sm text-[#38949B]">({{ product.reviews_count || 0 }} отзывов)</span>
-                                </div>
+<!--                                <div class="flex items-center mb-[4px]">-->
+<!--                                    <div class="flex space-x-1">-->
+<!--                                        <template v-for="n in totalStars" :key="n">-->
+<!--                                            <div class="relative text-2xl select-none">-->
+<!--                                                <span v-if="getStarClass(n) === 'half'" class="text-gray-300">★</span>-->
+<!--                                                <span -->
+<!--                                                    v-else :class="{-->
+<!--                                                    'text-orange-400': getStarClass(n) === 'full',-->
+<!--                                                    'text-gray-300': getStarClass(n) === 'empty'-->
+<!--                                                    }"-->
+<!--                                                >-->
+<!--                                                    ★-->
+<!--                                                </span>-->
+<!--                                                <span-->
+<!--                                                    v-if="getStarClass(n) === 'half'"-->
+<!--                                                    class="absolute inset-0 overflow-hidden text-orange-400"-->
+<!--                                                    :style="{ width: '50%' }"-->
+<!--                                                >-->
+<!--                                                    ★-->
+<!--                                                </span>-->
+<!--                                            </div>-->
+<!--                                        </template>-->
+<!--                                    </div>-->
+<!--                                    <span class="font-roboto text-sm text-[#38949B]">({{ product.reviews_count || 0 }} отзывов)</span>-->
+<!--                                </div>-->
                                 <div v-if="product.service_time" class="flex gap-[12px] text-sm font-roboto text-[#5C5C5C] mb-[4px]">
                                     <img src="/icons/calendar-icon.svg" alt=""> 
                                     <span>Срок выполнения: {{ product.service_time }}</span>
@@ -308,7 +334,7 @@ function updatePriceRange(event) {
                                     </div>
                                 </div>
                                 <div class="flex gap-[10px] mt-[10px]">
-                                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold">Подробнее</button>
+                                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold" @click="fetchProduct(product.id)">Подробнее</button>
                                     <button class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold">Добавить</button>
                                 </div>
                             </div>
@@ -323,7 +349,9 @@ function updatePriceRange(event) {
             </div>
         </div>
     </div>
-    
+  <Teleport to="body">
+    <ServiceDetailModal :visible="serviceDetailModalVisible" :service="serviceDelivery" :reviews="serviceReviews" :supplier="serviceSupplier" @close="serviceDetailModalVisible = false" />
+  </Teleport>
 </template>
 
 <style lang="css" scoped>

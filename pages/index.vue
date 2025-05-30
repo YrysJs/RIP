@@ -1,41 +1,5 @@
 <script setup>
-import Login from '~/components/client/auth/login.vue';
 import GraveDetailModal from '~/components/layout/modals/GraveDetailModal.vue';
-import ServiceDetailModal from '~/components/layout/modals/ServiceDetailModal.vue';
-
-const serviceDelivery = {
-  title: 'Доставка покойного',
-  rating: 4.7,
-  price: 100000,
-  image: 'https://i.makeagif.com/media/7-29-2022/r3Mm6k.gif',
-  description: 'Профессиональная транспортировка покойного осуществляется с соблюдением всех санитарных и этических норм. Мы обеспечиваем бережное отношение к усопшему на всех этапах перевозки для вас период. Услуга включает транспортировку тела в специализированном автомобиле, оформление сопроводительной документации и при необходимости, сопровождение близких.',
-  buttonText: 'Добавить',
-  provider: {
-    name: 'Ритуальный Центр "Покой и Уважение"',
-    address: 'Улица Бейсекбаева, Алматы',
-    phone: '+7 777 777 77 77'
-  },
-  reviews: [
-    {
-      name: 'Иван К.',
-      date: '16.07.2023',
-      rating: 4.5,
-      text: 'Огромное спасибо за чуткость и профессионализм. Все было организовано на высшем уровне'
-    },
-    {
-      name: 'Мария С.',
-      date: '14.07.2023',
-      rating: 4.5,
-      text: 'Оперативно, с уважением к памяти близкого человека. Благодарим за помощь'
-    },
-    {
-      name: 'Алексей В.',
-      date: '10.07.2023',
-      rating: 4.5,
-      text: 'Рекомендуем'
-    }
-  ]
-}
 
 const graveNorth = {
   title: 'Северное кладбище',
@@ -56,14 +20,11 @@ const graveNorth = {
 }
 
 
-const login = ref(false)
 </script>
 
 <template>
     <div>
-        <Login v-if="login" @close="login = false"/>
         <GraveDetailModal :visible="true" :grave="graveNorth" @close="graveDetailModalVisible = false" />
-        <ServiceDetailModal :visible="false" :service="serviceDelivery" @close="serviceDetailModalVisible = false" />
         <div class="main">
             <div class="container">
                 <div class="py-[210px] max-w-[476px]">
