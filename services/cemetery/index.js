@@ -16,7 +16,7 @@ function getCemeteries(params) {
         params,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w'
         }
     })
 }
@@ -28,7 +28,7 @@ function getCemeteryById(id) {
         url: `http://194.32.140.209:8092/api/v1/cemeteries/${id}`,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w'
         }
     })
 }

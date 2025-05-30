@@ -34,7 +34,7 @@ function getProducts(params) {
         params,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE4NDc3NTYzMzAsInJvbGUiOiJzdXBwbGllciIsInN1YiI6Ijc3Nzc3MzE4MjQzIn0.ZBnE5ZCBTkyzAVuYQwj5DrLWXzOSf6cdjq3DoVYo_0o'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJTVVBQTElFUiIsImlhdCI6MTc0ODYzNjQ1NCwiZXhwIjoxNzQ4NzIyODU0fQ._cQtZsIzMrZlsnsQSbdIjrif3mHAeC0aPu3teatyDYQZTvN-33tthSZLjHqMn3BQhiodck_xa9jFKgJASRKoug'
         }
     })
 }
@@ -118,7 +118,7 @@ function createProduct(data) {
     // Add all fields to formData
     if (data.name) formData.append('name', data.name)
     if (data.description) formData.append('description', data.description)
-    if (data.price) formData.append('price', data.price)
+    if (data.price) formData.append('price', +data.price)
     if (data.category_id) formData.append('category_id', data.category_id)
     if (data.type) formData.append('type', data.type)
     if (data.availability !== undefined) formData.append('availability', data.availability)
@@ -140,8 +140,7 @@ function createProduct(data) {
         url: 'http://194.32.140.209:8090/api/v1/products',
         data: formData,
         headers: {
-            'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE4NDc3NTYzMzAsInJvbGUiOiJzdXBwbGllciIsInN1YiI6Ijc3Nzc3MzE4MjQzIn0.ZBnE5ZCBTkyzAVuYQwj5DrLWXzOSf6cdjq3DoVYo_0o',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w',
         }
     })
 }
@@ -181,8 +180,7 @@ function updateProduct(id, data) {
         data: formData,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE4NDc3NTYzMzAsInJvbGUiOiJzdXBwbGllciIsInN1YiI6Ijc3Nzc3MzE4MjQzIn0.ZBnE5ZCBTkyzAVuYQwj5DrLWXzOSf6cdjq3DoVYo_0o',
-            'Content-Type': 'multipart/form-data'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJTVVBQTElFUiIsImlhdCI6MTc0ODYzNjQ1NCwiZXhwIjoxNzQ4NzIyODU0fQ._cQtZsIzMrZlsnsQSbdIjrif3mHAeC0aPu3teatyDYQZTvN-33tthSZLjHqMn3BQhiodck_xa9jFKgJASRKoug',
         }
     })
 }

@@ -88,7 +88,7 @@ function createDeceased(data) {
         data,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w',
             'Content-Type': 'application/json'
         }
     })
@@ -112,7 +112,7 @@ function getCart() {
         url: 'http://194.32.140.209:8080/api/v1/cart',
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w'
         }
     })
 }
@@ -125,7 +125,7 @@ function addToCart(data) {
         data,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w',
             'Content-Type': 'application/json'
         }
     })
@@ -138,7 +138,7 @@ function removeFromCart(productId) {
         url: `http://194.32.140.209:8080/api/v1/cart/${productId}`,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w'
         }
     })
 }
@@ -150,7 +150,7 @@ function clearCart() {
         url: 'http://194.32.140.209:8080/api/v1/cart',
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w'
         }
     })
 }
@@ -163,7 +163,7 @@ function getOrders(params) {
         params,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w'
         }
     })
 }
@@ -175,7 +175,7 @@ function getBurialRequests(params) {
         url: 'http://194.32.140.209:8092/api/v1/burial-requests',
         params,
         headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w',
             'accept': 'application/json'
         }
     })
@@ -232,7 +232,7 @@ function createOrder(data) {
         data,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w',
             'Content-Type': 'application/json'
         }
     })
@@ -262,7 +262,7 @@ function postReview(data) {
         data: formData,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w',
             'Content-Type': 'multipart/form-data'
         }
     })
