@@ -10,6 +10,7 @@ function getRequests(params) {
         headers: {
             'accept': 'application/json',
             'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3NzA1NzI5NTA1OSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODc3NjMzNSwiZXhwIjoxNzQ4ODYyNzM1fQ.1A2BgGAczacXX2zCe_sNoi7RYdbjInfdzimGKrvv-yShPvfBYdJskGJbgwxqvGbVg8M-dEDCVeQG6QZP6GNkXQ'
+
         }
     })
 }
