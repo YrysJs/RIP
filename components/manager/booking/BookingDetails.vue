@@ -56,7 +56,7 @@
           <p class="font-bold">{{ booking.grave_id }}</p>
         </div>
       </div>
-      <button class="rounded-md w-[140px] h-[30px] text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]">Данные участка</button>
+      <button class="rounded-md w-[140px] h-[30px] text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]" @click="$emit('details', booking.id)">Данные участка</button>
     </div>
 
     <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
@@ -99,7 +99,7 @@
 <script setup>
 defineProps(['booking'])
 
-defineEmits(['cancel'])
+defineEmits(['cancel', 'details'])
 
 function formatPhoneNumber(phone) {
   if (!/^\d{11}$/.test(phone)) return 'Неверный формат номера';

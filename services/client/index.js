@@ -75,7 +75,20 @@ function getGraveById(id) {
         method: 'GET',
         url: `http://194.32.140.209:8092/api/v1/graves/${id}`,
         headers: {
-            'accept': 'application/json'
+            'accept': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w'
+        }
+    })
+}
+
+function getGraveImages(id) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: `http://194.32.140.209:8092/api/v1/graves/${id}/photos`,
+        headers: {
+            'accept': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w'
         }
     })
 }
@@ -309,5 +322,6 @@ export {
     uploadDeceasedDeathCertificate,
     createBurialRequest,
     createOrder,
-    postReview
+    postReview,
+    getGraveImages
 }

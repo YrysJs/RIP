@@ -5,16 +5,33 @@ import {getBurialRequests} from "~/services/manager"
 const router = useRouter();
 
 const bookings = ref([])
+const search = ref('')
 
-
-onMounted(async () => {
+const fetchBurials = async (params = { status: 'paid' }) => {
   try {
-    const response = await getBurialRequests({status: 'pending'})
+    const response = await getBurialRequests(params)
     bookings.value = response.data
   } catch (error) {
     console.error('Ошибка при получении заявок:', error)
-  } finally {
-    console.log('finally')
+  }
+}
+
+onMounted(() => {
+  fetchBurials()
+})
+
+// debounce-функция
+let timeout
+watch(search, (newVal) => {
+  clearTimeout(timeout)
+
+  if (newVal.length >= 3 || newVal.length === 0) {
+    timeout = setTimeout(() => {
+      fetchBurials({
+        status: 'paid',
+        ...(newVal.length >= 3 ? { request_number: newVal } : {})
+      })
+    }, 500)
   }
 })
 </script>
@@ -22,6 +39,12 @@ onMounted(async () => {
 <template>
   <NuxtLayout name="manager">
     <div class="booking-list">
+      <div class="search-wrapper">
+        <div class="search-box">
+          <img src="/icons/search.svg" alt="Поиск" />
+          <input type="text" v-model="search" placeholder="Поиск" />
+        </div>
+      </div>
       <div v-for="booking in bookings" :key="booking.id" class="booking-card">
         <div class="booking-header">
           <span>Бронирование: <a href="#">{{ booking.request_number }}</a></span>
@@ -101,5 +124,31 @@ onMounted(async () => {
       align-items: center;
     }
   }
+}
+
+.search-wrapper {
+  background: #FFFFFF;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+}
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.search-box input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+}
+.search-box img {
+  width: 16px;
+  height: 16px;
 }
 </style>

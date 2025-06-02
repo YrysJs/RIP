@@ -2,11 +2,16 @@
 import BookingDetails from '@/components/manager/booking/BookingDetails.vue'
 
 import {getBurialRequestById, getBurialRequestStatus} from '@/services/manager'
-import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
+import {getGraveById, getGraveImages} from '@/services/client'
+import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
 
 const route = useRoute()
 
 const booking = ref({})
+const graveDetailModalVisible = ref(false)
+
+const grave = ref({})
+const graveImages = ref([])
 
 onMounted(async () => {
   try {
@@ -27,12 +32,30 @@ const cancelRequest = (id) => {
   })
 }
 
+
+const fetchGraveDetails = async (id) => {
+  try {
+    const response = await getGraveById(id)
+    grave.value = response.data
+    const images = await getGraveImages(id)
+    graveImages.value = images.data
+  } catch (error) {
+    console.error('Ошибка при услуги:', error)
+  } finally {
+    graveDetailModalVisible.value = true
+  }
+
+}
+
 </script>
 
 <template>
   <NuxtLayout name="manager">
-<!--    <SuccessModal title="Заявка завершена!" text="Заявка завершена!" @close="true"/>-->
-    <BookingDetails v-if="booking" :booking="booking" @cancel="cancelRequest" />
+    <BookingDetails v-if="booking" :booking="booking" @cancel="cancelRequest" @details="fetchGraveDetails" />
+
+    <Teleport to="body">
+      <GraveDetailModal :visible="graveDetailModalVisible" :grave="grave" :images="graveImages" :booking="booking" @close="graveDetailModalVisible = false" />
+    </Teleport>
   </NuxtLayout>
 </template>
 

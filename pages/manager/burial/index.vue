@@ -1,46 +1,71 @@
 <script setup>
+import {getBurialRequestById, getBurialRequests} from '~/services/manager'
+  import BurialDetailsModal from "~/components/manager/burial/BurialDetailsModal.vue";
+  import {getGraveById, getGraveImages} from "~/services/client/index.js";
 
-import {getBurialRequests} from "~/services/manager"
-const burials = [
-  {
-    id: 2,
-    request_number: "BR-1748006974-1",
-    cemetery_id: 1,
-    grave_id: 2,
-    deceased_id: 4,
-    deceased: {
-      id: 4,
-      grave_id: 2,
-      full_name: "Testov2 Test Testovich",
-      inn: "661212301298",
-      death_date: "2025-10-09T00:00:00Z",
-      death_cert_url: "https://s3.eu-north-1.amazonaws.com/ripservicebucket/deceased_docs/death_certificate/4/2025-05-23/Zulufov R охотникум.pdf",
-      created_at: "2025-05-23T13:29:34.447644Z",
-      updated_at: "2025-05-23T13:30:58.539566Z"
-    },
-    burial_date: "2025-10-10T00:00:00Z",
-    burial_time: "15:00",
-    user_phone: "77777318243",
-    status: "paid",
-    is_complete: false,
-    created_at: "2025-05-23T13:29:34.447644Z",
-    updated_at: "2025-05-23T13:29:34.447644Z"
+  const burials = ref([])
+  const burial = ref({})
+  const search = ref('')
+  const burialDetailModalVisible = ref(false)
+
+  const grave = ref({})
+  const graveImages = ref([])
+
+  const fetchBurials = async (params = { status: 'paid' }) => {
+    try {
+      const response = await getBurialRequests(params)
+      burials.value = response.data
+    } catch (error) {
+      console.error('Ошибка при получении заявок:', error)
+    }
   }
-]
 
-onMounted(() => {
-  getBurialRequests({
-    status: 'paid'
-  }).then((response) => {
-    console.log(response)
+  const fetchBurialDetails = async (id) => {
+    try {
+      const res = await getBurialRequestById(id)
+      burial.value = res.data
+      const response = await getGraveById(id)
+      grave.value = response.data
+      const images = await getGraveImages(id)
+      graveImages.value = images.data
+    } catch (error) {
+      console.error('Ошибка при услуги:', error)
+    } finally {
+      burialDetailModalVisible.value = true
+    }
+
+  }
+
+
+  onMounted(() => {
+    fetchBurials()
   })
-})
 
+  // debounce-функция
+  let timeout
+  watch(search, (newVal) => {
+    clearTimeout(timeout)
+
+    if (newVal.length >= 3 || newVal.length === 0) {
+      timeout = setTimeout(() => {
+        fetchBurials({
+          status: 'paid',
+          ...(newVal.length >= 3 ? { request_number: newVal } : {})
+        })
+      }, 500)
+    }
+  })
 </script>
 
 <template>
   <NuxtLayout name="manager">
     <div class="burial-list">
+      <div class="search-wrapper">
+        <div class="search-box">
+          <img src="/icons/search.svg" alt="Поиск" />
+          <input type="text" v-model="search" placeholder="Поиск" />
+        </div>
+      </div>
       <div v-for="burial in burials" :key="burial.id" class="burial-card">
         <div class="burial-header">
           <div class="flex items-center gap-4">
@@ -69,12 +94,15 @@ onMounted(() => {
             >
               {{ burial.status === 'paid' ? 'Ожидает подтверждения' : 'Подтверждено' }}
             </span>
-            <button class="details-btn">Подробнее</button>
+            <button class="details-btn" @click="fetchBurialDetails(burial.id)">Подробнее</button>
           </div>
 
         </div>
       </div>
     </div>
+    <Teleport to="body">
+      <BurialDetailsModal :visible="burialDetailModalVisible" :grave="grave" :images="graveImages" :booking="burial" @close="burialDetailModalVisible = false" />
+    </Teleport>
   </NuxtLayout>
 </template>
 
@@ -170,5 +198,31 @@ onMounted(() => {
     background-color: #d2f5dc;
     color: #007c3d;
   }
+}
+
+.search-wrapper {
+  background: #FFFFFF;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+}
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.search-box input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+}
+.search-box img {
+  width: 16px;
+  height: 16px;
 }
 </style>
