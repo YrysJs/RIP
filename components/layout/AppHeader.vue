@@ -21,7 +21,7 @@
 
       <!-- Правый блок -->
       <div class="right-actions">
-        <template v-if="isAuth">
+        <template v-if="userStore.token">
           <button v-if="type === 'client'" class="icon-btn">
             <img src="/icons/cart.svg" alt="Корзина" />
           </button>
@@ -37,15 +37,16 @@
       </div>
     </div>
 
-    <ClientLogin v-if="activeModal === 'client'" @close="activeModal = ''" />
-    <ManagerLogin v-if="activeModal === 'manager'" @close="activeModal = ''" />
-    <SupplierLogin v-if="activeModal === 'supplier'" @close="activeModal = ''" />
-    <AkimatLogin v-if="activeModal === 'akimat'" @close="activeModal = ''" /> 
+
 
 
   </header>
 
   <Teleport to="body">
+    <ClientLogin v-if="activeModal === 'client'" @close="activeModal = ''" />
+    <ManagerLogin v-if="activeModal === 'manager'" @close="activeModal = ''" />
+    <SupplierLogin v-if="activeModal === 'supplier'" @close="activeModal = ''" />
+    <AkimatLogin v-if="activeModal === 'akimat'" @close="activeModal = ''" />
     <div
         v-if="showLoginMenu"
         class="fixed inset-0 bg-black/40 z-40 flex items-center justify-center"
@@ -100,7 +101,6 @@ const activeModal = ref('')
 const userStore = useUserStore()
 
 const props = defineProps({
-  isAuth: Boolean,
   type: String
 });
 

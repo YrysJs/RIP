@@ -18,7 +18,7 @@ function checkOtp(params) {
     return $axios({
         method: 'POST',
         url: 'http://194.32.140.209:8081/v1/otp/check',
-        params,
+        data: params,
         headers: {
             'accept': 'application/json',
         }
