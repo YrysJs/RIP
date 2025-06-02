@@ -13,7 +13,7 @@ function getProducts(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8080/api/v1/products',
+        url: 'http://194.32.140.209:8090/api/v1/products',
         params,
         headers: {
             'Authorization': null,
@@ -49,7 +49,7 @@ function getProviderReviews(providerId, params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://194.32.140.209:8080/api/v1/reviews/providers/${providerId}`,
+        url: `http://194.32.140.209:8090/api/v1/reviews/providers/${providerId}`,
         params,
         headers: {
             'accept': 'application/json'
@@ -101,7 +101,7 @@ function createDeceased(data) {
         data,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw',
             'Content-Type': 'application/json'
         }
     })
@@ -125,7 +125,7 @@ function getCart() {
         url: 'http://194.32.140.209:8080/api/v1/cart',
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw'
         }
     })
 }
@@ -138,7 +138,7 @@ function addToCart(data) {
         data,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw',
             'Content-Type': 'application/json'
         }
     })
@@ -151,7 +151,7 @@ function removeFromCart(productId) {
         url: `http://194.32.140.209:8080/api/v1/cart/${productId}`,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw'
         }
     })
 }
@@ -163,7 +163,7 @@ function clearCart() {
         url: 'http://194.32.140.209:8080/api/v1/cart',
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw'
         }
     })
 }
@@ -176,7 +176,7 @@ function getOrders(params) {
         params,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw'
         }
     })
 }
@@ -188,7 +188,7 @@ function getBurialRequests(params) {
         url: 'http://194.32.140.209:8092/api/v1/burial-requests',
         params,
         headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw',
             'accept': 'application/json'
         }
     })
@@ -202,7 +202,8 @@ function updateBurialRequestStatus(requestId, data) {
         data,
         headers: {
             'accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw',
         }
     })
 }
@@ -224,15 +225,34 @@ function uploadBurialRequestDocument(requestId, document) {
     })
 }
 
+function uploadDeceasedDeathCertificate(deceasedId, certificate) {
+    const { $axios } = useNuxtApp()
+    
+    const formData = new FormData()
+    formData.append('certificate', certificate)
+    
+    return $axios({
+        method: 'POST',
+        url: `http://194.32.140.209:8092/api/v1/deceased/${deceasedId}/death-certificate`,
+        data: formData,
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw'
+        }
+    })
+}
+
 function createBurialRequest(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://194.32.140.209:8090/api/v1/burial-requests',
+        url: 'http://194.32.140.209:8092/api/v1/burial-requests',
         data,
         headers: {
             'accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw'
         }
     })
 }
@@ -245,7 +265,7 @@ function createOrder(data) {
         data,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw',
             'Content-Type': 'application/json'
         }
     })
@@ -275,7 +295,7 @@ function postReview(data) {
         data: formData,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODY0MDA2MCwiZXhwIjoxNzQ4NzI2NDYwfQ.SNW4IGu1vEAVdheIu2BnNYFNqCk_sCnASLjEylJ736tmwdYjgltOOU9QK6Uf96RZcFOAA5VqMOydDe7hn7kg4w',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw',
             'Content-Type': 'multipart/form-data'
         }
     })
@@ -299,6 +319,7 @@ export {
     getBurialRequests,
     updateBurialRequestStatus,
     uploadBurialRequestDocument,
+    uploadDeceasedDeathCertificate,
     createBurialRequest,
     createOrder,
     postReview,

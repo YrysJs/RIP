@@ -2,8 +2,10 @@
 import { ref, watch } from 'vue'
 import { createDeceased, createBurialRequest } from '~/services/client'
 import { useRouter } from 'vue-router'
+import { useCemeteryStore } from '~/store/cemetery'
 
 const router = useRouter()
+const cemeteryStore = useCemeteryStore()
 
 const switcher = ref(false)
 const inn = ref('')
@@ -12,41 +14,20 @@ const deathDate = ref('')
 const burialDate = ref('')
 const burialTime = ref('')
 
-// Автоматически заполнять поля при вводе ИИН
-watch(inn, (newValue) => {
-  if (newValue === '920216450089') {
-    setTimeout(() => {
-      fullName.value = 'СӘДҮӘҚАС БАЯНСҰЛУ ҚАЙРАТҚЫЗЫ'
-      deathDate.value = '2023-08-11'
-    }, 3000)
-  }
-})
-
 // Функция для бронирования
 const handleBooking = async () => {
   try {
-    // const data = {
-    //   inn: inn.value,
-    //   full_name: fullName.value,
-    //   death_date: deathDate.value+'T10:00:00Z',
-    //   grave_id: 2
-    // }
-    
-    // const response = await createDeceased(data)
-
-    const data = {
-      burial_date: "2023-08-11T00:00:00Z",
-      burial_time: "9:00",
-      cemetery_id: 1,
+    const dataBurial = {
+      cemetery_id: cemeteryStore.selectedGrave.cemetery_id,
       deceased: {
-        death_date: "2023-08-11T00:00:00Z",
-        full_name: "СӘДҮӘҚАС БАЯНСҰЛУ ҚАЙРАТҚЫЗЫ",
-        inn: "920216450089"
+        full_name: fullName.value,
+        inn: inn.value,
+        death_date: deathDate.value+'T00:00:00Z',
       },
-      grave_id: 1
+      grave_id: cemeteryStore.selectedGrave.id
     }
 
-    const burialRequest = await createBurialRequest(data)
+    const burialRequest = await createBurialRequest(dataBurial)
 
     router.push('/client/tickets/active')
   } catch (error) {
@@ -108,7 +89,7 @@ const handleBooking = async () => {
               </div>
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">Время похорон</p>
-                <input v-model="burialTime" type="text" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base" placeholder="00:00">
+                <input v-model="burialTime" type="time" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base" placeholder="00:00">
               </div>
             </div>
           </div>
@@ -118,7 +99,7 @@ const handleBooking = async () => {
             <img src="/icons/back-icon-blue.svg" alt=""> Вернуться к выбору
           </button>
           <h3 class="text-2xl text-[#222222] font-medium my-[16px]">
-            Северное кладбище
+            {{ cemeteryStore.selectedCemetery.name }}
           </h3>
           <div class="border-b border-[#EEEEEE] pb-[16px] flex items-center">
             <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
@@ -131,13 +112,13 @@ const handleBooking = async () => {
             <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
               Сектор:
             </h4>
-            <span class="text-base font-bold font-roboto text-[#222222]">1</span>
+            <span class="text-base font-bold font-roboto text-[#222222]">{{ cemeteryStore.selectedGrave.sector_number }}</span>
           </div>
           <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
             <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
               Место:
             </h4>
-            <span class="text-base font-bold font-roboto text-[#222222]">1</span>
+            <span class="text-base font-bold font-roboto text-[#222222]">{{ cemeteryStore.selectedGrave.grave_number }}</span>
           </div>
           <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
             <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
@@ -150,7 +131,7 @@ const handleBooking = async () => {
               Дата похорон:
             </h4>
             <span class="text-base" :class="burialDate ? 'font-bold text-[#222222]' : 'font-light text-[#939393]'">
-              {{ burialDate || 'Не указано' }}
+              {{ burialDate || 'Не указано' }} {{ burialTime || '' }}
             </span>
           </div>
           <button @click="handleBooking" class="text-base font-semibold font-roboto w-full h-[51px] rounded-lg bg-[#224C4F] text-white">

@@ -30,8 +30,8 @@ onMounted(async () => {
                 </div>
                 <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
                     <div class="min-w-[580px] font-medium flex flex-col gap-[10px]">
-                        <div class="flex text-base"><p class="min-w-[150px]">Кладбище:</p><p>Северное кладбище</p></div>
-                        <div class="flex text-base"><p class="min-w-[150px]">Сектор</p><p>11</p></div>
+                        <div class="flex text-base"><p class="min-w-[150px]">Кладбище:</p><p>{{ request.cemetery_name }}</p></div>
+                        <div class="flex text-base"><p class="min-w-[150px]">Сектор</p><p>{{ request.sector_number }}</p></div>
                         <div class="flex text-base"><p class="min-w-[150px]">Место:</p><p>{{ request.grave_id }}</p></div>
                     </div>
                     <button class="rounded-md w-[140px] h-[30px] text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]">Данные участка</button>
@@ -49,7 +49,8 @@ onMounted(async () => {
                     <div class="font-medium flex flex-col gap-[10px]">
                         <div class="flex text-base">
                             <p class="min-w-[150px] max-w-[150px]">Cтатус:</p>
-                            <p class="p-[4px] rounded-md bg-[#339B38] text-sm font-semibold text-white mr-4">Оплачено</p>
+                            <p class="p-[4px] rounded-md bg-[#339B38] text-sm font-semibold text-white mr-4" v-if="request.status === 'paid'">Оплачено</p>
+                            <p class="p-[4px] rounded-md bg-[#D63C3C] text-sm font-semibold text-white mr-4" v-if="request.status === 'canceled'">Отменено</p>
                         </div>
                         <div class="flex text-base">
                             <p class="min-w-[150px] max-w-[150px]">Дополнительные услуги:</p>

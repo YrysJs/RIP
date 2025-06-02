@@ -1,4 +1,7 @@
 <script setup>
+import { useCemeteryStore } from '~/store/cemetery'
+
+const cemeteryStore = useCemeteryStore()
 
 const switcher = ref(false)
 
