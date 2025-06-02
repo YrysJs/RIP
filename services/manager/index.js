@@ -8,7 +8,7 @@ function getBurialRequests(params) {
         params,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODg2NjM5MywiZXhwIjoxNzQ4OTUyNzkzfQ.kHADa28FVctH5nwSu8cjEpTWcY6WpFMy1Tg66Qkd0ub0mbIkTFIf2xWbnk2XVDKFVsBlzuomSvqF2FepiNj9Ag'
         }
     })
 }
@@ -20,7 +20,7 @@ function getBurialRequestById(id) {
         url: `http://194.32.140.209:8092/api/v1/burial-requests/${id}`,
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw'
         }
     })
 }
@@ -35,7 +35,7 @@ function getBurialRequestStatus(data) {
         },
         headers: {
             'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODU1MTc4NywiZXhwIjoxNzQ4NjM4MTg3fQ.pbhSsgiWvlgUWihkyVIWHPLIWltZBS4wBpAKVZ8ogbddT-xHP3jXGsdeBrXZ7CAFEedKxmqLAI4gZnrhKO13wQ'
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw'
         }
     })
 }

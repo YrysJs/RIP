@@ -24,7 +24,7 @@ const graveNorth = {
 
 <template>
     <div>
-        <GraveDetailModal :visible="true" :grave="graveNorth" @close="graveDetailModalVisible = false" />
+        <!-- <GraveDetailModal :visible="true" :grave="graveNorth" @close="graveDetailModalVisible = false" /> -->
         <div class="main">
             <div class="container">
                 <div class="py-[210px] max-w-[476px]">

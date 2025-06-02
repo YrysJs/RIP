@@ -26,12 +26,12 @@ onMounted(async () => {
                     <p class="text-sm">{{ new Date(request.created_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</p>
                 </div>
                 <div class="border-b-2 border-[#EEEEEE] mt-[16px] pb-[16px]">
-                    <div class="flex text-base font-medium"><p class="min-w-[150px]">Срок брони:</p><p>Осталось: 3 дня</p></div>
+                    <div class="flex text-base font-medium"><p class="min-w-[150px]">Срок брони:</p><p>{{ new Date(request.reservation_expires_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</p></div>
                 </div>
                 <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
                     <div class="min-w-[580px] font-medium flex flex-col gap-[10px]">
-                        <div class="flex text-base"><p class="min-w-[150px]">Кладбище:</p><p>Северное кладбище</p></div>
-                        <div class="flex text-base"><p class="min-w-[150px]">Сектор</p><p>11</p></div>
+                        <div class="flex text-base"><p class="min-w-[150px]">Кладбище:</p><p>{{ request.cemetery_name }}</p></div>
+                        <div class="flex text-base"><p class="min-w-[150px]">Сектор</p><p>{{ request.sector_number }}</p></div>
                         <div class="flex text-base"><p class="min-w-[150px]">Место:</p><p>{{ request.grave_id }}</p></div>
                     </div>
                 </div>
@@ -48,7 +48,8 @@ onMounted(async () => {
                     <div class="font-medium flex flex-col gap-[10px]">
                         <div class="flex text-base">
                             <p class="min-w-[150px] max-w-[150px]">Cтатус:</p>
-                            <p class="p-[4px] rounded-md bg-[#DC6E29] text-sm font-semibold text-white mr-4">Ожидает оплаты</p>
+                            <p class="p-[4px] rounded-md bg-[#DC6E29] text-sm font-semibold text-white mr-4" v-if="request.status === 'pending'">Ожидает оплаты</p>
+                            <p class="p-[4px] rounded-md bg-[#339B38] text-sm font-semibold text-white mr-4" v-if="request.status === 'paid'">Оплачено</p>
                         </div>
                         <div class="flex text-base">
                             <p class="min-w-[150px] max-w-[150px]">Дополнительные услуги:</p>

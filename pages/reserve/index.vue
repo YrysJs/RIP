@@ -57,7 +57,7 @@ const reserve = () => {
     cemeteryStore.setSelected(selectedCemetery.value)
   }
   
-  login.value = true
+  router.push('/client/reservation/reservation-first')
 }
 
 const pickCity = (item) => {
