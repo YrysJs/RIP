@@ -38,6 +38,9 @@
     </div>
 
     <ClientLogin v-if="activeModal === 'client'" @close="activeModal = ''" />
+    <ManagerLogin v-if="activeModal === 'manager'" @close="activeModal = ''" />
+    <SupplierLogin v-if="activeModal === 'supplier'" @close="activeModal = ''" />
+    <AkimatLogin v-if="activeModal === 'akimat'" @close="activeModal = ''" /> 
 
 
   </header>
@@ -86,6 +89,9 @@
 <script setup>
 import { useUserStore } from '~/store/user.js'
 import ClientLogin from "~/components/auth/ClientLogin.vue";
+import AkimatLogin from "~/components/auth/AkimatLogin.vue";
+import ManagerLogin from "~/components/auth/ManagerLogin.vue";
+import SupplierLogin from "~/components/auth/SupplierLogin.vue";
 
 const showLoginMenu = ref(false);
 const activeModal = ref('')
@@ -113,8 +119,9 @@ function closeMenu() {
 }
 
 function login(type) {
+  toggleLoginMenu()
   userStore.setAuthType(type)
-
+  
   activeModal.value = type
 }
 
