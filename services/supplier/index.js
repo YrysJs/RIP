@@ -6,10 +6,6 @@ function getBurialRequests(params) {
         method: 'GET',
         url: 'http://194.32.140.209:8092/api/v1/burial-requests',
         params,
-        headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODg2NjM5MywiZXhwIjoxNzQ4OTUyNzkzfQ.kHADa28FVctH5nwSu8cjEpTWcY6WpFMy1Tg66Qkd0ub0mbIkTFIf2xWbnk2XVDKFVsBlzuomSvqF2FepiNj9Ag',
-            'accept': 'application/json'
-        }
     })
 }
 
@@ -19,10 +15,6 @@ function getOrders(params) {
         method: 'GET',
         url: 'http://194.32.140.209:8090/api/v1/user/supplier/orders',
         params,
-        headers: {
-            'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODg2NjM5MywiZXhwIjoxNzQ4OTUyNzkzfQ.kHADa28FVctH5nwSu8cjEpTWcY6WpFMy1Tg66Qkd0ub0mbIkTFIf2xWbnk2XVDKFVsBlzuomSvqF2FepiNj9Ag'
-        }
     })
 }
 
@@ -32,10 +24,6 @@ function getProducts(params) {
         method: 'GET',
         url: 'http://194.32.140.209:8090/api/v1/user/supplier/products',
         params,
-        headers: {
-            'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODg2NjM5MywiZXhwIjoxNzQ4OTUyNzkzfQ.kHADa28FVctH5nwSu8cjEpTWcY6WpFMy1Tg66Qkd0ub0mbIkTFIf2xWbnk2XVDKFVsBlzuomSvqF2FepiNj9Ag'
-        }
     })
 }
 
@@ -45,10 +33,6 @@ function getAllProducts(params) {
         method: 'GET',
         url: 'http://194.32.140.209:8090/api/v1/products',
         params,
-        headers: {
-            'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODg2NjM5MywiZXhwIjoxNzQ4OTUyNzkzfQ.kHADa28FVctH5nwSu8cjEpTWcY6WpFMy1Tg66Qkd0ub0mbIkTFIf2xWbnk2XVDKFVsBlzuomSvqF2FepiNj9Ag'
-        }
     })
 }
 
@@ -57,9 +41,6 @@ function getCategories() {
     return $axios({
         method: 'GET',
         url: 'http://194.32.140.209:8090/api/v1/categories',
-        headers: {
-            'accept': 'application/json'
-        }
     })
 }
 
@@ -73,10 +54,6 @@ function getProductById(id) {
     return $axios({
         method: 'GET',
         url: `http://194.32.140.209:8090/api/v1/products/${id}`,
-        headers: {
-            'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODg2NjM5MywiZXhwIjoxNzQ4OTUyNzkzfQ.kHADa28FVctH5nwSu8cjEpTWcY6WpFMy1Tg66Qkd0ub0mbIkTFIf2xWbnk2XVDKFVsBlzuomSvqF2FepiNj9Ag'
-        }
     })
 }
 
@@ -91,11 +68,6 @@ function updateProductStatus(id, status) {
         method: 'PATCH',
         url: `http://194.32.140.209:8090/api/v1/products/${id}/status`,
         data: { status },
-        headers: {
-            'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODg2NjM5MywiZXhwIjoxNzQ4OTUyNzkzfQ.kHADa28FVctH5nwSu8cjEpTWcY6WpFMy1Tg66Qkd0ub0mbIkTFIf2xWbnk2XVDKFVsBlzuomSvqF2FepiNj9Ag',
-            'Content-Type': 'application/json'
-        }
     })
 }
 
@@ -104,10 +76,6 @@ function getReviews() {
     return $axios({
         method: 'GET',
         url: 'http://194.32.140.209:8090/api/v1/user/supplier/reviews',
-        headers: {
-            'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODg2NjM5MywiZXhwIjoxNzQ4OTUyNzkzfQ.kHADa28FVctH5nwSu8cjEpTWcY6WpFMy1Tg66Qkd0ub0mbIkTFIf2xWbnk2XVDKFVsBlzuomSvqF2FepiNj9Ag'
-        }
     })
 }
 
@@ -140,9 +108,6 @@ function createProduct(data) {
         method: 'POST',
         url: 'http://194.32.140.209:8090/api/v1/products',
         data: formData,
-        headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODg2NjM5MywiZXhwIjoxNzQ4OTUyNzkzfQ.kHADa28FVctH5nwSu8cjEpTWcY6WpFMy1Tg66Qkd0ub0mbIkTFIf2xWbnk2XVDKFVsBlzuomSvqF2FepiNj9Ag',
-        }
     })
 }
 
@@ -179,10 +144,6 @@ function updateProduct(id, data) {
         method: 'PUT',
         url: `http://194.32.140.209:8090/api/v1/products/${id}`,
         data: formData,
-        headers: {
-            'accept': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODg2NjM5MywiZXhwIjoxNzQ4OTUyNzkzfQ.kHADa28FVctH5nwSu8cjEpTWcY6WpFMy1Tg66Qkd0ub0mbIkTFIf2xWbnk2XVDKFVsBlzuomSvqF2FepiNj9Ag',
-        }
     })
 }
 

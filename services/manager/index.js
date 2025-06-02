@@ -6,9 +6,6 @@ function getBurialRequests(params) {
         method: 'GET',
         url: 'http://194.32.140.209:8092/api/v1/burial-requests',
         params,
-        headers: {
-            'accept': 'application/json',
-        }
     })
 }
 
@@ -17,9 +14,6 @@ function getBurialRequestById(id) {
     return $axios({
         method: 'GET',
         url: `http://194.32.140.209:8092/api/v1/burial-requests/${id}`,
-        headers: {
-            'accept': 'application/json',
-        }
     })
 }
 
@@ -31,9 +25,6 @@ function getBurialRequestStatus(data) {
         data: {
             status: data.status
         },
-        headers: {
-            'accept': 'application/json',
-        }
     })
 }
 

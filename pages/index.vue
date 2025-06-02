@@ -2,10 +2,13 @@
 
 
 
+import AppHeader from "~/components/layout/AppHeader.vue";
 </script>
 
 <template>
-    <div>
+    <div class="relative mt-[77px]">
+
+      <AppHeader type="client" />
         <div class="main">
             <div class="container">
                 <div class="py-[210px] max-w-[476px]">

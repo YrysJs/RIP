@@ -16,10 +16,6 @@ function processCardPayment(data) {
             invoiceID: data.invoiceID,
             phone: data.phone
         },
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
     })
 }
 
