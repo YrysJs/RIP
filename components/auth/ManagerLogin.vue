@@ -56,6 +56,7 @@ const otpCheck = async () => {
       code: code.value
     })
     Cookies.set('token', response.data.token);
+    Cookies.set('role', 'manager');
   } catch (error) {
     console.error('Ошибка при логине:', error)
   } finally {

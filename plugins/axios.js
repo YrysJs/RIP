@@ -1,16 +1,35 @@
 import axios from 'axios'
 import { defineNuxtPlugin } from '#app'
+import Cookies from 'js-cookie'
 
 export default defineNuxtPlugin(() => {
-    // const { public: publicConfig } = useRuntimeConfig()
-
     const api = axios.create({
-        baseURL: 'http://194.32.140.209:8092/',
-        headers: {
-            'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE4NDc3NTYzMzAsInJvbGUiOiJjZW1ldGVyeV9tYW5hZ2VyIiwic3ViIjoiNzc3NzczMTgyNDMifQ.nRLOpu4ywdPHL7sHjGWCprEMt6PtwHVBltNQSNNDa0c',
-        }
+        baseURL: 'http://194.32.140.209:8092/'
     })
 
+    // Добавляем токен из Cookies перед каждым запросом
+    api.interceptors.request.use(config => {
+        const token = Cookies.get('token')
+        if (token) {
+            config.headers.Authorization = 'Bearer ' + token
+        }
+        return config
+    }, error => {
+        return Promise.reject(error)
+    })
+
+    // Обработка 401: удаляем токен и роль из куков
+    api.interceptors.response.use(response => {
+        return response
+    }, error => {
+        if (error.response?.status === 401) {
+            Cookies.remove('token')
+            Cookies.remove('role')
+            // Можно перенаправить на /login:
+            // window.location.href = '/login'
+        }
+        return Promise.reject(error)
+    })
 
     return {
         provide: {
