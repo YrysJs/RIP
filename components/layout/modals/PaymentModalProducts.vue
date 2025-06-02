@@ -2,7 +2,20 @@
   <div v-if="visible" class="modal-overlay" @click="closeModal">
     <div class="modal-content" @click.stop>
       <div class="payment-form">
-        <h2 class="title">Оплата картой</h2>
+        <h2 class="title">Оплата заказа</h2>
+        
+        <!-- Детали заказа -->
+        <div class="order-summary">
+          <h3 class="summary-title">Детали заказа</h3>
+          <div v-if="orderData.cartTotal && orderData.cartTotal > 0" class="summary-item">
+            <span>Дополнительные услуги</span>
+            <span>{{ orderData.cartTotal?.toLocaleString() }} ₸</span>
+          </div>
+          <div class="summary-total">
+            <span>Итого к оплате</span>
+            <span>{{ orderData.cartTotal?.toLocaleString() || '0' }} ₸</span>
+          </div>
+        </div>
         
         <div class="form-group">
           <label class="label">Номер карты</label>
@@ -42,7 +55,7 @@
         </div>
 
         <button class="pay-button" @click="processPayment" :disabled="isProcessing">
-          {{ isProcessing ? 'Обработка...' : 'Оплатить' }}
+          {{ isProcessing ? 'Обработка...' : `Оплатить ${orderData.cartTotal?.toLocaleString() || '0'} ₸` }}
         </button>
       </div>
     </div>
@@ -51,22 +64,18 @@
 
 <script>
 import { processCardPayment } from '~/services/payments'
-import { updateBurialRequestStatus, updateBurialRequestData, uploadDeceasedDeathCertificate } from '~/services/client'
+import { createOrder } from '~/services/client'
 
 export default {
-  name: 'PaymentModal',
+  name: 'PaymentModalProducts',
   props: {
     visible: {
       type: Boolean,
       default: false
     },
-    burialData: {
+    orderData: {
       type: Object,
       default: () => ({})
-    },
-    deathCertificateFile: {
-      type: File,
-      default: null
     }
   },
   data() {
@@ -115,44 +124,46 @@ export default {
       try {
         // Подготавливаем данные для оплаты
         const paymentData = {
-          amount: 57000, // Госпошлина
+          amount: this.orderData.cartTotal || 0,
           cardNumber: this.cardNumber.replace(/\s/g, ''),
           currency: 'KZT',
           cvc: this.cvcCode,
-          description: `Оплата захоронения ${this.burialData?.request_number || ''}`,
-          email: 'test@test.com', // Можно получить из профиля пользователя
+          description: 'Оплата заказа услуг',
+          email: 'test@test.com',
           expDate: this.expiryDate.replace('/', ''),
-          invoiceID: this.burialData?.request_number || Date.now().toString(),
-          phone: '77777777777' // Можно получить из профиля пользователя
+          invoiceID: Date.now().toString(),
+          phone: '77777777777'
         }
 
-        // // 1. Выполняем платеж
+        // 1. Выполняем платеж (закомментировано для тестирования)
         // console.log('Processing payment...', paymentData)
         // const paymentResponse = await processCardPayment(paymentData)
         // console.log('Payment successful:', paymentResponse)
 
-        // 2. Обновляем данные захоронения (дата и время)
-        if (this.burialData?.burial_date || this.burialData?.burial_time) {
-          const burialUpdateData = {
-            burial_date: `${this.burialData.burial_date}T${this.burialData.burial_time}:00Z`,
-            burial_time: this.burialData.burial_time
-          }
-          await updateBurialRequestData(this.burialData.id, burialUpdateData)
-          console.log('Burial request data updated')
+        // Симулируем успешный платеж
+        await new Promise(resolve => setTimeout(resolve, 2000))
+
+        // 2. Создаем заказ через API с правильной структурой
+        const orderRequestData = {
+          burial_date: "2025-05-17",
+          burial_order_id: 23, // ID захоронения 0000023
+          burial_time: "09:00:00",
+          cemetery_id: 1, // Северное кладбище
+          deceased_id: 1, // ID покойного
+          grave_id: 1, // ID места захоронения
+          order_items: this.orderData.cartItems?.map(item => ({
+            delivery_arrival_time: item.delivery_arrival_time || "2025-05-17T09:00:00Z",
+            delivery_destination_address: item.delivery_destination_address || "Алматы, ул. Еревагская 157",
+            product_id: item.product_id,
+            quantity: item.quantity
+          })) || []
         }
+        
+        console.log('Creating order with data:', orderRequestData)
+        await createOrder(orderRequestData)
+        console.log('Order created successfully')
 
-        // 3. Обновляем статус заявки на захоронение
-        const statusUpdateData = { status: 'paid' }
-        await updateBurialRequestStatus(this.burialData.id, statusUpdateData)
-        console.log('Burial request status updated')
-
-        // 4. Загружаем сертификат о смерти, если он есть
-        if (this.deathCertificateFile && this.burialData?.deceased?.id) {
-          await uploadDeceasedDeathCertificate(this.burialData.deceased.id, this.deathCertificateFile)
-          console.log('Death certificate uploaded')
-        }
-
-        // 5. Закрываем модалку и сообщаем о успешной оплате
+        // 3. Закрываем модалку и сообщаем о успешной оплате
         this.$emit('close')
         this.$emit('success')
 
@@ -185,7 +196,7 @@ export default {
   background: white;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  max-width: 400px;
+  max-width: 450px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
@@ -199,8 +210,40 @@ export default {
   font-size: 24px;
   font-weight: 600;
   color: #333;
-  margin: 0 0 32px 0;
+  margin: 0 0 24px 0;
   text-align: left;
+}
+
+.order-summary {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.summary-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
 }
 
 .form-group {
@@ -237,7 +280,7 @@ export default {
 
 .input:focus {
   outline: none;
-  border-color: #4CAF50;
+  border-color: #339B38;
   background-color: white;
 }
 
@@ -248,7 +291,7 @@ export default {
 .pay-button {
   width: 100%;
   padding: 16px;
-  background-color: #4CAF50;
+  background-color: #339B38;
   color: white;
   border: none;
   border-radius: 8px;
@@ -260,11 +303,11 @@ export default {
 }
 
 .pay-button:hover {
-  background-color: #45a049;
+  background-color: #2d8530;
 }
 
 .pay-button:active {
-  background-color: #3d8b40;
+  background-color: #256b29;
 }
 
 .pay-button:disabled {
@@ -280,7 +323,12 @@ export default {
   
   .title {
     font-size: 20px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .order-summary {
+    padding: 16px;
+    margin-bottom: 20px;
   }
   
   .form-row {

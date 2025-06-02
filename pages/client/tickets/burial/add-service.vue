@@ -1,14 +1,34 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { getProducts, addToCart } from '~/services/client'
+import { ref, onMounted, computed } from 'vue'
+import { getProducts, addToCart, getCart, removeFromCart } from '~/services/client'
+import PaymentModalProducts from '~/components/layout/modals/PaymentModalProducts.vue'
 
 const products = ref([])
+const cartItems = ref([])
 const loading = ref(true)
 const error = ref(null)
 const totalStars = 5
 const rating = 3.5
 const addingToCart = ref(false)
 const cartMessage = ref('')
+const showPaymentModal = ref(false)
+const removingFromCart = ref(false)
+
+// Вычисляемое свойство для общей суммы корзины
+const cartTotal = computed(() => {
+  const cartSum = cartItems.value.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
+  const stateSum = 0 // Госпошлина
+  const total = cartSum + stateSum
+  console.log('Cart total calculated:', { cartSum, stateSum, total, cartItems: cartItems.value })
+  return total
+})
+
+// Вычисляемое свойство для проверки наличия товаров в корзине
+const hasCartItems = computed(() => {
+  const hasItems = cartItems.value.length > 0
+  console.log('Has cart items:', hasItems, 'Cart length:', cartItems.value.length)
+  return hasItems
+})
 
 // Функция для определения класса звезды (полная, половина, пустая)
 const getStarClass = (position) => {
@@ -18,6 +38,17 @@ const getStarClass = (position) => {
     return 'half'
   } else {
     return 'empty'
+  }
+}
+
+// Функция для загрузки корзины
+const loadCart = async () => {
+  try {
+    const response = await getCart()
+    cartItems.value = response.data || []
+    console.log('Cart loaded:', cartItems.value)
+  } catch (err) {
+    console.error('Ошибка при загрузке корзины:', err)
   }
 }
 
@@ -36,6 +67,7 @@ const addProductToCart = async (productId) => {
     
     await addToCart(cartData)
     cartMessage.value = 'Товар добавлен в корзину'
+    await loadCart() // Перезагружаем корзину
     setTimeout(() => {
       cartMessage.value = ''
     }, 3000)
@@ -47,11 +79,60 @@ const addProductToCart = async (productId) => {
   }
 }
 
+// Функция для удаления товара из корзины
+const removeProductFromCart = async (productId) => {
+  removingFromCart.value = true
+  try {
+    await removeFromCart(productId)
+    await loadCart() // Перезагружаем корзину
+    cartMessage.value = 'Товар удален из корзины'
+    setTimeout(() => {
+      cartMessage.value = ''
+    }, 3000)
+  } catch (err) {
+    cartMessage.value = 'Ошибка при удалении товара'
+    console.error('Ошибка при удалении из корзины:', err)
+  } finally {
+    removingFromCart.value = false
+  }
+}
+
+// Функция для открытия модального окна оплаты
+const openPaymentModal = () => {
+  if (hasCartItems.value) {
+    showPaymentModal.value = true
+  }
+}
+
+// Функция для закрытия модального окна оплаты
+const closePaymentModal = () => {
+  showPaymentModal.value = false
+}
+
+// Функция для обработки успешной оплаты
+const handlePaymentSuccess = async () => {
+  try {
+    // Перезагружаем корзину (она должна быть пустой после заказа)
+    await loadCart()
+    cartMessage.value = 'Заказ успешно оформлен!'
+    setTimeout(() => {
+      cartMessage.value = ''
+    }, 5000)
+  } catch (err) {
+    cartMessage.value = 'Ошибка при обновлении данных'
+    console.error('Ошибка при обновлении корзины:', err)
+  }
+}
+
 // Загрузка данных при монтировании компонента
 onMounted(async () => {
   try {
-    const response = await getProducts()
-    products.value = response.data.items
+    const [productsResponse] = await Promise.all([
+      getProducts(),
+      loadCart()
+    ])
+    products.value = productsResponse.data.items || productsResponse.data || []
+    console.log('Products loaded:', products.value)
   } catch (err) {
     error.value = 'Ошибка при загрузке услуг'
     console.error(err)
@@ -178,17 +259,59 @@ onMounted(async () => {
           </h4>
           <span class="text-base font-light font-roboto text-[#939393]">Не указано</span>
         </div>
-        <div>
-          <h3 class="font-roboto text-2xl font-bold text-[#222222] mb-[16px]">К оплате</h3>
-          <div class="flex justify-between items-center">
-            <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">Госпошлина</h4> <p class="text-2xl font-medium font-roboto text-[#222222] w-[105px]">57 000 ₸ </p>
+
+        <!-- Корзина с товарами -->
+        <div v-if="hasCartItems" class="border-b border-[#EEEEEE] pb-[16px] pt-[16px]">
+          <h4 class="text-base font-medium font-roboto text-[#222222] mb-[12px]">Товары в корзине:</h4>
+          <div class="space-y-[8px]">
+            <div v-for="item in cartItems" :key="item.id" class="flex items-center justify-between">
+              <div class="flex-1">
+                <p class="text-sm font-roboto text-[#222222]">{{ item.product.name }}</p>
+                <p class="text-xs font-roboto text-[#5C5C5C]">{{ item.quantity }} шт. × {{ item.product.price.toLocaleString() }} ₸</p>
+              </div>
+              <button 
+                @click="removeProductFromCart(item.product.id)"
+                :disabled="removingFromCart"
+                class="ml-[8px] text-red-500 hover:text-red-700 text-sm"
+              >
+                ✕
+              </button>
+            </div>
           </div>
         </div>
-        <button class="text-base font-semibold font-roboto w-full h-[51px] rounded-lg bg-[#339B38] text-white mt-[24px]">
+
+        <div>
+          <h3 class="font-roboto text-2xl font-bold text-[#222222] mb-[16px]">К оплате</h3>
+          <div v-if="hasCartItems" class="flex justify-between items-center mb-[8px]">
+            <h4 class="text-base font-medium font-roboto text-[#222222]">Доп. услуги</h4>
+            <p class="text-xl font-medium font-roboto text-[#222222]">{{ (cartTotal).toLocaleString() }} ₸</p>
+          </div>
+          <div class="flex justify-between items-center pt-[8px] border-t border-[#EEEEEE]">
+            <h4 class="text-lg font-bold font-roboto text-[#222222]">Итого</h4>
+            <p class="text-2xl font-bold font-roboto text-[#222222]">{{ cartTotal.toLocaleString() }} ₸</p>
+          </div>
+        </div>
+        <button 
+          class="text-base font-semibold font-roboto w-full h-[51px] rounded-lg text-white mt-[24px] transition-colors"
+          :class="hasCartItems ? 'bg-[#339B38] hover:bg-[#2d8530]' : 'bg-gray-400 cursor-not-allowed'"
+          :disabled="!hasCartItems"
+          @click="openPaymentModal"
+        >
           Оплатить
         </button>
       </div>
     </div>
+
+    <!-- Модальное окно оплаты -->
+    <PaymentModalProducts 
+      :visible="showPaymentModal"
+      :order-data="{ 
+        cartTotal: cartTotal, 
+        cartItems: cartItems 
+      }"
+      @close="closePaymentModal"
+      @success="handlePaymentSuccess"
+    />
   </div>
 </template>
 

@@ -122,7 +122,7 @@ function getCart() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8080/api/v1/cart',
+        url: 'http://194.32.140.209:8090/api/v1/cart',
         headers: {
             'accept': 'application/json',
             'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw'
@@ -134,7 +134,7 @@ function addToCart(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://194.32.140.209:8080/api/v1/cart',
+        url: 'http://194.32.140.209:8090/api/v1/cart',
         data,
         headers: {
             'accept': 'application/json',
@@ -148,7 +148,7 @@ function removeFromCart(productId) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'DELETE',
-        url: `http://194.32.140.209:8080/api/v1/cart/${productId}`,
+        url: `http://194.32.140.209:8090/api/v1/cart/${productId}`,
         headers: {
             'accept': 'application/json',
             'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw'
@@ -160,7 +160,7 @@ function clearCart() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'DELETE',
-        url: 'http://194.32.140.209:8080/api/v1/cart',
+        url: 'http://194.32.140.209:8090/api/v1/cart',
         headers: {
             'accept': 'application/json',
             'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw'
@@ -172,7 +172,7 @@ function getOrders(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8080/api/v1/orders',
+        url: 'http://194.32.140.209:8090/api/v1/orders',
         params,
         headers: {
             'accept': 'application/json',
@@ -199,6 +199,20 @@ function updateBurialRequestStatus(requestId, data) {
     return $axios({
         method: 'PATCH',
         url: `http://194.32.140.209:8092/api/v1/burial-requests/${requestId}/status`,
+        data,
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Nzc3NzMxODI0MiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0ODgzNzk5NSwiZXhwIjoxNzQ4OTI0Mzk1fQ.nFXyEAwHxle1q8bqLUkjlwF7c9pfY7soI7KfsSNFDeKXgb_VF8A4leiVBZvafAv39rUnsntLXj2-G9QcSS-bLw',
+        }
+    })
+}
+
+function updateBurialRequestData(requestId, data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PUT',
+        url: `http://194.32.140.209:8092/api/v1/burial-requests/${requestId}`,
         data,
         headers: {
             'accept': 'application/json',
@@ -261,7 +275,7 @@ function createOrder(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://194.32.140.209:8080/api/v1/orders',
+        url: 'http://194.32.140.209:8090/api/v1/orders',
         data,
         headers: {
             'accept': 'application/json',
@@ -291,7 +305,7 @@ function postReview(data) {
     
     return $axios({
         method: 'POST',
-        url: 'http://194.32.140.209:8080/api/v1/reviews',
+        url: 'http://194.32.140.209:8090/api/v1/reviews',
         data: formData,
         headers: {
             'accept': 'application/json',
@@ -318,6 +332,7 @@ export {
     getOrders,
     getBurialRequests,
     updateBurialRequestStatus,
+    updateBurialRequestData,
     uploadBurialRequestDocument,
     uploadDeceasedDeathCertificate,
     createBurialRequest,
