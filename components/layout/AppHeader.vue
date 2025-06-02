@@ -21,7 +21,7 @@
 
       <!-- Правый блок -->
       <div class="right-actions">
-        <template v-if="userStore.token">
+        <template v-if="token">
           <button v-if="type === 'client'" class="icon-btn">
             <img src="/icons/cart.svg" alt="Корзина" />
           </button>
@@ -93,10 +93,12 @@ import ClientLogin from "~/components/auth/ClientLogin.vue";
 import AkimatLogin from "~/components/auth/AkimatLogin.vue";
 import ManagerLogin from "~/components/auth/ManagerLogin.vue";
 import SupplierLogin from "~/components/auth/SupplierLogin.vue";
+import Cookies from 'js-cookie'
+
+const token = Cookies.get('token')
 
 const showLoginMenu = ref(false);
 const activeModal = ref('')
-
 
 const userStore = useUserStore()
 
