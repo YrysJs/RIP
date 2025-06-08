@@ -99,7 +99,7 @@ const getImageUrl = (imageUrls) => {
         </div>
 
         <!-- Список товаров/услуг -->
-        <div v-for="product in products" :key="product.id" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
+        <div v-for="product in products.items" :key="product.id" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
             <div class="w-full flex gap-[20px]">
                 <div class="min-w-[320px] w-[320px] rounded-lg overflow-hidden">
                     <img class="w-full h-full object-cover" :src="getImageUrl(product.image_urls)" :alt="product.name">
@@ -136,7 +136,7 @@ const getImageUrl = (imageUrls) => {
                                     </span>
                                 </div>
                             </template>
-                            <span class="text-[#38949B]">(42 отзыва)</span>
+                            <span class="text-[#38949B]">(0 отзыва)</span>
                         </div>
                         <div class="flex items-center gap-[10px] text-sm font-normal mb-[8px] text-[#5C5C5C] mt-[8px]">
                             <img src="/icons/calendar-icon.svg" alt="calendar-icon"> 

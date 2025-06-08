@@ -90,7 +90,7 @@ function getCart() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8080/api/v1/cart',
+        url: 'http://194.32.140.209:8090/api/v1/cart',
     })
 }
 
@@ -107,7 +107,7 @@ function removeFromCart(productId) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'DELETE',
-        url: `http://194.32.140.209:8080/api/v1/cart/${productId}`,
+        url: `http://194.32.140.209:8090/api/v1/cart/${productId}`,
     })
 }
 
@@ -115,7 +115,7 @@ function clearCart() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'DELETE',
-        url: 'http://194.32.140.209:8080/api/v1/cart',
+        url: 'http://194.32.140.209:8090/api/v1/cart',
     })
 }
 
