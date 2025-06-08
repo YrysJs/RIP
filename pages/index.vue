@@ -1,8 +1,16 @@
 <script setup>
-
-
-
+import MainPageModal from "~/components/layout/modals/MainPageModal.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
+import AppFooter from "~/components/layout/AppFooter.vue";
+
+const dataId = ref(0)
+const mainPageModalState = ref(false)
+
+const showDetail = (id) => {
+    dataId.value = id
+    mainPageModalState.value = true
+}
+
 </script>
 
 <template>
@@ -30,7 +38,7 @@ import AppHeader from "~/components/layout/AppHeader.vue";
                     <p class="text-xl text-[#224C4F]">
                         Мы компания RIP - первая в Казахстане единая база захоронений, с помощью которой вы сможете удалённо найти захоронение своих близких и родных, посмотреть в каком состоянии оно сейчас находится и организовать дальнейшее сопровождение по уходу, где бы вы ни находились.
                     </p>
-                    <nuxt-link to="/" class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px]">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></nuxt-link>
+                    <a href="#services" class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px]">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></a>
                 </div>
             </div>
         </div>
@@ -42,7 +50,7 @@ import AppHeader from "~/components/layout/AppHeader.vue";
                 </p>
             </div>
         </div>
-        <div class="container py-[80px]">
+        <div class="container py-[80px]" id="services">
             <h3 class="text-4xl text-[#224C4F] font-semibold">Услуги</h3>
             <div class="flex justify-evenly items-center flex-wrap gap-[25px] mt-[42px]">
                 <div class="rounded-lg max-w-[376px]">
@@ -52,37 +60,47 @@ import AppHeader from "~/components/layout/AppHeader.vue";
                         <p class="text-base text-[#224C4F] mt-[16px]">
                             Вы можете заказать у нас точные координаты захоронения на цифровой карте кладбища с подробным описанием маршрута.
                         </p>
-                        <nuxt-link to="/" class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px]">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></nuxt-link>
+                        <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px]" @click="showDetail(0)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
                     </div>
                 </div>
                 <div class="rounded-lg max-w-[376px]">
                     <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-full w-full object-cover overflow-hidden" src="/images/client/banner.jpg" alt="">
                     <div class="card p-[22px]">
-                        <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Поиск захоронения</h3>
+                        <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Благоустройство</h3>
                         <p class="text-base text-[#224C4F] mt-[16px]">
-                            Вы можете заказать у нас точные координаты захоронения на цифровой карте кладбища с подробным описанием маршрута.
+                            Мы предоставляем комплексный спектр услуг по благоустройству и уходу за захоронениями Ваших родственников и друзей.
                         </p>
-                        <nuxt-link to="/" class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px]">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></nuxt-link>
+                        <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px]" @click="showDetail(1)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
                     </div>
                 </div>
                 <div class="rounded-lg max-w-[376px]">
                     <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-full w-full object-cover overflow-hidden" src="/images/client/banner.jpg" alt="">
                     <div class="card p-[22px]">
-                        <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Поиск захоронения</h3>
+                        <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Цифровой мемориал и древо памяти</h3>
                         <p class="text-base text-[#224C4F] mt-[16px]">
-                            Вы можете заказать у нас точные координаты захоронения на цифровой карте кладбища с подробным описанием маршрута.
+                            Создайте виртуальный памятник, в котором будет собрана вся информация о Вашем близком человеке и кто с ним связан.
                         </p>
-                        <nuxt-link to="/" class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px]">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></nuxt-link>
+                        <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px]" @click="showDetail(2)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
                     </div>
                 </div>
                 <div class="rounded-lg max-w-[376px]">
                     <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-full w-full object-cover overflow-hidden" src="/images/client/banner.jpg" alt="">
                     <div class="card p-[22px]">
-                        <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Поиск захоронения</h3>
+                        <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Ритуальные услуги</h3>
                         <p class="text-base text-[#224C4F] mt-[16px]">
-                            Вы можете заказать у нас точные координаты захоронения на цифровой карте кладбища с подробным описанием маршрута.
+                            Полный комплекс мероприятий, включая оформление документов, подготовку церемонии и сопровождение. Обеспечиваем соблюдение всех традиций и пожеланий семьи. Гарантируем профессиональный подход и внимание к деталям.
                         </p>
-                        <nuxt-link to="/" class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px]">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></nuxt-link>
+                        <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px]" @click="showDetail(3)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
+                    </div>
+                </div>
+                <div class="rounded-lg max-w-[376px]">
+                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-full w-full object-cover overflow-hidden" src="/images/client/banner.jpg" alt="">
+                    <div class="card p-[22px]">
+                        <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Ритуальные товары</h3>
+                        <p class="text-base text-[#224C4F] mt-[16px]">
+                            Мы предлагаем широкий ассортимент ритуальных товаров, необходимых для организации похорон с учетом всех традиций и пожеланий:
+                        </p>
+                        <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px]" @click="showDetail(4)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
                     </div>
                 </div>
             </div>
@@ -124,7 +142,11 @@ import AppHeader from "~/components/layout/AppHeader.vue";
                 </div>
             </div>
         </div>
+        <AppFooter />
     </div>
+    <Teleport to="body">
+        <MainPageModal :dataId="dataId" :visible="mainPageModalState" @close="mainPageModalState = false"/>
+    </Teleport>
 </template>
 
 <style lang="scss" scoped>
