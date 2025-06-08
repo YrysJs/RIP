@@ -3,15 +3,17 @@
     <div class="dashboard grid grid-cols-1 gap-6">
       <!-- Количество заявок -->
       <div class="card flex flex-wrap justify-between items-center p-6">
-        <div>
+        <div class="mr-8">
           <h2 class="text-sm text-[#6B7280] font-semibold mb-2">Количество заявок всего</h2>
-          <p class="text-4xl font-bold">{{ totalRequests }}</p>
+          <p class="text-4xl font-bold">{{ requestStats.count }}</p>
         </div>
-        <div class="flex flex-wrap gap-4 text-sm font-semibold">
-          <span class="text-[#3CBF4A]">Согласовано: {{ approved }}</span>
-          <span class="text-[#E53935]">Отказано: {{ declined }}</span>
-          <span class="text-[#38949B]">В работе: {{ inWork }}</span>
-          <span class="text-[#F7901E]">На доработке: {{ revision }}</span>
+        <div v-if="requestStats?.statuses?.length" class="flex flex-wrap gap-4 text-sm font-semibold">
+          <span
+              v-for="status in requestStats?.statuses"
+              :key="status.status.id"
+              :class="{'text-[#3CBF4A]': status.status.id === 1, 'text-[#E53935]': status.status.id === 1, 'text-[#38949B]': status.status.id === 1, 'text-[#F7901E]': status.status.id === 1,}">
+            {{status.status.nameRu}}: {{ status.count }}
+          </span>
         </div>
         <select class="filter-select ml-auto w-[140px]">
           <option>За месяц</option>
@@ -33,21 +35,32 @@
           <!-- Диаграмма и легенда -->
           <div class="flex gap-6">
             <!-- Картинка -->
-            <div class="w-[180px] h-[180px]">
-              <img src="/images/pie.png" alt="Chart" class="w-full h-full object-contain" />
-            </div>
+<!--            <div class="w-[180px] h-[180px]">-->
+<!--              <img src="/images/pie.png" alt="Chart" class="w-full h-full object-contain" />-->
+<!--            </div>-->
 
-            <!-- Легенда -->
-            <div class="flex flex-col gap-2 mt-8">
-              <div class="legend-item">
-                <span class="legend-color bg-[#66CDD8]"></span>
-                <span class="legend-text text-[#66CDD8]">Обращения: 54</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-color bg-[#22686F]"></span>
-                <span class="legend-text text-[#374151]">Перезахоронение: 17</span>
-              </div>
-            </div>
+<!--            &lt;!&ndash; Легенда &ndash;&gt;-->
+<!--            <div class="flex flex-col gap-2 mt-8">-->
+<!--              <div class="legend-item">-->
+<!--                <span class="legend-color bg-[#66CDD8]"></span>-->
+<!--                <span class="legend-text text-[#66CDD8]">Обращения: 54</span>-->
+<!--              </div>-->
+<!--              <div class="legend-item">-->
+<!--                <span class="legend-color bg-[#22686F]"></span>-->
+<!--                <span class="legend-text text-[#374151]">Перезахоронение: 17</span>-->
+<!--              </div>-->
+<!--            </div>-->
+            <Doughnut
+                :data="types"
+                :options="{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'right',
+                    }
+                  },
+                }" />
           </div>
         </div>
 
@@ -56,15 +69,18 @@
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-sm text-[#6B7280] font-semibold">Сейчас в работе</h2>
           </div>
-          <div class="flex flex-col overflow-y-auto max-h-[300px] pr-2">
+          <div v-if="requestStats?.inWork?.length" class="flex flex-col overflow-y-auto max-h-[300px] pr-2">
             <div
-                v-for="item in inProgress"
+                v-for="item in requestStats?.inWork"
                 :key="item.id"
                 class="flex justify-between items-center py-2 text-sm font-semibold hover:bg-[#F9FAFB] rounded-[8px] px-2"
             >
-              <p>{{ item.type }} №{{ item.id }}</p>
+              <p>{{ item.status.nameRu }} №{{ item.requestNumber }}</p>
               <img src="/icons/arrow-right.svg" class="w-4 h-4" />
             </div>
+          </div>
+          <div v-else class="text-[#939393]">
+            В работе ничего нет
           </div>
         </div>
       </div>
@@ -88,13 +104,12 @@
 
       <!-- Новостей всего -->
       <div class="card flex flex-wrap justify-between items-center p-6">
-        <div>
+        <div class="mr-8">
           <h2 class="text-sm text-[#6B7280] font-semibold mb-2">Новостей всего</h2>
-          <p class="text-4xl font-bold">{{ totalNews }}</p>
+          <p class="text-4xl font-bold">{{ newsStats?.count }}</p>
         </div>
-        <div class="flex flex-wrap gap-4 text-sm font-semibold">
-          <span class="text-[#3CBF4A]">Активных: {{ activeNews }}</span>
-          <span class="text-[#9CA3AF]">Черновики: {{ draftNews }}</span>
+        <div v-if="newsStats?.newsStatuses?.length" class="flex flex-wrap items-end gap-4 text-sm font-semibold">
+          <span v-for="status in newsStats.newsStatuses" :key="status.status.id" :class="{'text-[#3CBF4A]': status.status.id === 1, 'text-[#9CA3AF]': status.status.id === 2}">{{status.status.nameRu}}: {{ status.count }}</span>
         </div>
         <select class="filter-select ml-auto w-[140px]">
           <option>За все время</option>
@@ -106,28 +121,23 @@
 
 <script setup>
 import { getNewsStats, getRequestsStats } from '~/services/akimat'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+import { Doughnut } from 'vue-chartjs'
 
+
+ChartJS.register(ArcElement, Tooltip, Legend)
 const loading = ref(false)
 const newsStats = ref({})
 const requestStats = ref({})
-
-const totalRequests = 141;
-const approved = 50;
-const declined = 34;
-const inWork = 16;
-const revision = 41;
-
-const totalNews = 12;
-const activeNews = 10;
-const draftNews = 2;
-
-const inProgress = [
-  { id: 351, type: 'Заявка на перезахоронение' },
-  { id: 350, type: 'Заявка на перезахоронение' },
-  { id: 349, type: 'Заявка на перезахоронение' },
-  { id: 3345, type: 'Обращение' },
-  { id: 3142, type: 'Обращение' }
-];
+const types = ref({
+  labels: ['Обращения', 'Перезахоронение'],
+  datasets: [
+    {
+      backgroundColor: ['#66CDD8', '#22686F'],
+      data: [54, 17]
+    }
+  ]
+})
 
 const topNews = [
   { title: 'Типовые правила погребения и организации дела', views: 234 },
@@ -144,6 +154,17 @@ onMounted((async () => {
     const requestRes = await getRequestsStats();
     newsStats.value = newsRes.data
     requestStats.value = requestRes.data
+    if (requestStats.value?.types?.length > 0) {
+      types.value = {
+        labels: [requestStats.value?.types[0].type.nameRu, requestStats.value?.types[1].type.nameRu],
+        datasets: [
+          {
+            backgroundColor: ['#66CDD8', '#22686F'],
+            data: [requestStats.value?.types[0].count, requestStats.value?.types[1].count]
+          }
+        ]
+      }
+    }
   } catch (error) {
     console.error('Ошибка при получении заявок:', error)
   } finally {

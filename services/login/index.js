@@ -19,6 +19,24 @@ function checkOtp(params) {
     })
 }
 
+function signupClient(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: 'http://194.32.140.209:8081/v1/user/signup/fcb',
+        data
+    })
+}
+
+function signupSupplier(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: 'http://194.32.140.209:8081/v1/supplier/signup/fcb',
+        data
+    })
+}
+
 function getUser(params) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -43,5 +61,7 @@ export {
     getOtp,
     checkOtp,
     getUser,
-    getSupplier
+    getSupplier,
+    signupClient,
+    signupSupplier
 }
