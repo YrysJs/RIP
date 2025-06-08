@@ -4,10 +4,15 @@ import BookingDetails from '@/components/manager/booking/BookingDetails.vue'
 import {getBurialRequestById, getBurialRequestStatus} from '@/services/manager'
 import {getGraveById, getGraveImages} from '@/services/client'
 import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
+import CancelModal from "~/components/manager/booking/CancelModal.vue";
+import {useRouter} from "#vue-router";
 
 const route = useRoute()
+const router = useRouter()
 
 const booking = ref({})
+const isCancelModalVisible = ref(false)
+const selectedRequest = ref()
 const graveDetailModalVisible = ref(false)
 
 const grave = ref({})
@@ -25,13 +30,20 @@ onMounted(async () => {
   getBurialRequestById(route.params.id)
 })
 
-const cancelRequest = (id) => {
+const cancelRequest = (comment) => {
   getBurialRequestStatus({
-    id: id,
-    status: 'cancelled'
+    id: selectedRequest.value,
+    status: 'cancelled',
+    comment
+  }).then(() => {
+    router.push('/manager/booking')
   })
 }
 
+const selectRequest = (id) => {
+  selectedRequest.value = id
+  isCancelModalVisible.value = true
+}
 
 const fetchGraveDetails = async (id) => {
   try {
@@ -51,10 +63,11 @@ const fetchGraveDetails = async (id) => {
 
 <template>
   <NuxtLayout name="manager">
-    <BookingDetails v-if="booking" :booking="booking" @cancel="cancelRequest" @details="fetchGraveDetails" />
+    <BookingDetails v-if="booking" :booking="booking" @cancel="selectRequest" @details="fetchGraveDetails" />
 
     <Teleport to="body">
       <GraveDetailModal :visible="graveDetailModalVisible" :grave="grave" :images="graveImages" :booking="booking" @close="graveDetailModalVisible = false" />
+      <CancelModal :visible="isCancelModalVisible" @cancel="cancelRequest" />
     </Teleport>
   </NuxtLayout>
 </template>

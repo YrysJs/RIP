@@ -105,6 +105,12 @@
 </template>
 
 <script setup>
+import { getNewsStats, getRequestsStats } from '~/services/akimat'
+
+const loading = ref(false)
+const newsStats = ref({})
+const requestStats = ref({})
+
 const totalRequests = 141;
 const approved = 50;
 const declined = 34;
@@ -130,6 +136,22 @@ const topNews = [
   { title: 'Как выбрать место на кладбище', views: 150 },
   { title: 'Современные технологии на кладбищах', views: 145 }
 ];
+
+onMounted((async () => {
+  try {
+    loading.value = true
+    const newsRes = await getNewsStats();
+    const requestRes = await getRequestsStats();
+    newsStats.value = newsRes.data
+    requestStats.value = requestRes.data
+  } catch (error) {
+    console.error('Ошибка при получении заявок:', error)
+  } finally {
+    console.log('finally')
+    loading.value = false
+  }
+}))
+
 </script>
 
 <style lang="scss" scoped>

@@ -12,9 +12,10 @@
       <!-- Выбор категории -->
       <div class="form-group mb-[24px]">
         <label class="label">Выберите категорию</label>
-        <select class="form-select">
-          <option>Перезахоронение</option>
-          <option>Новая категория</option>
+        <select class="form-select" v-model="newsCategory">
+          <option :value="1">Объявления</option>
+          <option :value="2">Социальная поддержка</option>
+          <option :value="3">Изменения в законодательстве</option>
         </select>
       </div>
 
@@ -25,22 +26,34 @@
       </div>
 
       <!-- Загрузка обложки -->
-      <div class="upload-area mb-[24px]">
-        <div class="upload-placeholder">
-          <p class="text-[#38949B] font-semibold mb-2">Загрузите обложку новости</p>
-          <p class="text-xs text-[#6B7280] leading-relaxed text-center">
-            Оптимальный размер: 1200х630 пикселей. <br/>
-            Минимальное разрешение: 600х315 пикселей.<br/>
-            Формат: JPEG, PNG.<br/>
-            Пропорции: Соотношение сторон 16:9<br/>
-            Размер файла: Не превышать 1–2 MB.
-          </p>
-        </div>
-      </div>
+      <SixDropzone
+          v-model="file"
+          :accept="['image/jpeg', 'image/png']"
+          class="w-full h-[200px] upload-area mb-[24px] cursor-pointer"
+          label="Выбрать файл"
+      >
+        <template #default>
+              <div class="upload-placeholder text-center">
+                <p class="text-[#38949B] font-semibold mb-2">Загрузите обложку новости</p>
+                <p class="text-xs text-[#6B7280] leading-relaxed">
+                  Оптимальный размер: 1200х630 пикселей. <br/>
+                  Минимальное разрешение: 600х315 пикселей.<br/>
+                  Формат: JPEG, PNG.<br/>
+                  Пропорции: Соотношение сторон 16:9<br/>
+                  Размер файла: Не превышать 1–2 MB.
+                </p>
+              </div>
+        </template>
+
+      </SixDropzone>
+
 
       <!-- Текст новости -->
       <div class="form-group mb-[24px]">
         <label class="label">Заполните основной текст новости</label>
+<!--        <ClientOnly>-->
+<!--        <QuillEditor v-model:content="newsContent" theme="snow" toolbar="full" content-type="html" />-->
+<!--        </ClientOnly>-->
 
         <div class="editor-toolbar flex gap-2 mb-2">
           <button class="editor-btn">B</button>
@@ -57,16 +70,83 @@
             placeholder="Введите текст новости..."
         ></textarea>
       </div>
+      <div class="bg-white p-5 rounded-2xl mb-4 flex gap-[10px] justify-end">
+        <button class="btn btn-submit" @click="addNews">
+          Опубликовать
+        </button>
+      </div>
     </div>
+
+    <Teleport to="body">
+      <SuccessModal
+          v-if="showSuccessModal"
+          title="Оплата прошла успешно, заявка на захоронения отправлена!"
+          text="Отслеживайте статус в личном кабинете"
+          @close="closeSuccessModal"
+      />
+    </Teleport>
   </NuxtLayout>
 </template>
 
 <script setup>
+// import {QuillEditor} from "@vueup/vue-quill";
 import { ref } from 'vue';
+import { createNews } from '~/services/akimat'
+import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 const router = useRouter();
 
+const newsCategory = ref(0);
 const newsTitle = ref('');
+const showSuccessModal = ref(false)
 const newsContent = ref('');
+const file = ref(null)
+const base64File = ref('');
+
+async function convertToBase64(file) {
+  if (!file) throw new Error('Файл не выбран')
+
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      const result = reader.result
+      const clean = result.split(',')[1]
+      resolve(clean)
+    }
+
+    reader.onerror = (error) => {
+      reject(error)
+    }
+
+    reader.readAsDataURL(file)
+  })
+}
+
+const closeSuccessModal = () => {
+  showSuccessModal.value = false
+  navigateTo('/user/news')
+}
+
+const addNews = async () => {
+
+  try {
+    base64File.value = await convertToBase64(file.value)
+    const temp = {
+      title: newsTitle.value,
+      content: newsContent.value,
+      categoryId: newsCategory.value,
+      coverImageBase64: base64File.value,
+      newsStatusId: 1
+    }
+    await createNews(temp)
+  } catch (error) {
+    console.error('Ошибка при услуги:', error)
+  } finally {
+    showSuccessModal.value = true
+  }
+
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -113,6 +193,7 @@ const newsContent = ref('');
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: none;
 }
 
 .upload-placeholder {
@@ -136,5 +217,12 @@ const newsContent = ref('');
   resize: vertical;
   font-size: 14px;
   background: #F9FAFB;
+}
+
+.btn-submit {
+  height: 52px;
+  background: #38949B;
+  color: #fff;
+  padding: 16px;
 }
 </style>

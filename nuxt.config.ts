@@ -15,11 +15,13 @@ export default defineNuxtConfig({
     '@nuxtjs/robots',
     '@vee-validate/nuxt',
     'nuxt-schema-org',
-    'nuxt-swiper'
+    'nuxt-swiper',
+    'six-dropzone',
   ],
   plugins: [
     '~/plugins/v-mask.js',
     '~/plugins/axios.js',
+    '~/plugins/dropzone-vue.js',
   ],
 
   css: [

@@ -23,7 +23,8 @@ function getBurialRequestStatus(data) {
         method: 'PATCH',
         url: `http://194.32.140.209:8092/api/v1/burial-requests/${data.id}/status`,
         data: {
-            status: data.status
+            status: data.status,
+            comment: data.comment,
         },
     })
 }

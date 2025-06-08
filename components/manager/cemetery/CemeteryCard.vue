@@ -21,15 +21,16 @@
       <span> <strong>Свободных мест: {{ cemetery.free_spaces }}</strong></span>
     </div>
 
-<!--    <div class="cemetery-card__footer flex justify-end">-->
-<!--      <button class="btn cemetery-card__edit-button" @click="router.push(`/manager/cemetery/${cemetery.id}`)">Редактировать</button>-->
-<!--    </div>-->
+    <div class="cemetery-card__footer flex justify-end">
+      <button class="btn cemetery-card__edit-button" @click="emit('open-map', cemetery)">На карте</button>
+    </div>
   </div>
 </template>
 
 <script setup>
 defineProps(['cemetery'])
 const router = useRouter();
+const emit = defineEmits(['open-map'])
 
 const types = {
   muslim: 'Мусульманское кладбище',

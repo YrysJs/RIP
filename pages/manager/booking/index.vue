@@ -1,13 +1,20 @@
 <script setup>
+import { useRouter } from 'vue-router'
+import { getBurialRequests } from '~/services/manager'
+import { getCemeteries } from '~/services/cemetery'
 
-import {getBurialRequests} from "~/services/manager"
-
-const router = useRouter();
+const router = useRouter()
 
 const bookings = ref([])
+const cemeteries = ref([])
 const search = ref('')
 
-const fetchBurials = async (params = { status: 'paid' }) => {
+// новые фильтры
+const dateFrom = ref('')
+const dateTo = ref('')
+const cemeteryId = ref(null)
+
+const fetchBurials = async (params = { status: 'pending' }) => {
   try {
     const response = await getBurialRequests(params)
     bookings.value = response.data
@@ -16,11 +23,25 @@ const fetchBurials = async (params = { status: 'paid' }) => {
   }
 }
 
+const fetchCemeteries = async () => {
+  try {
+    const response = await getCemeteries()
+    cemeteries.value = response.data
+  } catch (error) {
+    console.error('Ошибка при получении кладбищ:', error)
+  }
+}
+
 onMounted(() => {
   fetchBurials()
+  fetchCemeteries()
 })
 
-// debounce-функция
+const toIsoDate = (dateStr) => {
+  return dateStr ? `${dateStr}T00:00:00Z` : undefined
+}
+
+// Поиск (оставляем debounce)
 let timeout
 watch(search, (newVal) => {
   clearTimeout(timeout)
@@ -28,21 +49,78 @@ watch(search, (newVal) => {
   if (newVal.length >= 3 || newVal.length === 0) {
     timeout = setTimeout(() => {
       fetchBurials({
-        status: 'paid',
-        ...(newVal.length >= 3 ? { request_number: newVal } : {})
+        status: 'pending',
+        ...(newVal.length >= 3 ? { created_by: newVal } : {}),
+        date_from: toIsoDate(dateFrom.value) || undefined,
+        date_to: toIsoDate(dateTo.value) || undefined,
+        cemetery_id: cemeteryId.value || undefined,
       })
     }, 500)
   }
+})
+
+// Фильтры: дата с
+watch(dateFrom, () => {
+  fetchBurials({
+    status: 'pending',
+    ...(search.value.length >= 3 ? { created_by: search.value } : {}),
+    date_from: toIsoDate(dateFrom.value) || undefined,
+    date_to: toIsoDate(dateTo.value) || undefined,
+    cemetery_id: cemeteryId.value || undefined,
+  })
+})
+
+// Фильтры: дата по
+watch(dateTo, () => {
+  fetchBurials({
+    status: 'pending',
+    ...(search.value.length >= 3 ? { created_by: search.value } : {}),
+    date_from: toIsoDate(dateFrom.value) || undefined,
+    date_to: toIsoDate(dateTo.value) || undefined,
+    cemetery_id: cemeteryId.value || undefined,
+  })
+})
+
+// Фильтры: кладбище
+watch(cemeteryId, () => {
+  fetchBurials({
+    status: 'pending',
+    ...(search.value.length >= 3 ? { created_by: search.value } : {}),
+    date_from: toIsoDate(dateFrom.value) || undefined,
+    date_to: toIsoDate(dateTo.value) || undefined,
+    cemetery_id: cemeteryId.value || undefined,
+  })
 })
 </script>
 
 <template>
   <NuxtLayout name="manager">
     <div class="booking-list">
+      <div class="flex justify-between items-center flex-wrap gap-4">
+        <div class="flex gap-4 flex-wrap">
+          <div>
+            <p>Кладбище</p>
+            <select class="filter-select" v-model="cemeteryId">
+              <option :value="null">Все</option>
+              <option v-for="cemetery in cemeteries" :key="cemetery.id" :value="cemetery.id">
+                {{ cemetery.name }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <p>Дата с</p>
+            <input class="filter-select date" type="date" v-model="dateFrom" />
+          </div>
+          <div>
+            <p>Дата по</p>
+            <input class="filter-select date" type="date" v-model="dateTo" />
+          </div>
+        </div>
+      </div>
       <div class="search-wrapper">
         <div class="search-box">
           <img src="/icons/search.svg" alt="Поиск" />
-          <input type="text" v-model="search" placeholder="Поиск" />
+          <input type="text" v-model="search" placeholder="Поиск по пользователю" />
         </div>
       </div>
       <div v-for="booking in bookings" :key="booking.id" class="booking-card">
