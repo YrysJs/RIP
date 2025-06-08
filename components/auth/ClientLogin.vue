@@ -1,5 +1,5 @@
 <script setup>
-import { getOtp, checkOtp } from '~/services/login/index.js'
+import { getOtp, checkOtp, signupClient } from '~/services/login/index.js'
 import Cookies from 'js-cookie';
 const emit = defineEmits()
 const router = useRouter()
@@ -8,7 +8,6 @@ const phone_number = ref('')
 const loginId = ref('')
 const code = ref('')
 const iin = ref('')
-const full_name = ref('')
 const check = ref(false)
 const step = ref(0)
 
@@ -16,17 +15,33 @@ function close() {
     emit('close')
 }
 
-function run () {
-    router.push('/client/reservation/reservation-first')
+async function run () {
+  try {
+    const response = await signupClient({
+      otpRequest: {
+        id: loginId.value,
+        code: code.value
+      },
+      iin: iin.value,
+      requestId: '1'
+    })
+    Cookies.set('token', response.data.token);
+    Cookies.set('role', 'client');
+  } catch (error) {
+    console.error('Ошибка при логине:', error)
+
+    if (
+        error?.response?.status === 500 &&
+        error?.response?.data?.description?.includes('Role not found for phone')
+    ) {
+      step.value++;
+    }
+  } finally {
+    console.log('login')
+    router.push('/client/tickets/active')
+  }
 }
 
-watch(iin, (newValue) => {
-  if (newValue === '920806300456') {
-    setTimeout(() => {
-        full_name.value = 'Бабаев Рауан Ахметович'
-    }, 3000)
-  }
-})
 
 const fakeTimer = ref(10)
 let interval = null
@@ -70,6 +85,13 @@ const otpCheck = async () => {
     Cookies.set('role', 'client');
   } catch (error) {
     console.error('Ошибка при логине:', error)
+
+    if (
+        error?.response?.status === 500 &&
+        error?.response?.data?.description?.includes('Role not found for phone')
+    ) {
+      step.value++;
+    }
   } finally {
     console.log('login')
     router.push('/client/tickets/active')
@@ -119,25 +141,25 @@ const otpCheck = async () => {
                 <p class="text-sm font-roboto">
                     Для продолжение заполните обязательные данные
                 </p>
-                <div class="mt-[24px]">
-                    <p class="text-sm font-roboto text-[#222222]">Телефон</p>
-                    <input v-model="phone_number" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите код" disabled>
-                </div>
+<!--                <div class="mt-[24px]">-->
+<!--                    <p class="text-sm font-roboto text-[#222222]">Телефон</p>-->
+<!--                    <input v-model="phone_number" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите код" disabled>-->
+<!--                </div>-->
                 <div class="mt-[24px]">
                     <p class="text-sm font-roboto text-[#222222]">ИИН</p>
                     <input v-model="iin" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ИИН">
                 </div>
-                <div class="mt-[24px] mb-[24px]">
-                    <p class="text-sm font-roboto text-[#222222]">ФИО</p>
-                    <input v-model="full_name" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
-                </div>
+<!--                <div class="mt-[24px] mb-[24px]">-->
+<!--                    <p class="text-sm font-roboto text-[#222222]">ФИО</p>-->
+<!--                    <input v-model="full_name" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">-->
+<!--                </div>-->
                 <div class="flex gap-[10px] items-center mb-[24px]">
                     <input v-model="check" type="checkbox"> 
                     <p class="font-roboto text-sm text-[#939393]">
                         Я согласен с правилами использования и политикой конфиденциальности
                     </p>
                 </div>
-                <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': (iin.length && full_name.length && check) }" @click="run">Зарегистрироваться</button>
+                <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': (iin.length && check) }" @click="run">Зарегистрироваться</button>
             </div>
         </div>
     </div>
