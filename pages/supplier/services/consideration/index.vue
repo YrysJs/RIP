@@ -96,7 +96,7 @@ const formatDate = (dateString) => {
 
         <!-- Список товаров/услуг на рассмотрении -->
         <div v-for="product in products.items" :key="product.id" class="w-full flex gap-[20px] bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
-            <div class="min-w-[320px] w-[320px] rounded-lg overflow-hidden">
+            <div class="min-w-[320px] max-w-[320px] max-h-[260px] rounded-lg overflow-hidden">
                 <img class="w-full h-full object-cover" :src="getImageUrl(product.image_urls)" :alt="product.name">
             </div>
             <div class="w-full">

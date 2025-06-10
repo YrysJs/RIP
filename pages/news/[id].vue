@@ -1,7 +1,8 @@
 <script setup>
 import { useNewsStore } from '~/store/news.js'
 import {getNews} from "~/services/akimat/index.js";
-const router = useRouter();
+import AppHeader from '~/components/layout/AppHeader.vue';
+import AppFooter from '~/components/layout/AppFooter.vue';
 
 const newsStore = useNewsStore()
 const newsList = ref([])
@@ -52,6 +53,7 @@ function goBack() {
 </script>
 
 <template>
+    <AppHeader type="client" />
     <div class="container py-[80px]">
         <button class="flex gap-[15px] items-center text-sm font-semibold" @click="goBack">
             <img src="/icons/back-icon-blue.svg" alt=""> Назад
@@ -92,6 +94,7 @@ function goBack() {
             </div>
         </div>
     </div>
+    <AppFooter />
 </template>
 
 <style lang="css" scoped>

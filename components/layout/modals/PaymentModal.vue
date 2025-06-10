@@ -16,6 +16,16 @@
           />
         </div>
 
+        <div class="form-group">
+          <label class="label">Email</label>
+          <input 
+            v-model="email" 
+            type="email" 
+            class="input"
+            placeholder="example@test.com"
+          />
+        </div>
+
         <div class="form-row">
           <div class="form-group half">
             <label class="label">Срок действия</label>
@@ -73,6 +83,7 @@ export default {
     return {
       cardNumber: '',
       expiryDate: '',
+      email: '',
       cvcCode: '',
       isProcessing: false
     }
@@ -119,17 +130,14 @@ export default {
           cardNumber: this.cardNumber.replace(/\s/g, ''),
           currency: 'KZT',
           cvc: this.cvcCode,
-          description: `Оплата захоронения ${this.burialData?.request_number || ''}`,
-          email: 'test@test.com', // Можно получить из профиля пользователя
+          email: this.email, // Можно получить из профиля пользователя
           expDate: this.expiryDate.replace('/', ''),
-          invoiceID: this.burialData?.request_number || Date.now().toString(),
-          phone: '77777777777' // Можно получить из профиля пользователя
         }
 
-        // // 1. Выполняем платеж
-        // console.log('Processing payment...', paymentData)
-        // const paymentResponse = await processCardPayment(paymentData)
-        // console.log('Payment successful:', paymentResponse)
+        // 1. Выполняем платеж
+        console.log('Processing payment...', paymentData)
+        const paymentResponse = await processCardPayment(paymentData)
+        console.log('Payment successful:', paymentResponse)
 
         // 2. Обновляем данные захоронения (дата и время)
         if (this.burialData?.burial_date || this.burialData?.burial_time) {

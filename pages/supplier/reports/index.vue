@@ -1,4 +1,25 @@
 <script setup>
+import { getSalesStats } from '~/services/supplier'
+
+const stats = ref({
+    three_months: 0,
+    seven_days: 0,
+    one_month: 0,
+    all_time: 0
+})
+
+const isLoading = ref(true)
+
+onMounted(async () => {
+    try {
+        const response = await getSalesStats()
+        stats.value = response.data
+    } catch (error) {
+        console.error('Ошибка при загрузке статистики:', error)
+    } finally {
+        isLoading.value = false
+    }
+})
 </script>
 
 <template>
@@ -7,35 +28,22 @@
             Отчеты
         </div>
         <div class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
-            <div class="rip-table">
+            <div v-if="isLoading" class="flex justify-center py-8">
+                <div class="text-gray-500">Загрузка...</div>
+            </div>
+            <div v-else class="rip-table">
                 <div class="rip-table__header">
-                    <div>Товар/Услуга</div>
                     <div>3 месяца</div>
                     <div>7 дней</div>
                     <div>1 месяц</div>
                     <div>За все время</div>
                 </div>
-                <nuxt-link to="/" class="rip-table__content">
-                    <div class="rip-table__content-val">Доставка покойного</div>
-                    <div class="rip-table__content-val">30</div>
-                    <div class="rip-table__content-val">50</div>
-                    <div class="rip-table__content-val">80</div>
-                    <div class="rip-table__content-val">120</div>
-                </nuxt-link>
-                <nuxt-link to="/" class="rip-table__content">
-                    <div class="rip-table__content-val">Доставка покойного</div>
-                    <div class="rip-table__content-val">30</div>
-                    <div class="rip-table__content-val">50</div>
-                    <div class="rip-table__content-val">80</div>
-                    <div class="rip-table__content-val">120</div>
-                </nuxt-link>
-                <nuxt-link to="/" class="rip-table__content">
-                    <div class="rip-table__content-val">Доставка покойного</div>
-                    <div class="rip-table__content-val">30</div>
-                    <div class="rip-table__content-val">50</div>
-                    <div class="rip-table__content-val">80</div>
-                    <div class="rip-table__content-val">120</div>
-                </nuxt-link>
+                <div class="rip-table__content">
+                    <div class="rip-table__content-val">{{ stats.three_months }}</div>
+                    <div class="rip-table__content-val">{{ stats.seven_days }}</div>
+                    <div class="rip-table__content-val">{{ stats.one_month }}</div>
+                    <div class="rip-table__content-val">{{ stats.all_time }}</div>
+                </div>
             </div>
         </div>
     </NuxtLayout>
@@ -67,7 +75,7 @@
 .rip-table {
     &__header, &__content {
         display: grid;
-        grid-template-columns: 180px 1fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: 16px
     }
 

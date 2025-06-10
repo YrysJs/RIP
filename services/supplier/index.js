@@ -9,6 +9,14 @@ function getBurialRequests(params) {
     })
 }
 
+function getSalesStats() {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://194.32.140.209:8090/api/v1/user/supplier/sales/stats',
+    })
+}
+
 function getOrders(params) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -76,6 +84,37 @@ function getReviews() {
     return $axios({
         method: 'GET',
         url: 'http://194.32.140.209:8090/api/v1/user/supplier/reviews',
+    })
+}
+
+function getOrderById(id) {
+    const { $axios } = useNuxtApp()
+    
+    if (!id) {
+        throw new Error('Order ID is required')
+    }
+    
+    return $axios({
+        method: 'GET',
+        url: `http://194.32.140.209:8090/api/v1/orders/${id}`,
+    })
+}
+
+function updateOrderStatus(id, status) {
+    const { $axios } = useNuxtApp()
+    
+    if (!id) {
+        throw new Error('Order ID is required')
+    }
+    
+    if (!status) {
+        throw new Error('Status is required')
+    }
+    
+    return $axios({
+        method: 'PATCH',
+        url: `http://194.32.140.209:8090/api/v1/orders/${id}/status`,
+        data: { status },
     })
 }
 
@@ -155,7 +194,10 @@ export {
     getProductById,
     updateProductStatus,
     getReviews,
+    getOrderById,
+    updateOrderStatus,
     createProduct,
     updateProduct,
-    getBurialRequests
+    getBurialRequests,
+    getSalesStats
 }

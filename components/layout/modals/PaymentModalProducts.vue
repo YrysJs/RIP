@@ -29,6 +29,16 @@
           />
         </div>
 
+        <div class="form-group">
+          <label class="label">Email</label>
+          <input 
+            v-model="email" 
+            type="text" 
+            class="input"
+            placeholder="example@test.com"
+          />
+        </div>
+
         <div class="form-row">
           <div class="form-group half">
             <label class="label">Срок действия</label>
@@ -83,6 +93,7 @@ export default {
       cardNumber: '',
       expiryDate: '',
       cvcCode: '',
+      email: '',
       isProcessing: false
     }
   },
@@ -128,20 +139,15 @@ export default {
           cardNumber: this.cardNumber.replace(/\s/g, ''),
           currency: 'KZT',
           cvc: this.cvcCode,
-          description: 'Оплата заказа услуг',
-          email: 'test@test.com',
+          email: this.email,
           expDate: this.expiryDate.replace('/', ''),
-          invoiceID: Date.now().toString(),
-          phone: '77777777777'
         }
 
         // 1. Выполняем платеж (закомментировано для тестирования)
-        // console.log('Processing payment...', paymentData)
-        // const paymentResponse = await processCardPayment(paymentData)
-        // console.log('Payment successful:', paymentResponse)
+        console.log('Processing payment...', paymentData)
+        const paymentResponse = await processCardPayment(paymentData)
+        console.log('Payment successful:', paymentResponse)
 
-        // Симулируем успешный платеж
-        await new Promise(resolve => setTimeout(resolve, 2000))
 
         // 2. Создаем заказ через API с правильной структурой
         const orderRequestData = {
@@ -159,9 +165,7 @@ export default {
           })) || []
         }
         
-        console.log('Creating order with data:', orderRequestData)
         await createOrder(orderRequestData)
-        console.log('Order created successfully')
 
         // 3. Закрываем модалку и сообщаем о успешной оплате
         this.$emit('close')
