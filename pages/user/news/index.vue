@@ -31,31 +31,41 @@
         <div
             v-for="news in newsList"
             :key="news.id"
-            class="news-card flex rounded-[12px] overflow-hidden shadow-sm border border-[#EEEEEE]"
+            class="news-card flex rounded-[12px] overflow-hidden shadow-sm border border-[#EEEEEE] relative"
         >
-          <img :src="news.coverImageUrl" alt="cover" class="w-[200px] h-[150px] object-cover" />
+          <div class="absolute top-3 right-4">
+            <label class="flex items-center cursor-pointer">
+              <input type="checkbox" class="sr-only" :checked="news.newsStatus?.id === 1" @change="toggleStatus(news)" />
+              <div class="w-11 h-6 bg-gray-300 rounded-full relative transition-colors duration-300"
+                   :class="{ 'bg-green-500': news.newsStatus?.id === 1 }">
+                <div class="dot absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300"
+                     :class="{ 'translate-x-5': news.newsStatus?.id === 1 }"></div>
+              </div>
+            </label>
+          </div>
+          <img :src="news.coverImageUrl" alt="cover" class="w-[230px] h-[176px] object-cover" />
 
           <div class="flex flex-col justify-between p-[16px] flex-1">
             <div>
               <span class="category-badge">{{ news.category?.name }}</span>
               <h3 class="font-semibold text-lg mt-[6px] mb-[8px]">{{ news.title }}</h3>
-              <p class="text-sm text-[#6B7280] leading-[18px]">{{ news.content }}</p>
+              <p class="text-sm text-[#6B7280] leading-[18px]">{{ news.content.length > 250 ? news.content.slice(0, 250) + '...' : news.content }}</p>
             </div>
 
             <div class="flex justify-between items-center mt-[12px]">
-              <span class="text-sm text-[#6B7280]">{{ new Date(news.registrationDate).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</span>
+              <span class="text-sm text-[#6B7280]">{{ formatDate(news.registrationDate) }}</span>
 
               <div class="flex items-center gap-2">
               <span
                   class="status"
                   :class="{
-                  'status--active': news.newsStatus?.value === 'active',
-                  'status--draft': news.newsStatus?.value === 'draft'
+                  'status--active': news.newsStatus?.id === 1,
+                  'status--draft': news.newsStatus?.id === 2
                 }"
               >
-                {{ statusText(news.newsStatus?.nameRu) }}
+                {{ news.newsStatus?.nameRu }}
               </span>
-                <button class="open-btn" @click="router.push('/user/news/' + news.id)">Открыть</button>
+                <button class="open-btn" @click="goToNews(news)">Открыть</button>
               </div>
             </div>
           </div>
@@ -67,13 +77,16 @@
 </template>
 
 <script setup>
-import { getNews } from '~/services/akimat'
+import { getNews, changeNewsStatus } from '~/services/akimat'
+import { useNewsStore } from '~/store/news.js'
 const router = useRouter();
 const newsList = ref([])
 
 const categoryId = ref('')
 const statusId = ref('')
 const sortingType = ref('desc')
+const newsStore = useNewsStore()
+const isActive = ref(false)
 
 const fetchNews = async () => {
   try {
@@ -87,6 +100,44 @@ const fetchNews = async () => {
     console.error('Ошибка при получении новостей:', error)
   }
 }
+
+
+const toggleStatus = (news) => {
+  updateStatus(news.id, news.newsStatus?.id)
+}
+
+const updateStatus = (id, isActive) => {
+  const payload = {
+    newsId: id,
+    newsStatusId: isActive ? 1 : 2
+  }
+  changeNewsStatus(payload)
+}
+
+function formatDate(arr) {
+  if (!Array.isArray(arr) || arr.length < 6) return '';
+
+  const [year, month, day, hour, minute, second, nanoseconds = 0] = arr;
+  const date = new Date(
+      year,
+      month - 1, // месяцы в JS начинаются с 0
+      day,
+      hour,
+      minute,
+      second,
+      Math.floor(nanoseconds / 1_000_000) // наносекунды → миллисекунды
+  );
+
+  const pad = (n) => String(n).padStart(2, '0');
+
+  return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+const goToNews = (news) => {
+  newsStore.setSelected(news)
+  router.push('/user/news/' + news.id)
+}
+
 
 watch([categoryId, statusId, sortingType], fetchNews, { immediate: true })
 

@@ -1,5 +1,5 @@
 <script setup>
-import { getOtp, checkOtp, signupClient } from '~/services/login/index.js'
+import { getOtp, checkOtp, signupClient, getUserData } from '~/services/login/index.js'
 import Cookies from 'js-cookie';
 const emit = defineEmits()
 const router = useRouter()
@@ -10,10 +10,19 @@ const code = ref('')
 const iin = ref('')
 const check = ref(false)
 const step = ref(0)
+const user = ref({})
+const temp = ref('')
 
 function close() {
     emit('close')
 }
+
+watch(iin, (newValue) => {
+  temp.value = newValue
+  if(newValue.length) getUserData({iin: newValue}).then((res) => {
+    user.value = res
+  })
+})
 
 async function run () {
   try {
@@ -94,19 +103,22 @@ const otpCheck = async () => {
     }
   } finally {
     console.log('login')
-    router.push('/client/tickets/active')
+    // router.push('/client/tickets/active')
   }
 
     // setTimeout(() => {
     //     step.value++
     // }, 5000);
 }
-
+// 041124551140
 </script>
 
 <template>
     <div class="modal absolute min-w-full min-h-[100vh] flex justify-center items-center z-50">
         <div class="bg-white rounded-md max-w-[500px] w-full p-[24px] relative">
+          asds
+          {{temp}}
+          {{user.value}}
             <button class="absolute right-[24px] top-[24px]" @click="close">&#10005;</button>
             <div v-if="step == 0" class="flex flex-col">
                 <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
@@ -141,18 +153,18 @@ const otpCheck = async () => {
                 <p class="text-sm font-roboto">
                     Для продолжение заполните обязательные данные
                 </p>
-<!--                <div class="mt-[24px]">-->
-<!--                    <p class="text-sm font-roboto text-[#222222]">Телефон</p>-->
-<!--                    <input v-model="phone_number" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите код" disabled>-->
-<!--                </div>-->
+                <div class="mt-[24px]">
+                    <p class="text-sm font-roboto text-[#222222]">Телефон</p>
+                    <input v-model="phone_number" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите код" disabled>
+                </div>
                 <div class="mt-[24px]">
                     <p class="text-sm font-roboto text-[#222222]">ИИН</p>
                     <input v-model="iin" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ИИН">
                 </div>
-<!--                <div class="mt-[24px] mb-[24px]">-->
-<!--                    <p class="text-sm font-roboto text-[#222222]">ФИО</p>-->
-<!--                    <input v-model="full_name" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">-->
-<!--                </div>-->
+                <div class="mt-[24px] mb-[24px]">
+                    <p class="text-sm font-roboto text-[#222222]">ФИО</p>
+                    <input v-model="full_name" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
+                </div>
                 <div class="flex gap-[10px] items-center mb-[24px]">
                     <input v-model="check" type="checkbox"> 
                     <p class="font-roboto text-sm text-[#939393]">

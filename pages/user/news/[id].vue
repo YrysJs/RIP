@@ -7,29 +7,27 @@
       </button>
 
       <div class="flex justify-between items-center text-sm text-[#6B7280] mb-[16px]">
-        <span>{{ news.date }}</span>
+        <span>{{ formatDate(newsStore.selectedNews?.registrationDate) }}</span>
         <div class="flex items-center gap-[8px]">
-          <span>{{ news.statusText }}</span>
+          <span>{{ newsStore.selectedNews?.statusText }}</span>
           <span
               class="status"
               :class="{
-            'status--active': news.status === 'active',
-            'status--draft': news.status === 'draft'
+            'status--active': newsStore.selectedNews?.newsStatus?.id === 'active',
+            'status--draft': newsStore.selectedNews?.newsStatus?.id === 'draft'
           }"
           >
-          {{ statusLabel(news.status) }}
+          {{ statusLabel(newsStore.selectedNews?.newsStatus?.nameRu) }}
         </span>
         </div>
       </div>
 
-      <h1 class="text-2xl font-semibold mb-[20px] leading-tight">{{ news.title }}</h1>
+      <h1 class="text-2xl font-semibold mb-[20px] leading-tight">{{ newsStore.selectedNews?.title }}</h1>
 
-      <img :src="news.image" alt="Обложка" class="w-full h-auto rounded-[12px] mb-[24px]" />
-
-      <h2 class="text-lg font-bold mb-[12px]">{{ news.subtitle }}</h2>
+      <img :src="newsStore.selectedNews?.coverImageUrl" alt="Обложка" class="w-full h-auto rounded-[12px] mb-[24px]" />
 
       <p class="text-base text-[#374151] leading-6 whitespace-pre-line">
-        {{ news.text }}
+        {{ newsStore.selectedNews?.content }}
       </p>
     </div>
   </NuxtLayout>
@@ -37,21 +35,30 @@
 </template>
 
 <script setup>
+import { useNewsStore } from '~/store/news.js'
 const router = useRouter();
 
-const news = {
-  title: 'Правила захоронения на кладбищах изменили в Казахстане',
-  subtitle: 'Заместитель премьер-министра-министра национальной экономики приказом от 23 февраля 2024 года внес изменения в Типовые правила погребения и организации дела по уходу за могилами',
-  date: '15 мая 2025, 09:45',
-  status: 'active', // или 'draft'
-  statusText: 'Преактивация',
-  image: '/images/news-image.png', // путь к картинке
-  text: `
-При этом уточнено, что заключение договора на погребение, содержание и обслуживание кладбищ между местным исполнительным органом города республиканского значения, столицы, районного (города областного значения) и администратором кладбища осуществляется по итогам конкурса в срок, установленный в соответствии с законодательством о государственных закупках...
+const newsStore = useNewsStore()
 
-Добавлена новая норма, в соответствии с которой определены принципы проектирования и рекультивации кладбищ и порядок организации похоронного дела...
-  `
-};
+function formatDate(arr) {
+  if (!Array.isArray(arr) || arr.length < 6) return '';
+
+  const [year, month, day, hour, minute, second, nanoseconds = 0] = arr;
+  const date = new Date(
+      year,
+      month - 1, // месяцы в JS начинаются с 0
+      day,
+      hour,
+      minute,
+      second,
+      Math.floor(nanoseconds / 1_000_000) // наносекунды → миллисекунды
+  );
+
+  const pad = (n) => String(n).padStart(2, '0');
+
+  return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 
 const statusLabel = (status) => {
   if (status === 'active') return 'Активно';

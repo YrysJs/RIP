@@ -99,5 +99,5 @@ export {
     getTypes,
     getStatuses,
     getComments,
-    exportReport
+    exportReport,
 }

@@ -28,6 +28,15 @@ function signupClient(data) {
     })
 }
 
+function getUserData(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://194.32.140.209:8083/v1/individual',
+        params,
+    })
+}
+
 function signupSupplier(data) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -63,5 +72,6 @@ export {
     getUser,
     getSupplier,
     signupClient,
-    signupSupplier
+    signupSupplier,
+    getUserData
 }
