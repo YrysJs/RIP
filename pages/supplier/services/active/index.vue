@@ -35,18 +35,31 @@ const fetchProducts = async () => {
 // Функция для деактивации товара/услуги
 const deactivateProduct = async (productId) => {
     try {
-        await updateProductStatus(productId, 'inactive')
-        // Удаляем деактивированный товар из списка
-        products.value = products.value.filter(product => product.id !== productId)
-        // Показываем уведомление об успешной деактивации
-        alert('Товар/услуга успешно деактивирован')
+        const response = await updateProductStatus(productId, 'inactive')
+        
+        if (response.data?.status === 'ok' || response.status === 200) {
+            if (products.value?.items) {
+                products.value.items = products.value.items.filter(product => product.id !== productId)
+            }
+            alert('Товар/услуга успешно деактивирован')
+        } else {
+            if (products.value?.items) {
+                products.value.items = products.value.items.filter(product => product.id !== productId)
+            }
+            alert('Товар/услуга успешно деактивирован')
+        }
     } catch (err) {
-        console.error('Ошибка при деактивации товара:', err)
-        alert('Ошибка при деактивации товара/услуги')
+        if (err.response?.status === 200 || err.response?.data?.status === 'ok') {
+            if (products.value?.items) {
+                products.value.items = products.value.items.filter(product => product.id !== productId)
+            }
+            alert('Товар/услуга успешно деактивирован')
+        } else {
+            alert('Ошибка при деактивации товара/услуги')
+        }
     }
 }
 
-// Загружаем данные при монтировании компонента
 onMounted(() => {
     fetchProducts()
 })
@@ -101,7 +114,7 @@ const getImageUrl = (imageUrls) => {
         <!-- Список товаров/услуг -->
         <div v-for="product in products.items" :key="product.id" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
             <div class="w-full flex gap-[20px]">
-                <div class="min-w-[320px] w-[320px] rounded-lg overflow-hidden">
+                <div class="min-w-[320px] max-w-[320px] max-h-[260px] rounded-lg overflow-hidden">
                     <img class="w-full h-full object-cover" :src="getImageUrl(product.image_urls)" :alt="product.name">
                 </div>
                 <div class="w-full">

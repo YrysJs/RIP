@@ -1,7 +1,137 @@
 <script setup>
+import { ref, onMounted, computed } from 'vue'
+import { getOrderById } from '~/services/supplier'
+import { getCemeteryById } from '~/services/cemetery'
+import { updateOrderStatus } from '~/services/supplier'
+
+
 const props = defineProps(['ticketId'])
 
-console.log(props.ticketId);
+
+// Переменная для хранения данных заказа
+const orderData = ref(null)
+const cemeteryData = ref(null)
+const loading = ref(false)
+const error = ref(null)
+
+// Функция для загрузки данных заказа
+const fetchOrderData = async () => {
+    if (!props.ticketId) return
+    
+    loading.value = true
+    error.value = null
+    
+    try {
+        const response = await getOrderById(props.ticketId)
+        orderData.value = response.data
+
+        if (response.data) {
+            await getCemetryInfoById(response.data.items[0].product.id)
+        }
+
+        console.log('Order data:', orderData.value)
+    } catch (err) {
+        error.value = err.message || 'Ошибка при загрузке данных заказа'
+        console.error('Error fetching order:', err)
+    } finally {
+        loading.value = false
+    }
+}
+
+const getCemetryInfoById = async (id) => {
+    loading.value = true
+    error.value = null
+    
+    try {
+        const response = await getCemeteryById(id)
+        cemeteryData.value = response.data
+        console.log('Order data:', orderData.value)
+    } catch (err) {
+        error.value = err.message || 'Ошибка при загрузке данных заказа'
+        console.error('Error fetching order:', err)
+    } finally {
+        loading.value = false
+    }
+}
+
+// Загружаем данные при монтировании компонента
+onMounted(() => {
+    fetchOrderData()
+})
+
+const handleStatusUpdate = async (orderId, newStatus) => {
+    try {
+        await updateOrderStatus(orderId, newStatus)
+        // Обновить данные заказа после успешного изменения статуса
+        await fetchOrderData()
+    } catch (error) {
+        console.error('Ошибка при обновлении статуса:', error)
+    }
+}
+
+const orderStatuses = [
+    {
+        current: 'new',
+        next: 'processing',
+        title: 'Прянять заказ',
+        status: 'Заказ принят'
+    },
+    {
+        current: 'processing',
+        next: 'in_progress',
+        title: 'Подтвердить исполнение',
+        status: 'Выполняется'
+    },
+    {
+        current: 'in_progress',
+        next: 'completed',
+        title: 'Заказ выполнен',
+        status: 'Выполнен'
+    }
+]
+
+// Computed свойство для определения текущего действия
+const currentStatusAction = computed(() => {
+    if (!orderData.value?.status) return null
+    
+    return orderStatuses.find(status => status.current === orderData.value.status)
+})
+
+// Computed свойство для определения текущего статуса
+const currentStatus = computed(() => {
+    if (!orderData.value?.status) return 'Неизвестно'
+    
+    const statusInfo = orderStatuses.find(status => status.current === orderData.value.status)
+    return statusInfo ? statusInfo.status : orderData.value.status
+})
+
+// Computed свойство для определения цвета статуса
+const statusColor = computed(() => {
+    if (!orderData.value?.status) return 'bg-gray-500'
+    
+    const colorMap = {
+        'new': 'bg-blue-500',           // голубой для нового
+        'processing': 'bg-yellow-500',   // желтый для принятого
+        'in_progress': 'bg-orange-500',  // оранжевый для выполняется
+        'completed': 'bg-green-500'      // зеленый для завершенного
+    }
+    
+    return colorMap[orderData.value.status] || 'bg-gray-500'
+})
+
+// Функция для обработки смены статуса
+const handleStatusChange = async () => {
+    if (!currentStatusAction.value || !orderData.value) return
+    
+    loading.value = true
+    try {
+        await handleStatusUpdate(orderData.value.id, currentStatusAction.value.next)
+    } catch (error) {
+        console.error('Ошибка при смене статуса:', error)
+    } finally {
+        loading.value = false
+    }
+}
 
 </script>
 
@@ -11,38 +141,42 @@ console.log(props.ticketId);
             <img src="/icons/back-blue.svg" alt="" class=""> Назад
         </button>
         <div class="flex justify-between items-center border-b-2 border-[#EEEEEE] pb-[16px] mt-[16px]">
-            <h3 class="text-2xl font-medium">Доставка покойного</h3>
-            <p class="text-sm">Дата и время заявки: 07.06.2023, 10:42</p>
+            <h3 class="text-2xl font-medium">{{ orderData?.items[0].product.name }}</h3>
+            <p class="text-sm">Дата и время заявки: {{ new Date(orderData?.created_at).toLocaleString() }}</p>
         </div>
         <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
             <div class="min-w-[580px] font-medium flex flex-col gap-[10px]">
-                <div class="flex text-base"><p class="min-w-[150px]">Кладбище:</p><p>Северное кладбище</p></div>
-                <div class="flex text-base"><p class="min-w-[150px]">Сектор</p><p>11</p></div>
+                <div class="flex text-base"><p class="min-w-[150px]">Кладбище:</p><p>Дружба</p></div>
+                <!-- <div class="flex text-base"><p class="min-w-[150px]">Сектор</p><p>11</p></div> -->
                 <div class="flex text-base"><p class="min-w-[150px]">Место:</p><p>233</p></div>
-                <div class="flex text-base"><p class="min-w-[150px]">Заказчик:</p><p>Беляков Макар Максимович</p></div>
+                <!-- <div class="flex text-base"><p class="min-w-[150px]">Заказчик:</p><p>Беляков Макар Максимович</p></div> -->
             </div>
             <button class="rounded-md w-[140px] h-[30px] text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]">Данные участка</button>
         </div>
         <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
             <div class="font-medium flex flex-col gap-[10px]">
-                <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Дата похорон:</p><p>12.09.2024, 10:00</p></div>
-                <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Заказчик:</p><p>Бақадыр Нұрбике Бекзатқызыg</p></div>
-                <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Контакты заказчика:</p><p>+7 777 777 77 77</p></div>
-                <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Адрес прибытия:</p><p>Улица Бейсебаева, 148, Алматы, д.10, кв 5</p></div>
-                <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Время прибытия:</p><p>09:00</p></div>
+                <!-- <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Дата похорон:</p><p>12.09.2024, 10:00</p></div> -->
+                <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Заказчик:</p><p>{{ '-'}}</p></div>
+                <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Контакты заказчика:</p><p>+{{ orderData?.user_phone }}</p></div>
+                <!-- <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Адрес прибытия:</p><p>Улица Бейсебаева, 148, Алматы, д.10, кв 5</p></div> -->
+                <!-- <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Время прибытия:</p><p>09:00</p></div> -->
             </div>
         </div>
         <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
             <div class="font-medium flex flex-col gap-[10px]">
                 <div class="flex text-base">
                     <p class="min-w-[150px] max-w-[150px]">Cтатус:</p>
-                    <p class="p-[4px] rounded-md bg-[#339B38] text-sm font-semibold text-white mr-4">Оплачено</p>
-                    <p class="p-[4px] rounded-md bg-[#DC6E29] text-sm font-semibold text-white mr-4">Ожидает</p>
+                    <p :class="`p-[4px] rounded-md ${statusColor} text-sm font-semibold text-white mr-4`">{{ currentStatus }}</p>
                 </div>
             </div>
         </div>
-        <button class="block w-[225px] h-[51px] rounded-md bg-[#38949B] text-white text-base font-semibold ml-auto mt-[16px]">
-            Подтвердить исполнение
+        <button 
+            v-if="currentStatusAction && orderData.status !== 'completed'" 
+            @click="handleStatusChange"
+            :disabled="loading"
+            class="block w-[225px] h-[51px] rounded-md bg-[#38949B] text-white text-base font-semibold ml-auto mt-[16px] disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            {{ loading ? 'Обновление...' : currentStatusAction.title }}
         </button>
     </div>
 </template>

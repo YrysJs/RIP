@@ -1,5 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
+import AppHeader from '~/components/layout/AppHeader.vue';
+import AppFooter from '~/components/layout/AppFooter.vue';
 
 const router = useRouter()
 
@@ -9,6 +11,7 @@ function goBack() {
 </script>
 
 <template>
+    <AppHeader type="client" />
     <div class="container py-[80px]">
         <button class="flex gap-[15px] items-center text-sm font-semibold" @click="goBack">
             <img src="/icons/back-icon-blue.svg" alt=""> Назад
@@ -61,6 +64,7 @@ function goBack() {
             </div>
         </div>
     </div>
+    <AppFooter />
 </template>
 
 <style lang="css" scoped>

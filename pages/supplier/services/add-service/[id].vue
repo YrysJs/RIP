@@ -175,10 +175,10 @@ async function loadProduct() {
       form.service_time = product.value.service_time || '1 день'
       
       // Загружаем существующие изображения
-      if (product.value.images && Array.isArray(product.value.images)) {
-        existingPhotos.value = product.value.images.map(img => ({
-          url: img.url || img,
-          id: img.id || null
+      if (product.value.image_urls && Array.isArray(product.value.image_urls)) {
+        existingPhotos.value = product.value.image_urls.map((url, index) => ({
+          url: url,
+          id: index
         }))
       }
     }

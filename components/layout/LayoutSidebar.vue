@@ -54,7 +54,7 @@ const supplierMenu = [
     },
     {
         title: "Уведомления",
-        path: "/9",
+        path: "/supplier/notifications",
         childs: []
     },
     {
