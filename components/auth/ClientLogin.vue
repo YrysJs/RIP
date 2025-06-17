@@ -1,5 +1,5 @@
 <script setup>
-import { getOtp, checkOtp, signupClient, getUserData } from '~/services/login/index.js'
+import { getOtp, checkOtp, signupClient, getUserData, signupClientFcb } from '~/services/login/index.js'
 import Cookies from 'js-cookie';
 const emit = defineEmits()
 const router = useRouter()
@@ -11,31 +11,51 @@ const iin = ref('')
 const check = ref(false)
 const step = ref(0)
 const user = ref({})
-const temp = ref('')
+const isFcb = ref(true)
+const name = ref('')
+const surname = ref('')
+const patronymic = ref('')
 
 function close() {
     emit('close')
 }
 
 watch(iin, (newValue) => {
-  temp.value = newValue
-  if(newValue.length) getUserData({iin: newValue}).then((res) => {
+  if(newValue.length === 12) getUserData({iin: newValue}).then((res) => {
     user.value = res
+  }).catch(error => {
+    console.log(error?.response?.data?.message)
+    isFcb.value = false
   })
 })
 
 async function run () {
   try {
-    const response = await signupClient({
-      otpRequest: {
-        id: loginId.value,
-        code: code.value
-      },
-      iin: iin.value,
-      requestId: '1'
-    })
+    let response
+    if (isFcb.value) {
+      response = await signupClientFcb({
+        otpRequest: {
+          id: loginId.value,
+          code: code.value
+        },
+        iin: iin.value,
+      })
+    }
+    else {
+      response = await signupClient({
+        otpRequest: {
+          id: loginId.value,
+          code: code.value
+        },
+        iin: iin.value,
+        name: name.value,
+        surname: surname.value,
+        patronymic: patronymic.value,
+      })
+    }
     Cookies.set('token', response.data.token);
     Cookies.set('role', 'client');
+    await router.push('/client/tickets/active')
   } catch (error) {
     console.error('Ошибка при логине:', error)
 
@@ -47,7 +67,7 @@ async function run () {
     }
   } finally {
     console.log('login')
-    router.push('/client/tickets/active')
+
   }
 }
 
@@ -63,9 +83,6 @@ const login = async () => {
   try {
     const response =  await getOtp({phone: extractDigits(phone_number.value)})
     loginId.value = response.data
-  } catch (error) {
-    console.error('Ошибка при логине:', error)
-  } finally {
     step.value++
     fakeTimer.value = 60
 
@@ -81,6 +98,8 @@ const login = async () => {
         interval = null
       }
     }, 1000)
+  } catch (error) {
+    console.error('Ошибка при логине:', error)
   }
 }
 
@@ -92,6 +111,7 @@ const otpCheck = async () => {
     })
     Cookies.set('token', response.data.token);
     Cookies.set('role', 'client');
+    await router.push('/client/tickets/active')
   } catch (error) {
     console.error('Ошибка при логине:', error)
 
@@ -116,9 +136,6 @@ const otpCheck = async () => {
 <template>
     <div class="modal absolute min-w-full min-h-[100vh] flex justify-center items-center z-50">
         <div class="bg-white rounded-md max-w-[500px] w-full p-[24px] relative">
-          asds
-          {{temp}}
-          {{user.value}}
             <button class="absolute right-[24px] top-[24px]" @click="close">&#10005;</button>
             <div v-if="step == 0" class="flex flex-col">
                 <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
@@ -161,10 +178,18 @@ const otpCheck = async () => {
                     <p class="text-sm font-roboto text-[#222222]">ИИН</p>
                     <input v-model="iin" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ИИН">
                 </div>
-                <div class="mt-[24px] mb-[24px]">
-                    <p class="text-sm font-roboto text-[#222222]">ФИО</p>
-                    <input v-model="full_name" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
+                <div class="mt-[24px]">
+                    <p class="text-sm font-roboto text-[#222222]">Имя</p>
+                    <input v-model="name" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
                 </div>
+              <div class="mt-[24px]">
+                <p class="text-sm font-roboto text-[#222222]">Фамилия</p>
+                <input v-model="surname" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
+              </div>
+              <div class="mt-[24px] mb-[24px]">
+                <p class="text-sm font-roboto text-[#222222]">Отчество</p>
+                <input v-model="patronymic" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
+              </div>
                 <div class="flex gap-[10px] items-center mb-[24px]">
                     <input v-model="check" type="checkbox"> 
                     <p class="font-roboto text-sm text-[#939393]">

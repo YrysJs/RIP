@@ -4,7 +4,7 @@ function getBurialRequests(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8092/api/v1/burial-requests',
+        url: 'http://91.147.92.97:8092/api/v1/burial-requests',
         params,
     })
 }
@@ -13,7 +13,7 @@ function getBurialRequestById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://194.32.140.209:8092/api/v1/burial-requests/${id}`,
+        url: `http://91.147.92.97:8092/api/v1/burial-requests/${id}`,
     })
 }
 
@@ -21,7 +21,7 @@ function getBurialRequestStatus(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PATCH',
-        url: `http://194.32.140.209:8092/api/v1/burial-requests/${data.id}/status`,
+        url: `http://91.147.92.97:8092/api/v1/burial-requests/${data.id}/status`,
         data: {
             status: data.status,
             comment: data.comment,

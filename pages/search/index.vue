@@ -132,14 +132,6 @@ const onSubmit = async () => {
 </template>
 
 <style scoped>
-.input {
-  @apply w-full border border-gray-300 rounded-lg px-4 py-2;
-}
-
-.textarea {
-  @apply resize-none;
-}
-
 .btn-back {
   height: 40px;
   padding: 12px 16px;
