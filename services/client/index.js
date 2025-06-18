@@ -1,5 +1,22 @@
 import { useNuxtApp } from '#app'
 
+function getAppeals(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://91.147.92.97:8081/rip-government/v1/appeal',
+        params,
+    })
+}
+
+function createAppeal(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PUT',
+        url: 'http://91.147.92.97:8081/rip-government/v1/appeal',
+        data,
+    })
+}
 function processCardPayment(data) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -327,5 +344,7 @@ export {
     getMemorials,
     createMemorial,
     getMemorialById,
-    searchDeceased
+    searchDeceased,
+    getAppeals,
+    createAppeal
 }

@@ -34,7 +34,7 @@ const supplierMenu = [
     },
     {
         title: "Обращение в Акимат",
-        path: "/client/tickets/active",
+        path: "/client/gover+ment/requests",
         count: 0,
         childs: []
     },
