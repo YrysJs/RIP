@@ -50,7 +50,7 @@ const router = useRouter();
 
 const closeSuccessModal = () => {
   showSuccessModal.value = false
-  navigateTo('/admin/cemetery')
+  router.push('/admin/cemetery')
 }
 
 const finishDraw = (cords) => {
@@ -73,12 +73,12 @@ const create = async () => {
 <template>
   <NuxtLayout name="form">
     <div class="flex items-center bg-white p-5 rounded-2xl mb-4">
-      <button class="btn btn-back mr-4" @click="router.push('/manager/cemetery')">
+      <button class="btn btn-back mr-4" @click="router.push('/admin/cemetery')">
         <img class="w-4 h-4 mr-[10px]" src="/icons/arrow-left-primary.svg" alt="">
         Назад
       </button>
 
-      <h1 class="text-[32px] font-medium">Редактирование кладбища</h1>
+      <h1 class="text-[32px] font-medium">Создание кладбища</h1>
     </div>
 
 

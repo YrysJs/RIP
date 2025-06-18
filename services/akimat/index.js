@@ -10,6 +10,16 @@ function getRequests(params) {
     })
 }
 
+function getAppeals(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://91.147.92.97:8081/rip-government/v1/appeal',
+        params,
+    })
+}
+
+
 function getRequestsStats(params) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -100,4 +110,5 @@ export {
     getStatuses,
     getComments,
     exportReport,
+    getAppeals
 }

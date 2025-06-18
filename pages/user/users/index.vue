@@ -3,7 +3,7 @@
     <div class="w-full bg-white rounded-[16px] p-[20px] mt-[20px]">
       <div class="flex justify-between items-center mb-[16px]">
         <h2 class="text-2xl font-semibold">Пользователи</h2>
-        <button class="invite-btn">
+        <button class="invite-btn" @click="isCreateModal = true">
           <img src="/icons/plus.svg" alt="Пригласить" class="w-4 h-4 mr-2" />
           Пригласить
         </button>
@@ -39,10 +39,27 @@
         </div>
       </div>
     </div>
+    <Teleport to="body">
+      <AkimatSignUp v-if="isCreateModal" @finish="createUser" @close="isCreateModal = false" />
+      <SuccessModal
+          v-if="showSuccessModal"
+          title="Приглашение отправлено!"
+          @close="closeSuccessModal"
+      />
+    </Teleport>
   </NuxtLayout>
 </template>
 
 <script setup>
+import AkimatSignUp from "~/components/auth/AkimatSignUp.vue";
+import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
+import { getUsersByRole } from '~/services/login'
+import {ref} from "vue";
+
+const isCreateModal = ref(false)
+const showSuccessModal = ref(false)
+const temp = ref([])
+
 const users = [
   { id: 1, role: 'Менеджер', fullName: 'Бақадыр Нурбике Бекзатқызығ', status: 'active' },
   { id: 2, role: 'Менеджер', fullName: 'Айнұр Серікбай Арманқызы', status: 'pending' },
@@ -58,6 +75,28 @@ const statusText = (status) => {
   if (status === 'blocked') return 'Заблокирован';
   return '';
 };
+
+const createUser = () => {
+  isCreateModal.value = false
+  showSuccessModal.value = true
+}
+
+const closeSuccessModal = () => {
+  showSuccessModal.value = false
+}
+onMounted((async () => {
+  try {
+    const response = await getUsersByRole({
+      roleIds: '6,7'
+    })
+    temp.value = response.data
+  } catch (error) {
+    console.error('Ошибка при получении пользователей:', error)
+  } finally {
+    console.log('finally')
+  }
+}))
+
 </script>
 
 <style scoped>

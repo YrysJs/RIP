@@ -1,12 +1,8 @@
 <script setup>
 import { signupGov } from '~/services/login/index.js'
-import Cookies from 'js-cookie';
-const emit = defineEmits(['close'])
-const router = useRouter()
+const emit = defineEmits(['close', 'finish'])
 
 const phone_number = ref('')
-const loginId = ref('')
-const code = ref('')
 const iin = ref('')
 const name = ref('')
 const surname = ref('')
@@ -18,19 +14,14 @@ function close() {
 
 async function run () {
   try {
-    const response = await signupGov({
-        otpRequest: {
-          id: loginId.value,
-          code: code.value
-        },
+    await signupGov({
+        phone: extractDigits(phone_number.value),
         iin: iin.value,
         name: name.value,
         surname: surname.value,
         patronymic: patronymic.value,
       })
-    Cookies.set('token', response.data.token);
-    Cookies.set('role', 'client');
-    await router.push('/client/tickets/active')
+    emit('finish')
   } catch (error) {
     console.error('Ошибка при логине:', error)
 
@@ -66,7 +57,7 @@ function extractDigits(phone) {
           <p class="text-sm font-roboto text-[#222222]">Фамилия</p>
           <input v-model="surname" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
         </div>
-        <div class="mt-[24px] mb-[24px]">
+        <div class="mt-[24px]">
           <p class="text-sm font-roboto text-[#222222]">Отчество</p>
           <input v-model="patronymic" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
         </div>
@@ -74,9 +65,9 @@ function extractDigits(phone) {
           <p class="text-sm font-roboto text-[#222222]">ИИН</p>
           <input v-model="iin" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ИИН">
         </div>
-        <div class="mt-[24px]">
+        <div class="mt-[24px] mb-[24px]">
           <p class="text-sm font-roboto text-[#222222]">Телефон</p>
-          <input v-model="phone_number" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите номер телефона">
+          <input v-model="phone_number" v-mask="'+7 (###) ###-##-##'" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите номер телефона">
         </div>
         <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': iin.length }" @click="run">Отправить</button>
       </div>

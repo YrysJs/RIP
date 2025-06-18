@@ -1,7 +1,7 @@
 <script setup>
 
 import FormMap from "~/components/map/FormMap.vue";
-import { CreateCemetery } from '~/services/admin'
+import { UpdateCemetery } from '~/services/admin'
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import {ref} from "vue";
 import {getCemeteryById} from "~/services/cemetery";
@@ -52,7 +52,7 @@ const router = useRouter();
 
 const closeSuccessModal = () => {
   showSuccessModal.value = false
-  navigateTo('/admin/cemetery')
+  router.push('/admin/cemetery')
 }
 
 const finishDraw = (cords) => {
@@ -62,7 +62,10 @@ const finishDraw = (cords) => {
 
 const create = async () => {
   try {
-    const res = await CreateCemetery(form)
+    const res = await UpdateCemetery({
+      id: route.params.id,
+      input: form
+    })
     console.log(res)
   }
   catch (err) {
@@ -100,7 +103,7 @@ onMounted(async () => {
 <template>
   <NuxtLayout name="form">
     <div class="flex items-center bg-white p-5 rounded-2xl mb-4">
-      <button class="btn btn-back mr-4" @click="router.push('/manager/cemetery')">
+      <button class="btn btn-back mr-4" @click="router.push('/admin/cemetery')">
         <img class="w-4 h-4 mr-[10px]" src="/icons/arrow-left-primary.svg" alt="">
         Назад
       </button>

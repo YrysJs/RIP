@@ -93,7 +93,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import  { getRequests, getTypes, exportReport, getStatuses } from '@/services/akimat'
+import  { getRequests, getTypes, exportReport, getStatuses, getAppeals } from '@/services/akimat'
 
 const activeTab = ref('relocation');
 
@@ -107,6 +107,7 @@ onMounted(() => {
   getTypes()
   getStatuses()
   exportReport()
+  getAppeals()
 })
 
 const requests = [
