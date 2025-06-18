@@ -1,23 +1,71 @@
-<script setup lang="ts">
+<script setup>
 
 import FormMap from "~/components/map/FormMap.vue";
+import { CreateCemetery } from '~/services/admin'
+import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
+import {ref} from "vue";
+
+const showSuccessModal = ref(false)
+
+const cities = [
+  'Алматы',
+  'Нур-Султан',
+  'Шымкент',
+  'Караганда',
+  'Тараз',
+  'Павлодар',
+  'Усть-Каменогорск',
+  'Семей',
+  'Актобе',
+  'Костанай',
+  'Кызылорда',
+  'Талдыкорган',
+  'Тараз',
+  'Павлодар',
+  'Усть-Каменогорск',
+  'Семей',
+  'Актобе',
+  'Костанай',
+  'Кызылорда'
+]
+
 const form = reactive({
-  title: 'Северное кладбище',
+  name: 'Северное кладбище',
   description: 'Просторная и ухоженная, разделена на секции по типу захоронений: семейные, одиночные, мемориальные участки и колумбарий.',
-  address: 'Северное кладбище',
+  street_name: 'Северное кладбище',
   religion: 'all',
-  iin: 'Северное кладбище',
-  firstname: 'Северное кладбище',
-  middle: 'Северное кладбище',
-  lastname: 'Северное кладбище',
-  phone: 'Северное кладбище',
-  status: true
+  phone: '',
+  status: 'active',
+  city: '',
+  country: 'Казахстан',
+  polygon_data: {
+    color: '',
+    coordinates: []
+  },
+  location_coords: [],
+  capacity: 0
 });
 
 const router = useRouter();
 
-const testLog = (msg) => {
-  alert(msg);
+const closeSuccessModal = () => {
+  showSuccessModal.value = false
+  navigateTo('/admin/cemetery')
+}
+
+const finishDraw = (cords) => {
+  form.polygon_data.coordinates = [...cords.points, cords.points[0]]
+  form.location_coords = cords.center
+}
+
+const create = async () => {
+  try {
+    const res = await CreateCemetery(form)
+    console.log(res)
+  }
+  catch (err) {
+    console.log(err)
+  }
 }
 
 </script>
@@ -33,15 +81,13 @@ const testLog = (msg) => {
       <h1 class="text-[32px] font-medium">Редактирование кладбища</h1>
     </div>
 
-    <FormMap @complete="testLog" />
-
 
     <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
       <h2 class="text-lg font-medium">Данные о кладбище</h2>
 
       <div>
         <label class="block text-sm mb-1">Название</label>
-        <input type="text" v-model="form.title" class="input" />
+        <input type="text" v-model="form.name" class="input" />
       </div>
 
       <div>
@@ -50,8 +96,25 @@ const testLog = (msg) => {
       </div>
 
       <div>
+        <label class="block text-sm mb-1">Телефон</label>
+        <input type="tel" v-mask="'+7 (###) ###-##-##'" v-model="form.phone" class="input" />
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Вместимость</label>
+        <input type="number" v-model="form.capacity" class="input" />
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Город</label>
+        <select v-model="form.city" class="input">
+          <option v-for="city in cities" :key="city" :value="city">{{city}}</option>
+        </select>
+      </div>
+
+      <div>
         <label class="block text-sm mb-1">Адрес кладбища</label>
-        <input type="text" v-model="form.address" class="input" />
+        <input type="text" v-model="form.street_name" class="input" />
       </div>
 
       <div>
@@ -65,47 +128,16 @@ const testLog = (msg) => {
       </div>
     </div>
 
-    <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
-      <h2 class="text-lg font-medium">Менеджер Кладбище</h2>
-
-      <div>
-        <label class="block text-sm mb-1">ИИН</label>
-        <input type="text" v-model="form.iin" class="input" />
-      </div>
-
-      <div>
-        <label class="block text-sm mb-1">Имя</label>
-        <input type="text" v-model="form.firstname" class="input" />
-      </div>
-
-      <div>
-        <label class="block text-sm mb-1">Отчество</label>
-        <input type="text" v-model="form.middle" class="input" />
-      </div>
-
-      <div>
-        <label class="block text-sm mb-1">Фамилия</label>
-        <input type="text" v-model="form.lastname" class="input" />
-      </div>
-
-      <div>
-        <label class="block text-sm mb-1">Телефон</label>
-        <input type="text" v-model="form.phone" class="input" />
-      </div>
-
-      <button class="btn btn-add">
-        Добавить еще менеджера
-      </button>
-    </div>
+    <FormMap @complete="finishDraw" />
 
     <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
       <h2 class="text-lg font-medium">Статус кладбища</h2>
 
       <div class="flex justify-between gap-4">
-        <div class="flex justify-center items-center flex-1 h-12 rounded-lg bg-[#EEEEEE] text-center text-[#939393] font-semibold text-sm cursor-pointer" :class="{'!bg-[#224C4F] text-white': form.status}" @click="form.status=true">
+        <div class="flex justify-center items-center flex-1 h-12 rounded-lg bg-[#EEEEEE] text-center text-[#939393] font-semibold text-sm cursor-pointer" :class="{'!bg-[#224C4F] text-white': form.status === 'active'}" @click="form.status='active'">
           Активен
         </div>
-        <div class="flex justify-center items-center flex-1 h-12 rounded-lg bg-[#EEEEEE] text-center text-[#939393] font-semibold text-sm cursor-pointer" :class="{'!bg-[#224C4F] text-white': !form.status}" @click="form.status=false">
+        <div class="flex justify-center items-center flex-1 h-12 rounded-lg bg-[#EEEEEE] text-center text-[#939393] font-semibold text-sm cursor-pointer" :class="{'!bg-[#224C4F] text-white': form.status === 'inactive'}" @click="form.status='inactive'">
           Не активен
         </div>
       </div>
@@ -113,13 +145,17 @@ const testLog = (msg) => {
     </div>
 
     <div class="bg-white p-5 rounded-2xl mb-4 flex gap-[10px] justify-end">
-      <button class="btn btn-preview">
-        Предпросмотр
-      </button>
-      <button class="btn btn-submit">
-        Опубликовать
+      <button class="btn btn-submit" @click="create">
+        Создать
       </button>
     </div>
+    <Teleport to="body">
+      <SuccessModal
+          v-if="showSuccessModal"
+          title="Кладбище создано!"
+          @close="closeSuccessModal"
+      />
+    </Teleport>
   </NuxtLayout>
 </template>
 

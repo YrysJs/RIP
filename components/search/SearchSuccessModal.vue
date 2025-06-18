@@ -15,9 +15,9 @@ const handleClose = () => {
         Ваша заявка на поиск захоронения принята в обработку. Наши специалисты изучат предоставленные вами данные и свяжутся с вами, как только будет получена необходимая информация.
       </p>
       <p class="text-sm text-gray-600 italic mb-4">С уважением, администрация.</p>
-      <div class="text-right">
+      <div class="text-right flex justify-center">
         <button
-            @click="close"
+            @click="handleClose"
             class="bg-[#38949B] hover:bg-[#2f7c82] text-white text-sm font-semibold py-1.5 px-4 rounded"
         >
           Закрыть
@@ -30,5 +30,6 @@ const handleClose = () => {
 <style lang="scss" scoped>
 .modal {
   background: #0000005b;
+  top: 0;
 }
 </style>

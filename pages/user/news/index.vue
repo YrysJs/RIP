@@ -72,7 +72,6 @@
         </div>
       </div>
     </div>
-
   </NuxtLayout>
 </template>
 
@@ -101,17 +100,21 @@ const fetchNews = async () => {
   }
 }
 
-
-const toggleStatus = (news) => {
-  updateStatus(news.id, news.newsStatus?.id)
-}
-
-const updateStatus = (id, isActive) => {
+const toggleStatus = async (news) => {
+  const newStatusId = news.newsStatus?.id === 2 ? 1 : 2
   const payload = {
-    newsId: id,
-    newsStatusId: isActive ? 1 : 2
+    newsId: news.id,
+    newsStatusId: newStatusId
   }
-  changeNewsStatus(payload)
+
+  try {
+    await changeNewsStatus(payload)
+    // локально меняем статус
+    news.newsStatus.id = newStatusId
+    news.newsStatus.nameRu = newStatusId === 1 ? 'Активный' : 'Черновик'
+  } catch (error) {
+    console.error('Ошибка при смене статуса:', error)
+  }
 }
 
 function formatDate(arr) {
@@ -120,12 +123,12 @@ function formatDate(arr) {
   const [year, month, day, hour, minute, second, nanoseconds = 0] = arr;
   const date = new Date(
       year,
-      month - 1, // месяцы в JS начинаются с 0
+      month - 1,
       day,
       hour,
       minute,
       second,
-      Math.floor(nanoseconds / 1_000_000) // наносекунды → миллисекунды
+      Math.floor(nanoseconds / 1_000_000)
   );
 
   const pad = (n) => String(n).padStart(2, '0');
@@ -138,7 +141,6 @@ const goToNews = (news) => {
   router.push('/user/news/' + news.id)
 }
 
-
 watch([categoryId, statusId, sortingType], fetchNews, { immediate: true })
 
 const statusText = (status) => {
@@ -146,9 +148,7 @@ const statusText = (status) => {
   if (status === 2) return 'Черновик';
   return '';
 };
-
 </script>
-
 <style scoped>
 
 .create-btn {

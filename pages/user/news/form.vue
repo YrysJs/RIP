@@ -80,8 +80,7 @@
     <Teleport to="body">
       <SuccessModal
           v-if="showSuccessModal"
-          title="Оплата прошла успешно, заявка на захоронения отправлена!"
-          text="Отслеживайте статус в личном кабинете"
+          title="Новость опубликована!"
           @close="closeSuccessModal"
       />
     </Teleport>

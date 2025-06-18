@@ -258,12 +258,12 @@ function getMemorials(params) {
     })
 }
 
-function searchDeceased(params) {
+function searchDeceased(data) {
     const { $axios } = useNuxtApp()
     return $axios({
-        method: 'GET',
-        url: 'http://91.147.92.97:8092/api/v1/burial-requests',
-        params,
+        method: 'POST',
+        url: 'http://91.147.92.97:8092/api/v1/deceased-search-requests',
+        data,
     })
 }
 

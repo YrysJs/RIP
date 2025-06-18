@@ -91,6 +91,7 @@ const closeModal = () => emit('close')
 
 <style scoped lang="scss">
 .modal {
+  top: 0;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(2px);
 }

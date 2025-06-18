@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { searchDeceased } from '~/services/client'
@@ -9,7 +9,7 @@ const showSuccessModal = ref(false)
 
 const closeSuccessModal = () => {
   showSuccessModal.value = false
-  navigateTo('/')
+  router.push('/')
 }
 
 
@@ -25,24 +25,27 @@ const form = reactive({
   extraInfo: ''
 });
 
-const formatDate = (date: string) => {
+const formatDate = (date) => {
   if (!date) return '';
   const d = new Date(date);
-  return d.toISOString().split('T')[0]; // YYYY-MM-DD
+  return d.toISOString(); // YYYY-MM-DD
 };
+
+function extractDigits(phone) {
+  return phone.replace(/\D/g, '');
+}
 
 const onSubmit = async () => {
   await searchDeceased({
-    name: form.targetFirstName,
-    surname: form.targetLastName,
+    deceased_name: form.targetFirstName,
+    deceased_surname: form.targetLastName,
+    deceased_patronym: form.targetMiddleName,
     birth_date: formatDate(form.birthDate),
     death_date: formatDate(form.deathDate),
-    additional: form.extraInfo,
-    user: {
-      fio: form.fullName,
-      email: form.email,
-      phone: form.phone
-    }
+    additional_info: form.extraInfo,
+    applicant_email: form.email,
+    applicant_phone: extractDigits(form.phone),
+    applicant_name: form.fullName,
   });
   showSuccessModal.value = true
 };
@@ -62,7 +65,7 @@ const onSubmit = async () => {
     <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
       <h2 class="text-lg font-medium">
         Укажите свои данные и контакты
-        <span class="text-red-500 text-sm">Поля обязательно к заполнению</span>
+<!--        <span class="text-red-500 text-sm">Поля обязательно к заполнению</span>-->
       </h2>
 
       <div>
@@ -77,7 +80,7 @@ const onSubmit = async () => {
         </div>
         <div>
           <label class="block text-sm mb-1">Телефон</label>
-          <input type="tel" v-model="form.phone" class="input" placeholder="+7" />
+          <input type="tel" v-mask="'+7 (###) ###-##-##'" v-model="form.phone" class="input" placeholder="+7" />
         </div>
       </div>
     </div>

@@ -19,6 +19,15 @@ function checkOtp(params) {
     })
 }
 
+function signupGov(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PUT',
+        url: 'http://91.147.92.97:8081/v1/gov/signup',
+        data
+    })
+}
+
 function signupClient(data) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -83,5 +92,6 @@ export {
     signupClient,
     signupSupplier,
     getUserData,
-    signupClientFcb
+    signupClientFcb,
+    signupGov
 }
