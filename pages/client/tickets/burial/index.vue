@@ -66,7 +66,7 @@ onMounted(async () => {
                         <button class="block w-[225px] h-[51px] rounded-md bg-[#EEEEEE] text-[#224C4F] text-base font-semibold" @click="$router.push('/client/tickets/burial/add-service')">
                             Добавить услуги и товары
                         </button>
-                        <button class="block w-[225px] h-[51px] rounded-md bg-[#38949B] text-white text-base font-semibold" @click="$router.push('/client/memorial/create')">
+                        <button class="block w-[225px] h-[51px] rounded-md bg-[#38949B] text-white text-base font-semibold" @click="$router.push(`/client/memorial/create?id=${request.id}`)">
                             Создать мемориал
                         </button>
                     </div>
