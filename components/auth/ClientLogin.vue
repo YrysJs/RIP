@@ -204,6 +204,7 @@ const otpCheck = async () => {
 
 <style lang=scss scoped>
 .modal {
+  top: 0;
     background: #0000005b;
 }
 </style>
