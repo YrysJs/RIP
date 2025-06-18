@@ -4,7 +4,7 @@ import Cookies from 'js-cookie'
 
 export default defineNuxtPlugin(() => {
     const api = axios.create({
-        baseURL: 'http://194.32.140.209:8092/'
+        baseURL: 'http://91.147.92.97:8092/'
     })
 
     // Добавляем токен из Cookies перед каждым запросом

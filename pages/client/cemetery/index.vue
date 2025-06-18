@@ -2,6 +2,7 @@
 import {getGraves, getCemeteries} from "~/services/cemetery"
 import Map from '~/components/map/2GisMap.vue'
 import MapSecond from '~/components/map/MapV2.vue'
+import FormMap from "~/components/map/FormMap.vue";
 const polygons = [
   {
     id: 1,
@@ -125,6 +126,10 @@ const polygons = [
   }
 ]
 
+const testLog = (str) => {
+  alert(str)
+}
+
 onMounted(() => {
   console.log('asdas')
   getGraves().then((graves) => {
@@ -142,7 +147,8 @@ onMounted(() => {
 <template>
   <div>
     asdasd
-    <MapSecond :polygons="polygons" />
+<!--    <MapSecond :polygons="polygons" />-->
+    <FormMap @complete="testLog" />
   </div>
 </template>
 

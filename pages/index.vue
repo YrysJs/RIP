@@ -2,6 +2,8 @@
 import MainPageModal from "~/components/layout/modals/MainPageModal.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
 import AppFooter from "~/components/layout/AppFooter.vue";
+import { getNews } from '~/services/akimat'
+import { useNewsStore } from '~/store/news.js'
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 
@@ -9,43 +11,67 @@ const dataId = ref(0)
 const mainPageModalState = ref(false)
 
 const showDetail = (id) => {
-    dataId.value = id
-    mainPageModalState.value = true
+  dataId.value = id
+  mainPageModalState.value = true
 }
 
 const slides = ref([
-    {
-        id: 1,
-        title: 'Всеказахстанская база захоронений',
-        subtitle: 'Найдите захоронения ваших близких удаленно',
-        background: '/images/client/banner.jpg',
-        buttons: [
-            { text: 'Поиск захоронения', action: 'search' },
-            { text: 'Добавить захоронение', action: 'add' }
-        ]
-    },
-    {
-        id: 1,
-        title: 'Всеказахстанская база захоронений',
-        subtitle: 'Найдите захоронения ваших близких удаленно',
-        background: '/images/client/banner.jpg',
-        buttons: [
-            { text: 'Поиск захоронения', action: 'search' },
-            { text: 'Добавить захоронение', action: 'add' }
-        ]
-    },
-    {
-        id: 1,
-        title: 'Всеказахстанская база захоронений',
-        subtitle: 'Найдите захоронения ваших близких удаленно',
-        background: '/images/client/banner.jpg',
-        buttons: [
-            { text: 'Поиск захоронения', action: 'search' },
-            { text: 'Добавить захоронение', action: 'add' }
-        ]
-    }
+  {
+    id: 1,
+    title: 'Всеказахстанская база захоронений',
+    subtitle: 'Найдите захоронения ваших близких удаленно',
+    background: '/images/client/banner.jpg',
+    buttons: [
+      { text: 'Поиск захоронения', action: 'search' },
+      { text: 'Добавить захоронение', action: 'add' }
+    ]
+  },
+  {
+    id: 1,
+    title: 'Всеказахстанская база захоронений',
+    subtitle: 'Найдите захоронения ваших близких удаленно',
+    background: '/images/client/banner.jpg',
+    buttons: [
+      { text: 'Поиск захоронения', action: 'search' },
+      { text: 'Добавить захоронение', action: 'add' }
+    ]
+  },
+  {
+    id: 1,
+    title: 'Всеказахстанская база захоронений',
+    subtitle: 'Найдите захоронения ваших близких удаленно',
+    background: '/images/client/banner.jpg',
+    buttons: [
+      { text: 'Поиск захоронения', action: 'search' },
+      { text: 'Добавить захоронение', action: 'add' }
+    ]
+  }
 ])
 
+const router = useRouter();
+
+const newsList = ref([])
+const newsStore = useNewsStore()
+
+const fetchNews = async () => {
+  try {
+    const response = await getNews({
+      statusId: 1,
+    })
+    newsList.value = response.data
+  } catch (error) {
+    console.error('Ошибка при получении новостей:', error)
+  }
+}
+
+const goToNews = (news) => {
+  newsStore.setSelected(news)
+  router.push('/news/' + news.id)
+}
+
+onMounted(() => {
+  fetchNews()
+})
 </script>
 
 <template>
@@ -79,6 +105,7 @@ const slides = ref([
                                 <button 
                                     v-for="button in slide.buttons" 
                                     :key="button.action"
+                                    @click="router.push('/search')"
                                     class="border-2 border-[#E9EDED] text-white text-base p-[12px] rounded-lg hover:bg-white hover:text-[#224C4F] transition-all duration-300"
                                 >
                                     {{ button.text }}
@@ -181,36 +208,21 @@ const slides = ref([
             <div class="container">
                 <h3 class="text-4xl text-[#224C4F] font-semibold mb-[30px]">Новости</h3>
                 <div class="flex flex-col gap-[30px]">
-                    <nuxt-link to="/news/1" class="flex items-center gap-[20px] bg-white card">
-                        <img class="rounded-lg h-[167px] max-w-[264px] w-full object-cover overflow-hidden" src="/images/client/banner.jpg" alt="">
+                    <div
+                        class="flex items-center gap-[20px] bg-white card cursor-pointer"
+                        v-for="news in newsList"
+                        :key="news.id"
+                        @click="goToNews(news)"
+                    >
+                        <img class="rounded-lg h-[167px] max-w-[264px] w-full object-cover overflow-hidden" :src="news.coverImageUrl" alt="">
                         <div class="flex flex-col gap-[4px] rounded-lg py-[18px]">
-                            <div class="bg-[#224C4F26] text-[#4E4E4E] text-xs py-[2px] px-[6px] w-fit">Перезахоронение</div>
-                            <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Правила захоронения на кладбищах изменили в Казахстане</h3>
+                            <div class="bg-[#224C4F26] text-[#4E4E4E] text-xs py-[2px] px-[6px] w-fit">{{ news.category?.name }}</div>
+                            <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">{{news.title}}</h3>
                             <p class="text-base text-[#224C4F]">
-                                Поправками предусмотрено, что акимат города республиканского значения, столицы, районного (города областного значения) размещает актуальную информацию по занятым и свободным участкам кладбища на официальном интернет-ресурсе местного...
+                              {{ news.content.length > 230 ? news.content.slice(0, 230) + '...' : news.content }}
                             </p>
                         </div>
-                    </nuxt-link>
-                    <nuxt-link to="/news/1" class="flex items-center gap-[20px] bg-white card">
-                        <img class="rounded-lg h-[167px] max-w-[264px] w-full object-cover overflow-hidden" src="/images/client/banner.jpg" alt="">
-                        <div class="flex flex-col gap-[4px] rounded-lg py-[18px]">
-                            <div class="bg-[#224C4F26] text-[#4E4E4E] text-xs py-[2px] px-[6px] w-fit">Перезахоронение</div>
-                            <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Правила захоронения на кладбищах изменили в Казахстане</h3>
-                            <p class="text-base text-[#224C4F]">
-                                Поправками предусмотрено, что акимат города республиканского значения, столицы, районного (города областного значения) размещает актуальную информацию по занятым и свободным участкам кладбища на официальном интернет-ресурсе местного...
-                            </p>
-                        </div>
-                    </nuxt-link>
-                    <nuxt-link to="/news/1" class="flex items-center gap-[20px] bg-white card">
-                        <img class="rounded-lg h-[167px] max-w-[264px] w-full object-cover overflow-hidden" src="/images/client/banner.jpg" alt="">
-                        <div class="flex flex-col gap-[4px] rounded-lg py-[18px]">
-                            <div class="bg-[#224C4F26] text-[#4E4E4E] text-xs py-[2px] px-[6px] w-fit">Перезахоронение</div>
-                            <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Правила захоронения на кладбищах изменили в Казахстане</h3>
-                            <p class="text-base text-[#224C4F]">
-                                Поправками предусмотрено, что акимат города республиканского значения, столицы, районного (города областного значения) размещает актуальную информацию по занятым и свободным участкам кладбища на официальном интернет-ресурсе местного...
-                            </p>
-                        </div>
-                    </nuxt-link>
+                    </div>
                 </div>
             </div>
         </div>

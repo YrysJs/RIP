@@ -20,7 +20,7 @@ const dateFrom = ref('')
 const dateTo = ref('')
 const cemeteryId = ref(null)
 
-const fetchBurials = async (params = { status: 'pending' }) => {
+const fetchBurials = async (params = { show_confirmed_and_paid: true }) => {
   try {
     const response = await getBurialRequests(params)
     burials.value = response.data
@@ -72,7 +72,7 @@ watch(search, (newVal) => {
   if (newVal.length >= 3 || newVal.length === 0) {
     timeout = setTimeout(() => {
       fetchBurials({
-        status: 'pending',
+        show_confirmed_and_paid: true,
         ...(newVal.length >= 3 ? { created_by: newVal } : {}),
         date_from: toIsoDate(dateFrom.value) || undefined,
         date_to: toIsoDate(dateTo.value) || undefined,
@@ -85,7 +85,7 @@ watch(search, (newVal) => {
 // Фильтры: дата с
 watch(dateFrom, () => {
   fetchBurials({
-    status: 'pending',
+    show_confirmed_and_paid: true,
     ...(search.value.length >= 3 ? { created_by: search.value } : {}),
     date_from: toIsoDate(dateFrom.value) || undefined,
     date_to: toIsoDate(dateTo.value) || undefined,
@@ -96,7 +96,7 @@ watch(dateFrom, () => {
 // Фильтры: дата по
 watch(dateTo, () => {
   fetchBurials({
-    status: 'pending',
+    show_confirmed_and_paid: true,
     ...(search.value.length >= 3 ? { created_by: search.value } : {}),
     date_from: toIsoDate(dateFrom.value) || undefined,
     date_to: toIsoDate(dateTo.value) || undefined,
@@ -107,7 +107,7 @@ watch(dateTo, () => {
 // Фильтры: кладбище
 watch(cemeteryId, () => {
   fetchBurials({
-    status: 'pending',
+    show_confirmed_and_paid: true,
     ...(search.value.length >= 3 ? { created_by: search.value } : {}),
     date_from: toIsoDate(dateFrom.value) || undefined,
     date_to: toIsoDate(dateTo.value) || undefined,

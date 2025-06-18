@@ -4,7 +4,7 @@ function getBurialRequests(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8092/api/v1/burial-requests',
+        url: 'http://91.147.92.97:8092/api/v1/burial-requests',
         params,
     })
 }
@@ -13,7 +13,7 @@ function getSalesStats() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8090/api/v1/user/supplier/sales/stats',
+        url: 'http://91.147.92.97:8090/api/v1/user/supplier/sales/stats',
     })
 }
 
@@ -21,7 +21,7 @@ function getOrders(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8090/api/v1/user/supplier/orders',
+        url: 'http://91.147.92.97:8090/api/v1/user/supplier/orders',
         params,
     })
 }
@@ -30,7 +30,7 @@ function getProducts(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8090/api/v1/user/supplier/products',
+        url: 'http://91.147.92.97:8090/api/v1/user/supplier/products',
         params,
     })
 }
@@ -39,7 +39,7 @@ function getAllProducts(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8090/api/v1/products',
+        url: 'http://91.147.92.97:8090/api/v1/products',
         params,
     })
 }
@@ -48,7 +48,7 @@ function getCategories() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8090/api/v1/categories',
+        url: 'http://91.147.92.97:8090/api/v1/categories',
     })
 }
 
@@ -61,7 +61,7 @@ function getProductById(id) {
     
     return $axios({
         method: 'GET',
-        url: `http://194.32.140.209:8090/api/v1/products/${id}`,
+        url: `http://91.147.92.97:8090/api/v1/products/${id}`,
     })
 }
 
@@ -74,7 +74,7 @@ function updateProductStatus(id, status) {
     
     return $axios({
         method: 'PATCH',
-        url: `http://194.32.140.209:8090/api/v1/products/${id}/status`,
+        url: `http://91.147.92.97:8090/api/v1/products/${id}/status`,
         data: { status },
     })
 }
@@ -83,7 +83,7 @@ function getReviews() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.209:8090/api/v1/user/supplier/reviews',
+        url: 'http://91.147.92.97:8090/api/v1/user/supplier/reviews',
     })
 }
 
@@ -96,7 +96,7 @@ function getOrderById(id) {
     
     return $axios({
         method: 'GET',
-        url: `http://194.32.140.209:8090/api/v1/orders/${id}`,
+        url: `http://91.147.92.97:8090/api/v1/orders/${id}`,
     })
 }
 
@@ -113,7 +113,7 @@ function updateOrderStatus(id, status) {
     
     return $axios({
         method: 'PATCH',
-        url: `http://194.32.140.209:8090/api/v1/orders/${id}/status`,
+        url: `http://91.147.92.97:8090/api/v1/orders/${id}/status`,
         data: { status },
     })
 }
@@ -145,7 +145,7 @@ function createProduct(data) {
     
     return $axios({
         method: 'POST',
-        url: 'http://194.32.140.209:8090/api/v1/products',
+        url: 'http://91.147.92.97:8090/api/v1/products',
         data: formData,
     })
 }
@@ -181,7 +181,7 @@ function updateProduct(id, data) {
     
     return $axios({
         method: 'PUT',
-        url: `http://194.32.140.209:8090/api/v1/products/${id}`,
+        url: `http://91.147.92.97:8090/api/v1/products/${id}`,
         data: formData,
     })
 }
