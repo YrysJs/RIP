@@ -54,6 +54,7 @@
 import AkimatSignUp from "~/components/auth/AkimatSignUp.vue";
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import { getUsersByRole } from '~/services/login'
+import { getAkimats } from '~/services/admin'
 import {ref} from "vue";
 
 const isCreateModal = ref(false)
@@ -87,8 +88,9 @@ const closeSuccessModal = () => {
 onMounted((async () => {
   try {
     const response = await getUsersByRole({
-      roleIds: '6,7'
+      roleIds: '7,8'
     })
+    getAkimats()
     temp.value = response.data
   } catch (error) {
     console.error('Ошибка при получении пользователей:', error)

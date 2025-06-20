@@ -37,6 +37,14 @@ function CreateAkimat(data) {
     })
 }
 
+function getAkimats() {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://91.147.92.97:8081/rip-government/v1/akimats',
+    })
+}
+
 function importXlsx(data) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -51,5 +59,6 @@ export {
     CreateCemetery,
     importXlsx,
     UpdateCemetery,
+    getAkimats,
     CreateAkimat
 }

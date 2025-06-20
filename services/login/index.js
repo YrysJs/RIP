@@ -24,7 +24,8 @@ function signupGov(data) {
     return $axios({
         method: 'PUT',
         url: 'http://91.147.92.97:8081/v1/gov/signup',
-        data
+        data: data.data,
+        params: data.params
     })
 }
 

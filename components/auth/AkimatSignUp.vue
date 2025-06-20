@@ -6,6 +6,7 @@ const phone_number = ref('')
 const iin = ref('')
 const name = ref('')
 const surname = ref('')
+const roleId = ref(0)
 const patronymic = ref('')
 
 function close() {
@@ -15,12 +16,17 @@ function close() {
 async function run () {
   try {
     await signupGov({
+      data: {
         phone: extractDigits(phone_number.value),
         iin: iin.value,
         name: name.value,
         surname: surname.value,
         patronymic: patronymic.value,
-      })
+      },
+      params: {
+        roleId: roleId.value
+      }
+    })
     emit('finish')
   } catch (error) {
     console.error('Ошибка при логине:', error)
@@ -65,9 +71,16 @@ function extractDigits(phone) {
           <p class="text-sm font-roboto text-[#222222]">ИИН</p>
           <input v-model="iin" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ИИН">
         </div>
-        <div class="mt-[24px] mb-[24px]">
+        <div class="mt-[24px]">
           <p class="text-sm font-roboto text-[#222222]">Телефон</p>
           <input v-model="phone_number" v-mask="'+7 (###) ###-##-##'" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите номер телефона">
+        </div>
+        <div class="mt-[24px] mb-[24px]">
+          <p class="text-sm font-roboto text-[#222222]">Роль</p>
+          <select v-model="roleId" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px] pr-[16px] select" placeholder="Роль">
+            <option :value="8">Менеджер</option>
+            <option :value="7">Админ</option>
+          </select>
         </div>
         <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': iin.length }" @click="run">Отправить</button>
       </div>

@@ -42,6 +42,10 @@ const form = reactive({
   }
 });
 
+function extractDigits(phone) {
+  return phone.replace(/\D/g, '');
+}
+
 const router = useRouter();
 
 const closeSuccessModal = () => {
@@ -50,7 +54,20 @@ const closeSuccessModal = () => {
 
 const create = async () => {
   try {
-    const res = await CreateAkimat(form)
+    const res = await CreateAkimat({
+      address: form.address,
+      phone: extractDigits(form.phone),
+      mapUrl: form.mapUrl,
+      name: form.name,
+      cityId: form.cityId,
+      admin: {
+        iin: form.admin.iin,
+        name: form.admin.name,
+        surname: form.admin.surname,
+        patronymic: form.admin.patronymic,
+        phone: extractDigits(form.admin.phone)
+      }
+    })
     console.log(res)
   }
   catch (err) {
@@ -92,8 +109,8 @@ const create = async () => {
 
       <div>
         <label class="block text-sm mb-1">Город</label>
-        <select v-model="form.city" class="input">
-          <option v-for="(city, index) in cities" :key="city" :value="index">{{city}}</option>
+        <select v-model="form.cityId" class="input select">
+          <option v-for="(city, index) in cities" :key="city" :value="index + 1">{{city}}</option>
         </select>
       </div>
 
