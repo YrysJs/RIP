@@ -194,6 +194,7 @@ const submitMemorial = async () => {
                 <div class="photo-upload-container">
                     <!-- Область загрузки фото -->
                     <div 
+                        v-if="imagePreviews.length === 0"
                         class="upload-area"
                         @click="$refs.fileInput.click()"
                     >
@@ -204,8 +205,8 @@ const submitMemorial = async () => {
                         </div>
                     </div>
                     
-                    <!-- Галерея превью изображений -->
-                    <div v-if="imagePreviews.length > 0" class="images-gallery">
+                    <!-- Галерея превью изображений внутри блока загрузки -->
+                    <div v-else class="upload-area-with-images">
                         <div class="gallery-header">
                             <h4>Загруженные фото ({{ imagePreviews.length }})</h4>
                             <button 
@@ -234,6 +235,14 @@ const submitMemorial = async () => {
                                 <div class="image-number">{{ index + 1 }}</div>
                             </div>
                         </div>
+                        
+                        <!-- Кнопка добавления еще фото -->
+                        <button 
+                            @click="$refs.fileInput.click()"
+                            class="add-more-btn"
+                        >
+                            + Добавить еще фото
+                        </button>
                     </div>
                     
                     <!-- Скрытый input для файлов -->
@@ -499,8 +508,33 @@ const submitMemorial = async () => {
     color: #6B7280;
 }
 
-.images-gallery {
-    margin-top: 20px;
+.upload-area-with-images {
+    width: 100%;
+    min-height: 225px;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #F9FAFB;
+    margin-bottom: 20px;
+}
+
+.add-more-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #F3F4F6;
+    border: 2px dashed #D1D5DB;
+    border-radius: 8px;
+    color: #6B7280;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 16px;
+
+    &:hover {
+        background-color: #E5E7EB;
+        border-color: #9CA3AF;
+        color: #374151;
+    }
 }
 
 .gallery-header {

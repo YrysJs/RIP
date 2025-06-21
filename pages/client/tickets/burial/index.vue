@@ -1,9 +1,28 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getBurialRequests } from '~/services/client'
+import ShareCoordModal from '~/components/layout/modals/ShareCoordModal.vue';
+import GraveDataModal from '~/components/layout/modals/GraveDetailModal.vue';
+import { getGraveById } from '~/services/client';
+import { getCemeteryById } from '~/services/cemetery';
 
 const burialRequests = ref([])
-const loading = ref(true)
+const loading = ref(true);
+const shareCoordModalState = ref(false)
+const graveDataModalState = ref(false)
+const graveData = ref(null)
+const cemeteryData = ref(null)
+
+
+const fetchGraveData = async (id) => {
+  const response = await getGraveById(id)
+  graveData.value = response.data
+}
+
+const fetchCemeteryData = async (id) => {
+  const response = await getCemeteryById(id)
+  cemeteryData.value = response.data
+}
 
 onMounted(async () => {
   try {
@@ -15,6 +34,24 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+
+const graveLat = ref(null)
+const graveLng = ref(null)
+
+const shareGraveData = async () => {
+  await fetchGraveData(burialRequests.value[0].grave_id)
+  shareCoordModalState.value = true
+
+  graveLat.value = graveData.value.polygon_data.coordinates[0][1]
+  graveLng.value = graveData.value.polygon_data.coordinates[0][0]
+}
+
+
+const showGraveDataModal = async (id) => {
+  await fetchGraveData(id)
+  graveDataModalState.value = true
+}
 </script>
 
 <template>
@@ -34,7 +71,7 @@ onMounted(async () => {
                         <div class="flex text-base"><p class="min-w-[150px]">Сектор</p><p>{{ request.sector_number }}</p></div>
                         <div class="flex text-base"><p class="min-w-[150px]">Место:</p><p>{{ request.grave_id }}</p></div>
                     </div>
-                    <button class="rounded-md w-[140px] h-[30px] text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]">Данные участка</button>
+                    <button class="rounded-md w-[140px] h-[30px] text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]" @click="showGraveDataModal(request.grave_id)">Данные участка</button>
                 </div>
                 <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
                     <div class="font-medium flex flex-col gap-[10px]">
@@ -59,7 +96,7 @@ onMounted(async () => {
                     </div>
                 </div>
                 <div class="flex justify-between mt-[16px]">
-                    <button class="h-[51px] text-[#222222] text-base font-semibold flex items-center gap-[10px]">
+                    <button class="h-[51px] text-[#222222] text-base font-semibold flex items-center gap-[10px]" @click="shareGraveData">
                         <img src="/icons/share.svg" alt=""> поделиться координатами
                     </button>
                     <div class="flex gap-[10px]">
@@ -74,6 +111,8 @@ onMounted(async () => {
             </div>
         </template>
     </NuxtLayout>
+    <ShareCoordModal :visible="shareCoordModalState" :lat="graveLat" :lng="graveLng" @close="shareCoordModalState = false" />
+    <GraveDataModal :visible="graveDataModalState" :grave="graveData" :cemeteryData="cemeteryData" @close="graveDataModalState = false" />
 </template>
 
 <style lang=scss scoped>

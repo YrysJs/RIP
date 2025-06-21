@@ -18,7 +18,7 @@ const closeModal = () => {
     <div class="bg-white rounded-lg max-w-[800px] w-full max-h-[90vh] overflow-y-auto m-4">
       <!-- Header -->
       <div class="flex justify-between items-center pt-6 px-6 pb-0 border-b">
-        <h2 class="text-2xl font-bold">{{ booking?.cemetery_name }}</h2>
+        <h2 class="text-2xl font-bold">{{ grave.cemetery_name }}</h2>
         <button @click="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">
           &times;
         </button>

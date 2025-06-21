@@ -226,6 +226,20 @@ onMounted(() => {
                 </div>
             </div>
         </div>
+        <div class="bg-[#F4F4F4] py-[70px]">
+            <div class="max-w-[976px] w-full mx-auto bg-[#fff] py-[70px] px-[100px] rounded-2xl flex justify-between items-center gap-[50px]">
+                <div>
+                    <h3 class="text-[40px] text-[#224C4F] font-semibold leading-[initial]">
+                        У вас есть вопросы? Свяжитесь с нами
+                    </h3>
+                    <a href="mailto:info@rip-service.kz" class="text-[36px] text-[#9C9C9C]">info@rip-service.kz</a>
+                </div>
+                <div class="flex flex-col gap-[10px] min-w-[200px]">
+                    <a href="tel:+77077777777" class="text-[20px] text-[#9C9C9C]">+7 (707) 777-77-77</a>
+                    <a href="tel:+77077777777" class="text-[20px] text-[#9C9C9C]">+7 (707) 777-77-77</a>
+                </div>
+            </div>
+        </div>
         <AppFooter />
     </div>
     <Teleport to="body">

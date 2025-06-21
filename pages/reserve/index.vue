@@ -3,9 +3,11 @@ import { useRouter } from "vue-router";
 import MapSecond from "~/components/map/MapV2.vue";
 import { useCemeteryStore } from '~/store/cemetery.js'
 import { getCemeteries, getGraves } from '~/services/cemetery';
+import ShareCoordModal from "~/components/layout/modals/ShareCoordModal.vue";
 
 const router = useRouter()
 
+const shareCoordModalState = ref(false)
 const selectedReligios = ref('Не выбрано')
 const sities = [
     'Алматы',
@@ -145,6 +147,14 @@ const getGraveStatusText = (status) => {
   }
 }
 
+const graveLat = ref(null)
+const graveLng = ref(null)
+
+const shareGraveData = () => {
+  graveLat.value = selected.value.polygon_data.coordinates[0][1]
+  graveLng.value = selected.value.polygon_data.coordinates[0][0]
+  shareCoordModalState.value = true
+}
 </script>
 
 <template>
@@ -233,7 +243,7 @@ const getGraveStatusText = (status) => {
                         Участок {{ selectedGrave.sector_number }}-{{ selectedGrave.grave_number }}
                     </h3>
                     <div class="flex gap-[34px] items-center">
-                        <button class="flex items-center gap-[8px] text-base font-medium font-roboto text-[#222222]">
+                        <button class="flex items-center gap-[8px] text-base font-medium font-roboto text-[#222222]" @click="shareGraveData">
                             <img src="/icons/share.svg" alt=""> Отправить
                         </button>
                         <button 
@@ -292,6 +302,7 @@ const getGraveStatusText = (status) => {
             </div>
         </div>
     </div>
+    <ShareCoordModal :visible="shareCoordModalState" :lat="graveLat" :lng="graveLng" @close="shareCoordModalState = false" />
 </template>
 
 <style lang="scss" scoped>
