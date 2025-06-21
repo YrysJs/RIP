@@ -15,9 +15,11 @@
             {{status.status.nameRu}}: {{ status.count }}
           </span>
         </div>
-        <select class="filter-select ml-auto w-[140px]">
-          <option>За месяц</option>
-        </select>
+        <div class="flex gap-3">
+          <button class="btn" type="button">Отчет по заявкам</button>
+          <button class="btn" type="button">Отчет по обращениям</button>
+        </div>
+
       </div>
 
       <!-- 2 карточки в ряд -->
@@ -217,5 +219,14 @@ onMounted((async () => {
 .legend-text {
   font-size: 14px;
   font-weight: 600;
+}
+
+.btn {
+  height: 32px;
+  background: #224C4F;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 16px;
 }
 </style>

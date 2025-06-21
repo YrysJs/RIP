@@ -14,30 +14,33 @@
         <div class="col-span-6">Фио пользователя</div>
         <div class="col-span-3">Статус</div>
       </div>
-
-      <div
-          v-for="user in users"
-          :key="user.id"
-          class="grid grid-cols-12 items-center text-sm py-[14px] border-b border-[#EEEEEE] hover:bg-[#F9FAFB] transition"
-      >
-        <div class="col-span-3">{{ user.role }}</div>
-        <div class="col-span-6">{{ user.fullName }}</div>
-        <div class="col-span-2">
+      <template v-for="role in roles" :key="role.role">
+        <div
+            v-for="user in role.users"
+            :key="user.id"
+            class="grid grid-cols-12 items-center text-sm py-[14px] border-b border-[#EEEEEE] hover:bg-[#F9FAFB] transition"
+        >
+          <div class="col-span-3">{{ role.role === 'AKIMAT_ADMIN' ? 'Админ' : 'Менеджер' }}</div>
+          <div class="col-span-6">{{ user.surname }} {{ user.name }} {{ user.patronymic }}</div>
+          <div class="col-span-2">
         <span
             class="status"
             :class="{
-            'status--active': user.status === 'active',
+            'status--active': true,
             'status--pending': user.status === 'pending',
             'status--blocked': user.status === 'blocked'
           }"
         >
-          {{ statusText(user.status) }}
+<!--          {{ statusText(user.status) }}-->
+          Активен
         </span>
+          </div>
+          <div class="col-span-1 flex justify-end">
+            <img src="/icons/arrow-right.svg" class="w-4 h-4" />
+          </div>
         </div>
-        <div class="col-span-1 flex justify-end">
-          <img src="/icons/arrow-right.svg" class="w-4 h-4" />
-        </div>
-      </div>
+      </template>
+
     </div>
     <Teleport to="body">
       <AkimatSignUp v-if="isCreateModal" @finish="createUser" @close="isCreateModal = false" />
@@ -59,23 +62,9 @@ import {ref} from "vue";
 
 const isCreateModal = ref(false)
 const showSuccessModal = ref(false)
-const temp = ref([])
 
-const users = [
-  { id: 1, role: 'Менеджер', fullName: 'Бақадыр Нурбике Бекзатқызығ', status: 'active' },
-  { id: 2, role: 'Менеджер', fullName: 'Айнұр Серікбай Арманқызы', status: 'pending' },
-  { id: 3, role: 'Менеджер', fullName: 'Иван Петрович Сергеев', status: 'active' },
-  { id: 4, role: 'Администратор', fullName: 'Мария Александровна Иванова', status: 'active' },
-  { id: 5, role: 'Писатель', fullName: 'Алексей Андреевич Смирнов', status: 'active' },
-  { id: 6, role: 'Менеджер', fullName: 'Екатерина Дмитриевна Козлова', status: 'blocked' },
-];
+const roles = ref([])
 
-const statusText = (status) => {
-  if (status === 'active') return 'Активен';
-  if (status === 'pending') return 'Приглашение отправлено';
-  if (status === 'blocked') return 'Заблокирован';
-  return '';
-};
 
 const createUser = () => {
   isCreateModal.value = false
@@ -90,8 +79,8 @@ onMounted((async () => {
     const response = await getUsersByRole({
       roleIds: '7,8'
     })
-    getAkimats()
-    temp.value = response.data
+    // getAkimats()
+    roles.value = response.data
   } catch (error) {
     console.error('Ошибка при получении пользователей:', error)
   } finally {

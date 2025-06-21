@@ -1,17 +1,20 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import {getBurialRequestById, getBurialRequests} from '~/services/manager'
+import {getBurialRequestById, getBurialRequests, getBurialRequestStatus} from '~/services/manager'
 import BurialDetailsModal from "~/components/manager/burial/BurialDetailsModal.vue";
 import {getGraveById, getGraveImages} from "~/services/client/index.js";
 import { getCemeteries } from '~/services/cemetery'
+import CancelModal from "~/components/manager/booking/CancelModal.vue";
 
 const router = useRouter()
 
 const burials = ref([])
 const cemeteries = ref([])
+const burial = ref({})
 const search = ref('')
 const burialDetailModalVisible = ref(false)
-
+const isCancelModalVisible = ref(false)
+const selectedId = ref(null)
 const grave = ref({})
 const graveImages = ref([])
 
@@ -44,6 +47,32 @@ const fetchBurialDetails = async (id) => {
     burialDetailModalVisible.value = true
   }
 
+}
+
+const cancelRequest = (comment) => {
+  getBurialRequestStatus({
+    id: burial.value?.id,
+    status: 'cancelled',
+    comment
+  }).then(() => {
+    burialDetailModalVisible.value = false
+    fetchBurials()
+  })
+}
+
+const approveRequest = () => {
+  getBurialRequestStatus({
+    id: burial.value?.id,
+    status: 'approved',
+    comment: ''
+  }).then(() => {
+    burialDetailModalVisible.value = false
+    fetchBurials()
+  })
+}
+
+const selectRequest = () => {
+  isCancelModalVisible.value = true
 }
 
 const fetchCemeteries = async () => {
@@ -119,7 +148,7 @@ watch(cemeteryId, () => {
 <template>
   <NuxtLayout name="manager">
     <div class="burial-list">
-      <div class="flex justify-between items-center flex-wrap gap-4">
+      <div class="bg-white p-4 rounded-[8px] flex justify-between items-center flex-wrap gap-4">
         <div class="flex gap-4 flex-wrap">
           <div>
             <p>Кладбище</p>
@@ -181,7 +210,15 @@ watch(cemeteryId, () => {
       </div>
     </div>
     <Teleport to="body">
-      <BurialDetailsModal :visible="burialDetailModalVisible" :grave="grave" :images="graveImages" :booking="burial" @close="burialDetailModalVisible = false" />
+      <BurialDetailsModal
+          :visible="burialDetailModalVisible"
+          :grave="grave"
+          :images="graveImages"
+          :booking="burial"
+          @cancel="selectRequest"
+          @confirm="approveRequest"
+          @close="burialDetailModalVisible = false" />
+      <CancelModal :visible="isCancelModalVisible" @cancel="cancelRequest" />
     </Teleport>
   </NuxtLayout>
 </template>

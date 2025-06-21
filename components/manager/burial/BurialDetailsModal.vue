@@ -2,7 +2,7 @@
 import { defineProps } from 'vue';
 const props = defineProps(['grave', 'visible', 'booking', 'images'])
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'confirm', 'cancel'])
 
 function removeEscapedQuotes(str) {
   return str.replace(/\\"/g, '');
@@ -112,10 +112,10 @@ const closeModal = () => {
             Чек об оплате
           </button>
           <div class="flex gap-[16px]">
-            <button class="px-6 py-2 bg-[#FEE2E2] text-[#B91C1C] rounded-md text-sm hover:bg-[#fcbaba]">
+            <button class="px-6 py-2 bg-[#FEE2E2] text-[#B91C1C] rounded-md text-sm hover:bg-[#fcbaba]" @click="emit('cancel')">
               Отменить
             </button>
-            <button class="px-6 py-2 bg-[#10B981] text-white rounded-md text-sm hover:bg-[#0e9c6e] ml-auto">
+            <button class="px-6 py-2 bg-[#10B981] text-white rounded-md text-sm hover:bg-[#0e9c6e] ml-auto" @click="emit('confirm')">
               Подтвердить захоронение
             </button>
           </div>

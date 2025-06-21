@@ -96,7 +96,7 @@ watch(cemeteryId, () => {
 <template>
   <NuxtLayout name="manager">
     <div class="booking-list">
-      <div class="flex justify-between items-center flex-wrap gap-4">
+      <div class="bg-white p-4 rounded-[8px] flex justify-between items-center flex-wrap gap-4">
         <div class="flex gap-4 flex-wrap">
           <div>
             <p>Кладбище</p>
