@@ -2,20 +2,7 @@
 import { getNotifications } from '~/services/notifications'
 import { ref, onMounted } from 'vue'
 
-const notifications = ref([
-  {
-    "created_at": "string",
-    "data": {
-      "additionalProp1": {}
-    },
-    "id": 0,
-    "is_read": true,
-    "message": "string",
-    "title": "string",
-    "type": "status_changed",
-    "user_phone": "string"
-  }
-])
+const notifications = ref([])
 const loading = ref(false)
 const error = ref(null)
 
@@ -23,7 +10,7 @@ const fetchNotifications = async () => {
   try {
     loading.value = true
     const response = await getNotifications()
-    notifications.value = response.data
+    notifications.value = response.data.items
   } catch (err) {
     error.value = err.message
     console.error('Ошибка при загрузке уведомлений:', err)
@@ -44,7 +31,7 @@ const formatDate = (dateString) => {
 }
 
 onMounted(() => {
-//   fetchNotifications()
+  fetchNotifications()
 })
 </script>
 

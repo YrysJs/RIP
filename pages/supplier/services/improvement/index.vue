@@ -106,7 +106,7 @@ const formatDate = (dateString) => {
                             <h3 class="font-medium text-lg">{{ product.name }}</h3>
                             <p class="text-sm text-[#939393]">{{ product.description }}</p>
                         </div>
-                        <div class="font-medium text-xl">
+                        <div class="font-medium text-xl w-[365px]">
                             от {{ formatPrice(product.price) }} ₸
                         </div>
                     </div>
