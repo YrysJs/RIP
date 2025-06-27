@@ -25,10 +25,30 @@
           <button v-if="type === 'client'" class="icon-btn">
             <img src="/icons/cart.svg" alt="Корзина" />
           </button>
-          <button class="icon-btn">
-            <img src="/icons/menu.svg" alt="Меню" />
-            <img src="/icons/user.svg" alt="Профиль" />
-          </button>
+          <div class="icon-btn relative flex items-center gap-2">
+            <!-- Кнопка меню -->
+            <button @click="toggleDropdown">
+              <img src="/icons/menu.svg" alt="Меню" />
+            </button>
+
+            <!-- Кнопка профиля -->
+            <NuxtLink to="/profile">
+              <img src="/icons/user.svg" alt="Профиль" />
+            </NuxtLink>
+
+            <!-- Дропдаун меню -->
+            <div
+                v-if="showDropdownMenu"
+                class="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
+            >
+              <button
+                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                  @click="logout"
+              >
+                Выйти
+              </button>
+            </div>
+          </div>
         </template>
 
         <template v-else>
@@ -96,7 +116,7 @@ import SupplierLogin from "~/components/auth/SupplierLogin.vue";
 import Cookies from 'js-cookie'
 
 const token = Cookies.get('token')
-
+const router = useRouter()
 const showLoginMenu = ref(false);
 const activeModal = ref('')
 
@@ -109,8 +129,15 @@ const props = defineProps({
 const types = {
   manager: 'Менеджер Кладбища',
   suppliar: 'Поставщик услуг',
-  akimat: 'Кабинет Aкимата'
+  akimat: 'Кабинет Aкимата',
+  admin: 'Админ панель'
 };
+
+const showDropdownMenu = ref(false)
+
+function toggleDropdown() {
+  showDropdownMenu.value = !showDropdownMenu.value
+}
 
 function toggleLoginMenu() {
   showLoginMenu.value = !showLoginMenu.value;
@@ -125,6 +152,14 @@ function login(type) {
   userStore.setAuthType(type)
   
   activeModal.value = type
+}
+
+function logout() {
+  toggleDropdown()
+  Cookies.remove('token')
+  token.value = undefined
+
+  router.push('/')
 }
 
 </script>

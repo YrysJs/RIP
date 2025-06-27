@@ -40,6 +40,10 @@ const router = useRouter();
 
 const newsStore = useNewsStore()
 
+definePageMeta({
+  middleware: ['auth', 'akimat'],
+});
+
 function formatDate(arr) {
   if (!Array.isArray(arr) || arr.length < 6) return '';
 

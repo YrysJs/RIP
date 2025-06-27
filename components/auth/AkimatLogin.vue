@@ -53,11 +53,12 @@ const otpCheck = async () => {
     })
     Cookies.set('token', response.data.token);
     Cookies.set('role', 'user');
+    router.push('/user/tickets')
   } catch (error) {
     console.error('Ошибка при логине:', error)
   } finally {
     console.log('login')
-    router.push('/user/tickets')
+
   }
 
 }
@@ -65,7 +66,7 @@ const otpCheck = async () => {
 </script>
 
 <template>
-  <div class="modal absolute min-w-full min-h-[100vh] flex justify-center items-center z-50">
+  <div class="modal fixed min-w-full min-h-[100vh] flex justify-center items-center z-50">
     <div class="bg-white rounded-md max-w-[500px] w-full p-[24px] relative">
       <button class="absolute right-[24px] top-[24px]" @click="close">&#10005;</button>
       <div v-if="step == 0" class="flex flex-col">

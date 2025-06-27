@@ -9,6 +9,10 @@ const selectedCemetery = ref({})
 const isMap = ref(false)
 const router = useRouter();
 
+definePageMeta({
+  middleware: ['auth', 'admin'],
+});
+
 const selectCemetery = (cemetery) => {
   selectedCemetery.value = cemetery
   isMap.value = true
@@ -31,7 +35,7 @@ onMounted((async () => {
 </script>
 
 <template>
-  <NuxtLayout name="manager">
+  <NuxtLayout name="admin">
     <p class="opacity-0">{{selectedCemetery.id}}</p>
     <div class="flex justify-between items-center mb-[20px] flex-wrap gap-4">
       <div class="flex gap-4 flex-wrap">

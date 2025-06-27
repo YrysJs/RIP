@@ -18,6 +18,10 @@ const selectedId = ref(null)
 const grave = ref({})
 const graveImages = ref([])
 
+definePageMeta({
+  middleware: ['auth', 'manager'],
+});
+
 // новые фильтры
 const dateFrom = ref('')
 const dateTo = ref('')

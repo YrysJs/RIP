@@ -68,8 +68,8 @@ function getUsersByRole(params) {
 function signupSupplier(data) {
     const { $axios } = useNuxtApp()
     return $axios({
-        method: 'POST',
-        url: 'http://91.147.92.97:8081/v1/supplier/signup/fcb',
+        method: 'PUT',
+        url: 'http://91.147.92.97:8081/v1/supplier/signup',
         data
     })
 }

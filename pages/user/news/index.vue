@@ -87,6 +87,10 @@ const sortingType = ref('desc')
 const newsStore = useNewsStore()
 const isActive = ref(false)
 
+definePageMeta({
+  middleware: ['auth', 'akimat'],
+});
+
 const fetchNews = async () => {
   try {
     const response = await getNews({

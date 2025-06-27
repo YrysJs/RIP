@@ -102,6 +102,10 @@ const router = useRouter();
 const relocationCount = 5;
 const akimatCount = 0;
 
+definePageMeta({
+  middleware: ['auth', 'akimat'],
+});
+
 onMounted(() => {
   getRequests()
   getTypes()

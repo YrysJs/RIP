@@ -1,12 +1,12 @@
 <template>
-  <NuxtLayout name="user">
+  <NuxtLayout name="admin">
     <div class="w-full bg-white rounded-[16px] p-[20px] mt-[20px]">
       <div class="flex justify-between items-center mb-[16px]">
-        <h2 class="text-2xl font-semibold">Пользователи</h2>
-        <button class="invite-btn" @click="isCreateModal = true">
-          <img src="/icons/plus.svg" alt="Пригласить" class="w-4 h-4 mr-2" />
-          Пригласить
-        </button>
+        <h2 class="text-2xl font-semibold">Поставщики</h2>
+<!--        <button class="invite-btn" @click="isCreateModal = true">-->
+<!--          <img src="/icons/plus.svg" alt="Пригласить" class="w-4 h-4 mr-2" />-->
+<!--          Пригласить-->
+<!--        </button>-->
       </div>
 
       <div class="grid grid-cols-12 text-sm font-semibold text-[#6B7280] py-[10px] border-b border-[#EEEEEE]">
@@ -59,14 +59,15 @@ import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import { getUsersByRole } from '~/services/login'
 import {ref} from "vue";
 
+// definePageMeta({
+//   middleware: ['auth', 'admin'],
+// });
+
 const isCreateModal = ref(false)
 const showSuccessModal = ref(false)
 
 const roles = ref([])
 
-definePageMeta({
-  middleware: ['auth', 'akimat'],
-});
 
 const createUser = () => {
   isCreateModal.value = false
@@ -79,7 +80,7 @@ const closeSuccessModal = () => {
 onMounted((async () => {
   try {
     const response = await getUsersByRole({
-      roleIds: '7,8'
+      roleIds: '4'
     })
     roles.value = response.data
   } catch (error) {

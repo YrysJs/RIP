@@ -1,15 +1,27 @@
 <script setup>
 import CemeteryCard from '@/components/manager/cemetery/CemeteryCard.vue'
-import {getCemeteries} from "~/services/cemetery"
+import {getCemeteries, getGraves} from "~/services/cemetery"
 import CemeteryMap from "~/components/map/CemeteryMap.vue";
+
 
 const cemeteries = ref([])
 const selectedCemetery = ref({})
 const isMap = ref(false)
+const gravesList = ref([])
 
-const selectCemetery = (cemetery) => {
-  selectedCemetery.value = cemetery
-  isMap.value = true
+definePageMeta({
+  middleware: ['auth', 'manager'],
+});
+
+const selectCemetery = async (cemetery) => {
+  try {
+    selectedCemetery.value = cemetery
+    const response = await getGraves({ cemetery_id: selectedCemetery.value.id })
+    gravesList.value = response.data || []
+    isMap.value = true
+  } catch (error) {
+    gravesList.value = []
+  }
 }
 
 onMounted((async () => {
@@ -27,7 +39,6 @@ onMounted((async () => {
 <template>
   <NuxtLayout name="manager">
     <p class="opacity-0">{{selectedCemetery.id}}</p>
-
       <CemeteryCard
           v-for="(cemetery, index) in cemeteries"
           :key="index"
@@ -37,6 +48,7 @@ onMounted((async () => {
     <Teleport to="body">
       <CemeteryMap
           :cemetery="selectedCemetery"
+          :polygons="gravesList"
           :visible="isMap"
           @close="() => isMap = false"
       />
