@@ -5,7 +5,10 @@ import AppFooter from "~/components/layout/AppFooter.vue";
 import { getNews } from '~/services/akimat'
 import { useNewsStore } from '~/store/news.js'
 import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const dataId = ref(0)
 const mainPageModalState = ref(false)
@@ -80,10 +83,12 @@ onMounted(() => {
       <AppHeader type="client" />
       <div class="relative">
         <Swiper
+            :modules="[Navigation, Pagination, Autoplay]"
             :slides-per-view="1"
             :loop="true"
             :autoplay="{
-                delay: 1000,
+                delay: 5000,
+                disableOnInteraction: false,
             }"
             :navigation="{
                 nextEl: '.swiper-button-next-custom',
@@ -126,6 +131,7 @@ onMounted(() => {
                     <path d="M9 18L15 12L9 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </div>
+            <div class="swiper-pagination-custom absolute bottom-[20px] left-1/2 transform -translate-x-1/2 z-20"></div>
       </div>
         <div class="container">
             <div class="flex justify-start gap-[230px] items-center py-[113px]">
@@ -270,5 +276,16 @@ onMounted(() => {
     text-overflow: ellipsis;
     line-height: 1.5;
     height: 96px; /* Фиксированная высота для 4 строк */
+}
+
+.swiper-pagination-custom :deep(.swiper-pagination-bullet) {
+    background: white;
+    opacity: 0.5;
+    margin: 0 5px;
+}
+
+.swiper-pagination-custom :deep(.swiper-pagination-bullet-active) {
+    opacity: 1;
+    background: white;
 }
 </style>
