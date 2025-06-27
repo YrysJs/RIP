@@ -78,6 +78,10 @@
 <script setup>
 const router = useRouter();
 
+definePageMeta({
+  middleware: ['auth', 'akimat'],
+});
+
 const request = {
   id: 351,
   date: '07.01.2025',

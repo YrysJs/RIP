@@ -9,6 +9,10 @@ import {getCemeteryById} from "~/services/cemetery";
 const showSuccessModal = ref(false)
 const route = useRoute()
 
+definePageMeta({
+  middleware: ['auth', 'admin'],
+});
+
 const cities = [
   'Алматы',
   'Нур-Султан',

@@ -101,6 +101,10 @@ const newsContent = ref('');
 const file = ref(null)
 const base64File = ref('');
 
+definePageMeta({
+  middleware: ['auth', 'akimat'],
+});
+
 async function convertToBase64(file) {
   if (!file) throw new Error('Файл не выбран')
 

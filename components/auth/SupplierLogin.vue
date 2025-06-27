@@ -1,32 +1,80 @@
 <script setup>
-import { getOtp, checkOtp } from '~/services/login/index.js'
+import {getOtp, checkOtp, signupSupplier} from '~/services/login/index.js'
 import Cookies from 'js-cookie';
 const emit = defineEmits()
 const router = useRouter()
 
 const phone_number = ref('')
 const loginId = ref('')
+const cityId = ref(0)
 const code = ref('')
-const iin = ref('')
-const full_name = ref('')
+const bin = ref('')
 const check = ref(false)
 const step = ref(0)
+const name = ref('')
+const surname = ref('')
+const patronymic = ref('')
+const vatTypeId = ref(0)
 
 function close() {
   emit('close')
 }
 
-function run () {
-  router.push('/client/reservation/reservation-first')
+const cities = [
+  'Алматы',
+  'Нур-Султан',
+  'Шымкент',
+  'Караганда',
+  'Тараз',
+  'Павлодар',
+  'Усть-Каменогорск',
+  'Семей',
+  'Актобе',
+  'Костанай',
+  'Кызылорда',
+  'Талдыкорган',
+  'Тараз',
+  'Павлодар',
+  'Усть-Каменогорск',
+  'Семей',
+  'Актобе',
+  'Костанай',
+  'Кызылорда'
+]
+
+async function run () {
+  try {
+    const response = await signupSupplier({
+        otpRequest: {
+          id: loginId.value,
+          code: code.value
+        },
+        bin: bin.value,
+        name: name.value,
+        surname: surname.value,
+        patronymic: patronymic.value,
+        vatTypeId: vatTypeId.value,
+        cityId: cityId.value
+      })
+
+    Cookies.set('token', response.data.token);
+    Cookies.set('role', 'supplier');
+    await router.push('/supplier/tickets/active')
+  } catch (error) {
+    console.error('Ошибка при логине:', error)
+
+    if (
+        error?.response?.status === 500 &&
+        error?.response?.data?.description?.includes('Role not found for phone')
+    ) {
+      step.value++;
+    }
+  } finally {
+    console.log('login')
+
+  }
 }
 
-watch(iin, (newValue) => {
-  if (newValue === '920806300456') {
-    setTimeout(() => {
-      full_name.value = 'Бабаев Рауан Ахметович'
-    }, 3000)
-  }
-})
 
 const fakeTimer = ref(10)
 let interval = null
@@ -67,12 +115,19 @@ const otpCheck = async () => {
       code: code.value
     })
     Cookies.set('token', response.data.token);
+    router.push('/supplier/tickets/active')
     Cookies.set('role', 'supplier');
   } catch (error) {
+    if (
+        error?.response?.status === 500 &&
+        error?.response?.data?.description?.includes('Role not found for phone')
+    ) {
+      step.value = 2;
+    }
     console.error('Ошибка при логине:', error)
   } finally {
     console.log('login')
-    router.push('/supplier/tickets/active')
+
   }
 
   // setTimeout(() => {
@@ -83,10 +138,10 @@ const otpCheck = async () => {
 </script>
 
 <template>
-  <div class="modal absolute min-w-full min-h-[100vh] flex justify-center items-center z-50">
+  <div class="modal fixed min-w-full min-h-[100vh] flex justify-center items-center z-50">
     <div class="bg-white rounded-md max-w-[500px] w-full p-[24px] relative">
       <button class="absolute right-[24px] top-[24px]" @click="close">&#10005;</button>
-      <div v-if="step == 0" class="flex flex-col">
+      <div v-if="step === 0" class="flex flex-col">
         <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
           Войти как поставщик услуг
         </h3>
@@ -97,12 +152,12 @@ const otpCheck = async () => {
         <!-- <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto my-[21px]" :class="{ '!bg-[#38949B] text-white': phone_number.length >= 18 }" @click="step++">Получить код в WhatsApp </button> -->
         <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto my-[21px]" :class="{ '!bg-[#38949B] text-white': phone_number.length >= 18 }" @click="login">Получить код по СМС</button>
       </div>
-      <div v-if="step == 1" class="flex flex-col">
+      <div v-if="step === 1" class="flex flex-col">
         <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
           Подтвердите номер
         </h3>
         <p class="text-sm font-roboto">
-          Введлите код из СМС. Мы отправили его на номер
+          Введлите код из СМС. Мы отправили его на номер<br />
           {{ phone_number }}
         </p>
         <input v-model="code" class="border-2 border-[#939393] mt-[24px] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите код">
@@ -112,7 +167,7 @@ const otpCheck = async () => {
         </div>
         <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': code >= 4 }" @click="otpCheck">Подтвердить</button>
       </div>
-      <div v-if="step == 2" class="flex flex-col">
+      <div v-if="step === 2" class="flex flex-col">
         <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
           Регистрация поставщика услуг
         </h3>
@@ -124,12 +179,33 @@ const otpCheck = async () => {
           <input v-model="phone_number" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите код" disabled>
         </div>
         <div class="mt-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">ИИН</p>
-          <input v-model="iin" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ИИН">
+          <p class="text-sm font-roboto text-[#222222]">БИН</p>
+          <input v-model="bin" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ИИН">
+        </div>
+        <div class="mt-[24px]">
+          <p class="text-sm font-roboto text-[#222222]">Имя</p>
+          <input v-model="name" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
+        </div>
+        <div class="mt-[24px]">
+          <p class="text-sm font-roboto text-[#222222]">Фамилия</p>
+          <input v-model="surname" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
+        </div>
+        <div class="mt-[24px]">
+          <p class="text-sm font-roboto text-[#222222]">Отчество</p>
+          <input v-model="patronymic" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
+        </div>
+        <div class="mt-[24px]">
+          <p class="text-sm font-roboto text-[#222222]">Тип НДС</p>
+          <select v-model="vatTypeId" class="input select">
+            <option :value="1">С НДС</option>
+            <option :value="2">Без НДС</option>
+          </select>
         </div>
         <div class="mt-[24px] mb-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">ФИО</p>
-          <input v-model="full_name" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
+          <p class="text-sm font-roboto text-[#222222]">Город оказания услуг</p>
+          <select v-model="cityId" class="input select">
+            <option v-for="(city, index) in cities" :key="city" :value="index + 1">{{city}}</option>
+          </select>
         </div>
         <div class="flex gap-[10px] items-center mb-[24px]">
           <input v-model="check" type="checkbox">
@@ -137,7 +213,7 @@ const otpCheck = async () => {
             Я согласен с правилами использования и политикой конфиденциальности
           </p>
         </div>
-        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': (iin.length && full_name.length && check) }" @click="run">Зарегистрироваться</button>
+        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': (bin.length && check) }" @click="run">Зарегистрироваться</button>
       </div>
     </div>
   </div>

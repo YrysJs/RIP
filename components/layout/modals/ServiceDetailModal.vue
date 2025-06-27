@@ -46,7 +46,7 @@ function formatPhoneNumber(phone) {
 </script>
 
 <template>
-  <div v-if="visible" class="modal absolute min-w-full min-h-[100vh] flex justify-center items-center z-50">
+  <div v-if="visible" class="modal fixed min-w-full min-h-[100vh] flex justify-center items-center z-50">
     <div class="bg-white rounded-lg max-w-[795px] w-full max-h-[90vh] overflow-y-auto m-4">
       <!-- Header -->
       <div class="flex justify-between items-start pt-6 pl-6 pr-6 pb-0 border-b">

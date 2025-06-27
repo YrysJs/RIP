@@ -5,6 +5,10 @@ import {ref} from "vue";
 
 const showSuccessModal = ref(false)
 
+definePageMeta({
+  middleware: ['auth', 'admin'],
+});
+
 const cities = [
   'Алматы',
   'Нур-Султан',
@@ -60,6 +64,7 @@ const create = async () => {
       mapUrl: form.mapUrl,
       name: form.name,
       cityId: form.cityId,
+      employeeRole: '7',
       admin: {
         iin: form.admin.iin,
         name: form.admin.name,
@@ -68,6 +73,7 @@ const create = async () => {
         phone: extractDigits(form.admin.phone)
       }
     })
+    showSuccessModal.value = true
     console.log(res)
   }
   catch (err) {

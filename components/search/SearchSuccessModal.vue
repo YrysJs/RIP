@@ -8,7 +8,7 @@ const handleClose = () => {
 </script>
 
 <template>
-  <div class="modal absolute min-w-full min-h-[100vh] flex justify-center items-center">
+  <div class="modal fixed min-w-full min-h-[100vh] flex justify-center items-center">
     <div class="bg-white text-center rounded-md max-w-[500px] w-full py-[40px]">
       <h2 class="text-lg font-semibold mb-2">Заявка на поиск захоронения отправлена!</h2>
       <p class="text-sm text-gray-800 mb-2">

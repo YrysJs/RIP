@@ -126,6 +126,9 @@ import { getNewsStats, getRequestsStats } from '~/services/akimat'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'vue-chartjs'
 
+definePageMeta({
+  middleware: ['auth', 'akimat'],
+});
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 const loading = ref(false)

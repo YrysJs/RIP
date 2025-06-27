@@ -1,5 +1,7 @@
 <script setup lang="ts">
 
+
+
 import FormMap from "~/components/map/FormMap.vue";
 const form = reactive({
   title: 'Северное кладбище',

@@ -18,6 +18,10 @@ const graveDetailModalVisible = ref(false)
 const grave = ref({})
 const graveImages = ref([])
 
+definePageMeta({
+  middleware: ['auth', 'manager'],
+});
+
 onMounted(async () => {
   try {
     const response = await getBurialRequestById(route.params.id)

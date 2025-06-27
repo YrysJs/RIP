@@ -1,6 +1,5 @@
 <script setup>
-import { ref, watch, nextTick } from 'vue'
-
+import MapSecond from "~/components/map/MapV2.vue";
 const props = defineProps({
   cemetery: {
     type: Object,
@@ -10,68 +9,15 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  polygons: {
+    type: Array,
+    default: () => [],
+  },
 })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'grave-click'])
 
-const mapInstance = ref(null)
-const cemeteryBoundaryObject = ref(null)
-const mapContainerId = 'map-container'
-
-watch(
-    () => props.visible,
-    async (visible) => {
-      if (visible && props.cemetery?.polygon_data?.coordinates && window.DG) {
-        await nextTick()
-        destroyMap()
-        initializeMap()
-      }
-    }
-)
-
-function destroyMap() {
-  if (mapInstance.value) {
-    mapInstance.value.remove()
-    mapInstance.value = null
-    cemeteryBoundaryObject.value = null
-  }
-}
-
-function initializeMap() {
-  const center = getCemeteryCenter()
-  const container = document.getElementById(mapContainerId)
-  if (!container) {
-    console.warn('map container not found')
-    return
-  }
-
-  mapInstance.value = DG.map(mapContainerId, {
-    center,
-    zoom: 16,
-  })
-
-  drawCemeteryBoundary()
-}
-
-function getCemeteryCenter() {
-  const coords = props.cemetery?.polygon_data?.coordinates?.[0]
-  return coords ? [coords[1], coords[0]] : [43.238949, 76.889709]
-}
-
-function drawCemeteryBoundary() {
-  const coords = props.cemetery?.polygon_data?.coordinates
-  if (!coords) return
-
-  const latlngs = coords.map(([lng, lat]) => [lat, lng])
-
-  cemeteryBoundaryObject.value = DG.polygon(latlngs, {
-    color: '#FF0000',
-    weight: 3,
-    fillColor: 'transparent',
-    fillOpacity: 0,
-  }).addTo(mapInstance.value)
-}
-
+const selected = ref(null)
 const closeModal = () => emit('close')
 </script>
 
@@ -84,7 +30,11 @@ const closeModal = () => emit('close')
           &times;
         </button>
       </div>
-      <div :id="mapContainerId" style="width: 100%; height: 600px;"></div>
+      <MapSecond
+          :polygons="polygons"
+          :cemetery-boundary="cemetery"
+          v-model="selected"
+      />
     </div>
   </div>
 </template>
