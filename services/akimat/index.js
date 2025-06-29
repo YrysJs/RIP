@@ -54,11 +54,30 @@ function getComments(params) {
     })
 }
 
-function exportReport(params) {
+function exportRequestsReport(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
         url: 'http://91.147.92.97:8081/rip-government/v1/request/export',
+        params
+    })
+}
+
+
+function exportAppealsReport(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://91.147.92.97:8081/rip-government/v1/appeal/export',
+        params
+    })
+}
+
+function getAppealComment(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://91.147.92.97:8081/rip-government/v1/appeal/comments',
         params
     })
 }
@@ -109,6 +128,8 @@ export {
     getTypes,
     getStatuses,
     getComments,
-    exportReport,
-    getAppeals
+    exportRequestsReport,
+    getAppeals,
+    exportAppealsReport,
+    getAppealComment
 }

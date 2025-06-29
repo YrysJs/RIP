@@ -16,8 +16,8 @@
           </span>
         </div>
         <div class="flex gap-3">
-          <button class="btn" type="button">Отчет по заявкам</button>
-          <button class="btn" type="button">Отчет по обращениям</button>
+          <button class="btn" type="button" @click="exportRequests">Отчет по заявкам</button>
+          <button class="btn" type="button" @click="exportAppeals">Отчет по обращениям</button>
         </div>
 
       </div>
@@ -122,7 +122,8 @@
 </template>
 
 <script setup>
-import { getNewsStats, getRequestsStats } from '~/services/akimat'
+import { getNewsStats, getRequestsStats, exportAppealsReport, exportRequestsReport } from '~/services/akimat'
+import {downloadBase64File} from '~/utils/downloadBase64.js'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'vue-chartjs'
 
@@ -151,6 +152,16 @@ const topNews = [
   { title: 'Как выбрать место на кладбище', views: 150 },
   { title: 'Современные технологии на кладбищах', views: 145 }
 ];
+
+const exportAppeals = async () => {
+  const res = await exportAppealsReport()
+  downloadBase64File(res.data.base64, 'Отчет по обращениям.xslx')
+}
+
+const exportRequests = async () => {
+  const res = await exportRequestsReport()
+  downloadBase64File(res.data.base64, 'Отчет по заявкам.xslx')
+}
 
 onMounted((async () => {
   try {
