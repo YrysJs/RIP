@@ -193,7 +193,7 @@ const shareGraveData = () => {
             </div>
         </div>
         <div class="w-full">
-            <div class="w-full h-[60vh] rounded-xl overflow-hidden">
+            <div class="w-full h-[50vh] rounded-xl overflow-hidden">
               <MapSecond 
                 :polygons="gravesList" 
                 :cemetery-boundary="selectedCemetery" 
@@ -279,6 +279,24 @@ const shareGraveData = () => {
                             />
                         </div>
                     </div>
+                </div>
+                <div v-else class="mb-6">
+                  <div class="flex gap-4 overflow-x-scroll">
+                    <div 
+                      class="w-[752px] h-[221px] aspect-square rounded-lg overflow-hidden bg-gray-100 flex overflow-x-scroll"
+                    >
+                      <img 
+                        src="/images/placeholder.png"
+                        alt="Фото"
+                        class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
+                      />
+                      <img 
+                        src="/images/placeholder.png"
+                        alt="Фото"
+                        class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
+                      />
+                    </div>
+                  </div>
                 </div>
                 
                 <div class="flex gap-[24px] items-center text-[#222222]">

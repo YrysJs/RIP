@@ -249,6 +249,31 @@ function postReview(data) {
     })
 }
 
+function createProductReview(data) {
+    const { $axios } = useNuxtApp()
+    
+    const formData = new FormData()
+    
+    if (data.supplier_phone) formData.append('supplier_phone', data.supplier_phone)
+    if (data.product_id) formData.append('product_id', data.product_id)
+    if (data.rating) formData.append('rating', data.rating)
+    if (data.comment) formData.append('comment', data.comment)
+    
+    if (data.images) {
+        if (Array.isArray(data.images)) {
+            data.images.forEach(image => formData.append('images', image))
+        } else {
+            formData.append('images', data.images)
+        }
+    }
+    
+    return $axios({
+        method: 'POST',
+        url: 'http://91.147.92.97:8090/api/v1/reviews/products',
+        data: formData,
+    })
+}
+
 function getMemorials(params) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -346,5 +371,6 @@ export {
     getMemorialById,
     searchDeceased,
     getAppeals,
-    createAppeal
+    createAppeal,
+    createProductReview
 }

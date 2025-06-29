@@ -50,9 +50,9 @@ const copyToClipboard = async (type) => {
             <div class="mb-6 w-full flex justify-between items-center gap-[10px]">
                 <div class="flex flex-col gap-[10px]">
                     <p class="text-base text-[#939393]">Координаты места</p>
-                    <p class="font-bold truncate-middle" @click="copyToClipboard('coords')">{{ `${props.lat}, ${props.lng}` }}</p>
+                    <p class="font-bold truncate-middle">{{ `${props.lat}, ${props.lng}` }}</p>
                 </div>
-                <button class="bg-[#EEEEEE] text-[#224C4F] px-[16px] py-[8px] rounded-[8px] font-semibold">Скопировать</button>
+                <button class="bg-[#EEEEEE] text-[#224C4F] px-[16px] py-[8px] rounded-[8px] font-semibold" @click="copyToClipboard('coords')">Скопировать</button>
             </div>
         </div>
       </div>

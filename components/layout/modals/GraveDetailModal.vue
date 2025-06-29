@@ -31,7 +31,7 @@ const closeModal = () => {
           <div class="flex gap-1 items-center mb-2">
             <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Сектор <span class="font-bold">{{ grave?.sector_number }}</span></span>
             <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Место <span class="font-bold">{{ grave?.grave_number }}</span></span>
-            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Площадь: <span class="font-bold">{{ grave?.area || '2.5 x 1.5 м' }}</span></span>
+            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Периметр: <span class="font-bold">{{ grave?.area || '2.5 x 1.5 м' }}</span></span>
           </div>
         </div>
 
@@ -46,6 +46,24 @@ const closeModal = () => {
               <img 
                 :src="removeEscapedQuotes(image)"
                 :alt="`Фото ${index + 1}`"
+                class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
+              />
+            </div>
+          </div>
+        </div>
+        <div v-else class="mb-6">
+          <div class="flex gap-4 overflow-x-scroll">
+            <div 
+              class="w-[752px] h-[221px] aspect-square rounded-lg overflow-hidden bg-gray-100 flex overflow-x-scroll"
+            >
+              <img 
+                src="/images/placeholder.png"
+                alt="Фото"
+                class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
+              />
+              <img 
+                src="/images/placeholder.png"
+                alt="Фото"
                 class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
               />
             </div>

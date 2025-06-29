@@ -1,5 +1,13 @@
 import { useNuxtApp } from '#app'
 
+function getSupplierInfo() {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://91.147.92.97:8081/v1/supplier',
+    })
+}
+
 function getBurialRequests(params) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -186,6 +194,23 @@ function updateProduct(id, data) {
     })
 }
 
+function getSupplierProductReviews(phone, page = 1, limit = 10) {
+    const { $axios } = useNuxtApp()
+    
+    if (!phone) {
+        throw new Error('Phone number is required')
+    }
+    
+    return $axios({
+        method: 'GET',
+        url: `http://91.147.92.97:8090/api/v1/reviews/suppliers/${phone}/products`,
+        params: {
+            page,
+            limit
+        }
+    })
+}
+
 export {
     getOrders,
     getProducts,
@@ -199,5 +224,7 @@ export {
     createProduct,
     updateProduct,
     getBurialRequests,
-    getSalesStats
+    getSalesStats,
+    getSupplierInfo,
+    getSupplierProductReviews
 }

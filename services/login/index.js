@@ -92,6 +92,14 @@ function getSupplier(params) {
     })
 }
 
+function getCurrentUser() {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://91.147.92.97:8081/v1/user/current',
+    })
+}
+
 
 
 export {
@@ -99,6 +107,7 @@ export {
     checkOtp,
     getUser,
     getSupplier,
+    getCurrentUser,
     signupClient,
     signupSupplier,
     getUserData,

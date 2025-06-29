@@ -150,7 +150,7 @@ export default {
         }
 
         // 3. Обновляем статус заявки на захоронение
-        const statusUpdateData = { status: 'paid' }
+        const statusUpdateData = { status: 'paid', comment: 'Оплачено' }
         await updateBurialRequestStatus(this.burialData.id, statusUpdateData)
         console.log('Burial request status updated')
 
