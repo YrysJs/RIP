@@ -6,7 +6,7 @@
         <div class="w-full h-[61px] pl-[20px] flex items-center bg-white rounded-[16px] text-lg font-semibold">
             Архив заявок
         </div>
-        <div class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
+        <!-- <div class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
             <div class="rip-table">
                 <div class="rip-table__header">
                     <div>Товар/Услуга</div>
@@ -21,7 +21,7 @@
                     <div class="rip-table__content-val flex items-center gap-[15px]"><span class="status status-close">Завершена</span> <img src="/icons/link.svg" alt="arrow"> </div>
                 </nuxt-link>
             </div>
-        </div>
+        </div> -->
     </NuxtLayout>
 </template>
 

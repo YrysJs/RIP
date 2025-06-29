@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { processCardPayment } from '~/services/payments'
+import { processCardPayment, confirmOrderPayment, confirmBurialPayment } from '~/services/payments'
 import { createOrder } from '~/services/client'
 
 export default {
@@ -148,7 +148,6 @@ export default {
         const paymentResponse = await processCardPayment(paymentData)
         console.log('Payment successful:', paymentResponse)
 
-
         // 2. Создаем заказ через API с правильной структурой
         const orderRequestData = {
           burial_date: "2025-05-17",
@@ -165,11 +164,30 @@ export default {
           })) || []
         }
         
-        await createOrder(orderRequestData)
+        const orderResponse = await createOrder(orderRequestData)
+        console.log('Order created:', orderResponse)
+
+        // Получаем transaction_id из ответа платежа
+        const transactionId = paymentResponse?.data?.paymentInfo?.id
+        
+        // 1.1. Подтверждаем платеж заказа (используем order_id из ответа createOrder)
+        if (transactionId && orderResponse?.data?.id) {
+          console.log('Confirming order payment...')
+          await confirmOrderPayment(orderResponse.data.id, transactionId)
+          console.log('Order payment confirmed')
+        }
+
+        // 1.2. Подтверждаем платеж заявки на захоронение (используем burial_id из URL параметров)
+        const burialId = this.$route.query.burial_id
+        if (transactionId && burialId) {
+          console.log('Confirming burial payment...')
+          await confirmBurialPayment(burialId, transactionId)
+          console.log('Burial payment confirmed')
+        }
 
         // 3. Закрываем модалку и сообщаем о успешной оплате
-        this.$emit('close')
-        this.$emit('success')
+        // this.$emit('close')
+        // this.$emit('success')
 
       } catch (error) {
         console.error('Payment process failed:', error)
