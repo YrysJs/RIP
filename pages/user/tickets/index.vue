@@ -51,22 +51,23 @@
         </select>
       </div>
 
-      <div class="flex flex-col gap-[16px]">
-        <div
-            v-for="request in requests"
-            :key="request.id"
-            class="flex justify-between items-center rounded-[12px] p-[16px] border border-[#EEEEEE] shadow-sm hover:bg-[#F9FAFB]"
-        >
-          <div>
-            <h3 class="text-base font-semibold mb-1">Заявка № {{ request.id }}</h3>
-            <p class="text-sm">Заявитель: {{ request.applicant }}</p>
-            <p class="text-sm text-[#6B7280]">
-              Ответственный исполнитель:
-              <span v-if="request.executor" class="font-semibold">{{ request.executor }}</span>
-              <span v-else class="text-[#9CA3AF]">не назначен</span>
-            </p>
+      <template v-if="activeTab === 'relocation'">
+        <div class="flex flex-col gap-[16px]">
+          <div
+              v-for="request in requests"
+              :key="request.id"
+              class="flex justify-between items-center rounded-[12px] p-[16px] border border-[#EEEEEE] shadow-sm hover:bg-[#F9FAFB]"
+          >
+            <div>
+              <h3 class="text-base font-semibold mb-1">Заявка № {{ request.id }}</h3>
+              <p class="text-sm">Заявитель: {{ request.applicant }}</p>
+              <p class="text-sm text-[#6B7280]">
+                Ответственный исполнитель:
+                <span v-if="request.executor" class="font-semibold">{{ request.executor }}</span>
+                <span v-else class="text-[#9CA3AF]">не назначен</span>
+              </p>
 
-            <div class="mt-[8px]">
+              <div class="mt-[8px]">
             <span
                 class="status"
                 :class="{
@@ -78,22 +79,43 @@
             >
               {{ statusText(request.status) }}
             </span>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-end">
+              <span class="text-sm text-[#6B7280] mb-[8px]">Дата заявки: {{ request.date }}</span>
+              <button class="details-btn" @click="router.push('/user/tickets/1')">Подробнее</button>
             </div>
           </div>
-
-          <div class="flex flex-col items-end">
-            <span class="text-sm text-[#6B7280] mb-[8px]">Дата заявки: {{ request.date }}</span>
-            <button class="details-btn" @click="router.push('/user/tickets/1')">Подробнее</button>
+        </div>
+      </template>
+      <template v-if="activeTab === 'akimat'">
+        <div class="w-full rounded-[12px] border border-[#EEEEEE] mt-[20px] p-[20px]" v-for="appeal of appeals" :key="appeal.id">
+          <div class="flex justify-between gap-[10px] items-end">
+            <div class="flex flex-col gap-[10px] text-lg font-semibold">
+              <h3>Тип обращения: <span class="ml-6 px-3 py-1 rounded-lg text-white" :class="appeal.type.value === 'COMPLAINT' ? 'bg-[#38949B]' : appeal.type.value === 'OFFER' ? 'bg-[#FFA500]' : 'bg-[#008000]'">{{ appeal.type.nameRu }}</span></h3>
+              <h3 class="my-2">Дата создания: <span>{{ new Date(appeal.createTime).toLocaleString('ru-RU') }}</span></h3>
+              <div class="flex flex-col gap-[0px]">
+                <h3>Обращение:</h3>
+                <p class="text-gray-500">
+                  {{ appeal.content }}
+                </p>
+              </div>
+            </div>
+            <div class="flex flex-col items-end">
+              <button class="details-btn" @click="openAppealChat">Чат</button>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
+
     </div>
   </NuxtLayout>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import  { getRequests, getTypes, exportReport, getStatuses, getAppeals } from '@/services/akimat'
+import  { getRequests, getTypes, getStatuses, getAppeals, getAppealComment } from '@/services/akimat'
 
 const activeTab = ref('relocation');
 
@@ -101,18 +123,20 @@ const router = useRouter();
 
 const relocationCount = 5;
 const akimatCount = 0;
+const appeals = ref([])
 
 definePageMeta({
   middleware: ['auth', 'akimat'],
 });
 
-onMounted(() => {
-  getRequests()
-  getTypes()
-  getStatuses()
-  exportReport()
-  getAppeals()
-})
+async function fetchAppeals() {
+  const response = await getAppeals()
+  appeals.value = response.data
+}
+
+const openAppealChat = (id) => {
+  getAppealComment()
+}
 
 const requests = [
   {
@@ -152,6 +176,14 @@ const statusText = (status) => {
   if (status === 'rejected') return 'Отклонена';
   return '';
 };
+
+onMounted(async () => {
+  getRequests()
+  getTypes()
+  getStatuses()
+  await fetchAppeals()
+})
+
 </script>
 
 <style lang="scss" scoped>
