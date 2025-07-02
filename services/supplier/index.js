@@ -211,6 +211,27 @@ function getSupplierProductReviews(phone, page = 1, limit = 10) {
     })
 }
 
+function addReviewResponse(reviewId, comment) {
+    const { $axios } = useNuxtApp()
+    
+    if (!reviewId) {
+        throw new Error('Review ID is required')
+    }
+    
+    if (!comment) {
+        throw new Error('Comment is required')
+    }
+    
+    return $axios({
+        method: 'POST',
+        url: `http://91.147.92.97/api/v1/reviews/${reviewId}/response`,
+        data: {
+            comment,
+            review_id: reviewId
+        }
+    })
+}
+
 export {
     getOrders,
     getProducts,
@@ -226,5 +247,6 @@ export {
     getBurialRequests,
     getSalesStats,
     getSupplierInfo,
-    getSupplierProductReviews
+    getSupplierProductReviews,
+    addReviewResponse
 }

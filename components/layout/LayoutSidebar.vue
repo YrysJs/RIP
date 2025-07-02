@@ -62,6 +62,12 @@ const supplierMenu = [
         path: "/supplier/reports",
         childs: []
     },
+    {
+        title: "Обращение в Акимат",
+        path: "/supplier/goverment/requests",
+        count: 0,
+        childs: []
+    },
 ]
 
 </script>

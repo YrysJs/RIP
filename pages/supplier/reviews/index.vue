@@ -1,5 +1,5 @@
 <script setup>
-import { getSupplierProductReviews } from '~/services/supplier'
+import { getSupplierProductReviews, addReviewResponse } from '~/services/supplier'
 
 const props = defineProps({
     value: {
@@ -16,6 +16,11 @@ const props = defineProps({
 // Состояние пагинации
 const currentPage = ref(1)
 const pending = ref(false)
+
+// Состояния для ответов на отзывы
+const replyForms = ref({}) // Объект для хранения состояния формы для каждого отзыва
+const replyTexts = ref({}) // Объект для хранения текста ответа для каждого отзыва
+const sendingReply = ref({}) // Объект для отслеживания отправки ответа
 
 // Загружаем отзывы с сервера
 const { data: reviews, refresh } = await useLazyAsyncData('supplier-reviews', async () => {
@@ -62,6 +67,50 @@ function formatDate(dateString) {
         })
     } catch (error) {
         return dateString
+    }
+}
+
+// Функции для работы с ответами на отзывы
+const toggleReplyForm = (reviewId) => {
+    replyForms.value[reviewId] = !replyForms.value[reviewId]
+    if (!replyForms.value[reviewId]) {
+        // Очищаем текст при закрытии формы
+        replyTexts.value[reviewId] = ''
+    }
+}
+
+const cancelReply = (reviewId) => {
+    replyForms.value[reviewId] = false
+    replyTexts.value[reviewId] = ''
+}
+
+const submitReply = async (reviewId) => {
+    const replyText = replyTexts.value[reviewId]
+    
+    if (!replyText || replyText.trim() === '') {
+        alert('Пожалуйста, введите текст ответа')
+        return
+    }
+    
+    try {
+        sendingReply.value[reviewId] = true
+        
+        await addReviewResponse(reviewId, replyText.trim())
+        
+        // Очищаем форму и закрываем её
+        replyTexts.value[reviewId] = ''
+        replyForms.value[reviewId] = false
+        
+        // Обновляем список отзывов
+        await refresh()
+        
+        alert('Ответ успешно отправлен!')
+        
+    } catch (error) {
+        console.error('Ошибка отправки ответа:', error)
+        alert('Ошибка при отправке ответа. Попробуйте еще раз.')
+    } finally {
+        sendingReply.value[reviewId] = false
     }
 }
 
@@ -163,6 +212,64 @@ function formatDate(dateString) {
                             class="w-20 h-20 object-cover rounded-lg border"
                             @error="$event.target.style.display = 'none'"
                         />
+                    </div>
+                </div>
+
+                <!-- Блок ответов на отзыв -->
+                <div class="mt-6 border-t pt-4">
+                    <!-- Существующий ответ (если есть) -->
+                    <div v-if="review.response" class="mb-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="font-medium text-sm text-gray-700">Ваш ответ</div>
+                            <div class="text-xs text-gray-500">{{ formatDate(review.response.created_at) }}</div>
+                        </div>
+                        <div class="text-sm">{{ review.response.comment }}</div>
+                    </div>
+
+                    <!-- Кнопка "Ответить" (показывается только если нет ответа) -->
+                    <div v-if="!review.response && !replyForms[review.id]" class="flex justify-end">
+                        <button
+                            @click="toggleReplyForm(review.id)"
+                            class="px-4 py-2 text-white text-sm font-medium rounded-lg bg-[#224C4F] transition-colors"
+                        >
+                            Ответить
+                        </button>
+                    </div>
+
+                    <!-- Форма ответа -->
+                    <div v-if="!review.response && replyForms[review.id]" class="mt-4">
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Ваш ответ на отзыв
+                                </label>
+                                <textarea
+                                    v-model="replyTexts[review.id]"
+                                    placeholder="Введите ваш ответ..."
+                                    rows="4"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    :disabled="sendingReply[review.id]"
+                                ></textarea>
+                            </div>
+                            
+                            <div class="flex justify-end gap-2">
+                                <button
+                                    @click="cancelReply(review.id)"
+                                    :disabled="sendingReply[review.id]"
+                                    class="px-4 py-2 text-gray-600 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Отменить
+                                </button>
+                                <button
+                                    @click="submitReply(review.id)"
+                                    :disabled="sendingReply[review.id] || !replyTexts[review.id] || replyTexts[review.id].trim() === ''"
+                                    class="px-4 py-2 bg-[#224C4F] text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    <span v-if="sendingReply[review.id]" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                    {{ sendingReply[review.id] ? 'Отправка...' : 'Отправить' }}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
