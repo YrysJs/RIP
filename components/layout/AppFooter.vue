@@ -6,7 +6,7 @@
                 <nuxt-link to="/">Цены</nuxt-link>
                 <nuxt-link to="/">Контакты</nuxt-link>
                 <nuxt-link to="/">Вакансии</nuxt-link>
-                <nuxt-link to="/">Инструкция для пользователей</nuxt-link>
+                <nuxt-link to="/instructions">Инструкция для пользователей</nuxt-link>
             </div>
             <div class="footer-center flex items-center gap-[24px]">
                 <a href="/">

@@ -26,24 +26,24 @@ const supplierMenu = [
         count: 0,
         childs: []
     },
-    {
-        title: "Запрос на перезахоронение",
-        path: "/client/tickets/active",
-        count: 0,
-        childs: []
-    },
-    {
-        title: "Обращение в Акимат",
-        path: "/client/goverment/requests",
-        count: 0,
-        childs: []
-    },
-    {
-        title: "Обращение в администрацию кладбища",
-        path: "/client/tickets/active",
-        count: 0,
-        childs: []
-    }
+    // {
+    //     title: "Запрос на перезахоронение",
+    //     path: "/client/tickets/active",
+    //     count: 0,
+    //     childs: []
+    // },
+    // {
+    //     title: "Обращение в Акимат",
+    //     path: "/client/goverment/requests",
+    //     count: 0,
+    //     childs: []
+    // },
+    // {
+    //     title: "Обращение в администрацию кладбища",
+    //     path: "/client/tickets/active",
+    //     count: 0,
+    //     childs: []
+    // }
 ]
 
 </script>

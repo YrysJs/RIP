@@ -44,7 +44,7 @@ async function userCreateAppeal() {
 </script>
 
 <template>
-     <NuxtLayout name="client">
+     <NuxtLayout name="supplier">
         <div class="w-full h-[61px] pl-[20px] flex items-center bg-white rounded-[16px] text-lg font-semibold">
             Создание обращения в Акимат
         </div>
