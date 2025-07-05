@@ -20,7 +20,7 @@
             :class="{ 'tab--active': activeTab === 'akimat' }"
             @click="activeTab = 'akimat'"
         >
-          Обращения в акимат
+          Обращения в Акимат
           <span class="tab-count" :class="{ 'tab-count--active': activeTab === 'akimat' }">
           {{ akimatCount }}
         </span>
@@ -60,10 +60,10 @@
           >
             <div>
               <h3 class="text-base font-semibold mb-1">Заявка № {{ request.id }}</h3>
-              <p class="text-sm">Заявитель: {{ request.applicant }}</p>
+              <p class="text-sm">Заявитель: {{ formatPhoneNumber(request.userPhone) }}</p>
               <p class="text-sm text-[#6B7280]">
                 Ответственный исполнитель:
-                <span v-if="request.executor" class="font-semibold">{{ request.executor }}</span>
+                <span v-if="request.responsibleUserPhone" class="font-semibold">{{ formatPhoneNumber(request.responsibleUserPhone) }}</span>
                 <span v-else class="text-[#9CA3AF]">не назначен</span>
               </p>
 
@@ -83,8 +83,8 @@
             </div>
 
             <div class="flex flex-col items-end">
-              <span class="text-sm text-[#6B7280] mb-[8px]">Дата заявки: {{ request.date }}</span>
-              <button class="details-btn" @click="router.push('/user/tickets/1')">Подробнее</button>
+<!--              <span class="text-sm text-[#6B7280] mb-[8px]">Дата заявки: {{ request.date }}</span>-->
+              <button class="details-btn" @click="router.push('/user/tickets/' + request.id)">Подробнее</button>
             </div>
           </div>
         </div>
@@ -115,7 +115,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import  { getRequests, getTypes, getStatuses, getAppeals, getAppealComment } from '@/services/akimat'
+import  { getRequests, getTypes, getAppeals, getAppealComment } from '@/services/akimat'
 
 const activeTab = ref('relocation');
 
@@ -123,6 +123,7 @@ const router = useRouter();
 
 const relocationCount = 5;
 const akimatCount = 0;
+const requests = ref([])
 const appeals = ref([])
 
 definePageMeta({
@@ -134,40 +135,23 @@ async function fetchAppeals() {
   appeals.value = response.data
 }
 
+
+async function fetchRequests() {
+  const response = await getRequests()
+  requests.value = response.data
+}
+
 const openAppealChat = (id) => {
   getAppealComment()
 }
 
-const requests = [
-  {
-    id: 351,
-    applicant: 'Беляков Макар Максимович',
-    executor: '',
-    status: 'new',
-    date: '07.01.2025'
-  },
-  {
-    id: 352,
-    applicant: 'Петрова Анна Сергеевна',
-    executor: 'Бақадыр Нурбике Бекзатқызығ',
-    status: 'inwork',
-    date: '08.01.2025'
-  },
-  {
-    id: 353,
-    applicant: 'Сидоров Иван Александрович',
-    executor: 'Бақадыр Нурбике Бекзатқызығ',
-    status: 'waiting',
-    date: '09.01.2025'
-  },
-  {
-    id: 354,
-    applicant: 'Кузнецова Ольга Дмитриевна',
-    executor: 'Бақадыр Нурбике Бекзатқызығ',
-    status: 'rejected',
-    date: '10.01.2025'
-  }
-];
+
+
+function formatPhoneNumber(phone) {
+  if (!/^\d{11}$/.test(phone)) return 'Неверный формат номера';
+
+  return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(4, 7)} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
+}
 
 const statusText = (status) => {
   if (status === 'new') return 'Новый запрос';
@@ -178,10 +162,19 @@ const statusText = (status) => {
 };
 
 onMounted(async () => {
-  getRequests()
-  getTypes()
-  getStatuses()
-  await fetchAppeals()
+  // try {
+    await fetchRequests()
+    getTypes()
+    await fetchAppeals()
+  // } catch (error) {
+  //   console.error('Ошибка при логине:', error)
+  //
+  // } finally {
+  //   console.log('login')
+  //
+  // }
+
+  // getStatuses()
 })
 
 </script>

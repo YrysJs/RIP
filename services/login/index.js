@@ -29,6 +29,33 @@ function signupGov(data) {
     })
 }
 
+function signupAkimat(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PUT',
+        url: 'http://91.147.92.97:8081/rip-government/v1/akimat/user',
+        data: data.data,
+    })
+}
+
+function deleteAkimatUser(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'DELETE',
+        url: 'http://91.147.92.97:8081/rip-government/v1/akimat/user',
+        data: data.data,
+    })
+}
+
+function updateUser(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PATCH',
+        url: 'http://91.147.92.97:8081/v1/user',
+        data: data.data,
+    })
+}
+
 function signupClient(data) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -100,7 +127,32 @@ function getCurrentUser() {
     })
 }
 
+function setSupplierFiles(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: 'http://91.147.92.97:8093/api/v1/suppliers/docs',
+        data
+    })
+}
 
+function getSuppliers(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://91.147.92.97:8081/v1/supplier/list',
+        params,
+    })
+}
+
+function activateSupplier(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PATCH',
+        url: 'http://91.147.92.97:8081/v1/supplier/activate',
+        data
+    })
+}
 
 export {
     getOtp,
@@ -113,5 +165,11 @@ export {
     getUserData,
     signupClientFcb,
     signupGov,
-    getUsersByRole
+    getUsersByRole,
+    signupAkimat,
+    deleteAkimatUser,
+    updateUser,
+    setSupplierFiles,
+    getSuppliers,
+    activateSupplier
 }

@@ -70,6 +70,53 @@
             placeholder="Введите текст новости..."
         ></textarea>
       </div>
+
+
+      <div>
+        <h3 class="text-[18px] font-medium mb-1">
+          Прикрепить файл
+        </h3>
+
+        <!-- Кнопка загрузки фото -->
+        <button
+            @click="$refs.achievementFileInput.click()"
+            class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"
+        >
+          Добавить
+        </button>
+
+        <!-- Скрытый input для файлов -->
+        <input
+            ref="achievementFileInput"
+            type="file"
+            multiple
+            @change="handleAchievementPhotoUpload"
+            class="hidden"
+        >
+        <!-- Галерея фото достижений -->
+        <div v-if="achievementPhotos.length > 0" class="achievement-photos-gallery">
+
+          <div class="gallery-grid">
+            <div
+                v-for="(photo, index) in achievementPhotos"
+                :key="photo.id"
+                class="image-preview-container"
+            >
+              <img src="/images/doc.png" alt="Achievement photo" class="image-preview">
+              <div class="image-overlay">
+                <button
+                    @click="removeAchievementPhoto(index)"
+                    class="remove-btn"
+                >
+                  ✕
+                </button>
+              </div>
+              <div class="image-number">{{ index + 1 }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="bg-white p-5 rounded-2xl mb-4 flex gap-[10px] justify-end">
         <button class="btn btn-submit" @click="addNews">
           Опубликовать
@@ -90,14 +137,16 @@
 <script setup>
 // import {QuillEditor} from "@vueup/vue-quill";
 import { ref } from 'vue';
-import { createNews } from '~/services/akimat'
+import { createNews, setNewsFile } from '~/services/akimat'
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
+import Cookies from "js-cookie";
 const router = useRouter();
 
 const newsCategory = ref(0);
 const newsTitle = ref('');
 const showSuccessModal = ref(false)
 const newsContent = ref('');
+const achievementPhotos = ref([])
 const file = ref(null)
 const base64File = ref('');
 
@@ -125,6 +174,27 @@ async function convertToBase64(file) {
   })
 }
 
+const handleAchievementPhotoUpload = (event) => {
+  const files = Array.from(event.target.files)
+
+  files.forEach(file => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        achievementPhotos.value.push({
+          id: Date.now() + Math.random(),
+          url: e.target.result,
+          file: file
+        })
+      }
+      reader.readAsDataURL(file)
+  })
+  event.target.value = ''
+}
+
+const removeAchievementPhoto = (index) => {
+  achievementPhotos.value.splice(index, 1)
+}
+
 const closeSuccessModal = () => {
   showSuccessModal.value = false
   navigateTo('/user/news')
@@ -133,13 +203,28 @@ const closeSuccessModal = () => {
 const addNews = async () => {
 
   try {
-    base64File.value = await convertToBase64(file.value)
+
+    const formData = new FormData()
+    let filerRes
+    formData.append('Authorization', Cookies.get('token'))
+    if (achievementPhotos.value) {
+      if (Array.isArray(achievementPhotos.value)) {
+        achievementPhotos.value.forEach(achievement => formData.append('files', achievement.file))
+      } else {
+        formData.append('files', achievementPhotos.value.file)
+      }
+      filerRes = await setNewsFile(formData)
+    }
+
     const temp = {
       title: newsTitle.value,
       content: newsContent.value,
       categoryId: newsCategory.value,
       coverImageBase64: base64File.value,
       newsStatusId: 1
+    }
+    if (filerRes?.data?.success) {
+      temp.fileUrl = filerRes.data.files[0].fileUrl
     }
     await createNews(temp)
   } catch (error) {
@@ -228,4 +313,94 @@ const addNews = async () => {
   color: #fff;
   padding: 16px;
 }
+
+.achievement-photos-gallery {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.gallery-grid {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.image-preview-container {
+  width: 120px;
+  height: 120px;
+  position: relative;
+
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #E5E7EB;
+}
+
+.image-preview {
+  width: 120px;
+  height: 100%;
+  display: block;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  .image-preview-container:hover & {
+    opacity: 1;
+  }
+}
+
+.image-number {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.change-btn {
+  background-color: #6366F1;
+  color: white;
+
+  &:hover {
+    background-color: #5B5BF7;
+  }
+}
+
+.remove-btn {
+  background-color: #EF4444;
+  color: white;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: #DC2626;
+  }
+}
+
 </style>

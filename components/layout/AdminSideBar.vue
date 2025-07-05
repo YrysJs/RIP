@@ -13,6 +13,11 @@ const managerMenu = [
     childs: []
   },
   {
+    title: "Управление менеджерами",
+    path: '/admin/managers',
+    childs: []
+  },
+  {
     title: "Управление кладбищами",
     path: "/admin/cemetery",
     childs: []

@@ -87,22 +87,43 @@
         </div>
       </div>
 
-      <!-- Топ 5 новостей -->
-      <div class="card p-6 flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-sm text-[#6B7280] font-semibold">Топ 5 просматриваемых новостей</h2>
-          <select class="filter-select w-[140px]">
-            <option>За все время</option>
-          </select>
+      <div class="card flex  justify-between items-center p-6">
+        <div class="mr-8">
+          <h2 class="text-sm text-[#6B7280] font-semibold mb-2">Пользователи</h2>
         </div>
-        <div v-for="news in topNews" :key="news.title" class="flex justify-between items-center py-3">
-          <p class="text-sm font-medium">{{ news.title }}</p>
-          <div class="flex items-center gap-2 text-[#6B7280]">
-            <span>{{ news.views }}</span>
-            <img src="/icons/eye.svg" class="w-4 h-4" />
-          </div>
+        <div class="flex flex-wrap items-end gap-4 text-sm font-semibold">
+          <span v-for="item in roles" :key="item.role" >{{item.role === 'USER' ? 'Клиенты' : 'Поставщики'}}: {{ item.users.length }}</span>
         </div>
       </div>
+
+      <!-- Топ 5 новостей -->
+      <template v-for="(value, key) in burialStats" :key="key">
+        <div v-if="key !== 'total'" class="card flex  justify-between items-center p-6">
+          <div class="mr-8">
+            <h2 class="text-sm text-[#6B7280] font-semibold mb-2">{{burialStatsTitles[key]}}</h2>
+          </div>
+          <div class="flex flex-wrap items-end gap-4 text-sm font-semibold">
+            <span v-for="item in value" :key="item.name" >{{key === 'by_months' ? formatYearMonth(item.name) : item.name}}: {{ item.count }}</span>
+          </div>
+        </div>
+      </template>
+
+
+<!--      <div class="card p-6 flex flex-col">-->
+<!--        <div class="flex justify-between items-center mb-4">-->
+<!--          <h2 class="text-sm text-[#6B7280] font-semibold">Топ 5 просматриваемых новостей</h2>-->
+<!--          <select class="filter-select w-[140px]">-->
+<!--            <option>За все время</option>-->
+<!--          </select>-->
+<!--        </div>-->
+<!--        <div v-for="news in topNews" :key="news.title" class="flex justify-between items-center py-3">-->
+<!--          <p class="text-sm font-medium">{{ news.title }}</p>-->
+<!--          <div class="flex items-center gap-2 text-[#6B7280]">-->
+<!--            <span>{{ news.views }}</span>-->
+<!--            <img src="/icons/eye.svg" class="w-4 h-4" />-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <!-- Новостей всего -->
       <div class="card flex flex-wrap justify-between items-center p-6">
@@ -122,10 +143,12 @@
 </template>
 
 <script setup>
-import { getNewsStats, getRequestsStats, exportAppealsReport, exportRequestsReport } from '~/services/akimat'
+import { getNewsStats, getRequestsStats, exportAppealsReport, exportRequestsReport, getBurialRequestStats } from '~/services/akimat'
 import {downloadBase64File} from '~/utils/downloadBase64.js'
+import { getUsersByRole } from '~/services/login'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'vue-chartjs'
+import {ref} from "vue";
 
 definePageMeta({
   middleware: ['auth', 'akimat'],
@@ -135,6 +158,7 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 const loading = ref(false)
 const newsStats = ref({})
 const requestStats = ref({})
+const burialStats = ref({})
 const types = ref({
   labels: ['Обращения', 'Перезахоронение'],
   datasets: [
@@ -145,13 +169,27 @@ const types = ref({
   ]
 })
 
-const topNews = [
-  { title: 'Типовые правила погребения и организации дела', views: 234 },
-  { title: 'Законы и правила захоронений в Казахстане', views: 200 },
-  { title: 'Причины и моральные аспекты перезахоронения', views: 198 },
-  { title: 'Как выбрать место на кладбище', views: 150 },
-  { title: 'Современные технологии на кладбищах', views: 145 }
-];
+const roles = ref([])
+
+const burialStatsTitles = ref({
+  by_cemeteries: 'Кладбища',
+  by_cities: 'Города',
+  by_months: 'Месяцы',
+  by_status: 'Статусы'
+})
+
+function formatYearMonth(dateStr) {
+  const [year, month] = dateStr.split('-');
+  const monthNames = [
+    'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+  ];
+
+  const monthIndex = parseInt(month, 10) - 1;
+  const monthName = monthNames[monthIndex] || 'Неизвестно';
+
+  return `${monthName} ${year}`;
+}
 
 const exportAppeals = async () => {
   const res = await exportAppealsReport()
@@ -168,8 +206,14 @@ onMounted((async () => {
     loading.value = true
     const newsRes = await getNewsStats();
     const requestRes = await getRequestsStats();
+    const burialRes = await getBurialRequestStats();
+    const response = await getUsersByRole({
+      roleIds: '3,4'
+    })
+    roles.value = response.data
     newsStats.value = newsRes.data
     requestStats.value = requestRes.data
+    burialStats.value = burialRes.data
     if (requestStats.value?.types?.length > 0) {
       types.value = {
         labels: [requestStats.value?.types[0].type.nameRu, requestStats.value?.types[1].type.nameRu],

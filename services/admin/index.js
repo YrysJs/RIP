@@ -54,11 +54,31 @@ function importXlsx(data) {
     })
 }
 
+function getManagers(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://91.147.92.97:8092/api/v1/admin/cemetery-managers/all',
+        params,
+    })
+}
+
+function setCemeteryManager(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: `http://91.147.92.97:8092/api/v1/admin/cemeteries/${data.id}/managers`,
+        data
+    })
+}
+
 export {
     getTemplate,
     CreateCemetery,
     importXlsx,
     UpdateCemetery,
     getAkimats,
-    CreateAkimat
+    CreateAkimat,
+    getManagers,
+    setCemeteryManager
 }

@@ -10,68 +10,95 @@
       </div>
 
       <div class="grid grid-cols-12 text-sm font-semibold text-[#6B7280] py-[10px] border-b border-[#EEEEEE]">
-        <div class="col-span-3">Роль</div>
         <div class="col-span-6">Фио пользователя</div>
+        <div class="col-span-3">БИН</div>
         <div class="col-span-3">Статус</div>
       </div>
-      <template v-for="role in roles" :key="role.role">
         <div
-            v-for="user in role.users"
+            v-for="user in suppliers"
             :key="user.id"
             class="grid grid-cols-12 items-center text-sm py-[14px] border-b border-[#EEEEEE] hover:bg-[#F9FAFB] transition"
         >
-          <div class="col-span-3">{{ role.role === 'AKIMAT_ADMIN' ? 'Админ' : 'Менеджер' }}</div>
           <div class="col-span-6">{{ user.surname }} {{ user.name }} {{ user.patronymic }}</div>
+          <div class="col-span-3">{{ user.bin }}</div>
+
           <div class="col-span-2">
         <span
             class="status"
             :class="{
-            'status--active': true,
-            'status--pending': user.status === 'pending',
-            'status--blocked': user.status === 'blocked'
+            'status--active': user.isActive,
+            'status--pending cursor-pointer': !user.isActive,
           }"
+            @click="showConfirmModal(user)"
         >
-<!--          {{ statusText(user.status) }}-->
-          Активен
+          {{ user.isActive ? 'Активен' : 'Не активен' }}
+
         </span>
           </div>
           <div class="col-span-1 flex justify-end">
             <img src="/icons/arrow-right.svg" class="w-4 h-4" />
           </div>
         </div>
-      </template>
 
     </div>
     <Teleport to="body">
-      <AkimatSignUp v-if="isCreateModal" @finish="createUser" @close="isCreateModal = false" />
       <SuccessModal
           v-if="showSuccessModal"
           title="Приглашение отправлено!"
           @close="closeSuccessModal"
+      />
+      <ConfirmModal
+          v-if="isConfirmModal"
+          title="Активировать постащика?"
+          @close="closeConfirmModal"
+          @confirm="activate"
       />
     </Teleport>
   </NuxtLayout>
 </template>
 
 <script setup>
-import AkimatSignUp from "~/components/auth/AkimatSignUp.vue";
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
-import { getUsersByRole } from '~/services/login'
+import { getSuppliers, activateSupplier } from '~/services/login'
 import {ref} from "vue";
+import ConfirmModal from "~/components/layout/modals/ConfirmModal.vue";
 
-// definePageMeta({
-//   middleware: ['auth', 'admin'],
-// });
 
-const isCreateModal = ref(false)
+
+definePageMeta({
+  middleware: ['auth', 'admin'],
+});
+
 const showSuccessModal = ref(false)
+const isConfirmModal = ref(false)
+const selectedUser = ref({})
 
-const roles = ref([])
+const suppliers = ref([])
 
 
-const createUser = () => {
-  isCreateModal.value = false
-  showSuccessModal.value = true
+const showConfirmModal = (user) => {
+  if (!user.isActive) {
+    selectedUser.value = user
+    isConfirmModal.value = true
+  }
+}
+
+const activate = async () => {
+
+    try {await activateSupplier({
+      supplierId: selectedUser.value.id
+    })
+    } catch (error) {
+      console.error('Ошибка при получении пользователей:', error)
+    } finally {
+      console.log('finally')
+    }
+
+
+}
+
+const closeConfirmModal = () => {
+  isConfirmModal.value = false
 }
 
 const closeSuccessModal = () => {
@@ -79,10 +106,8 @@ const closeSuccessModal = () => {
 }
 onMounted((async () => {
   try {
-    const response = await getUsersByRole({
-      roleIds: '4'
-    })
-    roles.value = response.data
+    const response = await getSuppliers()
+    suppliers.value = response.data
   } catch (error) {
     console.error('Ошибка при получении пользователей:', error)
   } finally {

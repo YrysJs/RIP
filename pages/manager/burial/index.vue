@@ -45,10 +45,9 @@ const fetchBurialDetails = async (id) => {
     grave.value = response.data
     const images = await getGraveImages(id)
     graveImages.value = images.data
+    burialDetailModalVisible.value = true
   } catch (error) {
     console.error('Ошибка при услуги:', error)
-  } finally {
-    burialDetailModalVisible.value = true
   }
 
 }

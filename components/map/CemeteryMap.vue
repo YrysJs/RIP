@@ -18,6 +18,15 @@ const props = defineProps({
 const emit = defineEmits(['close', 'grave-click'])
 
 const selected = ref(null)
+
+
+
+watch(selected, (newSelected) => {
+  if (newSelected) {
+    emit('grave-click', selected.value.id)
+  }
+})
+
 const closeModal = () => emit('close')
 </script>
 

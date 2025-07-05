@@ -12,6 +12,11 @@ const managerMenu = [
     path: '/manager/burial',
     childs: []
   },
+  {
+    title: "Уведомления",
+    path: '/manager/notifications',
+    childs: []
+  },
   // {
   //   title: "Запрос на облагораживание",
   //   path: "/manager/ennoblement",

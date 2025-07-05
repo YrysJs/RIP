@@ -1,12 +1,11 @@
 <script setup>
-import { signupAkimat } from '~/services/login'
+import { signupGov } from '~/services/login/index.js'
 const emit = defineEmits(['close', 'finish'])
 
 const phone_number = ref('')
 const iin = ref('')
 const name = ref('')
 const surname = ref('')
-const roleId = ref(0)
 const patronymic = ref('')
 
 function close() {
@@ -15,18 +14,17 @@ function close() {
 
 async function run () {
   try {
-    await signupAkimat({
+    await signupGov({
       data: {
-        user: {
-          phone: extractDigits(phone_number.value),
-          iin: iin.value,
-          name: name.value,
-          surname: surname.value,
-          patronymic: patronymic.value,
-        },
-        userRoleId: roleId.value,
-        akimatId: 1
+        phone: extractDigits(phone_number.value),
+        iin: iin.value,
+        name: name.value,
+        surname: surname.value,
+        patronymic: patronymic.value,
       },
+      params: {
+        roleId: 5
+      }
     })
     emit('finish')
   } catch (error) {
@@ -75,13 +73,6 @@ function extractDigits(phone) {
         <div class="mt-[24px]">
           <p class="text-sm font-roboto text-[#222222]">Телефон</p>
           <input v-model="phone_number" v-mask="'+7 (###) ###-##-##'" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите номер телефона">
-        </div>
-        <div class="mt-[24px] mb-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">Роль</p>
-          <select v-model="roleId" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px] pr-[16px] select" placeholder="Роль">
-            <option :value="8">Менеджер</option>
-            <option :value="7">Админ</option>
-          </select>
         </div>
         <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': iin.length }" @click="run">Отправить</button>
       </div>

@@ -32,9 +32,9 @@
             </button>
 
             <!-- Кнопка профиля -->
-            <NuxtLink to="/profile">
+            <button @click="profileClick">
               <img src="/icons/user.svg" alt="Профиль" />
-            </NuxtLink>
+            </button>
 
             <!-- Дропдаун меню -->
             <div
@@ -99,7 +99,7 @@
         </div>
         <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('akimat')">
           <img src="/icons/building.svg" class="w-5 h-5" />
-          <span class="font-medium">Кабинет акимата</span>
+          <span class="font-medium">Кабинет Акимата</span>
         </div>
       </div>
     </div>
@@ -114,8 +114,9 @@ import AkimatLogin from "~/components/auth/AkimatLogin.vue";
 import ManagerLogin from "~/components/auth/ManagerLogin.vue";
 import SupplierLogin from "~/components/auth/SupplierLogin.vue";
 import Cookies from 'js-cookie'
+import {parseJwt} from '~/utils/parseJwt';
 
-const token = Cookies.get('token')
+const token = ref(Cookies.get('token'))
 const router = useRouter()
 const showLoginMenu = ref(false);
 const activeModal = ref('')
@@ -152,6 +153,33 @@ function login(type) {
   userStore.setAuthType(type)
   
   activeModal.value = type
+}
+
+function profileClick() {
+  const parsedToken = parseJwt(token.value)
+  switch (parsedToken.role) {
+    case 'ADMIN':
+      router.push('/admin/cemetery')
+      break;
+    case 'AKIMAT_MANAGER':
+      router.push('/user/tickets')
+      break;
+    case 'AKIMAT_ADMIN':
+      router.push('/user/tickets')
+      break;
+    case 'GOVERNMENT':
+      router.push('/user/tickets')
+      break;
+    case 'CEMETERY_MANAGER':
+      router.push('/manager/booking')
+      break;
+    case 'USER':
+      router.push('/client/tickets/active')
+      break;
+    case 'SUPPLIER':
+      router.push('/supplier/tickets/active')
+      break;
+  }
 }
 
 function logout() {

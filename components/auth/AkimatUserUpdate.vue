@@ -1,12 +1,11 @@
 <script setup>
-import { signupAkimat } from '~/services/login'
+import { updateUser } from '~/services/login'
 const emit = defineEmits(['close', 'finish'])
+const props = defineProps(['user'])
 
-const phone_number = ref('')
 const iin = ref('')
 const name = ref('')
 const surname = ref('')
-const roleId = ref(0)
 const patronymic = ref('')
 
 function close() {
@@ -15,17 +14,13 @@ function close() {
 
 async function run () {
   try {
-    await signupAkimat({
+    await updateUser({
       data: {
-        user: {
-          phone: extractDigits(phone_number.value),
-          iin: iin.value,
-          name: name.value,
-          surname: surname.value,
-          patronymic: patronymic.value,
-        },
-        userRoleId: roleId.value,
-        akimatId: 1
+        userId: props.user.id,
+        iin: iin.value,
+        name: name.value,
+        surname: surname.value,
+        patronymic: patronymic.value,
       },
     })
     emit('finish')
@@ -38,9 +33,12 @@ async function run () {
   }
 }
 
-function extractDigits(phone) {
-  return phone.replace(/\D/g, '');
-}
+onMounted(() => {
+  iin.value = props.user.iin
+  name.value = props.user.name
+  surname.value = props.user.surname
+  patronymic.value = props.user.patronymic
+})
 
 
 </script>
@@ -51,11 +49,8 @@ function extractDigits(phone) {
       <button class="absolute right-[24px] top-[24px]" @click="close">&#10005;</button>
       <div class="flex flex-col">
         <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
-          Приглашение на регистрацию
+          Редактировать пользователя
         </h3>
-        <p class="text-sm font-roboto">
-          Укажите данные сотрудника и мы отправим ссылку регистрации
-        </p>
         <div class="mt-[24px]">
           <p class="text-sm font-roboto text-[#222222]">Имя</p>
           <input v-model="name" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
@@ -68,20 +63,9 @@ function extractDigits(phone) {
           <p class="text-sm font-roboto text-[#222222]">Отчество</p>
           <input v-model="patronymic" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
         </div>
-        <div class="mt-[24px]">
+        <div class="mt-[24px] mb-[24px]">
           <p class="text-sm font-roboto text-[#222222]">ИИН</p>
           <input v-model="iin" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ИИН">
-        </div>
-        <div class="mt-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">Телефон</p>
-          <input v-model="phone_number" v-mask="'+7 (###) ###-##-##'" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите номер телефона">
-        </div>
-        <div class="mt-[24px] mb-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">Роль</p>
-          <select v-model="roleId" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px] pr-[16px] select" placeholder="Роль">
-            <option :value="8">Менеджер</option>
-            <option :value="7">Админ</option>
-          </select>
         </div>
         <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': iin.length }" @click="run">Отправить</button>
       </div>

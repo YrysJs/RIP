@@ -3,7 +3,7 @@ import UserLayoutSideBar from './UserLayoutSideBar.vue';
 
 const managerMenu = [
   {
-    label: "Запросы в акимат",
+    label: "Запросы в Акимат",
     to: '/user/tickets',
     icon: '/icons/tickets.svg',
     active: '/icons/tickets-active.svg',

@@ -91,12 +91,12 @@ const create = async () => {
         Назад
       </button>
 
-      <h1 class="text-[32px] font-medium">Создание акимата</h1>
+      <h1 class="text-[32px] font-medium">Создание Акимата</h1>
     </div>
 
 
     <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
-      <h2 class="text-lg font-medium">Данные о акимате</h2>
+      <h2 class="text-lg font-medium">Данные о Акимате</h2>
 
       <div>
         <label class="block text-sm mb-1">Название</label>

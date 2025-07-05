@@ -71,7 +71,7 @@ const otpCheck = async () => {
       <button class="absolute right-[24px] top-[24px]" @click="close">&#10005;</button>
       <div v-if="step == 0" class="flex flex-col">
         <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
-          Вход в кабинет акимата
+          Вход в кабинет Акимата
         </h3>
         <p class="text-sm font-roboto">
           Введите  номер мобильного телефона - мы пришлем код

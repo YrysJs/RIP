@@ -35,8 +35,25 @@
           Активен
         </span>
           </div>
-          <div class="col-span-1 flex justify-end">
-            <img src="/icons/arrow-right.svg" class="w-4 h-4" />
+          <div class="col-span-1 flex justify-end pr-2 relative">
+            <img src="/icons/menu.svg" class="w-4 h-4 cursor-pointer" @click="toggleDropdown" />
+            <div
+                v-if="showDropdownMenu"
+                class="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
+            >
+              <button
+                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                  @click="openUpdateModal(user)"
+              >
+                Редактировать
+              </button>
+              <button
+                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                  @click="showConfirmModal"
+              >
+                Удалить
+              </button>
+            </div>
           </div>
         </div>
       </template>
@@ -44,10 +61,17 @@
     </div>
     <Teleport to="body">
       <AkimatSignUp v-if="isCreateModal" @finish="createUser" @close="isCreateModal = false" />
+      <AkimatUserUpdate v-if="isUpdateModal" :user="selectedUser" @finish="updateUser" @close="isUpdateModal = false" />
       <SuccessModal
           v-if="showSuccessModal"
-          title="Приглашение отправлено!"
+          :title="successText"
           @close="closeSuccessModal"
+      />
+      <ConfirmModal
+          v-if="isConfirmModal"
+          title="Вы уверены что хотите удалить пользователя?"
+          @close="closeConfirmModal"
+          @confirm="deleteUser"
       />
     </Teleport>
   </NuxtLayout>
@@ -55,14 +79,21 @@
 
 <script setup>
 import AkimatSignUp from "~/components/auth/AkimatSignUp.vue";
+import AkimatUserUpdate from "~/components/auth/AkimatUserUpdate.vue";
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
-import { getUsersByRole } from '~/services/login'
+import ConfirmModal from "~/components/layout/modals/ConfirmModal.vue";
+import { getUsersByRole, deleteAkimatUser } from '~/services/login'
 import {ref} from "vue";
 
 const isCreateModal = ref(false)
 const showSuccessModal = ref(false)
+const isConfirmModal = ref(false)
+const isUpdateModal = ref(false)
+const selectedUser = ref({})
+const successText = ref('')
 
 const roles = ref([])
+const showDropdownMenu = ref(false)
 
 definePageMeta({
   middleware: ['auth', 'akimat'],
@@ -70,13 +101,62 @@ definePageMeta({
 
 const createUser = () => {
   isCreateModal.value = false
+  successText.value = 'Приглашение отправлено!'
   showSuccessModal.value = true
+}
+
+const updateUser = () => {
+  isUpdateModal.value = false
+  successText.value = 'Данные изменены!'
+  showSuccessModal.value = true
+  fetchUsers()
+}
+
+function toggleDropdown() {
+  showDropdownMenu.value = !showDropdownMenu.value
+}
+
+const openUpdateModal = (user) => {
+  selectedUser.value = user
+  toggleDropdown()
+  isUpdateModal.value = true
 }
 
 const closeSuccessModal = () => {
   showSuccessModal.value = false
 }
-onMounted((async () => {
+
+const showConfirmModal = (user) => {
+  selectedUser.value = user
+  toggleDropdown()
+  isConfirmModal.value = true
+}
+
+const closeConfirmModal = () => {
+  isConfirmModal.value = false
+}
+const deleteUser = async () => {
+  try {
+    await deleteAkimatUser({
+      data: {
+        akimatId: 1,
+        employeeId: selectedUser.value.id,
+        phone: selectedUser.value.phone
+      },
+    })
+    isConfirmModal.value = false
+    fetchUsers()
+  } catch (error) {
+    console.error('Ошибка при логине:', error)
+
+  } finally {
+    console.log('login')
+
+  }
+
+}
+
+const fetchUsers = async () => {
   try {
     const response = await getUsersByRole({
       roleIds: '7,8'
@@ -87,6 +167,10 @@ onMounted((async () => {
   } finally {
     console.log('finally')
   }
+}
+
+onMounted((() => {
+  fetchUsers()
 }))
 
 </script>

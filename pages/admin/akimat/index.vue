@@ -2,7 +2,7 @@
   <NuxtLayout name="admin">
     <div class="w-full mt-[20px] booking-list">
       <div class="flex justify-between items-center mb-[16px] bg-white rounded-[16px] p-[20px]">
-        <h2 class="text-2xl font-semibold">Список акиматов</h2>
+        <h2 class="text-2xl font-semibold">Список Акиматов</h2>
         <button class="invite-btn" @click="router.push('/admin/akimat/form')">
           <img src="/icons/plus.svg" alt="Пригласить" class="w-4 h-4 mr-2" />
           Создать
@@ -72,7 +72,7 @@ onMounted((async () => {
     const response = await getAkimats()
     akimats.value = response.data
   } catch (error) {
-    console.error('Ошибка при получении списка акиматов:', error)
+    console.error('Ошибка при получении списка Акиматов:', error)
   } finally {
     console.log('finally')
   }

@@ -2,12 +2,19 @@
 import CemeteryCard from '@/components/manager/cemetery/CemeteryCard.vue'
 import {getCemeteries, getGraves} from "~/services/cemetery"
 import CemeteryMap from "~/components/map/CemeteryMap.vue";
+import {getGraveById, getGraveImages} from "~/services/client/index.js";
+import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
 
 
 const cemeteries = ref([])
 const selectedCemetery = ref({})
 const isMap = ref(false)
 const gravesList = ref([])
+
+const graveDetailModalVisible = ref(false)
+
+const grave = ref({})
+const graveImages = ref([])
 
 definePageMeta({
   middleware: ['auth', 'manager'],
@@ -22,6 +29,20 @@ const selectCemetery = async (cemetery) => {
   } catch (error) {
     gravesList.value = []
   }
+}
+
+const fetchGraveDetails = async (id) => {
+  try {
+    const response = await getGraveById(id)
+    grave.value = response.data
+    const images = await getGraveImages(id)
+    graveImages.value = images.data
+    graveDetailModalVisible.value = true
+
+  } catch (error) {
+    console.error('Ошибка при услуги:', error)
+  }
+
 }
 
 onMounted((async () => {
@@ -46,12 +67,15 @@ onMounted((async () => {
           @open-map="selectCemetery"
       />
     <Teleport to="body">
+
       <CemeteryMap
           :cemetery="selectedCemetery"
           :polygons="gravesList"
           :visible="isMap"
+          @grave-click="fetchGraveDetails"
           @close="() => isMap = false"
       />
+      <GraveDetailModal :visible="graveDetailModalVisible" :grave="grave" :images="graveImages" @close=" () => graveDetailModalVisible = false" />
     </Teleport>
   </NuxtLayout>
 

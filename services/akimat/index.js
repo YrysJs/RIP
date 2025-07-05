@@ -118,6 +118,24 @@ function createNews(data) {
     })
 }
 
+function getBurialRequestStats(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://91.147.92.97:8092/api/v1/admin/statistics/burial-requests',
+        params,
+    })
+}
+
+function setNewsFile(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: 'http://91.147.92.97:8093/api/v1/akimat/files',
+        data
+    })
+}
+
 export {
     getRequests,
     createNews,
@@ -131,5 +149,7 @@ export {
     exportRequestsReport,
     getAppeals,
     exportAppealsReport,
-    getAppealComment
+    getAppealComment,
+    getBurialRequestStats,
+    setNewsFile
 }
