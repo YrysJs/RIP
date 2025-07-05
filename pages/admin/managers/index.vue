@@ -83,6 +83,7 @@ const setCemetery = async (id) => {
       cemetery_manager_phone: selectedManagerPhone.value
     })
     successText.value = 'Менеджер назначен!'
+    isSetCemeteryModal.value = false
     showSuccessModal.value = true
   } catch (error) {
     console.error('Ошибка при получении пользователей:', error)

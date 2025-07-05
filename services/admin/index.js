@@ -72,6 +72,23 @@ function setCemeteryManager(data) {
     })
 }
 
+function getReviews() {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'https://ripservice.kz/api/v1/moderation/reviews'
+    })
+}
+
+function moderateReview(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PATCH',
+        url: `https://ripservice.kz/api/v1/moderation/reviews/${data.id}`,
+        data: data.data
+    })
+}
+
 export {
     getTemplate,
     CreateCemetery,
@@ -80,5 +97,7 @@ export {
     getAkimats,
     CreateAkimat,
     getManagers,
-    setCemeteryManager
+    setCemeteryManager,
+    getReviews,
+    moderateReview
 }

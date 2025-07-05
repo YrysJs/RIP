@@ -22,6 +22,11 @@ const managerMenu = [
     path: "/admin/cemetery",
     childs: []
   },
+  {
+    title: "Модерация комментариев",
+    path: "/admin/comments",
+    childs: []
+  },
 ]
 
 </script>
