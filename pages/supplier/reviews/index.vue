@@ -1,5 +1,5 @@
 <script setup>
-import { getSupplierProductReviews, addReviewResponse } from '~/services/supplier'
+import { getSupplierProductReviews, addReviewResponse, createReviewAppeal } from '~/services/supplier'
 
 const props = defineProps({
     value: {
@@ -21,6 +21,11 @@ const pending = ref(false)
 const replyForms = ref({}) // Объект для хранения состояния формы для каждого отзыва
 const replyTexts = ref({}) // Объект для хранения текста ответа для каждого отзыва
 const sendingReply = ref({}) // Объект для отслеживания отправки ответа
+
+// Состояния для обжалования отзывов
+const appealForms = ref({}) // Объект для хранения состояния формы обжалования для каждого отзыва
+const appealReasons = ref({}) // Объект для хранения причины обжалования для каждого отзыва
+const sendingAppeal = ref({}) // Объект для отслеживания отправки обжалования
 
 // Загружаем отзывы с сервера
 const { data: reviews, refresh } = await useLazyAsyncData('supplier-reviews', async () => {
@@ -111,6 +116,53 @@ const submitReply = async (reviewId) => {
         alert('Ошибка при отправке ответа. Попробуйте еще раз.')
     } finally {
         sendingReply.value[reviewId] = false
+    }
+}
+
+// Функции для работы с обжалованием отзывов
+const toggleAppealForm = (reviewId) => {
+    appealForms.value[reviewId] = !appealForms.value[reviewId]
+    if (!appealForms.value[reviewId]) {
+        // Очищаем текст при закрытии формы
+        appealReasons.value[reviewId] = ''
+    }
+}
+
+const cancelAppeal = (reviewId) => {
+    appealForms.value[reviewId] = false
+    appealReasons.value[reviewId] = ''
+}
+
+const submitAppeal = async (reviewId) => {
+    const reason = appealReasons.value[reviewId]
+    
+    if (!reason || reason.trim() === '') {
+        alert('Пожалуйста, введите причину обжалования')
+        return
+    }
+    
+    try {
+        sendingAppeal.value[reviewId] = true
+        
+        await createReviewAppeal({
+            review_id: reviewId,
+            reason: reason.trim()
+        })
+        
+        // Очищаем форму и закрываем её
+        appealReasons.value[reviewId] = ''
+        appealForms.value[reviewId] = false
+        
+        // Обновляем список отзывов
+        await refresh()
+        
+        alert('Обжалование успешно отправлено!')
+        
+    } catch (error) {
+        console.error('Ошибка отправки обжалования:', error)
+        alert('Ошибка при отправке обжалования. Попробуйте еще раз.')
+    } finally {
+        sendingAppeal.value[reviewId] = false
     }
 }
 
@@ -226,8 +278,15 @@ const submitReply = async (reviewId) => {
                         <div class="text-sm">{{ review.response.comment }}</div>
                     </div>
 
-                    <!-- Кнопка "Ответить" (показывается только если нет ответа) -->
-                    <div v-if="!review.response && !replyForms[review.id]" class="flex justify-end">
+                    <!-- Кнопки действий (показываются только если нет ответа) -->
+                    <div v-if="!review.response && !replyForms[review.id] && !appealForms[review.id]" class="flex justify-end gap-2">
+                        <button
+                            v-if="review.is_moderated"
+                            @click="toggleAppealForm(review.id)"
+                            class="px-4 py-2 text-white text-sm font-medium rounded-lg bg-red-600 hover:bg-red-700 transition-colors"
+                        >
+                            Обжаловать
+                        </button>
                         <button
                             @click="toggleReplyForm(review.id)"
                             class="px-4 py-2 text-white text-sm font-medium rounded-lg bg-[#224C4F] transition-colors"
@@ -267,6 +326,42 @@ const submitReply = async (reviewId) => {
                                 >
                                     <span v-if="sendingReply[review.id]" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                                     {{ sendingReply[review.id] ? 'Отправка...' : 'Отправить' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Форма обжалования -->
+                    <div v-if="appealForms[review.id]" class="mt-4">
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Причина обжалования отзыва
+                                </label>
+                                <textarea
+                                    v-model="appealReasons[review.id]"
+                                    placeholder="Опишите причину обжалования отзыва..."
+                                    rows="4"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                                    :disabled="sendingAppeal[review.id]"
+                                ></textarea>
+                            </div>
+                            
+                            <div class="flex justify-end gap-2">
+                                <button
+                                    @click="cancelAppeal(review.id)"
+                                    :disabled="sendingAppeal[review.id]"
+                                    class="px-4 py-2 text-gray-600 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Отменить
+                                </button>
+                                <button
+                                    @click="submitAppeal(review.id)"
+                                    :disabled="sendingAppeal[review.id] || !appealReasons[review.id] || appealReasons[review.id].trim() === ''"
+                                    class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    <span v-if="sendingAppeal[review.id]" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                    {{ sendingAppeal[review.id] ? 'Отправка...' : 'Отправить обжалование' }}
                                 </button>
                             </div>
                         </div>

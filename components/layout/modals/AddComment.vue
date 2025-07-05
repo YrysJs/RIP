@@ -38,6 +38,16 @@ const closeModal = () => {
 
 // Сброс формы
 const resetForm = () => {
+  // Очищаем URL объекты перед сбросом формы
+  if (process.client && typeof URL !== 'undefined' && URL.revokeObjectURL) {
+    formData.value.images.forEach(image => {
+      const imageUrl = getImagePreview(image)
+      if (imageUrl) {
+        URL.revokeObjectURL(imageUrl)
+      }
+    })
+  }
+  
   formData.value = {
     rating: 5,
     comment: '',
@@ -71,6 +81,14 @@ const handleFileUpload = (event) => {
 
 // Удаление изображения
 const removeImage = (index) => {
+  const image = formData.value.images[index]
+  // Очищаем URL объект для предотвращения утечек памяти
+  if (process.client && typeof URL !== 'undefined' && URL.revokeObjectURL) {
+    const imageUrl = getImagePreview(image)
+    if (imageUrl) {
+      URL.revokeObjectURL(imageUrl)
+    }
+  }
   formData.value.images.splice(index, 1)
   delete errors.value.images
 }
@@ -118,6 +136,14 @@ const submitForm = async () => {
 const setRating = (rating) => {
   formData.value.rating = Number(rating)
   console.log('Установлен рейтинг:', rating) // Для отладки
+}
+
+// Безопасное создание preview URL только на клиентской стороне
+const getImagePreview = (image) => {
+  if (process.client && typeof URL !== 'undefined' && URL.createObjectURL) {
+    return URL.createObjectURL(image)
+  }
+  return '' // Возвращаем пустую строку для SSR
 }
 </script>
 
@@ -196,10 +222,17 @@ const setRating = (rating) => {
                 class="relative"
               >
                 <img
-                  :src="URL.createObjectURL(image)"
+                  v-if="getImagePreview(image)"
+                  :src="getImagePreview(image)"
                   :alt="`Preview ${index + 1}`"
                   class="w-full h-20 object-cover rounded border"
                 />
+                <div
+                  v-else
+                  class="w-full h-20 bg-gray-200 rounded border flex items-center justify-center"
+                >
+                  <span class="text-gray-500 text-sm">Загрузка...</span>
+                </div>
                 <button
                   type="button"
                   @click="removeImage(index)"

@@ -133,6 +133,18 @@ const handleStatusChange = async () => {
     }
 }
 
+const whatsAppLink = computed(() => {
+  const phone = orderData.value?.user_phone?.replace(/\D/g, '') || '';
+  const surname = orderData.value?.user_info?.surname || '';
+  const name = orderData.value?.user_info?.name || '';
+  const patronymic = orderData.value?.user_info?.patronymic || '';
+  const productName = orderData.value?.items?.[0]?.product?.name || '';
+
+  const message = `Здравствуйте ${surname} ${name} ${patronymic}\nПишу вам по поводу вашего заказа.\nНаименование: ${productName}`;
+
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+});
+
 </script>
 
 <template>
@@ -157,7 +169,15 @@ const handleStatusChange = async () => {
             <div class="font-medium flex flex-col gap-[10px]">
                 <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Дата похорон:</p><p>12.09.2024, 10:00</p></div>
                 <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Заказчик:</p><p>{{ '-'}}</p></div>
-                <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Контакты заказчика:</p><p>+{{ orderData?.user_phone }}</p></div>
+                <div class="flex text-base">
+                    <p class="min-w-[150px] max-w-[150px] flex items-center gap-[10px]">Контакты заказчика:</p>
+                    <p class="flex items-center gap-[10px]">
+                        +{{ orderData?.user_phone }} 
+                        <a :href="whatsAppLink" class="ml-2">
+                            <img src="/icons/whatsapp.svg" alt="" class="w-[32px] h-[32px]">
+                        </a>
+                    </p>
+                </div>
                 <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Адрес прибытия:</p><p>{{ orderData?.items[0].delivery_destination_address }}</p></div>
                 <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Время прибытия:</p><p>09:00</p></div>
             </div>

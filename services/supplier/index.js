@@ -4,7 +4,26 @@ function getSupplierInfo() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/v1/supplier',
+        url: 'https://ripservice.kz/v1/supplier/current',
+    })
+}
+
+function createReviewAppeal(data) {
+    const { $axios } = useNuxtApp()
+
+    return $axios({
+        method: 'POST',
+        url: `https://ripservice.kz/api/v1/appeals`,
+        data: data
+    })
+}
+
+function getReviewAppeals(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'https://ripservice.kz/api/v1/appeals',
+        params,
     })
 }
 
@@ -12,7 +31,7 @@ function getBurialRequests(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/burial-requests',
+        url: 'https://ripservice.kz/api/v1/burial-requests',
         params,
     })
 }
@@ -21,7 +40,7 @@ function getSalesStats() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/user/supplier/sales/stats',
+        url: 'https://ripservice.kz/api/v1/user/supplier/sales/stats',
     })
 }
 
@@ -29,7 +48,7 @@ function getOrders(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/user/supplier/orders',
+        url: 'https://ripservice.kz/api/v1/user/supplier/orders',
         params,
     })
 }
@@ -38,7 +57,7 @@ function getProducts(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/user/supplier/products',
+        url: 'https://ripservice.kz/api/v1/user/supplier/products',
         params,
     })
 }
@@ -47,7 +66,7 @@ function getAllProducts(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/products',
+        url: 'https://ripservice.kz/api/v1/products',
         params,
     })
 }
@@ -56,7 +75,7 @@ function getCategories() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/categories',
+        url: 'https://ripservice.kz/api/v1/categories',
     })
 }
 
@@ -69,7 +88,7 @@ function getProductById(id) {
     
     return $axios({
         method: 'GET',
-        url: `http://91.147.92.97/api/v1/products/${id}`,
+        url: `https://ripservice.kz/api/v1/products/${id}`,
     })
 }
 
@@ -82,7 +101,7 @@ function updateProductStatus(id, status) {
     
     return $axios({
         method: 'PATCH',
-        url: `http://91.147.92.97/api/v1/products/${id}/status`,
+        url: `https://ripservice.kz/api/v1/products/${id}/status`,
         data: { status },
     })
 }
@@ -91,7 +110,7 @@ function getReviews() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/user/supplier/reviews',
+        url: 'https://ripservice.kz/api/v1/user/supplier/reviews',
     })
 }
 
@@ -104,7 +123,7 @@ function getOrderById(id) {
     
     return $axios({
         method: 'GET',
-        url: `http://91.147.92.97/api/v1/orders/${id}`,
+        url: `https://ripservice.kz/api/v1/orders/${id}`,
     })
 }
 
@@ -121,7 +140,7 @@ function updateOrderStatus(id, status) {
     
     return $axios({
         method: 'PATCH',
-        url: `http://91.147.92.97/api/v1/orders/${id}/status`,
+        url: `https://ripservice.kz/api/v1/orders/${id}/status`,
         data: { status },
     })
 }
@@ -153,7 +172,7 @@ function createProduct(data) {
     
     return $axios({
         method: 'POST',
-        url: 'http://91.147.92.97/api/v1/products',
+        url: 'https://ripservice.kz/api/v1/products',
         data: formData,
     })
 }
@@ -189,7 +208,7 @@ function updateProduct(id, data) {
     
     return $axios({
         method: 'PUT',
-        url: `http://91.147.92.97/api/v1/products/${id}`,
+        url: `https://ripservice.kz/api/v1/products/${id}`,
         data: formData,
     })
 }
@@ -203,7 +222,7 @@ function getSupplierProductReviews(phone, page = 1, limit = 10) {
     
     return $axios({
         method: 'GET',
-        url: `http://91.147.92.97/api/v1/reviews/suppliers/${phone}/products`,
+        url: `https://ripservice.kz/api/v1/reviews/suppliers/${phone}/products`,
         params: {
             page,
             limit
@@ -224,7 +243,7 @@ function addReviewResponse(reviewId, comment) {
     
     return $axios({
         method: 'POST',
-        url: `http://91.147.92.97/api/v1/reviews/${reviewId}/response`,
+        url: `https://ripservice.kz/api/v1/reviews/${reviewId}/response`,
         data: {
             comment,
             review_id: reviewId
@@ -248,5 +267,7 @@ export {
     getSalesStats,
     getSupplierInfo,
     getSupplierProductReviews,
-    addReviewResponse
+    addReviewResponse,
+    createReviewAppeal,
+    getReviewAppeals
 }

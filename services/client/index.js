@@ -132,7 +132,7 @@ function clearCart() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'DELETE',
-        url: 'http://91.147.92.97/api/v1/cart',
+        url: 'https://ripservice.kz/api/v1/cart',
     })
 }
 
@@ -140,7 +140,7 @@ function getOrders(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/orders',
+        url: 'https://ripservice.kz/api/v1/orders',
         params,
     })
 }
@@ -149,7 +149,7 @@ function getBurialRequests(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/burial-requests',
+        url: 'https://ripservice.kz/api/v1/burial-requests',
         params,
     })
 }
@@ -158,7 +158,7 @@ function getBurialRequestById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://91.147.92.97/api/v1/burial-requests/${id}`,
+        url: `https://ripservice.kz/api/v1/burial-requests/${id}`,
     })
 }
 
@@ -166,7 +166,7 @@ function updateBurialRequestStatus(requestId, data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PATCH',
-        url: `http://91.147.92.97/api/v1/burial-requests/${requestId}/status`,
+        url: `https://ripservice.kz/api/v1/burial-requests/${requestId}/status`,
         data,
     })
 }
@@ -175,7 +175,7 @@ function updateBurialRequestData(requestId, data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: `http://91.147.92.97/api/v1/burial-requests/${requestId}`,
+        url: `https://ripservice.kz/api/v1/burial-requests/${requestId}`,
         data,
     })
 }
@@ -188,7 +188,7 @@ function uploadBurialRequestDocument(requestId, document) {
     
     return $axios({
         method: 'POST',
-        url: `http://91.147.92.97/api/v1/burial-requests/${requestId}/document`,
+        url: `https://ripservice.kz/api/v1/burial-requests/${requestId}/document`,
         data: formData,
     })
 }
@@ -201,7 +201,7 @@ function uploadDeceasedDeathCertificate(deceasedId, certificate) {
     
     return $axios({
         method: 'POST',
-        url: `http://91.147.92.97/api/v1/deceased/${deceasedId}/death-certificate`,
+        url: `https://ripservice.kz/api/v1/deceased/${deceasedId}/death-certificate`,
         data: formData,
     })
 }
@@ -210,7 +210,7 @@ function createBurialRequest(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://91.147.92.97/api/v1/burial-requests',
+        url: 'https://ripservice.kz/api/v1/burial-requests',
         data,
     })
 }
@@ -219,7 +219,7 @@ function createOrder(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://91.147.92.97/api/v1/orders',
+        url: 'https://ripservice.kz/api/v1/orders',
         data,
     })
 }
@@ -244,7 +244,7 @@ function postReview(data) {
     
     return $axios({
         method: 'POST',
-        url: 'http://91.147.92.97/api/v1/reviews',
+        url: 'https://ripservice.kz/api/v1/reviews',
         data: formData,
     })
 }
@@ -269,7 +269,7 @@ function createProductReview(data) {
     
     return $axios({
         method: 'POST',
-        url: 'http://91.147.92.97/api/v1/reviews/products',
+        url: 'https://ripservice.kz/api/v1/reviews/products',
         data: formData,
     })
 }
@@ -278,7 +278,7 @@ function getMemorials(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/memorials',
+        url: 'https://ripservice.kz/api/v1/memorials',
         params,
     })
 }
@@ -287,7 +287,7 @@ function searchDeceased(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://91.147.92.97/api/v1/deceased-search-requests',
+        url: 'https://ripservice.kz/api/v1/deceased-search-requests',
         data,
     })
 }
@@ -328,7 +328,7 @@ function createMemorial(data) {
     
     return $axios({
         method: 'POST',
-        url: 'http://91.147.92.97/api/v1/memorials',
+        url: 'https://ripservice.kz/api/v1/memorials',
         data: formData,
     })
 }
@@ -337,7 +337,7 @@ function getMemorialById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://91.147.92.97/api/v1/memorials/${id}`,
+        url: `https://ripservice.kz/api/v1/memorials/${id}`,
     })
 }
 

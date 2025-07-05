@@ -23,7 +23,7 @@ function confirmOrderPayment(orderId, transactionId) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: `http://91.147.92.97/api/v1/orders/${orderId}/confirm-payment`,
+        url: `https://ripservice.kz/api/v1/orders/${orderId}/confirm-payment`,
         headers: {
             'accept': 'application/json',
             'Content-Type': 'application/json'
@@ -38,7 +38,7 @@ function confirmBurialPayment(burialRequestId, transactionId) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: `http://91.147.92.97/api/v1/burial-requests/${burialRequestId}/confirm-payment`,
+        url: `https://ripservice.kz/api/v1/burial-requests/${burialRequestId}/confirm-payment`,
         headers: {
             'accept': 'application/json',
             'Content-Type': 'application/json'
@@ -53,7 +53,7 @@ function getPaymentReceipt(receiptId) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://91.147.92.97/api/v1/payments/receipt/${receiptId}`,
+        url: `https://ripservice.kz/api/v1/payments/receipt/${receiptId}`,
         headers: {
             'accept': 'application/json',
         }

@@ -158,7 +158,7 @@ const formatDate = (dateString) => {
             </div>
             <div class="bg-[#DC6E2926] p-[10px] rounded-md mt-[10px] flex items-center gap-3 text-base">
                 <img src="/icons/attention-icon.svg" alt="icon"> 
-                Услуга требует доработки, укажите точное описание и прикрепите фотографии
+                Услуга требует доработки: {{ product?.moderation_comment}}
             </div>
         </div>
     </NuxtLayout>

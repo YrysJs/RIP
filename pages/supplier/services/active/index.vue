@@ -1,17 +1,7 @@
 <script setup>
 import { getProducts, updateProductStatus } from '~/services/supplier'
 
-const props = defineProps({
-    value: {
-        type: Number,
-        default: 4.5,
-    },
-
-    totalStars: {
-        type: Number,
-        default: 5,
-    },
-});
+// Убираем статичные props для рейтинга
 
 // Состояние для хранения данных
 const products = ref([])
@@ -64,9 +54,9 @@ onMounted(() => {
     fetchProducts()
 })
 
-function getStarClass(n) {
-    if (props.value >= n) return "full";
-    if (props.value >= n - 0.5 && props.value < n) return "half";
+function getStarClass(rating, n) {
+    if (rating >= n) return "full";
+    if (rating >= n - 0.5 && rating < n) return "half";
     return "empty";
 }
 
@@ -131,25 +121,25 @@ const getImageUrl = (imageUrls) => {
                         <div class="flex items-center space-x-1">
                             <template v-for="n in 5" :key="n">
                                 <div class="relative text-2xl select-none">
-                                    <span v-if="getStarClass(5) === 'half'" class="text-gray-300">★</span>
-                                    <!-- <span 
+                                    <span v-if="getStarClass(product.average_rating, n) === 'half'" class="text-gray-300">★</span>
+                                    <span 
                                         v-else :class="{
-                                        'text-yellow-400': getStarClass(0) === 'full',
-                                        'text-gray-300': getStarClass(0) === 'empty'
+                                        'text-yellow-400': getStarClass(product.average_rating, n) === 'full',
+                                        'text-gray-300': getStarClass(product.average_rating, n) === 'empty'
                                         }"
                                     >
                                         ★
                                     </span>
                                     <span
-                                        v-if="getStarClass(0) === 'half'"
+                                        v-if="getStarClass(product.average_rating, n) === 'half'"
                                         class="absolute inset-0 overflow-hidden text-yellow-400"
                                         :style="{ width: '50%' }"
                                     >
                                         ★
-                                    </span> -->
+                                    </span>
                                 </div>
                             </template>
-                            <span class="text-[#38949B]">(0 отзыва)</span>
+                            <span class="text-[#38949B] ml-2">{{ product.average_rating ? product.average_rating.toFixed(1) : '0.0' }}</span>
                         </div>
                         <div class="flex items-center gap-[10px] text-sm font-normal mb-[8px] text-[#5C5C5C] mt-[8px]">
                             <img src="/icons/calendar-icon.svg" alt="calendar-icon"> 
