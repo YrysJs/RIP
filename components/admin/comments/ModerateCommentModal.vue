@@ -9,6 +9,15 @@ const reason = ref('')
 function close() {
   emit('close')
 }
+
+function approve() {
+  emit('finish', { reason: reason.value, status: 'approved' })
+}
+
+function reject() {
+  emit('finish', { reason: reason.value, status: 'rejected' })
+}
+
 watch(() => props.comment, (newVal) => {
   reason.value = newVal;
 }, { immediate: true });
@@ -24,7 +33,14 @@ watch(() => props.comment, (newVal) => {
           Модерация комментария
         </h3>
         <input v-model="reason" class="border-2 border-[#939393] mt-[24px] pl-[16px] rounded-lg h-[60px] mb-4" type="text" placeholder="Причина">
-        <button class="h-[51px] rounded-lg !bg-[#38949B] text-white font-semibold font-roboto" @click="emit('finish', reason)">Подтвердить</button>
+        <div class="flex gap-4">
+          <button class="flex-1 h-[51px] rounded-lg !bg-[#38949B] text-white font-semibold font-roboto" @click="approve">
+            Одобрить
+          </button>
+          <button class="flex-1 h-[51px] rounded-lg !bg-[#E53935] text-white font-semibold font-roboto" @click="reject">
+            Отклонить
+          </button>
+        </div>
       </div>
     </div>
   </div>

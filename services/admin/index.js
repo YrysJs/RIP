@@ -89,6 +89,55 @@ function moderateReview(data) {
     })
 }
 
+function getModerateAppeals(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'https://ripservice.kz/api/v1/moderation/appeals',
+        params
+    })
+}
+
+function moderateAppeal(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PATCH',
+        url: `https://ripservice.kz/api/v1/moderation/appeals/${data.id}`,
+        data: data.data
+    })
+}
+
+function getReviewById(id) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: `https://ripservice.kz/api/v1/reviews/${id}`
+    })
+}
+
+function getProducts(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'https://ripservice.kz/api/v1/products',
+        params,
+    })
+}
+
+function updateProductStatus(id, data) {
+    const { $axios } = useNuxtApp()
+    
+    if (!id) {
+        throw new Error('Product ID is required')
+    }
+    
+    return $axios({
+        method: 'PATCH',
+        url: `https://ripservice.kz/api/v1/products/${id}/status`,
+        data,
+    })
+}
+
 export {
     getTemplate,
     CreateCemetery,
@@ -99,5 +148,10 @@ export {
     getManagers,
     setCemeteryManager,
     getReviews,
-    moderateReview
+    moderateReview,
+    getModerateAppeals,
+    moderateAppeal,
+    getReviewById,
+    getProducts,
+    updateProductStatus
 }
