@@ -14,6 +14,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  centerCoords: {
+    type: Array,
+    default: null,
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -49,6 +53,13 @@ watch(() => props.polygons, () => {
   }
 }, { deep: true })
 
+// Следим за изменениями координат центра карты
+watch(() => props.centerCoords, (newCoords) => {
+  if (mapInstance.value && newCoords && newCoords.length === 2) {
+    mapInstance.value.setView([newCoords[0], newCoords[1]], 15)
+  }
+}, { deep: true })
+
 function getPolygons() {
   return Array.isArray(props.polygons) ? props.polygons : props.polygons.value
 }
@@ -57,8 +68,13 @@ function initializeMap() {
   const items = getPolygons()
   let center = [43.238949, 76.889709] // дефолтный центр
   
-  // Используем координаты границ кладбища для центрирования карты
-  if (props.cemeteryBoundary?.polygon_data?.coordinates?.length > 0) {
+  // Приоритет использования координат:
+  // 1. Координаты центра кладбища (centerCoords)
+  // 2. Координаты границ кладбища
+  // 3. Координаты первого полигона могилы
+  if (props.centerCoords && props.centerCoords.length === 2) {
+    center = [props.centerCoords[0], props.centerCoords[1]]
+  } else if (props.cemeteryBoundary?.polygon_data?.coordinates?.length > 0) {
     const coords = props.cemeteryBoundary.polygon_data.coordinates[0]
     center = [coords[1], coords[0]]
   } else if (items.length > 0) {

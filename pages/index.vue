@@ -158,9 +158,9 @@ onMounted(() => {
         <div class="container py-[80px]" id="services">
             <h3 class="text-4xl text-[#224C4F] font-semibold">Услуги</h3>
             <div class="flex justify-evenly items-stretch flex-wrap gap-[25px] mt-[42px]">
-                <div class="rounded-lg max-w-[376px] flex flex-col">
-                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/client/banner.jpg" alt="">
-                    <div class="card p-[22px] flex flex-col flex-1">
+                <div class="rounded-lg max-w-[376px] flex flex-col card">
+                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/main_service/f1.jpg" alt="">
+                    <div class="p-[22px] flex flex-col flex-1">
                         <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Поиск захоронения</h3>
                         <p class="text-base text-[#224C4F] mt-[16px] flex-1 service-description">
                             Вы можете заказать у нас точные координаты захоронения на цифровой карте кладбища с подробным описанием маршрута.
@@ -168,9 +168,9 @@ onMounted(() => {
                         <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px] mt-[16px]" @click="showDetail(0)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
                     </div>
                 </div>
-                <div class="rounded-lg max-w-[376px] flex flex-col">
-                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/client/banner.jpg" alt="">
-                    <div class="card p-[22px] flex flex-col flex-1">
+                <div class="rounded-lg max-w-[376px] flex flex-col card">
+                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/main_service/f2.jpg" alt="">
+                    <div class="p-[22px] flex flex-col flex-1">
                         <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Благоустройство</h3>
                         <p class="text-base text-[#224C4F] mt-[16px] flex-1 service-description">
                             Мы предоставляем комплексный спектр услуг по благоустройству и уходу за захоронениями Ваших родственников и друзей.
@@ -178,9 +178,9 @@ onMounted(() => {
                         <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px] mt-[16px]" @click="showDetail(1)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
                     </div>
                 </div>
-                <div class="rounded-lg max-w-[376px] flex flex-col">
-                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/client/banner.jpg" alt="">
-                    <div class="card p-[22px] flex flex-col flex-1">
+                <div class="rounded-lg max-w-[376px] flex flex-col card">
+                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/main_service/f3.jpg" alt="">
+                    <div class="p-[22px] flex flex-col flex-1">
                         <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Цифровой мемориал и древо памяти</h3>
                         <p class="text-base text-[#224C4F] mt-[16px] flex-1 service-description">
                             Создайте виртуальный памятник, в котором будет собрана вся информация о Вашем близком человеке и кто с ним связан.
@@ -188,9 +188,9 @@ onMounted(() => {
                         <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px] mt-[16px]" @click="showDetail(2)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
                     </div>
                 </div>
-                <div class="rounded-lg max-w-[376px] flex flex-col">
-                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/client/banner.jpg" alt="">
-                    <div class="card p-[22px] flex flex-col flex-1">
+                <div class="rounded-lg max-w-[376px] flex flex-col card">
+                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/main_service/f4.jpg" alt="">
+                    <div class="p-[22px] flex flex-col flex-1">
                         <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Ритуальные услуги</h3>
                         <p class="text-base text-[#224C4F] mt-[16px] flex-1 service-description">
                             Полный комплекс мероприятий, включая оформление документов, подготовку церемонии и сопровождение. Обеспечиваем соблюдение всех традиций и пожеланий семьи. Гарантируем профессиональный подход и внимание к деталям.
@@ -198,9 +198,9 @@ onMounted(() => {
                         <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px] mt-[16px]" @click="showDetail(3)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
                     </div>
                 </div>
-                <div class="rounded-lg max-w-[376px] flex flex-col">
-                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/client/banner.jpg" alt="">
-                    <div class="card p-[22px] flex flex-col flex-1">
+                <div class="rounded-lg overflow-hidden max-w-[376px] flex flex-col card">
+                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/main_service/f5.jpg" alt="">
+                    <div class="p-[22px] flex flex-col flex-1">
                         <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Ритуальные товары</h3>
                         <p class="text-base text-[#224C4F] mt-[16px] flex-1 service-description">
                             Мы предлагаем широкий ассортимент ритуальных товаров, необходимых для организации похорон с учетом всех традиций и пожеланий:
@@ -238,11 +238,11 @@ onMounted(() => {
                     <h3 class="text-[32px] text-[#224C4F] font-semibold leading-[initial]">
                         У вас есть вопросы? Свяжитесь с нами
                     </h3>
-                    <a href="mailto:info@rip-service.kz" class="text-[26px] text-[#9C9C9C]">info@rip-service.kz</a>
+                    <a href="mailto:info@rip-service.kz" class="text-[26px] text-[#9C9C9C]">info@ripservice.kz</a>
                 </div>
                 <div class="flex flex-col gap-[10px] min-w-[200px]">
-                    <a href="tel:+77077777777" class="text-[20px] text-[#9C9C9C] flex gap-2"><img src="/icons/phone.svg" alt=""> +7 (707) 777-77-77</a>
-                    <a href="tel:+77077777777" class="text-[20px] text-[#9C9C9C] flex gap-2"><img src="/icons/phone.svg" alt=""> +7 (707) 777-77-77</a>
+                    <a href="tel:++77758100110" class="text-[20px] text-[#9C9C9C] flex gap-2"><img src="/icons/phone.svg" alt=""> +7 775 810 01 10</a>
+                    <a href="tel:++77758100110" class="text-[20px] text-[#9C9C9C] flex gap-2"><img src="/icons/phone.svg" alt=""> +7 775 810 01 10</a>
                 </div>
             </div>
         </div>
