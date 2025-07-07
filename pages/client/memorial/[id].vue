@@ -1,11 +1,14 @@
 <script setup>
 import { ref } from 'vue'
-import { createMemorial, getBurialRequestById } from '~/services/client'
+import { createMemorial, getBurialRequestById, getMemorialById, getDeceasedById } from '~/services/client'
 
 const route = useRoute()
 
-// Данные захоронения
+// Данные захоронения и мемориала
 const burial = ref(null)
+const memorial = ref(null)
+const deceased = ref(null)
+const isEditMode = ref(false)
 
 const selectedImages = ref([])
 const imagePreviews = ref([])
@@ -38,9 +41,98 @@ const loadBurialData = async () => {
   }
 }
 
+// Загрузка данных мемориала для редактирования
+const loadMemorialData = async () => {
+  try {
+    if (route.params.id && route.params.id !== 'create') {
+      const response = await getMemorialById(route.params.id)
+      memorial.value = response.data
+      isEditMode.value = true
+      
+      // Загружаем данные покойного
+      if (memorial.value.deceased_id) {
+        await loadDeceasedData(memorial.value.deceased_id)
+      }
+      
+      // Заполняем поля формы данными мемориала
+      fillFormWithMemorialData()
+    }
+  } catch (error) {
+    console.error('Ошибка при загрузке данных мемориала:', error)
+  }
+}
+
+// Загрузка данных покойного
+const loadDeceasedData = async (deceasedId) => {
+  try {
+    const response = await getDeceasedById(deceasedId)
+    deceased.value = response.data
+  } catch (error) {
+    console.error('Ошибка при загрузке данных покойного:', error)
+  }
+}
+
+// Заполнение формы данными мемориала
+const fillFormWithMemorialData = () => {
+  if (!memorial.value) return
+  
+  // Заполняем основные поля
+  epitaph.value = memorial.value.epitaph || ''
+  aboutPerson.value = memorial.value.about_person || ''
+  isPublic.value = memorial.value.is_public || false
+  deceasedId.value = memorial.value.deceased_id
+  
+  // Обрабатываем фотографии
+  if (memorial.value.photo_urls && memorial.value.photo_urls.length > 0) {
+    memorial.value.photo_urls.forEach((url, index) => {
+      imagePreviews.value.push({
+        id: Date.now() + index,
+        url: url,
+        isExisting: true // флаг для отличия существующих фото от новых
+      })
+    })
+  }
+  
+  // Обрабатываем достижения
+  if (memorial.value.achievement_urls && memorial.value.achievement_urls.length > 0) {
+    memorial.value.achievement_urls.forEach((url, index) => {
+      achievementPhotos.value.push({
+        id: Date.now() + index + 1000,
+        url: url,
+        isExisting: true
+      })
+    })
+  }
+  
+  // Обрабатываем видео
+  if (memorial.value.video_urls && memorial.value.video_urls.length > 0) {
+    memorial.value.video_urls.forEach((urlString, index) => {
+      // Видео URL может прийти как строка с запятыми
+      const urls = urlString.includes(',') ? urlString.split(',') : [urlString]
+      
+      urls.forEach((url, urlIndex) => {
+        const trimmedUrl = url.trim()
+        if (trimmedUrl) {
+          const videoId = extractYouTubeId(trimmedUrl)
+          if (videoId) {
+            videos.value.push({
+              id: Date.now() + index + urlIndex + 2000,
+              url: trimmedUrl,
+              embedUrl: `https://www.youtube.com/embed/${videoId}`,
+              title: `Видео ${videos.value.length + 1}`,
+              isExisting: true
+            })
+          }
+        }
+      })
+    })
+  }
+}
+
 // Загружаем данные при монтировании компонента
 onMounted(() => {
   loadBurialData()
+  loadMemorialData()
 })
 
 const handleImageUpload = (event) => {
@@ -68,7 +160,16 @@ const handleImageUpload = (event) => {
 }
 
 const removeImage = (index) => {
-  selectedImages.value.splice(index, 1)
+  const preview = imagePreviews.value[index]
+  
+  // Если это новый файл (не с сервера), удаляем его также из selectedImages
+  if (!preview.isExisting) {
+    const fileIndex = selectedImages.value.findIndex(file => file === preview.file)
+    if (fileIndex !== -1) {
+      selectedImages.value.splice(fileIndex, 1)
+    }
+  }
+  
   imagePreviews.value.splice(index, 1)
 }
 
@@ -139,34 +240,60 @@ const removeAchievementPhoto = (index) => {
   achievementPhotos.value.splice(index, 1)
 }
 
-// Функция создания мемориала
+// Функция создания/обновления мемориала
 const submitMemorial = async () => {
   try {
     isSubmitting.value = true
     
     // Подготавливаем данные для отправки
     const formData = {
-      deceased_id: +burial.value?.deceased?.id,
+      deceased_id: isEditMode.value ? deceasedId.value : +burial.value?.deceased?.id,
       epitaph: epitaph.value,
       about_person: aboutPerson.value,
       is_public: isPublic.value,
-      photos: selectedImages.value, // основные фото мемориала
-      achievements: achievementPhotos.value.map(photo => photo.file), // фото достижений
-      video_urls: videos.value.map(video => video.url) // URL видео
+      photos: selectedImages.value, // только новые фото мемориала
+      achievements: achievementPhotos.value
+        .filter(photo => !photo.isExisting) // только новые достижения
+        .map(photo => photo.file), 
+      video_urls: videos.value
+        .filter(video => !video.isExisting) // только новые видео
+        .map(video => video.url)
+    }
+    
+    // В режиме редактирования добавляем существующие URL-ы
+    if (isEditMode.value) {
+      // Добавляем существующие фото URL-ы (пока нет API для обновления)
+      const existingPhotoUrls = imagePreviews.value
+        .filter(preview => preview.isExisting)
+        .map(preview => preview.url)
+      
+      const existingAchievementUrls = achievementPhotos.value
+        .filter(photo => photo.isExisting)
+        .map(photo => photo.url)
+        
+      const existingVideoUrls = videos.value
+        .filter(video => video.isExisting)
+        .map(video => video.url)
+      
+      // Объединяем существующие и новые URL-ы
+      const allVideoUrls = [...existingVideoUrls, ...formData.video_urls]
+      formData.video_urls = allVideoUrls
     }
     
     const response = await createMemorial(formData)
     
-    // Успешно создано
-    alert('Мемориал успешно создан!')
-    console.log('Memorial created:', response)
+    // Успешно создано/обновлено
+    const action = isEditMode.value ? 'обновлен' : 'создан'
+    alert(`Мемориал успешно ${action}!`)
+    console.log('Memorial processed:', response)
     
     // Можно перенаправить пользователя
     // await navigateTo('/client/memorials')
     
   } catch (error) {
-    console.error('Error creating memorial:', error)
-    alert('Ошибка при создании мемориала: ' + (error.response?.data?.message || error.message))
+    console.error('Error processing memorial:', error)
+    const action = isEditMode.value ? 'обновлении' : 'создании'
+    alert(`Ошибка при ${action} мемориала: ` + (error.response?.data?.message || error.message))
   } finally {
     isSubmitting.value = false
   }
@@ -181,11 +308,15 @@ const submitMemorial = async () => {
                 Назад
             </button>
 
-            <h1 class="text-[32px] font-medium">Мемориал</h1>
+            <h1 class="text-[32px] font-medium">
+                {{ isEditMode ? 'Редактирование мемориала' : 'Создание мемориала' }}
+            </h1>
         </div>
         <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
             <div class="flex justify-between items-center">
-                <h3 class="text-[24px] font-medium">{{ burial?.deceased?.full_name }}</h3>
+                <h3 class="text-[24px] font-medium">
+                    {{ isEditMode ? (deceased?.full_name || `Мемориал ID: ${memorial?.id}`) : burial?.deceased?.full_name }}
+                </h3>
                 <button class="flex items-center gap-2">
                     <img src="/icons/share.svg" alt=""> поделиться
                 </button>
@@ -194,6 +325,7 @@ const submitMemorial = async () => {
                 <div class="photo-upload-container">
                     <!-- Область загрузки фото -->
                     <div 
+                        v-if="imagePreviews.length === 0"
                         class="upload-area"
                         @click="$refs.fileInput.click()"
                     >
@@ -204,8 +336,8 @@ const submitMemorial = async () => {
                         </div>
                     </div>
                     
-                    <!-- Галерея превью изображений -->
-                    <div v-if="imagePreviews.length > 0" class="images-gallery">
+                    <!-- Галерея превью изображений внутри блока загрузки -->
+                    <div v-else class="upload-area-with-images">
                         <div class="gallery-header">
                             <h4>Загруженные фото ({{ imagePreviews.length }})</h4>
                             <button 
@@ -221,6 +353,7 @@ const submitMemorial = async () => {
                                 v-for="(preview, index) in imagePreviews" 
                                 :key="preview.id"
                                 class="image-preview-container"
+                                :class="{ 'existing-item': preview.isExisting }"
                             >
                                 <img :src="preview.url" alt="Preview" class="image-preview">
                                 <div class="image-overlay">
@@ -232,8 +365,17 @@ const submitMemorial = async () => {
                                     </button>
                                 </div>
                                 <div class="image-number">{{ index + 1 }}</div>
+                                <div v-if="preview.isExisting" class="existing-badge">Существующее</div>
                             </div>
                         </div>
+                        
+                        <!-- Кнопка добавления еще фото -->
+                        <button 
+                            @click="$refs.fileInput.click()"
+                            class="add-more-btn"
+                        >
+                            + Добавить еще фото
+                        </button>
                     </div>
                     
                     <!-- Скрытый input для файлов -->
@@ -248,9 +390,19 @@ const submitMemorial = async () => {
                 </div>
                 <div>
                     <div class="border-b border-[#EEEEEE] pb-4 font-medium text-base">
-                        <p>Дата смерти: {{ new Date(burial?.deceased?.death_date).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) }}</p>
+                        <p v-if="!isEditMode">
+                            Дата смерти: {{ new Date(burial?.deceased?.death_date).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) }}
+                        </p>
+                        <div v-else>
+                            <p v-if="deceased?.death_date">
+                                Дата смерти: {{ new Date(deceased.death_date).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) }}
+                            </p>
+                            <p>
+                                Дата создания мемориала: {{ new Date(memorial?.created_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
+                            </p>
+                        </div>
                     </div>
-                    <div>
+                    <div v-if="!isEditMode">
                         <h3 class="text-[18px] font-medium mb-4">
                             Информация о захоронении
                         </h3>
@@ -273,6 +425,27 @@ const submitMemorial = async () => {
                         <div class="flex justify-between text-base font-medium">
                             <div>Место:</div>
                             <div>{{ burial?.grave_id }}</div>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <h3 class="text-[18px] font-medium mb-4">
+                            Информация о мемориале
+                        </h3>
+                        <div class="flex justify-between text-base font-medium">
+                            <div>ID покойного:</div>
+                            <div>{{ memorial?.deceased_id }}</div>
+                        </div>
+                        <div class="flex justify-between text-base font-medium">
+                            <div>Создатель:</div>
+                            <div>{{ memorial?.creator_phone }}</div>
+                        </div>
+                        <div class="flex justify-between text-base font-medium">
+                            <div>Публичность:</div>
+                            <div>{{ memorial?.is_public ? 'Публичный' : 'Приватный' }}</div>
+                        </div>
+                        <div class="flex justify-between text-base font-medium">
+                            <div>Последнее обновление:</div>
+                            <div>{{ new Date(memorial?.updated_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</div>
                         </div>
                     </div>
                 </div>
@@ -338,6 +511,7 @@ const submitMemorial = async () => {
                             v-for="(photo, index) in achievementPhotos" 
                             :key="photo.id"
                             class="image-preview-container"
+                            :class="{ 'existing-item': photo.isExisting }"
                         >
                             <img :src="photo.url" alt="Achievement photo" class="image-preview">
                             <div class="image-overlay">
@@ -349,6 +523,7 @@ const submitMemorial = async () => {
                                 </button>
                             </div>
                             <div class="image-number">{{ index + 1 }}</div>
+                            <div v-if="photo.isExisting" class="existing-badge">Существующее</div>
                         </div>
                     </div>
                 </div>
@@ -403,9 +578,13 @@ const submitMemorial = async () => {
                             v-for="(video, index) in videos" 
                             :key="video.id"
                             class="video-item"
+                            :class="{ 'existing-item': video.isExisting }"
                         >
                             <div class="flex justify-between items-center mb-3">
-                                <h5 class="text-sm font-medium text-gray-700">{{ video.title }}</h5>
+                                <h5 class="text-sm font-medium text-gray-700">
+                                    {{ video.title }}
+                                    <span v-if="video.isExisting" class="existing-badge-inline">Существующее</span>
+                                </h5>
                                 <button 
                                     @click="removeVideo(index)"
                                     class="text-[#EF4444] hover:text-[#DC2626] font-medium transition-colors text-sm"
@@ -434,8 +613,12 @@ const submitMemorial = async () => {
                     :disabled="isSubmitting"
                     class="bg-[#224C4F] text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-[#1a3a3c] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                    <span v-if="isSubmitting">Создание мемориала...</span>
-                    <span v-else>Создать мемориал</span>
+                    <span v-if="isSubmitting">
+                        {{ isEditMode ? 'Обновление мемориала...' : 'Создание мемориала...' }}
+                    </span>
+                    <span v-else>
+                        {{ isEditMode ? 'Обновить мемориал' : 'Создать мемориал' }}
+                    </span>
                 </button>
             </div>
         </div>
@@ -497,6 +680,35 @@ const submitMemorial = async () => {
 .upload-hint {
     font-size: 14px;
     color: #6B7280;
+}
+
+.upload-area-with-images {
+    width: 100%;
+    min-height: 225px;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #F9FAFB;
+    margin-bottom: 20px;
+}
+
+.add-more-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #F3F4F6;
+    border: 2px dashed #D1D5DB;
+    border-radius: 8px;
+    color: #6B7280;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 16px;
+
+    &:hover {
+        background-color: #E5E7EB;
+        border-color: #9CA3AF;
+        color: #374151;
+    }
 }
 
 .images-gallery {
@@ -683,5 +895,38 @@ const submitMemorial = async () => {
 // Стили для галереи достижений
 .achievement-photos-gallery {
     margin-top: 16px;
+}
+
+// Стили для существующих элементов
+.existing-item {
+    border: 2px solid #10B981 !important;
+    box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.2);
+}
+
+.existing-badge {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: #10B981;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.existing-badge-inline {
+    display: inline-block;
+    background: #10B981;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 </style>
