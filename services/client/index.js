@@ -4,7 +4,7 @@ function getAppeals(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/rip-government/v1/appeal',
+        url: 'http://91.147.92.97:8082/rip-government/v1/appeal',
         params,
     })
 }
@@ -13,7 +13,7 @@ function createAppeal(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: 'http://91.147.92.97:8081/rip-government/v1/appeal',
+        url: 'http://91.147.92.97:8082/rip-government/v1/appeal',
         data,
     })
 }
@@ -21,7 +21,7 @@ function processCardPayment(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://91.147.92.97:8081/api/v1/payments/card',
+        url: 'https://ripservice.kz:8081/api/v1/payments/card',
         data
     })
 }
@@ -30,7 +30,7 @@ function getProducts(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/products',
+        url: 'https://ripservice.kz/api/v1/products',
         params,
     })
 }
@@ -39,7 +39,7 @@ function getProductById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://91.147.92.97/api/v1/products/${id}`,
+        url: `https://ripservice.kz/api/v1/products/${id}`,
     })
 }
 
@@ -47,7 +47,7 @@ function getProductReviews(productId, params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://91.147.92.97/api/v1/reviews/products/${productId}`,
+        url: `https://ripservice.kz/api/v1/reviews/products/${productId}`,
         params,
     })
 }
@@ -56,7 +56,7 @@ function getProviderReviews(providerId, params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://91.147.92.97/api/v1/reviews/providers/${providerId}`,
+        url: `https://ripservice.kz/api/v1/reviews/providers/${providerId}`,
         params,
     })
 }
@@ -65,7 +65,7 @@ function getGraves(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/graves',
+        url: 'https://ripservice.kz/api/v1/graves',
         params,
     })
 }
@@ -74,7 +74,7 @@ function getGraveById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://91.147.92.97/api/v1/graves/${id}`,
+        url: `https://ripservice.kz/api/v1/graves/${id}`,
     })
 }
 
@@ -82,7 +82,7 @@ function getGraveImages(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://91.147.92.97/api/v1/graves/${id}/photos`,
+        url: `https://ripservice.kz/api/v1/graves/${id}/photos`,
     })
 }
 
@@ -90,7 +90,7 @@ function createDeceased(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://91.147.92.97/api/v1/admin/deceased',
+        url: 'https://ripservice.kz/api/v1/admin/deceased',
         data,
     })
 }
@@ -99,7 +99,7 @@ function getDeceasedById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://91.147.92.97/api/v1/deceased/${id}`,
+        url: `https://ripservice.kz/api/v1/deceased/${id}`,
     })
 }
 
@@ -107,7 +107,7 @@ function getCart() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97/api/v1/cart',
+        url: 'https://ripservice.kz/api/v1/cart',
     })
 }
 
@@ -115,7 +115,7 @@ function addToCart(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://91.147.92.97/api/v1/cart',
+        url: 'https://ripservice.kz/api/v1/cart',
         data,
     })
 }
@@ -124,7 +124,7 @@ function removeFromCart(productId) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'DELETE',
-        url: `http://91.147.92.97/api/v1/cart/${productId}`,
+        url: `https://ripservice.kz/api/v1/cart/${productId}`,
     })
 }
 
@@ -320,7 +320,7 @@ function createMemorial(data) {
     
     if (data.video_urls) {
         if (Array.isArray(data.video_urls)) {
-            formData.append('video_urls', data.video_urls.join(','))
+            data.video_urls.forEach(url => formData.append('video_urls', url))
         } else {
             formData.append('video_urls', data.video_urls)
         }
