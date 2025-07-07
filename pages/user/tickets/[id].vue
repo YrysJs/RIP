@@ -9,37 +9,37 @@
       <div class="flex justify-between items-center border-b border-[#E5E7EB] pb-[12px] mb-[16px]">
         <div>
           <h2 class="text-xl font-semibold">Заявка на перезахоронение № {{ request.id }}</h2>
-          <p class="text-sm text-[#6B7280]">
-            Дата заявки: {{ request.date }} Ответственный исполнитель: {{ request.executor }}
-          </p>
+<!--          <p v-if="request.responsibleUser" class="text-sm text-[#6B7280]">-->
+<!--            Дата заявки: {{ request.date }} Ответственный исполнитель: {{ request.responsibleUser.name }}-->
+<!--          </p>-->
         </div>
         <span class="status status--new">Новый запрос</span>
       </div>
 
-      <div class="info-block">
+      <div v-if="request.user" class="info-block">
         <h3>Данные заявителя</h3>
-        <div class="info-row"><p>Заявитель:</p><p>{{ request.applicant }}</p></div>
-        <div class="info-row"><p>ИИН заявителя:</p><p>{{ request.iin }}</p></div>
-        <div class="info-row"><p>Телефон:</p><p>{{ request.phone }}</p></div>
+        <div class="info-row"><p>Заявитель:</p><p>{{ request.user.surname }} {{ request.user.name }} {{ request.user.patronymic }}</p></div>
+        <div class="info-row"><p>ИИН заявителя:</p><p>{{ request.user.iin }}</p></div>
+        <div class="info-row"><p>Телефон:</p><p>{{ request.user.phone }}</p></div>
       </div>
 
       <div class="info-block">
-        <h3>Данные покойного</h3>
-        <div class="info-row"><p>ФИО покойного:</p><p>{{ request.deceased }}</p></div>
-        <div class="info-row"><p>Дата рождения:</p><p>{{ request.birthDate }}</p></div>
-        <div class="info-row"><p>Дата смерти:</p><p>{{ request.deathDate }}</p></div>
-        <div class="info-row"><p>Место захоронения:</p><p>{{ request.oldCemetery }}</p></div>
+        <h3>Старое место захоронения</h3>
+        <div class="flex justify-between items-start">
+          <div>
+            <div class="info-row"><p>Название кладбища:</p><p>{{ getNameById(request.fromBurialId) }}</p></div>
+          </div>
+        </div>
+
+
       </div>
 
       <div class="info-block">
         <h3>Новое место захоронения</h3>
         <div class="flex justify-between items-start">
           <div>
-            <div class="info-row"><p>Название кладбища:</p><p>{{ request.newCemetery }}</p></div>
-            <div class="info-row"><p>Сектор:</p><p>{{ request.sector }}</p></div>
-            <div class="info-row"><p>Место:</p><p>{{ request.place }}</p></div>
+            <div class="info-row"><p>Название кладбища:</p><p>{{ getNameById(request.toBurialId) }}</p></div>
           </div>
-          <button class="section-btn">Данные участка</button>
         </div>
 
 
@@ -54,7 +54,7 @@
         <h3>Документы</h3>
         <div class="documents">
           <div
-              v-for="doc in request.documents"
+              v-for="doc in documents"
               :key="doc.name"
               class="document-card"
           >
@@ -65,11 +65,11 @@
         </div>
       </div>
 
-      <div class="flex gap-4 justify-end mt-[24px]">
-        <button class="btn btn-decline">Отказать</button>
-        <button class="btn btn-edit">Отправить на доработку</button>
-        <button class="btn btn-approve">Согласовать захоронение</button>
-      </div>
+<!--      <div class="flex gap-4 justify-end mt-[24px]">-->
+<!--        <button class="btn btn-decline">Отказать</button>-->
+<!--        <button class="btn btn-edit">Отправить на доработку</button>-->
+<!--        <button class="btn btn-approve">Согласовать захоронение</button>-->
+<!--      </div>-->
     </div>
   </NuxtLayout>
 
@@ -86,6 +86,17 @@ const router = useRouter();
 
 const cemeteries = ref([])
 
+const documents = ref([
+  { name: 'Свидетельство о смерти', file: 'file232.PDF (12 MB)' },
+  { name: 'Подтверждение родства заявителя', file: '442134.JPG (12 MB)' },
+  { name: 'Документ на могилу', file: 'file232.PDF (12 MB)' }
+])
+
+function getNameById(id) {
+  const item = cemeteries.value.find(obj => obj.id === id);
+  return item ? item.name : null;
+}
+
 const request = {
   id: 351,
   date: '07.01.2025',
@@ -101,11 +112,7 @@ const request = {
   sector: 11,
   place: 234,
   reason: 'Перезахоронение в семейный участок.',
-  documents: [
-    { name: 'Свидетельство о смерти', file: 'file232.PDF (12 MB)' },
-    { name: 'Подтверждение родства заявителя', file: '442134.JPG (12 MB)' },
-    { name: 'Документ на могилу', file: 'file232.PDF (12 MB)' }
-  ]
+
 };
 </script>
 

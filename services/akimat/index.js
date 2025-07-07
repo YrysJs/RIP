@@ -5,7 +5,7 @@ function getRequests(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/rip-government/v1/request',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/request',
         params,
     })
 }
@@ -14,7 +14,7 @@ function getAppeals(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/rip-government/v1/appeal',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/appeal',
         params,
     })
 }
@@ -24,7 +24,7 @@ function getRequestsStats(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/rip-government/v1/request/stats',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/request/stats',
         params,
     })
 }
@@ -33,7 +33,7 @@ function getTypes() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/rip-government/v1/request/types',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/request/types',
     })
 }
 
@@ -41,7 +41,7 @@ function getStatuses() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/rip-government/v1/request/statuses',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/request/statuses',
     })
 }
 
@@ -49,7 +49,7 @@ function getComments(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/rip-government/v1/request/comments',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/request/comments',
         params
     })
 }
@@ -58,7 +58,7 @@ function exportRequestsReport(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/rip-government/v1/request/export',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/request/export',
         params
     })
 }
@@ -68,7 +68,7 @@ function exportAppealsReport(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/rip-government/v1/appeal/export',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/appeal/export',
         params
     })
 }
@@ -77,7 +77,7 @@ function getAppealComment(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/rip-government/v1/appeal/comments',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/appeal/comments',
         params
     })
 }
@@ -86,7 +86,7 @@ function getNews(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/rip-government/v1/news',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/news',
         params,
     })
 }
@@ -95,7 +95,7 @@ function getNewsStats(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8081/rip-government/v1/news/stats',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/news/stats',
         params,
     })
 }
@@ -104,7 +104,7 @@ function changeNewsStatus(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PATCH',
-        url: `http://91.147.92.97:8081/rip-government/v1/news/status`,
+        url: `https://ripservice.kz/api/v3/rip-government/v1/news/status`,
         data,
     })
 }
@@ -113,7 +113,7 @@ function createNews(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: `http://91.147.92.97:8081/rip-government/v1/news`,
+        url: `https://ripservice.kz/api/v3/rip-government/v1/news`,
         data,
     })
 }
@@ -122,7 +122,7 @@ function getBurialRequestStats(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8092/api/v1/admin/statistics/burial-requests',
+        url: 'https://ripservice.kz/api/v1/admin/statistics/burial-requests',
         params,
     })
 }
@@ -131,7 +131,7 @@ function setNewsFile(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://91.147.92.97:8093/api/v1/akimat/files',
+        url: 'https://ripservice.kz:8093/api/v1/akimat/files',
         data
     })
 }

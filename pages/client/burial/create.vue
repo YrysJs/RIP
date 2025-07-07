@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { createAppeal } from '~/services/client'
+import { createRequest } from '~/services/client'
 import {getCemeteries} from "~/services/cemetery/index.js";
 
 const router = useRouter()
@@ -68,7 +68,7 @@ const handleDocumentUpload = (event) => {
 
 async function userCreateAppeal() {
   try {
-    const response = await createAppeal({
+    const response = await createRequest({
       userPhone: "74683854222",
       fromBurialId: fromBurialId.value,
       toBurialId: toBurialId.value,

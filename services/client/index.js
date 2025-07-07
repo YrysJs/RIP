@@ -4,7 +4,7 @@ function getAppeals(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://91.147.92.97:8082/rip-government/v1/appeal',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/appeal',
         params,
     })
 }
@@ -13,10 +13,20 @@ function createAppeal(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: 'http://91.147.92.97:8082/rip-government/v1/appeal',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/appeal',
         data,
     })
 }
+
+function createRequest(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PUT',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/request',
+        data,
+    })
+}
+
 function processCardPayment(data) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -372,5 +382,6 @@ export {
     searchDeceased,
     getAppeals,
     createAppeal,
-    createProductReview
+    createProductReview,
+    createRequest
 }
