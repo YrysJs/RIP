@@ -27,6 +27,16 @@ const managerMenu = [
     path: "/admin/comments",
     childs: []
   },
+  {
+    title: "Модерация обжалований",
+    path: "/admin/comment-appeals",
+    childs: []
+  },
+  {
+    title: "Модерация товаров/услуг",
+    path: "/admin/products",
+    childs: []
+  },
 ]
 
 </script>

@@ -66,22 +66,25 @@ const selectedComment = ref({})
 
 
 
-const moderate = async (comment) => {
-
-  try {await moderateReview({
-    id: selectedComment.value.id,
-    data: {
-      comment,
-      status: 'approved'
-    }
-  })
+const moderate = async (data) => {
+  try {
+    await moderateReview({
+      id: selectedComment.value.id,
+      data: {
+        comment: data.reason,
+        status: data.status
+      }
+    })
+    
+    // Обновляем список комментариев после модерации
+    const response = await getReviews()
+    suppliers.value = response.data?.items
+    
+    // Закрываем модальное окно
+    isModerateModal.value = false
   } catch (error) {
-    console.error('Ошибка при получении пользователей:', error)
-  } finally {
-    console.log('finally')
+    console.error('Ошибка при модерации комментария:', error)
   }
-
-
 }
 
 const showModerateModal = (comment) => {

@@ -197,6 +197,7 @@ const shareGraveData = () => {
               <MapSecond 
                 :polygons="gravesList" 
                 :cemetery-boundary="selectedCemetery" 
+                :center-coords="selectedCemetery.location_coords"
                 v-model="selected" 
               />
             </div>
