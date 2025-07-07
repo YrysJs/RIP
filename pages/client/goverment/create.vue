@@ -30,9 +30,7 @@ async function userCreateAppeal() {
         const response = await createAppeal({
             typeId: selected_appeal_type.value,
             content: appeal_content.value,
-            userPhone: '76112513629',
-            statusId: '1',
-            responsiblePhone: '73330450599'
+            akimatId: 1,
         })
         console.log(response)
         router.push('/client/goverment/requests')

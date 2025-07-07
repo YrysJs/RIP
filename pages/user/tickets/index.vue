@@ -31,25 +31,28 @@
         <input type="text" placeholder="Введите номер заявки" class="search-input flex-2" />
 
         <select class="filter-select flex-1">
-          <option value="">Статус</option>
+          <option value="Статус">Статус</option>
+          <option v-for="item in statuses" :key="item.id" :value="item.id">
+            {{ item.name }}
+          </option>
         </select>
 
 
       </div>
 
-      <div class="flex items-center gap-4 mb-[16px]">
-        <select class="filter-select flex-1">
-          <option value="">Период заявки</option>
-        </select>
+<!--      <div class="flex items-center gap-4 mb-[16px]">-->
+<!--        <select class="filter-select flex-1">-->
+<!--          <option value="">Период заявки</option>-->
+<!--        </select>-->
 
-        <select class="filter-select flex-1">
-          <option value="">Заявитель</option>
-        </select>
+<!--        <select class="filter-select flex-1">-->
+<!--          <option value="">Заявитель</option>-->
+<!--        </select>-->
 
-        <select class="filter-select flex-1">
-          <option value="">Сначала новые</option>
-        </select>
-      </div>
+<!--        <select class="filter-select flex-1">-->
+<!--          <option value="">Сначала новые</option>-->
+<!--        </select>-->
+<!--      </div>-->
 
       <template v-if="activeTab === 'relocation'">
         <div class="flex flex-col gap-[16px]">
@@ -60,10 +63,10 @@
           >
             <div>
               <h3 class="text-base font-semibold mb-1">Заявка № {{ request.id }}</h3>
-              <p class="text-sm">Заявитель: {{ formatPhoneNumber(request.userPhone) }}</p>
+              <p class="text-sm">Заявитель: {{ request.user ? request.user.surname + ' ' + request.user.name + ' ' +  request.user.patronymic : formatPhoneNumber(request.userPhone) }}</p>
               <p class="text-sm text-[#6B7280]">
                 Ответственный исполнитель:
-                <span v-if="request.responsibleUserPhone" class="font-semibold">{{ formatPhoneNumber(request.responsibleUserPhone) }}</span>
+                <span v-if="request.responsibleUser?.id" class="font-semibold">{{ request.responsibleUser.surname }} {{ request.responsibleUser.name }} {{ request.responsibleUser.patronymic }}</span>
                 <span v-else class="text-[#9CA3AF]">не назначен</span>
               </p>
 
@@ -77,7 +80,7 @@
                 'status--rejected': request.status === 'rejected'
               }"
             >
-              {{ statusText(request.status) }}
+              {{ request.status.name }}
             </span>
               </div>
             </div>
@@ -102,9 +105,9 @@
                 </p>
               </div>
             </div>
-            <div class="flex flex-col items-end">
-              <button class="details-btn" @click="openAppealChat">Чат</button>
-            </div>
+<!--            <div class="flex flex-col items-end">-->
+<!--              <button class="details-btn" @click="openAppealChat">Чат</button>-->
+<!--            </div>-->
           </div>
         </div>
       </template>
@@ -115,7 +118,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import  { getRequests, getTypes, getAppeals, getAppealComment } from '@/services/akimat'
+import  { getRequests, getAppeals, getAppealComment, getStatuses } from '@/services/akimat'
 
 const activeTab = ref('relocation');
 
@@ -125,16 +128,21 @@ const relocationCount = 5;
 const akimatCount = 0;
 const requests = ref([])
 const appeals = ref([])
+const statuses = ref([])
 
-definePageMeta({
-  middleware: ['auth', 'akimat'],
-});
+// definePageMeta({
+//   middleware: ['auth', 'akimat'],
+// });
 
 async function fetchAppeals() {
   const response = await getAppeals()
   appeals.value = response.data
 }
 
+async function fetchStatuses() {
+  const response = await getStatuses()
+  statuses.value = response.data
+}
 
 async function fetchRequests() {
   const response = await getRequests()
@@ -153,18 +161,10 @@ function formatPhoneNumber(phone) {
   return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(4, 7)} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
 }
 
-const statusText = (status) => {
-  if (status === 'new') return 'Новый запрос';
-  if (status === 'inwork') return 'В работе';
-  if (status === 'waiting') return 'Ожидает уточнений';
-  if (status === 'rejected') return 'Отклонена';
-  return '';
-};
-
 onMounted(async () => {
   // try {
     await fetchRequests()
-    getTypes()
+    await fetchStatuses()
     await fetchAppeals()
   // } catch (error) {
   //   console.error('Ошибка при логине:', error)

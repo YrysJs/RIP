@@ -76,11 +76,15 @@
 </template>
 
 <script setup>
+import {ref} from "vue";
+
 const router = useRouter();
 
-definePageMeta({
-  middleware: ['auth', 'akimat'],
-});
+// definePageMeta({
+//   middleware: ['auth', 'akimat'],
+// });
+
+const cemeteries = ref([])
 
 const request = {
   id: 351,
