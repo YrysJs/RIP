@@ -186,8 +186,8 @@ export default {
         }
 
         // 3. Закрываем модалку и сообщаем о успешной оплате
-        // this.$emit('close')
-        // this.$emit('success')
+        this.$emit('close')
+        this.$emit('success')
 
       } catch (error) {
         console.error('Payment process failed:', error)
