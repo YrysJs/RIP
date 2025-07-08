@@ -8,26 +8,26 @@
 
       <div class="flex justify-between items-center border-b border-[#E5E7EB] pb-[12px] mb-[16px]">
         <div>
-          <h2 class="text-xl font-semibold">Заявка на перезахоронение № {{ request.id }}</h2>
-<!--          <p v-if="request.responsibleUser" class="text-sm text-[#6B7280]">-->
-<!--            Дата заявки: {{ request.date }} Ответственный исполнитель: {{ request.responsibleUser.name }}-->
+          <h2 class="text-xl font-semibold">Заявка на перезахоронение № {{ request?.id }}</h2>
+<!--          <p v-if="request?.responsibleUser" class="text-sm text-[#6B7280]">-->
+<!--            Дата заявки: {{ request?.date }} Ответственный исполнитель: {{ request?.responsibleUser.name }}-->
 <!--          </p>-->
         </div>
         <span class="status status--new">Новый запрос</span>
       </div>
 
-      <div v-if="request.user" class="info-block">
+      <div v-if="request?.user" class="info-block">
         <h3>Данные заявителя</h3>
-        <div class="info-row"><p>Заявитель:</p><p>{{ request.user.surname }} {{ request.user.name }} {{ request.user.patronymic }}</p></div>
-        <div class="info-row"><p>ИИН заявителя:</p><p>{{ request.user.iin }}</p></div>
-        <div class="info-row"><p>Телефон:</p><p>{{ request.user.phone }}</p></div>
+        <div class="info-row"><p>Заявитель:</p><p>{{ request?.user.surname }} {{ request?.user.name }} {{ request?.user.patronymic }}</p></div>
+        <div class="info-row"><p>ИИН заявителя:</p><p>{{ request?.user.iin }}</p></div>
+        <div class="info-row"><p>Телефон:</p><p>{{ request?.user.phone }}</p></div>
       </div>
 
       <div class="info-block">
         <h3>Старое место захоронения</h3>
         <div class="flex justify-between items-start">
           <div>
-            <div class="info-row"><p>Название кладбища:</p><p>{{ getNameById(request.fromBurialId) }}</p></div>
+            <div class="info-row"><p>Название кладбища:</p><p>{{ getNameById(request?.fromBurialId) }}</p></div>
           </div>
         </div>
 
@@ -38,7 +38,7 @@
         <h3>Новое место захоронения</h3>
         <div class="flex justify-between items-start">
           <div>
-            <div class="info-row"><p>Название кладбища:</p><p>{{ getNameById(request.toBurialId) }}</p></div>
+            <div class="info-row"><p>Название кладбища:</p><p>{{ getNameById(request?.toBurialId) }}</p></div>
           </div>
         </div>
 
@@ -47,7 +47,7 @@
 
       <div class="info-block">
         <h3>Причина перезахоронения</h3>
-        <p class="text-base">{{ request.reason }}</p>
+        <p class="text-base">{{ request?.reason }}</p>
       </div>
 
       <div class="info-block">
@@ -76,15 +76,20 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import {getCemeteries} from "~/services/cemetery/index.js";
+import {getRequests} from "~/services/akimat/index.js";
 
 const router = useRouter();
+const route = useRoute()
 
 // definePageMeta({
 //   middleware: ['auth', 'akimat'],
 // });
 
 const cemeteries = ref([])
+const requests = ref([])
+const request = ref({})
 
 const documents = ref([
   { name: 'Свидетельство о смерти', file: 'file232.PDF (12 MB)' },
@@ -97,23 +102,23 @@ function getNameById(id) {
   return item ? item.name : null;
 }
 
-const request = {
-  id: 351,
-  date: '07.01.2025',
-  executor: 'Бақадыр Нурбике Бекзатқызығ',
-  applicant: 'Беляков Макар Максимович',
-  iin: '672594562469',
-  phone: '+7 777 777 77 77',
-  deceased: 'Беляков Макар Максимович',
-  birthDate: '15.09.1921',
-  deathDate: '12.07.2010',
-  oldCemetery: 'Кенсай-2, Секция-2, ряд-4, могила-5',
-  newCemetery: 'Северное кладбище',
-  sector: 11,
-  place: 234,
-  reason: 'Перезахоронение в семейный участок.',
+async function fetchRequests() {
+  const response = await getRequests()
+  requests.value = response.data
+  request.value = requests.value.find(obj => obj.id == route.params.id);
+}
 
-};
+onMounted((async () => {
+  try {
+    const response = await getCemeteries()
+    cemeteries.value = response.data
+    await fetchRequests()
+  } catch (error) {
+    console.error('Ошибка при получении заявок:', error)
+  } finally {
+    console.log('finally')
+  }
+}))
 </script>
 
 <style lang="scss" scoped>

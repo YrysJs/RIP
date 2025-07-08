@@ -67,20 +67,20 @@
               <p class="text-sm text-[#6B7280]">
                 Ответственный исполнитель:
                 <span v-if="request.responsibleUser?.id" class="font-semibold">{{ request.responsibleUser.surname }} {{ request.responsibleUser.name }} {{ request.responsibleUser.patronymic }}</span>
-                <span v-else class="text-[#9CA3AF]">не назначен</span>
+                <span v-else class="text-[#9CA3AF] cursor-pointer" @click="openSetResponsibleModal(request.id)">не назначен</span>
               </p>
 
               <div class="mt-[8px]">
             <span
                 class="status"
                 :class="{
-                'status--new': request.status === 'new',
-                'status--inwork': request.status === 'inwork',
-                'status--waiting': request.status === 'waiting',
-                'status--rejected': request.status === 'rejected'
+                'status--new': request.status.value === 'NEW' || request.status.value === 'CONFIRMED',
+                'status--inwork': request.status.value === 'IN_PROCESS',
+                'status--waiting': request.status.value === 'PENDING',
+                'status--rejected': request.status.value === 'REJECTED' || request.status.value === 'CLOSED'
               }"
             >
-              {{ request.status.name }}
+              {{ request.status.nameRu }}
             </span>
               </div>
             </div>
@@ -113,22 +113,31 @@
       </template>
 
     </div>
+    <Teleport to="body">
+      <SetResponsibleModal v-if="isSetResponsibleModal" :users="roles[0].users" @finish="setResponsible" @close="isSetResponsibleModal = false" />
+    </Teleport>
   </NuxtLayout>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import  { getRequests, getAppeals, getAppealComment, getStatuses } from '@/services/akimat'
+import  { getRequests, getAppeals, getAppealComment, getStatuses, setRequestResponsible } from '@/services/akimat'
+import {getUsersByRole} from "~/services/login/index.js";
+import SetResponsibleModal from "~/components/user/modals/SetResponsibleModal.vue";
 
 const activeTab = ref('relocation');
 
 const router = useRouter();
 
+const roles = ref([])
 const relocationCount = 5;
 const akimatCount = 0;
 const requests = ref([])
 const appeals = ref([])
 const statuses = ref([])
+
+const selectedRequest = ref({})
+const isSetResponsibleModal = ref(false)
 
 // definePageMeta({
 //   middleware: ['auth', 'akimat'],
@@ -149,11 +158,36 @@ async function fetchRequests() {
   requests.value = response.data
 }
 
+const fetchUsers = async () => {
+  try {
+    const response = await getUsersByRole({
+      roleIds: '8'
+    })
+    roles.value = response.data
+  } catch (error) {
+    console.error('Ошибка при получении пользователей:', error)
+  } finally {
+    console.log('finally')
+  }
+}
+
+const openSetResponsibleModal = (request) => {
+  selectedRequest.value = request
+  isSetResponsibleModal.value = true
+}
+
 const openAppealChat = (id) => {
   getAppealComment()
 }
 
 
+const setResponsible = (user) => {
+  setRequestResponsible({
+    requestId: selectedRequest.value,
+    responsibleUserId: user,
+    comment: ''
+  })
+}
 
 function formatPhoneNumber(phone) {
   if (!/^\d{11}$/.test(phone)) return 'Неверный формат номера';
@@ -166,6 +200,7 @@ onMounted(async () => {
     await fetchRequests()
     await fetchStatuses()
     await fetchAppeals()
+  await fetchUsers()
   // } catch (error) {
   //   console.error('Ошибка при логине:', error)
   //

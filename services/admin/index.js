@@ -32,7 +32,7 @@ function CreateAkimat(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: 'https://ripservice.kz/api/v3/rip-government/v1/akimat',
+        url: 'http://91.147.92.97:8081/rip-government/v1/akimat',
         data
     })
 }

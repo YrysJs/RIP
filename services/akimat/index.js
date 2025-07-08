@@ -136,6 +136,15 @@ function setNewsFile(data) {
     })
 }
 
+function setRequestResponsible(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PATCH',
+        url: `https://ripservice.kz/api/v3/rip-government/v1/request/responsible`,
+        data,
+    })
+}
+
 export {
     getRequests,
     createNews,
@@ -151,5 +160,6 @@ export {
     exportAppealsReport,
     getAppealComment,
     getBurialRequestStats,
-    setNewsFile
+    setNewsFile,
+    setRequestResponsible
 }

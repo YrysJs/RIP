@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import {onMounted, ref} from 'vue'
 import { createRequest } from '~/services/client'
 import {getCemeteries} from "~/services/cemetery/index.js";
+import {getCurrentUser} from "~/services/login/index.js";
 
 const router = useRouter()
 
@@ -14,6 +15,8 @@ const toBurialId = ref(0)
 const death_certificate = ref([])
 const proof_of_relation = ref([])
 const grave_doc = ref([])
+const userInfo = ref(null);
+
 
 const handleSertUpload = (event) => {
   const files = Array.from(event.target.files)
@@ -69,24 +72,29 @@ const handleDocumentUpload = (event) => {
 async function userCreateAppeal() {
   try {
     const response = await createRequest({
-      userPhone: "74683854222",
+      userPhone: userInfo.value.phone,
       fromBurialId: fromBurialId.value,
       toBurialId: toBurialId.value,
       reason: reason.value,
       foreign_cemetry: foreign_cemetry.value,
-      akimatId: 1,
+      akimatId: 6,
       death_certificate: '',
       proof_of_relation: '',
       grave_doc: ''
     })
     console.log(response)
-    router.push('/client/goverment/requests')
+    // router.push('/client/goverment/requests')
   } catch (error) {
     console.log(error)
   }
 }
 
 onMounted((async () => {
+  const response = await getCurrentUser({
+    id: localStorage.getItem('user_id')
+  });
+
+  userInfo.value = response.data;
   try {
     const response = await getCemeteries()
     cemeteries.value = response.data
@@ -123,7 +131,10 @@ onMounted((async () => {
             </option>
           </select>
         </div>
-
+        <div>
+          <label class="block text-sm mb-1">Причина</label>
+          <textarea v-model="reason" rows="3" class="input textarea"></textarea>
+        </div>
         <div>
           <h3 class="text-[18px] font-medium mb-1">
             Свидетельство о смерти
@@ -255,10 +266,6 @@ onMounted((async () => {
               </div>
             </div>
           </div>
-        </div>
-        <div class="flex flex-col gap-[10px]">
-          <p>Причина</p>
-          <textarea v-model="reason" class="w-full h-[200px] p-2 border border-gray-300 rounded-md"></textarea>
         </div>
 
         <button @click="userCreateAppeal" class="bg-[#38949B] text-white px-[16px] py-[8px] rounded-[8px]">Создать заявку</button>

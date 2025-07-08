@@ -8,7 +8,7 @@ import ShareCoordModal from "~/components/layout/modals/ShareCoordModal.vue";
 const router = useRouter()
 
 const shareCoordModalState = ref(false)
-const selectedReligios = ref('Не выбрано')
+const selectedReligios = ref('')
 const sities = [
     'Алматы',
     'Нур-Султан',
@@ -174,7 +174,8 @@ const shareGraveData = () => {
                 <p v-for="item of sities" :key="item" class="text-base font-roboto text-[#222222]" @click="pickCity(item)">{{ item }}</p>
             </div>
 
-            <select id="" v-model="selectedReligios" name="" placeholder="Религия" class="w-full border border-[#EEEEEE] rounded-lg py-[8px] px-[12px]">
+            <select id="" v-model="selectedReligios" name="" placeholder="Религия" class="w-full border border-[#EEEEEE] rounded-lg py-[8px] px-[12px] input select">
+              <option value="" disabled>Религия</option>
                 <option v-for="item of religios" :key="item" :value="item">{{ item }}</option>
             </select>
 
