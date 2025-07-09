@@ -19,6 +19,24 @@ function getAppeals(params) {
     })
 }
 
+function getMyRequests(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/request/my',
+        params,
+    })
+}
+
+function getMyAppeals(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'https://ripservice.kz/api/v3/rip-government/v1/appeal/my',
+        params,
+    })
+}
+
 
 function getRequestsStats(params) {
     const { $axios } = useNuxtApp()
@@ -131,7 +149,7 @@ function setNewsFile(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'https://ripservice.kz:8093/api/v1/akimat/files',
+        url: 'https://ripservice.kz/api/v7/akimat/files',
         data
     })
 }
@@ -161,5 +179,7 @@ export {
     getAppealComment,
     getBurialRequestStats,
     setNewsFile,
-    setRequestResponsible
+    setRequestResponsible,
+    getMyRequests,
+    getMyAppeals
 }

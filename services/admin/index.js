@@ -45,6 +45,14 @@ function getAkimats() {
     })
 }
 
+function getCities() {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'https://ripservice.kz/api/v2/country/cities',
+    })
+}
+
 function importXlsx(data) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -153,5 +161,6 @@ export {
     moderateAppeal,
     getReviewById,
     getProducts,
-    updateProductStatus
+    updateProductStatus,
+    getCities
 }

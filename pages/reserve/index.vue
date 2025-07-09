@@ -170,8 +170,8 @@ const shareGraveData = () => {
                 <button class="bg-[#224C4F26] text-[#224C4F] font-bold font-roboto py-[8px] px-[12px] rounded-lg" @click="cityListState = true">Выбрать</button>
             </div>
 
-            <div v-if="cityListState" class="absolute bg-white top-0 left-0 w-full p-[20px] flex flex-col gap-[8px]">
-                <p v-for="item of sities" :key="item" class="text-base font-roboto text-[#222222]" @click="pickCity(item)">{{ item }}</p>
+            <div v-if="cityListState" class="absolute bg-white top-0 left-0 w-full p-[20px] flex flex-col gap-[8px] z-10">
+                <p v-for="item of sities" :key="item" class="text-base font-roboto text-[#222222] cursor-pointer" @click="pickCity(item)">{{ item }}</p>
             </div>
 
             <select id="" v-model="selectedReligios" name="" placeholder="Религия" class="w-full border border-[#EEEEEE] rounded-lg py-[8px] px-[12px] input select">

@@ -10,9 +10,9 @@
             @click="activeTab = 'relocation'"
         >
           Заявки на перезахоронение
-          <span class="tab-count" :class="{ 'tab-count--active': activeTab === 'relocation' }">
-          {{ relocationCount }}
-        </span>
+<!--          <span class="tab-count" :class="{ 'tab-count&#45;&#45;active': activeTab === 'relocation' }">-->
+<!--          {{ relocationCount }}-->
+<!--        </span>-->
         </button>
 
         <button
@@ -21,24 +21,13 @@
             @click="activeTab = 'akimat'"
         >
           Обращения в Акимат
-          <span class="tab-count" :class="{ 'tab-count--active': activeTab === 'akimat' }">
-          {{ akimatCount }}
-        </span>
+<!--          <span class="tab-count" :class="{ 'tab-count&#45;&#45;active': activeTab === 'akimat' }">-->
+<!--          {{ akimatCount }}-->
+<!--        </span>-->
         </button>
       </div>
 
-      <div class="flex items-center gap-4 mb-[16px]">
-        <input type="text" placeholder="Введите номер заявки" class="search-input flex-2" />
 
-        <select class="filter-select flex-1">
-          <option value="Статус">Статус</option>
-          <option v-for="item in statuses" :key="item.id" :value="item.id">
-            {{ item.name }}
-          </option>
-        </select>
-
-
-      </div>
 
 <!--      <div class="flex items-center gap-4 mb-[16px]">-->
 <!--        <select class="filter-select flex-1">-->
@@ -55,6 +44,28 @@
 <!--      </div>-->
 
       <template v-if="activeTab === 'relocation'">
+        <div class="flex items-center gap-4 mb-[16px]">
+
+          <div>
+            <p>Статус</p>
+            <select class="filter-select flex-1" v-model="status">
+              <option v-for="item in statuses" :key="item.id" :value="item.id">
+                {{ item.name }}
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <p>Дата с</p>
+            <input class="filter-select date" type="date" v-model="dateFrom" />
+          </div>
+          <div>
+            <p>Дата по</p>
+            <input class="filter-select date" type="date" v-model="dateTo" />
+          </div>
+
+        </div>
+
         <div class="flex flex-col gap-[16px]">
           <div
               v-for="request in requests"
@@ -115,6 +126,11 @@
     </div>
     <Teleport to="body">
       <SetResponsibleModal v-if="isSetResponsibleModal" :users="roles[0].users" @finish="setResponsible" @close="isSetResponsibleModal = false" />
+      <SuccessModal
+          v-if="showSuccessModal"
+          :title="successText"
+          @close="closeSuccessModal"
+      />
     </Teleport>
   </NuxtLayout>
 </template>
@@ -124,6 +140,7 @@ import { ref } from 'vue';
 import  { getRequests, getAppeals, getAppealComment, getStatuses, setRequestResponsible } from '@/services/akimat'
 import {getUsersByRole} from "~/services/login/index.js";
 import SetResponsibleModal from "~/components/user/modals/SetResponsibleModal.vue";
+import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 
 const activeTab = ref('relocation');
 
@@ -135,6 +152,12 @@ const akimatCount = 0;
 const requests = ref([])
 const appeals = ref([])
 const statuses = ref([])
+const dateFrom = ref('')
+const dateTo = ref('')
+const status = ref(0)
+const successText = ref('Ответственный назначен!')
+
+const showSuccessModal = ref(false)
 
 const selectedRequest = ref({})
 const isSetResponsibleModal = ref(false)
@@ -142,6 +165,41 @@ const isSetResponsibleModal = ref(false)
 // definePageMeta({
 //   middleware: ['auth', 'akimat'],
 // });
+
+const toIsoDate = (dateStr) => {
+  return dateStr ? `${dateStr}T00:00:00Z` : undefined
+}
+
+
+// Фильтры: дата с
+watch(dateFrom, () => {
+  fetchRequests({
+    status: status.value || undefined,
+    from: toIsoDate(dateFrom.value) || undefined,
+    to: toIsoDate(dateTo.value) || undefined,
+  })
+})
+
+// Фильтры: дата по
+watch(dateTo, () => {
+  fetchRequests({
+    status: status.value || undefined,
+    from: toIsoDate(dateFrom.value) || undefined,
+    to: toIsoDate(dateTo.value) || undefined,
+  })
+})
+
+watch(status, () => {
+  fetchRequests({
+    status: status.value || undefined,
+    from: toIsoDate(dateFrom.value) || undefined,
+    to: toIsoDate(dateTo.value) || undefined,
+  })
+})
+
+const closeSuccessModal = () => {
+  showSuccessModal.value = false
+}
 
 async function fetchAppeals() {
   const response = await getAppeals()
@@ -153,8 +211,8 @@ async function fetchStatuses() {
   statuses.value = response.data
 }
 
-async function fetchRequests() {
-  const response = await getRequests()
+async function fetchRequests(data) {
+  const response = await getRequests(data)
   requests.value = response.data
 }
 
@@ -182,11 +240,19 @@ const openAppealChat = (id) => {
 
 
 const setResponsible = (user) => {
-  setRequestResponsible({
+   setRequestResponsible({
     requestId: selectedRequest.value,
     responsibleUserId: user,
     comment: ''
-  })
+  }).then(() => {
+     fetchRequests({
+       status: status.value || undefined,
+       from: toIsoDate(dateFrom.value) || undefined,
+       to: toIsoDate(dateTo.value) || undefined,
+     })
+     isSetResponsibleModal.value = false
+     showSuccessModal.value = true
+   })
 }
 
 function formatPhoneNumber(phone) {

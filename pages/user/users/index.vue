@@ -36,9 +36,14 @@
         </span>
           </div>
           <div class="col-span-1 flex justify-end pr-2 relative">
-            <img src="/icons/menu.svg" class="w-4 h-4 cursor-pointer" @click="toggleDropdown" />
+            <img
+                src="/icons/menu.svg"
+                class="w-4 h-4 cursor-pointer"
+                @click="toggleDropdown(user.id)"
+            />
+
             <div
-                v-if="showDropdownMenu"
+                v-if="openedDropdownUserId === user.id"
                 class="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
             >
               <button
@@ -49,7 +54,7 @@
               </button>
               <button
                   class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                  @click="showConfirmModal"
+                  @click="showConfirmModal(user)"
               >
                 Удалить
               </button>
@@ -71,7 +76,7 @@
           v-if="isConfirmModal"
           title="Вы уверены что хотите удалить пользователя?"
           @close="closeConfirmModal"
-          @confirm="deleteUser"
+          @confirm="onDeleteUser"
       />
     </Teleport>
   </NuxtLayout>
@@ -82,7 +87,7 @@ import AkimatSignUp from "~/components/auth/AkimatSignUp.vue";
 import AkimatUserUpdate from "~/components/auth/AkimatUserUpdate.vue";
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import ConfirmModal from "~/components/layout/modals/ConfirmModal.vue";
-import { getUsersByRole, deleteAkimatUser } from '~/services/login'
+import { getUsersByRole, deleteUser  } from '~/services/login'
 import {ref} from "vue";
 
 const isCreateModal = ref(false)
@@ -94,10 +99,11 @@ const successText = ref('')
 
 const roles = ref([])
 const showDropdownMenu = ref(false)
+const openedDropdownUserId = ref(null)
 
-definePageMeta({
-  middleware: ['auth', 'akimat'],
-});
+// definePageMeta({
+//   middleware: ['auth', 'akimat'],
+// });
 
 const createUser = () => {
   isCreateModal.value = false
@@ -112,13 +118,17 @@ const updateUser = () => {
   fetchUsers()
 }
 
-function toggleDropdown() {
-  showDropdownMenu.value = !showDropdownMenu.value
+function toggleDropdown(userId) {
+  if (openedDropdownUserId.value === userId) {
+    openedDropdownUserId.value = null
+  } else {
+    openedDropdownUserId.value = userId
+  }
 }
 
 const openUpdateModal = (user) => {
   selectedUser.value = user
-  toggleDropdown()
+  openedDropdownUserId.value = null
   isUpdateModal.value = true
 }
 
@@ -128,22 +138,16 @@ const closeSuccessModal = () => {
 
 const showConfirmModal = (user) => {
   selectedUser.value = user
-  toggleDropdown()
+  openedDropdownUserId.value = null
   isConfirmModal.value = true
 }
 
 const closeConfirmModal = () => {
   isConfirmModal.value = false
 }
-const deleteUser = async () => {
+const onDeleteUser = async () => {
   try {
-    await deleteAkimatUser({
-      data: {
-        akimatId: 1,
-        employeeId: selectedUser.value.id,
-        phone: selectedUser.value.phone
-      },
-    })
+    await deleteUser(selectedUser.value.phone)
     isConfirmModal.value = false
     fetchUsers()
   } catch (error) {

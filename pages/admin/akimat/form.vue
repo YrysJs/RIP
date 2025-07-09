@@ -1,5 +1,5 @@
 <script setup>
-import { CreateAkimat } from '~/services/admin'
+import { CreateAkimat, getCities } from '~/services/admin'
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import {ref} from "vue";
 
@@ -80,6 +80,10 @@ const create = async () => {
     console.log(err)
   }
 }
+
+onMounted(async () => {
+  await getCities()
+})
 
 </script>
 

@@ -25,7 +25,7 @@ async function run () {
           patronymic: patronymic.value,
         },
         userRoleId: roleId.value,
-        akimatId: 1
+        akimatId: 6
       },
     })
     emit('finish')

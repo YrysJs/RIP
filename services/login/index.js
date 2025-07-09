@@ -47,6 +47,15 @@ function deleteAkimatUser(data) {
     })
 }
 
+function deleteUser(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'DELETE',
+        url: `https://ripservice.kz/api/v2/user/${data}`,
+    })
+}
+
+
 function updateUser(data) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -131,7 +140,7 @@ function setSupplierFiles(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'https://ripservice.kz:8093/api/v1/suppliers/docs',
+        url: 'https://ripservice.kz/api/v7/suppliers/docs',
         data
     })
 }
@@ -171,5 +180,6 @@ export {
     updateUser,
     setSupplierFiles,
     getSuppliers,
-    activateSupplier
+    activateSupplier,
+    deleteUser
 }

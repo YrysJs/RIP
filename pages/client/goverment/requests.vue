@@ -1,12 +1,12 @@
 <script setup>
 import { ref } from 'vue'
-import { getAppeals } from '~/services/client'
+import { getMyAppeals } from '~/services/akimat'
 
 const router = useRouter()
 const appeals = ref([])
 
 async function getUserAppeals() {
-    const response = await getAppeals()
+    const response = await getMyAppeals()
     appeals.value = response.data
 }
 
@@ -18,7 +18,7 @@ onMounted(async () => {
 
 <template>
      <NuxtLayout name="client">
-        <div class="w-full py-5 flex items-center bg-white rounded-[16px] text-lg font-semibold flex justify-between items-center">
+        <div class="w-full p-5 flex items-center bg-white rounded-[16px] text-lg font-semibold flex justify-between items-center">
             <h1>Обращения в Акимат</h1> <button @click="router.push('/client/goverment/create')" class="bg-[#38949B] text-white px-[16px] py-[8px] rounded-[8px]">Создать обращение</button>
         </div>
         <div class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]" v-for="appeal of appeals" :key="appeal.id">

@@ -7,7 +7,6 @@ const managerMenu = [
     to: '/user/tickets',
     icon: '/icons/tickets.svg',
     active: '/icons/tickets-active.svg',
-    badge: 5
   },
   {
     label: "Отчеты, статистика",

@@ -18,7 +18,7 @@ const handleConfirm = () => {
 </script>
 
 <template>
-  <div class="modal fixed min-w-full min-h-[100vh] flex justify-center items-center">
+  <div class="modal fixed min-w-full min-h-[100vh] flex justify-center items-center z-50">
     <div class="bg-white text-center rounded-md max-w-[500px] w-full py-[40px]">
       <h3 class="mt-[9px] mb-[21px] font-bold text-2xl">{{ props.title }}</h3>
       <div class="flex justify-around items-center w-full px-12">

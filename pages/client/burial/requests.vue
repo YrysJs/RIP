@@ -1,12 +1,12 @@
 <script setup>
 import { ref } from 'vue'
-import { getRequests } from '~/services/akimat'
+import { getMyRequests } from '~/services/akimat'
 
 const router = useRouter()
 const appeals = ref([])
 
 async function getUserAppeals() {
-  const response = await getRequests()
+  const response = await getMyRequests()
   appeals.value = response.data
 }
 
