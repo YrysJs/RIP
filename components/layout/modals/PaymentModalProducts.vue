@@ -177,14 +177,6 @@ export default {
           console.log('Order payment confirmed')
         }
 
-        // 1.2. Подтверждаем платеж заявки на захоронение (используем burial_id из URL параметров)
-        const burialId = this.$route.query.burial_id
-        if (transactionId && burialId) {
-          console.log('Confirming burial payment...')
-          await confirmBurialPayment(burialId, transactionId)
-          console.log('Burial payment confirmed')
-        }
-
         // 3. Закрываем модалку и сообщаем о успешной оплате
         this.$emit('close')
         this.$emit('success')

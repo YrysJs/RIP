@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { processCardPayment } from '~/services/payments'
+import { processCardPayment, confirmBurialPayment } from '~/services/payments'
 import { updateBurialRequestStatus, updateBurialRequestData, uploadDeceasedDeathCertificate } from '~/services/client'
 
 export default {
@@ -138,6 +138,14 @@ export default {
         console.log('Processing payment...', paymentData)
         const paymentResponse = await processCardPayment(paymentData)
         console.log('Payment successful:', paymentResponse)
+
+        // 1.2. Подтверждаем платеж заявки на захоронение (используем burial_id из URL параметров)
+        const burialId = this.$route.query.burial_id
+        if (transactionId && burialId) {
+          console.log('Confirming burial payment...')
+          await confirmBurialPayment(burialId, transactionId)
+          console.log('Burial payment confirmed')
+        }
 
         // 2. Обновляем данные захоронения (дата и время)
         if (this.burialData?.burial_date || this.burialData?.burial_time) {
