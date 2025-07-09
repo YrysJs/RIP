@@ -255,7 +255,7 @@ const shareGraveData = () => {
                             Отмена
                         </button>
                         <button 
-                            v-if="selectedGrave.status !== 'occupied'"
+                            v-if="selectedGrave.status == 'free'"
                             class="w-[257px] h-[50px] border-2 border-[#224C4F] rounded-lg bg-[#224C4F] text-[#fff] font-roboto text-base font-medium" 
                             @click="reserve"
                         >

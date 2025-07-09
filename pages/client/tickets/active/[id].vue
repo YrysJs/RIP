@@ -143,11 +143,11 @@ const burialDateClass = computed(() => {
           <div class="grid grid-cols-2 gap-[12px] mt-[24px]">
             <div>
               <p class="text-sm text-[#222222] font-roboto font-normal">ИИН</p>
-              <input type="text" v-model="burialData.deceased.inn" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-lg" readonly>
+              <input type="text" v-model="burialData.deceased.inn" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-lg input" readonly>
             </div>
             <div>
               <p class="text-sm text-[#222222] font-roboto font-normal">ФИО</p>
-              <input type="text" v-model="burialData.deceased.full_name" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-lg" readonly>
+              <input type="text" v-model="burialData.deceased.full_name" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-lg input" readonly>
             </div>
           </div>
         </div>
@@ -156,7 +156,7 @@ const burialDateClass = computed(() => {
               Даты 
               <div>
                 <label class="relative inline-block w-14 h-8 cursor-pointer select-none">
-                  <input v-model="switcher" type="checkbox" class="sr-only peer">
+                  <input v-model="switcher" type="checkbox" class="sr-only peer input">
                   <span
                     class="absolute inset-0 bg-gray-200 rounded-full transition-colors
                           peer-focus:ring-2 peer-focus:ring-blue-500
@@ -171,19 +171,19 @@ const burialDateClass = computed(() => {
           <div v-if="switcher" class="grid grid-cols-2 gap-[12px] gap-y-[24px] mt-[24px]">
             <div>
               <p class="text-sm text-[#222222] font-roboto font-normal">Дата смерти</p>
-              <input type="date" v-model="deathDate" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base">
+              <input type="date" v-model="deathDate" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base input">
             </div>
             <div>
-              <p class="text-sm text-[#222222] font-roboto font-normal">Заключение о смерти от мед учреждения:</p>
-              <input type="file" accept=".pdf" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#38949B] file:text-white hover:file:bg-[#2a6f75]" @change="handleFileSelect">
+              <p class="text-sm text-[#222222] font-roboto font-normal pb-2">Заключение о смерти от мед учреждения:</p>
+              <input type="file" accept=".pdf" class="w-[100%] h-[60px]  rounded-lg text-base file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#38949B] file:text-white hover:file:bg-[#2a6f75]" @change="handleFileSelect">
             </div>
             <div>
               <p class="text-sm text-[#222222] font-roboto font-normal">Дата похорон</p>
-              <input type="date" v-model="burialDate" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base">
+              <input type="date" v-model="burialDate" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base input">
             </div>
             <div>
               <p class="text-sm text-[#222222] font-roboto font-normal">Время похорон</p>
-              <input type="time" v-model="burialData.burial_time" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base" placeholder="00:00">
+              <input type="time" v-model="burialData.burial_time" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base input" placeholder="00:00">
             </div>
           </div>
         </div>
