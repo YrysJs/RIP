@@ -1,6 +1,8 @@
 <script setup>
-import { getOtp, checkOtp, signupClient, getUserData, signupClientFcb } from '~/services/login/index.js'
+import { getOtp, checkOtp, signupClient, getUserData, signupClientFcb, getPkbToken, getPkbRequest, pkbGetData } from '~/services/login/index.js'
 import Cookies from 'js-cookie';
+import AppLoader from "~/components/loader/AppLoader.vue";
+import {useLoadingStore} from "~/store/loading.js";
 const emit = defineEmits()
 const router = useRouter()
 
@@ -11,37 +13,99 @@ const iin = ref('')
 const check = ref(false)
 const step = ref(0)
 const user = ref({})
-const isFcb = ref(true)
+const isFcb = ref(false)
 const name = ref('')
 const surname = ref('')
 const patronymic = ref('')
+
+const loadingStore = useLoadingStore()
 
 function close() {
     emit('close')
 }
 
-watch(iin, (newValue) => {
-  if(newValue.length === 12) getUserData({iin: newValue}).then((res) => {
-    user.value = res
-  }).catch(error => {
-    console.log(error?.response?.data?.message)
-    isFcb.value = false
-  })
-})
+watch(iin, async (newValue) => {
+  if (newValue.length !== 12) return;
+
+  let timeoutId; // чтобы можно было отменить повторы
+
+  try {
+    loadingStore.startLoading()
+    const pkbToken = await getPkbToken();
+
+    const poll = async () => {
+      try {
+        const res = await getPkbRequest({
+          params: { iin: newValue },
+          data: pkbToken.data.access.hash,
+        });
+
+        if (
+            res?.data?.code === 'OK' &&
+            res.data?.data?.status_code === 'VALID'
+        ) {
+          console.log('VALID получен, делаем pkbGetData');
+
+          // вызываем pkbGetData
+          const response = await pkbGetData({
+            id: res.data.data.request_id,
+            params: {
+              iin: newValue,
+              requestId: res.data.data.request_id,
+            },
+            data: pkbToken.data.access.hash,
+          });
+          isFcb.value = true
+          name.value = capitalize(response.data.data.person_data.name)
+          surname.value = capitalize(response.data.data.person_data.surname)
+          patronymic.value = capitalize(response.data.data.person_data.patronymic)
+          loadingStore.stopLoading()
+          console.log('Ответ от pkbGetData:', response);
+
+          // остановить дальнейшие попытки
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+          }
+
+        } else {
+          console.log('Ожидаем VALID, текущий статус:', res?.data?.data?.status_code);
+          // запланировать следующий вызов через 10 секунд
+          timeoutId = setTimeout(poll, 10000);
+        }
+      } catch (err) {
+        console.error('Ошибка при запросе:', err);
+        // запланировать повтор при ошибке
+        timeoutId = setTimeout(poll, 10000);
+      }
+    };
+
+    // запускаем первый вызов
+    await poll();
+
+  } catch (error) {
+    console.error('Ошибка при получении токена:', error);
+  }
+});
+
+function capitalize(str) {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
 
 async function run () {
   try {
     let response
-    if (isFcb.value) {
-      response = await signupClientFcb({
-        otpRequest: {
-          id: loginId.value,
-          code: code.value
-        },
-        iin: iin.value,
-      })
-    }
-    else {
+    // if (isFcb.value) {
+    //   response = await signupClientFcb({
+    //     otpRequest: {
+    //       id: loginId.value,
+    //       code: code.value
+    //     },
+    //     iin: iin.value,
+    //   })
+    // }
+    // else {
       response = await signupClient({
         otpRequest: {
           id: loginId.value,
@@ -52,7 +116,7 @@ async function run () {
         surname: surname.value,
         patronymic: patronymic.value,
       })
-    }
+    // }
     Cookies.set('token', response.data.token);
     Cookies.set('role', 'client');
     await router.push('/client/tickets/active')
@@ -180,15 +244,15 @@ const otpCheck = async () => {
                 </div>
                 <div class="mt-[24px]">
                     <p class="text-sm font-roboto text-[#222222]">Имя</p>
-                    <input v-model="name" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
+                    <input v-model="name" :disabled="isFcb" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
                 </div>
               <div class="mt-[24px]">
                 <p class="text-sm font-roboto text-[#222222]">Фамилия</p>
-                <input v-model="surname" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
+                <input v-model="surname" :disabled="isFcb" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
               </div>
               <div class="mt-[24px] mb-[24px]">
                 <p class="text-sm font-roboto text-[#222222]">Отчество</p>
-                <input v-model="patronymic" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
+                <input v-model="patronymic" :disabled="isFcb" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
               </div>
                 <div class="flex gap-[10px] items-center mb-[24px]">
                     <input v-model="check" type="checkbox"> 
