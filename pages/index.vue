@@ -9,9 +9,12 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import AppLoader from "~/components/loader/AppLoader.vue";
+import { useLoadingStore } from "~/store/loading.js";
 
 const dataId = ref(0)
 const mainPageModalState = ref(false)
+const loadingStore = useLoadingStore()
 
 const showDetail = (id) => {
   dataId.value = id
@@ -79,7 +82,7 @@ onMounted(() => {
 
 <template>
     <div class="relative mt-[77px]">
-
+      <AppLoader v-if="loadingStore.loading" />
       <AppHeader type="client" />
       <div class="relative">
         <Swiper

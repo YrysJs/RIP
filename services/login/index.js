@@ -163,6 +163,40 @@ function activateSupplier(data) {
     })
 }
 
+function getPkbToken() {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'https://ripservice.kz/api/v5/token'
+    })
+}
+
+function getPkbRequest(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: 'https://ripservice.kz/api/v5/individual/send/request',
+        params: data.params,
+        data: data.data,
+        headers: {
+            'Content-Type': 'text/plain' // или 'application/json' если строка — это JSON-строка
+        }
+    })
+}
+
+function pkbGetData(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: `https://ripservice.kz/api/v5/individual/request/${data.id}`,
+        params: data.params,
+        data: data.data,
+        headers: {
+            'Content-Type': 'text/plain' // или 'application/json' если строка — это JSON-строка
+        }
+    })
+}
+
 export {
     getOtp,
     checkOtp,
@@ -181,5 +215,8 @@ export {
     setSupplierFiles,
     getSuppliers,
     activateSupplier,
-    deleteUser
+    deleteUser,
+    getPkbToken,
+    getPkbRequest,
+    pkbGetData
 }
