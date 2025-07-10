@@ -197,6 +197,15 @@ function pkbGetData(data) {
     })
 }
 
+function pkbGetDeceasedData(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: `https://ripservice.kz/api/v5/deceased`,
+        params: data.params,
+    })
+}
+
 export {
     getOtp,
     checkOtp,
@@ -218,5 +227,6 @@ export {
     deleteUser,
     getPkbToken,
     getPkbRequest,
-    pkbGetData
+    pkbGetData,
+    pkbGetDeceasedData
 }

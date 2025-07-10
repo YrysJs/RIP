@@ -1,7 +1,16 @@
 <script setup>
-import {getOtp, checkOtp, signupSupplier, setSupplierFiles} from '~/services/login/index.js'
+import {
+  getOtp,
+  checkOtp,
+  signupSupplier,
+  setSupplierFiles,
+  getPkbToken,
+  getPkbRequest,
+  pkbGetData
+} from '~/services/login/index.js'
 import Cookies from 'js-cookie';
 import {ref} from "vue";
+import {useLoadingStore} from "~/store/loading.js";
 const emit = defineEmits()
 const router = useRouter()
 
@@ -18,10 +27,13 @@ const patronymic = ref('')
 const serviceDescription = ('')
 const achievementPhotos = ref([])
 const vatTypeId = ref(0)
+const isFcb = ref(false)
 
 function close() {
   emit('close')
 }
+
+const loadingStore = useLoadingStore()
 
 const cities = [
   'Алматы',
@@ -44,6 +56,75 @@ const cities = [
   'Костанай',
   'Кызылорда'
 ]
+
+watch(bin, async (newValue) => {
+  if (newValue.length !== 12) return;
+
+  let timeoutId; // чтобы можно было отменить повторы
+
+  try {
+    loadingStore.startLoading()
+    const pkbToken = await getPkbToken();
+
+    const poll = async () => {
+      try {
+        const res = await getPkbRequest({
+          params: { iin: newValue },
+          data: pkbToken.data.access.hash,
+        });
+
+        if (
+            res?.data?.code === 'OK' &&
+            res.data?.data?.status_code === 'VALID'
+        ) {
+          console.log('VALID получен, делаем pkbGetData');
+
+          // вызываем pkbGetData
+          const response = await pkbGetData({
+            id: res.data.data.request_id,
+            params: {
+              iin: newValue,
+              requestId: res.data.data.request_id,
+            },
+            data: pkbToken.data.access.hash,
+          });
+          isFcb.value = true
+          name.value = capitalize(response.data.data.person_data.name)
+          surname.value = capitalize(response.data.data.person_data.surname)
+          patronymic.value = capitalize(response.data.data.person_data.patronymic)
+          loadingStore.stopLoading()
+          console.log('Ответ от pkbGetData:', response);
+
+          // остановить дальнейшие попытки
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+          }
+
+        } else {
+          console.log('Ожидаем VALID, текущий статус:', res?.data?.data?.status_code);
+          // запланировать следующий вызов через 10 секунд
+          timeoutId = setTimeout(poll, 10000);
+        }
+      } catch (err) {
+        console.error('Ошибка при запросе:', err);
+        // запланировать повтор при ошибке
+        timeoutId = setTimeout(poll, 10000);
+      }
+    };
+
+    // запускаем первый вызов
+    await poll();
+
+  } catch (error) {
+    console.error('Ошибка при получении токена:', error);
+  }
+});
+
+function capitalize(str) {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
 
 async function run () {
   try {

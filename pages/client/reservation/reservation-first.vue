@@ -3,6 +3,8 @@ import { ref, watch } from 'vue'
 import { createDeceased, createBurialRequest } from '~/services/client'
 import { useRouter } from 'vue-router'
 import { useCemeteryStore } from '~/store/cemetery'
+import {pkbGetDeceasedData} from "~/services/login/index.js";
+import {useLoadingStore} from "~/store/loading.js";
 
 const router = useRouter()
 const cemeteryStore = useCemeteryStore()
@@ -13,6 +15,35 @@ const fullName = ref('')
 const deathDate = ref('')
 const burialDate = ref('')
 const burialTime = ref('')
+const isFcb = ref(false)
+
+const loadingStore = useLoadingStore()
+
+watch(inn, async (newValue) => {
+  if (newValue.length !== 12) return;
+
+  try {
+    loadingStore.startLoading()
+    const response = await pkbGetDeceasedData({
+        iin: newValue,
+    });
+    isFcb.value = true
+    fullName.value = capitalizeFullName(response.data.data.person_data.fullName)
+    loadingStore.stopLoading()
+    console.log('Ответ от pkbGetData:', response);
+  } catch (err) {
+    console.error('Ошибка при запросе:', err);
+  }
+
+})
+
+function capitalizeFullName(str) {
+  return str
+      .toLowerCase() // всё в нижний регистр
+      .split(' ') // разбиваем на слова
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // капиталайз каждого слова
+      .join(' '); // склеиваем обратно
+}
 
 // Функция для бронирования
 const handleBooking = async () => {
