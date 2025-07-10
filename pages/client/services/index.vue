@@ -131,6 +131,36 @@ async function openReceiptModal(order) {
     }
 }
 
+function computedStatus(status) {
+    if (status === 'new') {
+        return 'Новый'
+    } else if (status === 'processing') {
+        return 'В обработке'
+    } else if (status === 'in_progress') {
+        return 'В процессе'
+    } else if (status === 'completed') {
+        return 'Выполнен'
+    } else if (status === 'cancelled') {
+        return 'Отменен'
+    } else if (status === 'pending_payment') {
+        return 'Ожидается оплата'
+    }  
+
+    return status
+}
+
+function getStatusColor(status) {
+    const colors = {
+        'new': 'bg-blue-500 text-white',
+        'processing': 'bg-yellow-500 text-white', 
+        'in_progress': 'bg-orange-500 text-white',
+        'completed': 'bg-green-500 text-white',
+        'cancelled': 'bg-red-500 text-white',
+        'pending_payment': 'bg-purple-500 text-white',
+    }
+    return colors[status] || 'bg-gray-500 text-white'
+}
+
 function closeReceiptModal() {
     showReceiptModal.value = false
     receiptData.value = null
@@ -153,45 +183,30 @@ onMounted(() => {
             <!-- Заказы -->
             <div v-else-if="orders?.items?.length" v-for="(item, index) in orders.items"  :key="item.id" class="item">
                 <div class="flex justify-between items-center cursor-pointer select-none" @click="toggle(index)">
-                    <h3 class="text-2xl font-medium">{{ item.items[0].product.name }}</h3>
+                    <h3 class="text-2xl font-medium">Заказ № {{ item.id }}</h3>
                     <img src="/icons/dropdown.svg" alt="" :class="{ 'transform rotate-180': openItems[index] }">
                 </div>
                 <div v-show="openItems[index]" class="drop">
-                    <!-- <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
-                        <div class="min-w-[580px] font-medium flex flex-col gap-[10px]">
-                            <div class="flex text-base"><p class="min-w-[150px]">Кладбище:</p><p>Северное кладбище</p></div>
-                            <div class="flex text-base"><p class="min-w-[150px]">Сектор</p><p>11</p></div>
-                            <div class="flex text-base"><p class="min-w-[150px]">Место:</p><p>233</p></div>
-                        </div>
-                    </div> -->
-                    <!-- <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
-                        <div class="font-medium flex flex-col gap-[10px]">
-                            <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">ФИО покойного:</p><p class="font-bold">Беляков Макар Максимович</p></div>
-                            <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Дата похорон:</p><p>12.09.2024, 10:00</p></div>
-                        </div>
-                    </div> -->
-                    <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
+                    
+                    <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]" v-for="position in item.items" :key="item.id">
                         <div class="font-medium flex flex-col gap-[10px]">
                             <div class="flex text-base">
-                                <p class="min-w-[150px] max-w-[150px]">Cтатус:</p>
-                                <p class="p-[4px] rounded-md bg-[#339B38] text-sm font-semibold text-white mr-4">Выполнен</p>
-                                <p class="p-[4px] rounded-md bg-[#DC6E29] text-sm font-semibold text-white mr-4">Выполняется</p>
+                                <p class="min-w-[150px] max-w-[150px]">Статус:</p>
+                                <span :class="['px-3 py-1 rounded-full text-sm font-semibold', getStatusColor(item.status)]">
+                                    {{ computedStatus(item.status) }}
+                                </span>
                             </div>
                             <div class="flex text-base">
                                 <p class="min-w-[150px] max-w-[150px]">Адрес прибытия:</p>
-                                <p class="p-[4px]">{{ item.items[0].delivery_destination_address }}</p>
+                                <p class="p-[4px]">{{ position.delivery_destination_address }}</p>
                             </div>
                             <div class="flex text-base">
                                 <p class="min-w-[150px] max-w-[150px]">Время прибытия:</p>
                                 <p class="p-[4px]">10:00</p>
                             </div>
-                            <!-- <div class="flex text-base">
-                                <p class="min-w-[150px] max-w-[150px]">Поставщик:</p>
-                                <p class="p-[4px]">Ритуальный Центр "Покой и Уважение"</p>
-                            </div> -->
                             <div class="flex text-base">
                                 <p class="min-w-[150px] max-w-[150px]">Телефон:</p>
-                                <p class="p-[4px]">+{{ item.items[0].product.supplier_phone }}</p>
+                                <p class="p-[4px]">+{{ position.product.supplier_phone }}</p>
                             </div>
                         </div>
                     </div>

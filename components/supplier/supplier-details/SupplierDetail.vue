@@ -153,35 +153,37 @@ const whatsAppLink = computed(() => {
             <img src="/icons/back-blue.svg" alt="" class=""> Назад
         </button>
         <div class="flex justify-between items-center border-b-2 border-[#EEEEEE] pb-[16px] mt-[16px]">
-            <h3 class="text-2xl font-medium">{{ orderData?.items[0].product.name }}</h3>
+            <h3 class="text-2xl font-medium">Заказ № {{ orderData?.id }}</h3>
             <p class="text-sm">Дата и время заявки: {{ new Date(orderData?.created_at).toLocaleString() }}</p>
         </div>
-        <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
-            <div class="min-w-[580px] font-medium flex flex-col gap-[10px]">
-                <div class="flex text-base"><p class="min-w-[150px]">Кладбище:</p><p>Дружба</p></div>
-                <div class="flex text-base"><p class="min-w-[150px]">Сектор</p><p>11</p></div>
-                <div class="flex text-base"><p class="min-w-[150px]">Место:</p><p>233</p></div>
-                <div class="flex text-base"><p class="min-w-[150px]">Заказчик:</p><p>{{ orderData?.user_info.surname }} {{ orderData?.user_info.name }} {{ orderData?.user_info.patronymic }}</p></div>
-            </div>
-            <button class="rounded-md w-[140px] h-[30px] text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]">Данные участка</button>
-        </div>
-        <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
-            <div class="font-medium flex flex-col gap-[10px]">
-                <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Дата похорон:</p><p>12.09.2024, 10:00</p></div>
-                <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Заказчик:</p><p>{{ '-'}}</p></div>
-                <div class="flex text-base">
-                    <p class="min-w-[150px] max-w-[150px] flex items-center gap-[10px]">Контакты заказчика:</p>
-                    <p class="flex items-center gap-[10px]">
-                        +{{ orderData?.user_phone }} 
-                        <a :href="whatsAppLink" class="ml-2">
-                            <img src="/icons/whatsapp.svg" alt="" class="w-[32px] h-[32px]">
-                        </a>
-                    </p>
+        <div v-for="order in orderData?.items" :key="order.id">
+            <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
+                <div class="min-w-[580px] font-medium flex flex-col gap-[10px]">
+                    <!-- <div class="flex text-base"><p class="min-w-[150px]">Кладбище:</p><p>Дружба</p></div>
+                    <div class="flex text-base"><p class="min-w-[150px]">Сектор</p><p>11</p></div>
+                    <div class="flex text-base"><p class="min-w-[150px]">Место:</p><p>233</p></div> -->
+                    <div class="flex text-base"><p class="min-w-[150px]">Заказчик:</p><p>{{ orderData?.user_info?.surname }} {{ orderData?.user_info?.name }} {{ orderData?.user_info?.patronymic }}</p></div>
                 </div>
-                <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Адрес прибытия:</p><p>{{ orderData?.items[0].delivery_destination_address }}</p></div>
-                <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Время прибытия:</p><p>09:00</p></div>
+                <!-- <button class="rounded-md w-[140px] h-[30px] text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]">Данные участка</button> -->
             </div>
-        </div>
+            <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
+                <div class="font-medium flex flex-col gap-[10px]">
+                    <!-- <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Дата похорон:</p><p>12.09.2024, 10:00</p></div>
+                    <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Заказчик:</p><p>{{ '-'}}</p></div> -->
+                    <div class="flex text-base">
+                        <p class="min-w-[150px] max-w-[150px] flex items-center gap-[10px]">Контакты заказчика:</p>
+                        <p class="flex items-center gap-[10px]">
+                            +{{ orderData?.user_phone }} 
+                            <a :href="whatsAppLink" class="ml-2">
+                                <img src="/icons/whatsapp.svg" alt="" class="w-[32px] h-[32px]">
+                            </a>
+                        </p>
+                    </div>
+                    <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Адрес прибытия:</p><p>{{ orderData?.items[0].delivery_destination_address }}</p></div>
+                    <!-- <div class="flex text-base"><p class="min-w-[150px] max-w-[150px]">Время прибытия:</p><p>09:00</p></div> -->
+                </div>
+            </div>
+        </div>  
         <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
             <div class="font-medium flex flex-col gap-[10px]">
                 <div class="flex text-base">
