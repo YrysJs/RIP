@@ -1,13 +1,16 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getBurialRequests } from '~/services/client'
+import { useUserStore } from '~/store/user';
+
+const userStore = useUserStore();
 
 const burialRequests = ref([])
 const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const response = await getBurialRequests({ status: 'pending' })
+    const response = await getBurialRequests({ status: 'pending', user_phone: userStore.user?.phone})
     burialRequests.value = response.data
   } catch (error) {
     console.error('Ошибка при получении заявок:', error)

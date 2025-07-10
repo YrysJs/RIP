@@ -50,11 +50,11 @@ const handleBooking = async () => {
             <div class="grid grid-cols-2 gap-[12px] mt-[24px]">
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">ИИН</p>
-                <input v-model="inn" type="text" class="pl-4 w-[100%] h-[60px] !border !border-[#222222] rounded-lg text-lg">
+                <input v-model="inn" type="text" class="pl-4 w-[100%] h-[60px] !border !border-[#222222] rounded-lg text-lg input">
               </div>
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">ФИО</p>
-                <input v-model="fullName" type="text" class="pl-4 w-[100%] h-[60px] !border !border-[#222222] rounded-lg text-lg">
+                <input v-model="fullName" type="text" class="pl-4 w-[100%] h-[60px] !border !border-[#222222] rounded-lg text-lg input">
               </div>
             </div>
           </div>
@@ -63,7 +63,7 @@ const handleBooking = async () => {
                 Даты 
                 <div>
                   <label class="relative inline-block w-14 h-8 cursor-pointer select-none">
-                    <input v-model="switcher" type="checkbox" class="sr-only peer">
+                    <input v-model="switcher" type="checkbox" class="sr-only peer input">
                     <span
                       class="absolute inset-0 bg-gray-200 rounded-full transition-colors
                             peer-focus:ring-2 peer-focus:ring-blue-500
@@ -77,19 +77,19 @@ const handleBooking = async () => {
             <div v-if="switcher" class="grid grid-cols-2 gap-[12px] gap-y-[24px] mt-[24px]">
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">Дата смерти</p>
-                <input v-model="deathDate" type="date" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base">
+                <input v-model="deathDate" type="date" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base input">
               </div>
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">Заключение о смерти от мед учереждении:</p>
-                <input type="text" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base">
+                <input type="text" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base input">
               </div>
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">Дата похорон</p>
-                <input v-model="burialDate" type="date" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base">
+                <input v-model="burialDate" type="date" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base input">
               </div>
               <div>
                 <p class="text-sm text-[#222222] font-roboto font-normal">Время похорон</p>
-                <input v-model="burialTime" type="time" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base" placeholder="00:00">
+                <input v-model="burialTime" type="time" class="w-[100%] h-[60px] !border !border-[#222222] rounded-lg pl-[16px] text-base input" placeholder="00:00">
               </div>
             </div>
           </div>

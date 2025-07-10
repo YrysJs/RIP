@@ -5,6 +5,9 @@ import ShareCoordModal from '~/components/layout/modals/ShareCoordModal.vue';
 import GraveDataModal from '~/components/layout/modals/GraveDetailModal.vue';
 import { getGraveById } from '~/services/client';
 import { getCemeteryById } from '~/services/cemetery';
+import { useUserStore } from '~/store/user';
+
+const userStore = useUserStore();
 
 const burialRequests = ref([])
 const loading = ref(true);
@@ -26,7 +29,7 @@ const fetchCemeteryData = async (id) => {
 
 onMounted(async () => {
   try {
-    const response = await getBurialRequests({ status: 'paid' })
+    const response = await getBurialRequests({ status: 'paid', user_phone: userStore.user?.phone })
     burialRequests.value = response.data
   } catch (error) {
     console.error('Ошибка при получении заявок:', error)
@@ -39,8 +42,8 @@ onMounted(async () => {
 const graveLat = ref(null)
 const graveLng = ref(null)
 
-const shareGraveData = async () => {
-  await fetchGraveData(burialRequests.value[0].grave_id)
+const shareGraveData = async (grave_id) => {
+  await fetchGraveData(grave_id)
   shareCoordModalState.value = true
 
   graveLat.value = graveData.value.polygon_data.coordinates[0][1]
@@ -96,7 +99,7 @@ const showGraveDataModal = async (id) => {
                     </div>
                 </div>
                 <div class="flex justify-between mt-[16px]">
-                    <button class="h-[51px] text-[#222222] text-base font-semibold flex items-center gap-[10px]" @click="shareGraveData">
+                    <button class="h-[51px] text-[#222222] text-base font-semibold flex items-center gap-[10px]" @click="shareGraveData(request.grave_id)">
                         <img src="/icons/share.svg" alt=""> поделиться координатами
                     </button>
                     <div class="flex gap-[10px]">

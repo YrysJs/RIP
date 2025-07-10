@@ -131,8 +131,17 @@ function drawPolygons() {
 
     const isSelected = selected.value?.id === item.id
 
+    let borderColor = '#006600'
+    if (isSelected) {
+      if (item.status === 'free') {
+        borderColor = '#38949B'
+      } else {
+        borderColor = 'gray' 
+      }
+    }
+
     const polygon = DG.polygon(latlngs, {
-      color: isSelected ? '#0066CC' : '#006600', // обводка
+      color: borderColor,
       weight: isSelected ? 3 : 1,
       fillColor: getFillColor(item, isSelected),
       fillOpacity: 0.7,
@@ -151,7 +160,14 @@ function drawPolygons() {
 }
 
 function getFillColor(item, isSelected) {
-  if (isSelected) return '#43DC49CC'
+  if (isSelected && item.status === 'free') return '#43DC49CC'
+  
+  if (isSelected) {
+    if (item.status === 'reserved') return '#FFD700'
+    if (item.status === 'occupied') return '#939393'
+    return '#999999'
+  }
+  
   if (item.status === 'free') return '#66FF99'
   if (item.status === 'reserved') return '#FFD700'
   if (item.status === 'occupied') return '#939393'
@@ -164,10 +180,20 @@ function selectPolygon(item) {
 
   polygonObjects.value.forEach(({ id, polygon, data }) => {
     const isSel = id === item.id
+    
+    let borderColor = null
+    if (isSel) {
+      if (data.status === 'free') {
+        borderColor = '#38949B'
+      } else {
+        borderColor = 'gray' 
+      }
+    }
+    
     polygon.setStyle({
       fillColor: getFillColor(data, isSel),
-      color: isSel ? '#38949B' : null,
-      weight: isSel ? 3 : 1,
+      color: borderColor,
+      weight: isSel ? 4 : 1,
     })
   })
 }

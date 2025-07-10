@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { createMemorial, getBurialRequestById } from '~/services/client'
 
 const route = useRoute()
+const router = useRouter()
 
 // Данные захоронения
 const burial = ref(null)
@@ -176,7 +177,7 @@ const submitMemorial = async () => {
 <template>
     <div class="container">
         <div class="flex items-center bg-white p-5 rounded-2xl mb-4 bg-[#fff]">
-            <button class="btn btn-back mr-4" @click="router.push('/supplier/services/active')">
+            <button class="btn btn-back mr-4" @click="router.push('/client/memorial')">
                 <img class="w-4 h-4 mr-[10px]" src="/icons/arrow-left-primary.svg" alt="">
                 Назад
             </button>

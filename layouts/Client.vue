@@ -4,6 +4,9 @@ import ClientSidebar from '~/components/layout/ClientSidebar.vue';
 import AppHeader from "~/components/layout/AppHeader.vue";
 import { getCurrentUser } from '~/services/login';
 import { onMounted } from 'vue';
+import { useUserStore } from '~/store/user';
+
+const userStore = useUserStore();
 
 const userInfo = ref(null);
 
@@ -13,6 +16,8 @@ onMounted(async () => {
   });
 
   userInfo.value = response.data;
+
+  userStore.setUser(userInfo.value);
 })
 </script>
 
