@@ -135,17 +135,10 @@ export default {
         }
 
         // 1. Выполняем платеж
-        console.log('Processing payment...', paymentData)
         const paymentResponse = await processCardPayment(paymentData)
-        console.log('Payment successful:', paymentResponse)
 
-        // 1.2. Подтверждаем платеж заявки на захоронение (используем burial_id из URL параметров)
-        const burialId = this.$route.query.burial_id
-        if (transactionId && burialId) {
-          console.log('Confirming burial payment...')
-          await confirmBurialPayment(burialId, transactionId)
-          console.log('Burial payment confirmed')
-        }
+        const burialId = this.$route.params.id
+        await confirmBurialPayment(burialId,paymentResponse.data.data.paymentInfo.id)
 
         // 2. Обновляем данные захоронения (дата и время)
         if (this.burialData?.burial_date || this.burialData?.burial_time) {
@@ -154,18 +147,11 @@ export default {
             burial_time: this.burialData.burial_time
           }
           await updateBurialRequestData(this.burialData.id, burialUpdateData)
-          console.log('Burial request data updated')
         }
-
-        // 3. Обновляем статус заявки на захоронение
-        const statusUpdateData = { status: 'paid', comment: 'Оплачено' }
-        await updateBurialRequestStatus(this.burialData.id, statusUpdateData)
-        console.log('Burial request status updated')
 
         // 4. Загружаем сертификат о смерти, если он есть
         if (this.deathCertificateFile && this.burialData?.deceased?.id) {
           await uploadDeceasedDeathCertificate(this.burialData.deceased.id, this.deathCertificateFile)
-          console.log('Death certificate uploaded')
         }
 
         // 5. Закрываем модалку и сообщаем о успешной оплате

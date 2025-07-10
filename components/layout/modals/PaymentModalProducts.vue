@@ -165,10 +165,10 @@ export default {
         }
         
         const orderResponse = await createOrder(orderRequestData)
-        console.log('Order created:', orderResponse)
+        console.log(orderResponse)
 
         // Получаем transaction_id из ответа платежа
-        const transactionId = paymentResponse?.data?.paymentInfo?.id
+        const transactionId = paymentResponse.data.data.paymentInfo.id
         
         // 1.1. Подтверждаем платеж заказа (используем order_id из ответа createOrder)
         if (transactionId && orderResponse?.data?.id) {
@@ -183,7 +183,6 @@ export default {
 
       } catch (error) {
         console.error('Payment process failed:', error)
-        alert('Ошибка при обработке платежа. Пожалуйста, попробуйте снова.')
       } finally {
         this.isProcessing = false
       }
