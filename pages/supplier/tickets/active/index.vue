@@ -101,7 +101,8 @@ const getStatusInfo = (status) => {
     pending: { text: 'Ожидает', class: 'status-danger' },
     approved: { text: 'Одобрено', class: 'status-close' },
     rejected: { text: 'Отклонено', class: 'status-cancel' },
-    completed: { text: 'Завершено', class: 'status-close' }
+    completed: { text: 'Завершено', class: 'status-close' },
+    pending_payment: { text: 'Ожидает оплаты', class: 'status-danger' }
   }
   return statusMap[status] || { text: status, class: 'status-danger' }
 }
@@ -240,9 +241,9 @@ onMounted(() => {
             <!-- Данные заказов -->
             <div v-else-if="orders.length > 0" class="rip-table">
                 <div class="rip-table__header">
-                    <div>Товар/Услуга</div>
+                    <div>Номер заказа</div>
                     <div>Заказчик</div>
-                    <div>Дата доставки</div>
+                    <div>Дата</div>
                     <div>Статус</div>
                 </div>
                 <nuxt-link 
@@ -252,13 +253,13 @@ onMounted(() => {
                     class="rip-table__content"
                 >
                     <div class="rip-table__content-val">
-                        {{ getProductName(order) }}
+                        {{ order.id }}
                     </div>
                     <div class="rip-table__content-val">
                         {{ order.user_phone || 'Не указано' }}
                     </div>
                     <div class="rip-table__content-val">
-                        {{ formatDate(getDeliveryTime(order)) }}
+                        {{ formatDate(order.created_at) }}
                     </div>
                     <div class="rip-table__content-val flex items-center gap-[15px]">
                         <span class="status" :class="getStatusInfo(order.status).class">
@@ -303,7 +304,7 @@ onMounted(() => {
 .rip-table {
     &__header, &__content {
         display: grid;
-        grid-template-columns: 202px 249px 127px 127px;
+        grid-template-columns: 152px 259px 127px 147px;
         gap: 16px
     }
 
