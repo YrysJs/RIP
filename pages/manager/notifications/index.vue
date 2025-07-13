@@ -36,7 +36,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <NuxtLayout name="supplier">
+    <NuxtLayout name="manager">
         <div class="w-full h-[61px] pl-[20px] flex items-center bg-white rounded-[16px] text-lg font-semibold">
             Уведомления
         </div>
