@@ -23,7 +23,7 @@
 
     <div class="cemetery-card__footer flex justify-end gap-3">
       <button class="btn cemetery-card__edit-button" @click="emit('open-map', cemetery)">На карте</button>
-      <button class="btn cemetery-card__edit-button" @click="triggerFileSelect">Загрузить могилы</button>
+      <button class="btn cemetery-card__edit-button" @click="triggerFileSelect">Загрузить захоронения</button>
       <input
           ref="fileInput"
           type="file"
@@ -61,7 +61,7 @@ function onFileChange(event) {
     formData.append('file', file)
     formData.append('cemetery_id', props.cemetery.id)
 
-    emit('upload', formData)
+    emit('upload', formData, props.cemetery)
   }
 }
 

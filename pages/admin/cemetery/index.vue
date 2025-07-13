@@ -18,8 +18,9 @@ const selectCemetery = (cemetery) => {
   isMap.value = true
 }
 
-const uploadFile = async (data) => {
-  importXlsx(data)
+const uploadFile = async (data, cemetery) => {
+  await importXlsx(data)
+  selectCemetery(cemetery)
 }
 
 onMounted((async () => {
@@ -65,5 +66,15 @@ onMounted((async () => {
 </template>
 
 <style scoped>
+.create-btn {
+  background: #224C4F;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
 
 </style>

@@ -62,7 +62,10 @@ function finishDrawing() {
   const count = points.length
   const centerLat = points.reduce((sum, p) => sum + p[0], 0) / count
   const centerLng = points.reduce((sum, p) => sum + p[1], 0) / count
-  emit('complete', {points: [...points], center: [centerLat, centerLng]})
+  emit('complete', {
+    points: points.map(([lat, lng]) => [lng, lat]),
+    center: [centerLat, centerLng]
+  })
 }
 
 function clearMap() {

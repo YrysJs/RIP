@@ -215,7 +215,7 @@ const addNews = async () => {
       }
       filerRes = await setNewsFile(formData)
     }
-
+    base64File.value = await convertToBase64(file.value)
     const temp = {
       title: newsTitle.value,
       content: newsContent.value,

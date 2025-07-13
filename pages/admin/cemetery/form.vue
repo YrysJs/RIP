@@ -65,6 +65,7 @@ const finishDraw = (cords) => {
 const create = async () => {
   try {
     const res = await CreateCemetery(form)
+    showSuccessModal.value = true
     console.log(res)
   }
   catch (err) {
@@ -131,7 +132,7 @@ const create = async () => {
         </select>
       </div>
     </div>
-
+    {{form.polygon_data.coordinates}}
     <FormMap @complete="finishDraw" />
 
     <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
