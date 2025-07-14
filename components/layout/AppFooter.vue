@@ -6,7 +6,7 @@
                 <nuxt-link to="/">Цены</nuxt-link>
                 <nuxt-link to="/">Контакты</nuxt-link>
                 <nuxt-link to="/">Вакансии</nuxt-link>
-                <nuxt-link to="/instructions">Инструкция для пользователей</nuxt-link>
+                <nuxt-link to="/">Инструкция для пользователей</nuxt-link>
             </div>
             <div class="footer-center flex items-center gap-[24px]">
                 <a href="/">
@@ -16,9 +16,11 @@
                     <img src="/icons/fb.svg" alt="">
                 </a>
             </div>
+          <div class="footer-bottom flex items-center gap-[24px]">
+            <p class="text-[16px]">Пользуясь сервисом ripservice.kz, Вы соглашаетесь с <br/><nuxt-link to="/instructions" class="underline">условиями и политиками</nuxt-link>  предоставления услуги</p>
+          </div>
             <div class="footer-bottom flex items-center gap-[24px]">
                 <p class="text-[20px]">© 2025 RIP. Все права защищены.</p>
-                <a class="text-[16px]" href="/">Политика Конфиденциальности</a>
             </div>
         </div>
     </footer>
