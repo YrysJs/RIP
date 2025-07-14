@@ -9,10 +9,10 @@
                 <nuxt-link to="/">Инструкция для пользователей</nuxt-link>
             </div>
             <div class="footer-center flex items-center gap-[24px]">
-                <a href="/">
+                <a href="https://www.instagram.com/ripservice.kz/profilecard/?igsh=NWlmZzJieW9lMGFt" target="_blank">
                     <img src="/icons/inst.svg" alt="">
                 </a>
-                <a href="/">
+                <a href="https://www.facebook.com/share/19H52AYpDA/?mibextid=wwXIfr" target="_blank">
                     <img src="/icons/fb.svg" alt="">
                 </a>
             </div>
