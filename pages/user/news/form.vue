@@ -137,7 +137,7 @@
 <script setup>
 // import {QuillEditor} from "@vueup/vue-quill";
 import { ref } from 'vue';
-import { createNews, setNewsFile } from '~/services/akimat'
+import { createNews, setAkimatFile } from '~/services/akimat'
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import Cookies from "js-cookie";
 const router = useRouter();
@@ -213,7 +213,7 @@ const addNews = async () => {
       } else {
         formData.append('files', achievementPhotos.value.file)
       }
-      filerRes = await setNewsFile(formData)
+      filerRes = await setAkimatFile(formData)
     }
     base64File.value = await convertToBase64(file.value)
     const temp = {

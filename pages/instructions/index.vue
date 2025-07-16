@@ -15,7 +15,7 @@ import AppFooter from "~/components/layout/AppFooter.vue";
             <a target="_blank" href="/docs/Политика конфиденциальности (1)-2.pdf" class="card flex items-center gap-[10px] rounded-xl py-4 px-6">
                 <img src="/icons/pdf.webp" alt="pdf">Политика конфиденциальности
             </a>
-            <a target="_blank" href="/docs/Политика обработка ПД (1)-2.pdf" class="card flex items-center gap-[10px] rounded-xl py-4 px-6">
+            <a target="_blank" href="/docs/Политика обработка ПД (1).pdf" class="card flex items-center gap-[10px] rounded-xl py-4 px-6">
                 <img src="/icons/pdf.webp" alt="pdf">Политика обработка ПД
             </a>
             <a target="_blank" href="/docs/Пользовательское соглашение-2.pdf" class="card flex items-center gap-[10px] rounded-xl py-4 px-6">

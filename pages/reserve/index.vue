@@ -232,6 +232,7 @@ const shareGraveData = () => {
                 <div class="flex gap-[24px] mt-[16px] mb-[32px]">
                     <span class="text-base font-medium font-roboto">Вместимость: {{ selectedCemetery.capacity }}</span>
                     <span class="text-base font-medium font-roboto">Cвободных мест: {{ selectedCemetery.free_spaces }}</span>
+                  <span class="text-base font-medium font-roboto">Стоимость брони: 10 000₸</span>
                 </div>
                 <p class="text-base font-roboto text-[#222222]">
                     {{ selectedCemetery.description }}

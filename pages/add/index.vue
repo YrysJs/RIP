@@ -46,7 +46,7 @@ const onSubmit = async () => {
     applicant_email: form.email,
     applicant_phone: extractDigits(form.phone),
     applicant_name: form.fullName,
-      request_type: 'search'
+    request_type: 'add'
   });
   showSuccessModal.value = true
 };
@@ -66,7 +66,7 @@ const onSubmit = async () => {
     <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
       <h2 class="text-lg font-medium">
         Укажите свои данные и контакты
-<!--        <span class="text-red-500 text-sm">Поля обязательно к заполнению</span>-->
+        <!--        <span class="text-red-500 text-sm">Поля обязательно к заполнению</span>-->
       </h2>
 
       <div>

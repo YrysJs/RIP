@@ -1,8 +1,11 @@
 <script setup>
 import {onMounted, ref} from 'vue'
 import { createRequest } from '~/services/client'
+import { setAkimatFile } from '~/services/akimat'
 import {getCemeteries} from "~/services/cemetery/index.js";
-import {getCurrentUser} from "~/services/login/index.js";
+import {getUser} from "~/services/login/index.js";
+import Cookies from "js-cookie";
+import {parseJwt} from '~/utils/parseJwt';
 
 const router = useRouter()
 
@@ -17,6 +20,18 @@ const proof_of_relation = ref([])
 const grave_doc = ref([])
 const userInfo = ref(null);
 
+
+const removeDeathSert = (index) => {
+  death_certificate.value.splice(index, 1)
+}
+
+const removeProof = (index) => {
+  proof_of_relation.value.splice(index, 1)
+}
+
+const removeDoc = (index) => {
+  grave_doc.value.splice(index, 1)
+}
 
 const handleSertUpload = (event) => {
   const files = Array.from(event.target.files)
@@ -58,7 +73,7 @@ const handleDocumentUpload = (event) => {
   files.forEach(file => {
     const reader = new FileReader()
     reader.onload = (e) => {
-      achievementPhotos.value.push({
+      grave_doc.value.push({
         id: Date.now() + Math.random(),
         url: e.target.result,
         file: file
@@ -71,6 +86,43 @@ const handleDocumentUpload = (event) => {
 
 async function userCreateAppeal() {
   try {
+    const sertFormData = new FormData()
+    const proofFormData = new FormData()
+    const docFormData = new FormData()
+    let sertRes
+    let proofRes
+    let docRes
+    sertFormData.append('Authorization', Cookies.get('token'))
+    if (death_certificate.value) {
+      if (Array.isArray(death_certificate.value)) {
+        death_certificate.value.forEach(achievement => sertFormData.append('files', achievement.file))
+      } else {
+        sertFormData.append('files', death_certificate.value.file)
+      }
+      sertRes = await setAkimatFile(sertFormData)
+    }
+
+    proofFormData.append('Authorization', Cookies.get('token'))
+    if (proof_of_relation.value) {
+      if (Array.isArray(proof_of_relation.value)) {
+        proof_of_relation.value.forEach(achievement => proofFormData.append('files', achievement.file))
+      } else {
+        proofFormData.append('files', proof_of_relation.value.file)
+      }
+      proofRes = await setAkimatFile(proofFormData)
+    }
+
+    docFormData.append('Authorization', Cookies.get('token'))
+    if (grave_doc.value) {
+      if (Array.isArray(grave_doc.value)) {
+        grave_doc.value.forEach(achievement => docFormData.append('files', achievement.file))
+      } else {
+        docFormData.append('files', grave_doc.value.file)
+      }
+      docRes = await setAkimatFile(docFormData)
+    }
+
+
     const response = await createRequest({
       userPhone: userInfo.value.phone,
       fromBurialId: fromBurialId.value,
@@ -78,9 +130,9 @@ async function userCreateAppeal() {
       reason: reason.value,
       foreign_cemetry: foreign_cemetry.value,
       akimatId: 6,
-      death_certificate: '',
-      proof_of_relation: '',
-      grave_doc: ''
+      death_certificate: sertRes.data.files[0].fileUrl,
+      proof_of_relation: proofRes.data.files[0].fileUrl,
+      grave_doc: docRes.data.files[0].fileUrl
     })
     console.log(response)
     // router.push('/client/goverment/requests')
@@ -90,8 +142,9 @@ async function userCreateAppeal() {
 }
 
 onMounted((async () => {
-  const response = await getCurrentUser({
-    id: localStorage.getItem('user_id')
+  const parsedToken = parseJwt(token.value)
+  const response = await getUser({
+    phone: parsedToken.sub
   });
 
   userInfo.value = response.data;
@@ -142,7 +195,7 @@ onMounted((async () => {
 
           <!-- Кнопка загрузки фото -->
           <button
-              @click="$refs.achievementFileInput.click()"
+              @click="$refs.sertFileInput.click()"
               class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"
           >
             Добавить
@@ -150,7 +203,7 @@ onMounted((async () => {
 
           <!-- Скрытый input для файлов -->
           <input
-              ref="achievementFileInput"
+              ref="sertFileInput"
               type="file"
               multiple
               @change="handleSertUpload"
@@ -168,7 +221,7 @@ onMounted((async () => {
                 <img src="/images/doc.png" alt="Achievement photo" class="image-preview">
                 <div class="image-overlay">
                   <button
-                      @click="removeAchievementPhoto(index)"
+                      @click="removeDeathSert(index)"
                       class="remove-btn"
                   >
                     ✕
@@ -186,7 +239,7 @@ onMounted((async () => {
 
           <!-- Кнопка загрузки фото -->
           <button
-              @click="$refs.achievementFileInput.click()"
+              @click="$refs.proofFileInput.click()"
               class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"
           >
             Добавить
@@ -194,7 +247,7 @@ onMounted((async () => {
 
           <!-- Скрытый input для файлов -->
           <input
-              ref="achievementFileInput"
+              ref="proofFileInput"
               type="file"
               multiple
               @change="handleProofUpload"
@@ -212,7 +265,7 @@ onMounted((async () => {
                 <img src="/images/doc.png" alt="Achievement photo" class="image-preview">
                 <div class="image-overlay">
                   <button
-                      @click="removeAchievementPhoto(index)"
+                      @click="removeProof(index)"
                       class="remove-btn"
                   >
                     ✕
@@ -230,7 +283,7 @@ onMounted((async () => {
 
           <!-- Кнопка загрузки фото -->
           <button
-              @click="$refs.achievementFileInput.click()"
+              @click="$refs.docFileInput.click()"
               class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"
           >
             Добавить
@@ -238,7 +291,7 @@ onMounted((async () => {
 
           <!-- Скрытый input для файлов -->
           <input
-              ref="achievementFileInput"
+              ref="docFileInput"
               type="file"
               multiple
               @change="handleDocumentUpload"
@@ -256,7 +309,7 @@ onMounted((async () => {
                 <img src="/images/doc.png" alt="Achievement photo" class="image-preview">
                 <div class="image-overlay">
                   <button
-                      @click="removeAchievementPhoto(index)"
+                      @click="removeDoc(index)"
                       class="remove-btn"
                   >
                     ✕

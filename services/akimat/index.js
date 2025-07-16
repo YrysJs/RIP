@@ -145,7 +145,7 @@ function getBurialRequestStats(params) {
     })
 }
 
-function setNewsFile(data) {
+function setAkimatFile(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
@@ -178,7 +178,7 @@ export {
     exportAppealsReport,
     getAppealComment,
     getBurialRequestStats,
-    setNewsFile,
+    setAkimatFile,
     setRequestResponsible,
     getMyRequests,
     getMyAppeals

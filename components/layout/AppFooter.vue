@@ -4,7 +4,7 @@
             <div class="footer-top flex gap-[24px] items-center text-[16px]">
                 <nuxt-link to="/">Стать партнером</nuxt-link>
                 <nuxt-link to="/">Цены</nuxt-link>
-                <nuxt-link to="/">Контакты</nuxt-link>
+                <nuxt-link to="/contacts">Контакты</nuxt-link>
                 <nuxt-link to="/">Вакансии</nuxt-link>
                 <nuxt-link to="/">Инструкция для пользователей</nuxt-link>
             </div>

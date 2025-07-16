@@ -113,7 +113,7 @@ onMounted(() => {
                                 <button 
                                     v-for="button in slide.buttons" 
                                     :key="button.action"
-                                    @click="router.push('/search')"
+                                    @click="router.push(`/${button.action}`)"
                                     class="border-2 border-[#E9EDED] text-white text-base p-[12px] rounded-lg hover:bg-white hover:text-[#224C4F] transition-all duration-300"
                                 >
                                     {{ button.text }}
