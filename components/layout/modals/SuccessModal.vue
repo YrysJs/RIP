@@ -33,5 +33,6 @@ const handleClose = () => {
 .modal {
   top: 0;
     background: #0000005b;
+  z-index: 999;
 }
 </style>
