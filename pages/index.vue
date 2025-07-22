@@ -2,6 +2,7 @@
 import MainPageModal from "~/components/layout/modals/MainPageModal.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
 import AppFooter from "~/components/layout/AppFooter.vue";
+
 import { getNews } from '~/services/akimat'
 import { useNewsStore } from '~/store/news.js'
 import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -16,10 +17,14 @@ const dataId = ref(0)
 const mainPageModalState = ref(false)
 const loadingStore = useLoadingStore()
 
+
 const showDetail = (id) => {
   dataId.value = id
   mainPageModalState.value = true
 }
+
+
+
 
 const slides = ref([
   {
@@ -250,10 +255,11 @@ onMounted(() => {
             </div>
         </div>
         <AppFooter />
-    </div>
-    <Teleport to="body">
+      <Teleport to="body">
         <MainPageModal :dataId="dataId" :visible="mainPageModalState" @close="mainPageModalState = false"/>
-    </Teleport>
+      </Teleport>
+    </div>
+
 </template>
 
 <style lang="scss" scoped>

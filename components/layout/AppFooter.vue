@@ -3,7 +3,7 @@
         <div class="container">
             <div class="footer-top flex gap-[24px] items-center text-[16px]">
                 <nuxt-link to="/">Стать партнером</nuxt-link>
-                <nuxt-link to="/">Цены</nuxt-link>
+                <nuxt-link @click="showSuccessModal = true" >Цены</nuxt-link>
                 <nuxt-link to="/contacts">Контакты</nuxt-link>
                 <nuxt-link to="/">Вакансии</nuxt-link>
                 <nuxt-link to="/">Инструкция для пользователей</nuxt-link>
@@ -23,10 +23,24 @@
                 <p class="text-[20px]">© 2025 RIP. Все права защищены.</p>
             </div>
         </div>
+      <Teleport to="body">
+        <SuccessModal
+            v-if="showSuccessModal"
+            title="Цена бронирования 10.000 тенге"
+            @close="closeSuccessModal"
+        />
+      </Teleport>
     </footer>
 </template>
 
 <script setup>
+import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
+
+const showSuccessModal = ref(false)
+
+const closeSuccessModal = () => {
+  showSuccessModal.value = false
+}
 </script>
 
 <style scoped>
