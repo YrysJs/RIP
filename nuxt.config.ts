@@ -63,4 +63,10 @@ export default defineNuxtConfig({
       { label: 'Change Frequency', select: 'sitemap:changefreq', width: '12.5%' },
     ],
   },
+
+  vite: {
+    server: {
+      allowedHosts: ['ripservice.kz', 'localhost', '127.0.0.1']
+    }
+  }
 })
