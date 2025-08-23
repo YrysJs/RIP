@@ -126,7 +126,7 @@ export default {
       try {
         // Подготавливаем данные для оплаты
         const paymentData = {
-          amount: 57000, // Госпошлина
+          amount: 100, // Госпошлина
           cardNumber: this.cardNumber.replace(/\s/g, ''),
           currency: 'KZT',
           cvc: this.cvcCode,
