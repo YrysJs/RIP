@@ -59,7 +59,7 @@ const showGraveDataModal = async (id) => {
 
 <template>
     <NuxtLayout name="client">
-        <div v-if="burialRequests.length === 0" class="flex justify-center items-center p-10">
+        <div v-if="!burialRequests || burialRequests?.length === 0" class="flex justify-center items-center p-10">
             <p class="text-xl">Нет оплаченных заявок на захоронение</p>
         </div>
         <template v-else>
