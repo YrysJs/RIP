@@ -270,7 +270,7 @@ onMounted(async () => {
                 <p class="text-xs font-roboto text-[#5C5C5C]">{{ item.quantity }} шт. × {{ item.product.price.toLocaleString() }} ₸</p>
               </div>
               <button 
-                @click="removeProductFromCart(item.product.id)"
+                @click="removeProductFromCart(item.product.product_id)"
                 :disabled="removingFromCart"
                 class="ml-[8px] text-red-500 hover:text-red-700 text-sm"
               >

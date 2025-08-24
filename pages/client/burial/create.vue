@@ -8,7 +8,7 @@ import Cookies from "js-cookie";
 import {parseJwt} from '~/utils/parseJwt';
 
 const router = useRouter()
-
+const token = ref(Cookies.get('token'))
 
 const foreign_cemetry = ref('')
 const reason = ref('')

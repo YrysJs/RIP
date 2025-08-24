@@ -9,7 +9,7 @@ const closeModal = () => {
 }
 
 const orderService = () => {
-  emit('order', props.service)
+  emit('order', props.service.id)
 }
 
 const renderStars = (rating) => {

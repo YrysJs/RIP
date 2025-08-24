@@ -2,9 +2,15 @@
 import { ref, watch, onMounted } from 'vue';
 import LayoutTop from '~/components/layout/LayoutTop.vue';
 import { getAllProducts, getCategories } from '~/services/supplier';
-import { getProductById, getProductReviews } from '~/services/client'
+import {addToCart, getProductById, getProductReviews} from '~/services/client'
 import { getSupplier } from '~/services/login';
 import ServiceDetailModal from "~/components/layout/modals/ServiceDetailModal.vue";
+import AppHeader from "~/components/layout/AppHeader.vue";
+import ClientLogin from "~/components/auth/ClientLogin.vue";
+import ManagerLogin from "~/components/auth/ManagerLogin.vue";
+import AkimatLogin from "~/components/auth/AkimatLogin.vue";
+import SupplierLogin from "~/components/auth/SupplierLogin.vue";
+import Cookies from "js-cookie";
 
 const serviceDetailModalVisible = ref(false);
 
@@ -38,6 +44,13 @@ const filters = ref({
 const products = ref([]);
 const categories = ref([]);
 const loading = ref(false);
+const addingToCart = ref(false)
+const cartMessage = ref('')
+
+const token = ref(Cookies.get('token'))
+const router = useRouter()
+const showLoginMenu = ref(false);
+const activeModal = ref('')
 
 // Функция для форматирования цены
 function formatPrice(price) {
@@ -124,6 +137,48 @@ async function fetchCategories() {
     }
 }
 
+const addProductToCart = async (productId) => {
+  if(token.value) {
+    addingToCart.value = true
+    cartMessage.value = ''
+
+    try {
+      const cartData = {
+        delivery_arrival_time: "2025-05-17T09:00:00Z",
+        delivery_destination_address: "Алматы, ул. Еревагская 157",
+        product_id: productId,
+        quantity: 1
+      }
+
+      await addToCart(cartData)
+      cartMessage.value = 'Товар добавлен в корзину'
+      await loadCart() // Перезагружаем корзину
+      setTimeout(() => {
+        cartMessage.value = ''
+      }, 3000)
+    } catch (err) {
+      cartMessage.value = 'Ошибка при добавлении товара'
+      console.error('Ошибка при добавлении в корзину:', err)
+    } finally {
+      addingToCart.value = false
+    }
+  }
+  else {
+    toggleLoginMenu()
+  }
+}
+
+function toggleLoginMenu() {
+  showLoginMenu.value = !showLoginMenu.value;
+}
+
+function login(type) {
+  toggleLoginMenu()
+  userStore.setAuthType(type)
+
+  activeModal.value = type
+}
+
 // Загружаем данные при монтировании компонента
 onMounted(async () => {
     await fetchCategories();
@@ -155,6 +210,7 @@ function updatePriceRange(event) {
 
 <template>
     <div class="bg-[#FAFAFA] py-[20px]">
+      <AppHeader type="client" />
         <div class="container">
             <LayoutTop title="Заказать услуги и товары" :hide="true"/>
             <div class="flex justify-between items-start mt-[20px]">
@@ -335,7 +391,7 @@ function updatePriceRange(event) {
                                 </div>
                                 <div class="flex gap-[10px] mt-[10px]">
                                     <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold" @click="fetchProduct(product.id)">Подробнее</button>
-                                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold">Добавить</button>
+                                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold" @click="addProductToCart(product.id)">Добавить</button>
                                 </div>
                             </div>
                         </div>
@@ -348,10 +404,50 @@ function updatePriceRange(event) {
                 </div>
             </div>
         </div>
+      <Teleport to="body">
+        <ServiceDetailModal :visible="serviceDetailModalVisible" :service="serviceDelivery" :reviews="serviceReviews" :supplier="serviceSupplier" @close="serviceDetailModalVisible = false" @order="addProductToCart" />
+        <ClientLogin v-if="activeModal === 'client'" @close="activeModal = ''" />
+        <ManagerLogin v-if="activeModal === 'manager'" @close="activeModal = ''" />
+        <SupplierLogin v-if="activeModal === 'supplier'" @close="activeModal = ''" />
+        <AkimatLogin v-if="activeModal === 'akimat'" @close="activeModal = ''" />
+        <div
+            v-if="showLoginMenu"
+            class="fixed inset-0 bg-black/40 z-40 flex items-center justify-center"
+            @click.self="closeMenu"
+        >
+          <div class="bg-white rounded-xl w-[340px] p-6 shadow-xl">
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-lg font-semibold">Войти</span>
+              <button @click="closeMenu">
+                <img src="/icons/close.svg" alt="Закрыть" class="w-6 h-6" />
+              </button>
+            </div>
+
+            <div class="text-gray-400 text-sm mb-2">Клиентам</div>
+            <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('client')">
+              <img src="/icons/user.svg" class="w-5 h-5" />
+              <span class="font-medium">Войти/Зарегистрироваться</span>
+            </div>
+
+            <div class="text-gray-400 text-sm mt-4 mb-2">Партнерам</div>
+            <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('supplier')">
+              <img src="/icons/shop.svg" class="w-5 h-5" />
+              <span class="font-medium">Войти как поставщик услуг</span>
+            </div>
+
+            <div class="text-gray-400 text-sm mt-4 mb-2">Администрация</div>
+            <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('manager')">
+              <img src="/icons/home.svg" class="w-5 h-5" />
+              <span class="font-medium">Войти как менеджер кладбища</span>
+            </div>
+            <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('akimat')">
+              <img src="/icons/building.svg" class="w-5 h-5" />
+              <span class="font-medium">Кабинет Акимата</span>
+            </div>
+          </div>
+        </div>
+      </Teleport>
     </div>
-  <Teleport to="body">
-    <ServiceDetailModal :visible="serviceDetailModalVisible" :service="serviceDelivery" :reviews="serviceReviews" :supplier="serviceSupplier" @close="serviceDetailModalVisible = false" />
-  </Teleport>
 </template>
 
 <style lang="css" scoped>
@@ -359,6 +455,7 @@ function updatePriceRange(event) {
     max-width: 1170px;
     width: 100%;
     margin: auto;
+  margin-top: 68px;
 }
 .card {
     box-shadow: 0px 4px 10px -5px #000;
