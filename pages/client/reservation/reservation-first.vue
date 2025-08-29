@@ -50,11 +50,9 @@ const handleBooking = async () => {
   try {
     const dataBurial = {
       cemetery_id: cemeteryStore.selectedGrave.cemetery_id,
-      deceased: {
-        full_name: fullName.value,
-        inn: inn.value,
-        death_date: deathDate.value+'T00:00:00Z',
-      },
+      full_name: fullName.value,
+      inn: inn.value,
+      death_date: deathDate.value ? deathDate.value+'T00:00:00Z' : undefined,
       grave_id: cemeteryStore.selectedGrave.id
     }
 
