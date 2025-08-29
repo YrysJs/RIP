@@ -31,7 +31,7 @@ function getBurialRequests(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.103:8094/api/v1/burial-requests',
+        url: 'http://194.32.140.103:8094/api/v1/burial-requests/my',
         params,
     })
 }
