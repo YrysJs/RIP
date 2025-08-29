@@ -91,7 +91,7 @@ async function getGravesReq(cemetery_id) {
     if (!cemetery_id) return
     
     const response = await getGraves({ cemetery_id })
-    gravesList.value = response.data || []
+    gravesList.value = response.data.data || []
   } catch (error) {
     gravesList.value = []
   }
