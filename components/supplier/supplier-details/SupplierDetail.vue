@@ -142,7 +142,7 @@ const whatsAppLink = computed(() => {
 
   const message = `Здравствуйте ${surname} ${name} ${patronymic}\nПишу вам по поводу вашего заказа.\nНаименование: ${productName}`;
 
-  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  return `http://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 });
 
 </script>

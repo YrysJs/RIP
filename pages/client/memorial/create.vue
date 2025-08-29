@@ -96,7 +96,7 @@ const addVideo = () => {
       const newVideo = {
         id: Date.now() + Math.random(),
         url: videoUrl.value,
-        embedUrl: `https://www.youtube.com/embed/${videoId}`,
+        embedUrl: `http://www.youtube.com/embed/${videoId}`,
         title: `Видео ${videos.value.length + 1}`
       }
       videos.value.push(newVideo)

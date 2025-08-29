@@ -119,7 +119,7 @@ const fillFormWithMemorialData = () => {
             videos.value.push({
               id: Date.now() + index + urlIndex + 2000,
               url: trimmedUrl,
-              embedUrl: `https://www.youtube.com/embed/${videoId}`,
+              embedUrl: `http://www.youtube.com/embed/${videoId}`,
               title: `Видео ${videos.value.length + 1}`,
               isExisting: true
             })
@@ -197,7 +197,7 @@ const addVideo = () => {
       const newVideo = {
         id: Date.now() + Math.random(),
         url: videoUrl.value,
-        embedUrl: `https://www.youtube.com/embed/${videoId}`,
+        embedUrl: `http://www.youtube.com/embed/${videoId}`,
         title: `Видео ${videos.value.length + 1}`
       }
       videos.value.push(newVideo)

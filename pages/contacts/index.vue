@@ -16,7 +16,7 @@ import AppFooter from "~/components/layout/AppFooter.vue"
         <p><span class="font-medium">КБЕ:</span> 17</p>
         <p><span class="font-medium">Банк:</span> АО «Народный Банк Казахстана»</p>
         <p><span class="font-medium">БИК:</span> HSBKKZKX</p>
-        <a href="https://wa.me/77758100110" target="_blank"><span class="font-medium">Телефон:</span> +7 775 810 01 10</a>
+        <a href="http://wa.me/77758100110" target="_blank"><span class="font-medium">Телефон:</span> +7 775 810 01 10</a>
       </div>
     </div>
     <AppFooter />

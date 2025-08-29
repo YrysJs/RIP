@@ -4,7 +4,7 @@ import Cookies from 'js-cookie'
 
 export default defineNuxtPlugin(() => {
     const api = axios.create({
-        baseURL: 'https://ripservice.kz/'
+        baseURL: 'http://ripservice.kz/'
     })
     
     // Добавляем токен из Cookies перед каждым запросом
