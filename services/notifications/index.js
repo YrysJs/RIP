@@ -4,7 +4,7 @@ function getNotifications(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'https://ripservice.kz/api/v1/user-notifications',
+        url: 'http://194.32.140.103:8090/api/v1/user-notifications',
         params,
     })
 }
