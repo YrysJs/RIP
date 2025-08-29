@@ -80,7 +80,7 @@ async function getCemeteriesReq() {
     }
     
     const response = await getCemeteries(params)
-    cemetriessList.value = response.data || []
+    cemetriessList.value = response.data.data || []
   } catch (error) {
     console.log(error)
   }
