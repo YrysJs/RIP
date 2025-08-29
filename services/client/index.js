@@ -297,7 +297,7 @@ function searchDeceased(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://194.32.140.103:8095/api/v1/deceased-search-requests',
+        url: 'http://194.32.140.103:8095/api/v1/search-requests',
         data,
     })
 }
