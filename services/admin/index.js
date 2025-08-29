@@ -5,7 +5,7 @@ function getTemplate() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.103:8092/api/v1/admin/graves/template-xlsx/download',
+        url: 'https://194.32.140.103:8092/api/v1/admin/graves/template-xlsx/download',
         responseType: 'blob',
     })
 }
@@ -14,7 +14,7 @@ function CreateCemetery(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://194.32.140.103:8092/api/v1/admin/cemeteries',
+        url: 'https://194.32.140.103:8092/api/v1/admin/cemeteries',
         data
     })
 }
@@ -23,7 +23,7 @@ function UpdateCemetery(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: 'http://194.32.140.103:8092/api/v1/admin/cemeteries/' + data.id,
+        url: 'https://194.32.140.103:8092/api/v1/admin/cemeteries/' + data.id,
         data
     })
 }
@@ -32,7 +32,7 @@ function CreateAkimat(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: 'http://91.147.92.97:8081/rip-government/v1/akimat',
+        url: 'https://91.147.92.97:8081/rip-government/v1/akimat',
         data
     })
 }
@@ -41,7 +41,7 @@ function getAkimats() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.103:8081/rip-government/v1/akimats',
+        url: 'https://194.32.140.103:8081/rip-government/v1/akimats',
     })
 }
 
@@ -49,7 +49,7 @@ function getCities() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.103:8081/v1/country/cities',
+        url: 'https://194.32.140.103:8081/v1/country/cities',
     })
 }
 
@@ -57,7 +57,7 @@ function importXlsx(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://194.32.140.103:8092/api/v1/admin/graves/import-xlsx',
+        url: 'https://194.32.140.103:8092/api/v1/admin/graves/import-xlsx',
         data
     })
 }
@@ -66,7 +66,7 @@ function getManagers(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.103:8092/api/v1/admin/cemetery-managers/all',
+        url: 'https://194.32.140.103:8092/api/v1/admin/cemetery-managers/all',
         params,
     })
 }
@@ -75,7 +75,7 @@ function setCemeteryManager(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: `http://194.32.140.103:8092/api/v1/admin/cemeteries/${data.id}/managers`,
+        url: `https://194.32.140.103:8092/api/v1/admin/cemeteries/${data.id}/managers`,
         data
     })
 }
@@ -84,7 +84,7 @@ function getReviews() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.103:8090/api/v1/moderation/reviews'
+        url: 'https://194.32.140.103:8090/api/v1/moderation/reviews'
     })
 }
 
@@ -92,7 +92,7 @@ function moderateReview(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PATCH',
-        url: `http://194.32.140.103:8090/api/v1/moderation/reviews/${data.id}`,
+        url: `https://194.32.140.103:8090/api/v1/moderation/reviews/${data.id}`,
         data: data.data
     })
 }
@@ -101,7 +101,7 @@ function getModerateAppeals(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.103:8090/api/v1/moderation/appeals',
+        url: 'https://194.32.140.103:8090/api/v1/moderation/appeals',
         params
     })
 }
@@ -110,7 +110,7 @@ function moderateAppeal(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PATCH',
-        url: `http://194.32.140.103:8090/api/v1/moderation/appeals/${data.id}`,
+        url: `https://194.32.140.103:8090/api/v1/moderation/appeals/${data.id}`,
         data: data.data
     })
 }
@@ -119,7 +119,7 @@ function getReviewById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://194.32.140.103:8090/api/v1/reviews/${id}`
+        url: `https://194.32.140.103:8090/api/v1/reviews/${id}`
     })
 }
 
@@ -127,7 +127,7 @@ function getProducts(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.103:8090/api/v1/products',
+        url: 'https://194.32.140.103:8090/api/v1/products',
         params,
     })
 }
@@ -141,7 +141,7 @@ function updateProductStatus(id, data) {
     
     return $axios({
         method: 'PATCH',
-        url: `http://194.32.140.103:8090/api/v1/products/${id}/status`,
+        url: `https://194.32.140.103:8090/api/v1/products/${id}/status`,
         data,
     })
 }
