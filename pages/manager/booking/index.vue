@@ -21,7 +21,7 @@ definePageMeta({
 const fetchBurials = async (params = { status: 'pending' }) => {
   try {
     const response = await getBurialRequests(params)
-    bookings.value = response.data
+    bookings.value = response.data.data.data
   } catch (error) {
     console.error('Ошибка при получении заявок:', error)
   }

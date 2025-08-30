@@ -11,7 +11,7 @@ const loading = ref(true)
 onMounted(async () => {
   try {
     const response = await getBurialRequests({ status: 'pending', user_phone: userStore.user?.phone})
-    burialRequests.value = response.data.data
+    burialRequests.value = response.data.data.data
   } catch (error) {
     console.error('Ошибка при получении заявок:', error)
   } finally {

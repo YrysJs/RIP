@@ -30,7 +30,7 @@ const cemeteryId = ref(null)
 const fetchBurials = async (params = { show_confirmed_and_paid: true }) => {
   try {
     const response = await getBurialRequests(params)
-    burials.value = response.data
+    burials.value = response.data.data.data
   } catch (error) {
     console.error('Ошибка при получении заявок:', error)
   }

@@ -48,7 +48,7 @@ const fetchGraveDetails = async (id) => {
 onMounted((async () => {
   try {
     const response = await getCemeteries()
-    cemeteries.value = response.data
+    cemeteries.value = response.data.data
   } catch (error) {
     console.error('Ошибка при получении заявок:', error)
   } finally {
