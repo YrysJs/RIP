@@ -40,10 +40,11 @@ const fetchBurials = async (params = { show_confirmed_and_paid: true }) => {
 const fetchBurialDetails = async (id) => {
   try {
     const res = await getBurialRequestById(id)
-    burial.value = res.data
-    const response = await getGraveById(id)
+    burial.value = res.data.data
+    console.log(burial.value)
+    const response = await getGraveById(burial.value.grave_id)
     grave.value = response.data
-    const images = await getGraveImages(id)
+    const images = await getGraveImages(burial.value.grave_id)
     graveImages.value = images.data
     burialDetailModalVisible.value = true
   } catch (error) {
@@ -58,7 +59,7 @@ const cancelRequest = (comment) => {
     status: 'cancelled',
     comment
   }).then(() => {
-    burialDetailModalVisible.value = false
+    isCancelModalVisible.value = false
     fetchBurials()
   })
 }
@@ -66,7 +67,7 @@ const cancelRequest = (comment) => {
 const approveRequest = () => {
   getBurialRequestStatus({
     id: burial.value?.id,
-    status: 'approved',
+    status: 'confirmed',
     comment: ''
   }).then(() => {
     burialDetailModalVisible.value = false
