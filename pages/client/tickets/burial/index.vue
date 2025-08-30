@@ -19,18 +19,18 @@ const cemeteryData = ref(null)
 
 const fetchGraveData = async (id) => {
   const response = await getGraveById(id)
-  graveData.value = response.data
+  graveData.value = response.data.data
 }
 
 const fetchCemeteryData = async (id) => {
   const response = await getCemeteryById(id)
-  cemeteryData.value = response.data
+  cemeteryData.value = response.data.data
 }
 
 onMounted(async () => {
   try {
     const response = await getBurialRequests({ status: 'paid', user_phone: userStore.user?.phone })
-    burialRequests.value = response.data
+    burialRequests.value = response.data.data.data
   } catch (error) {
     console.error('Ошибка при получении заявок:', error)
   } finally {

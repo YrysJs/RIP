@@ -24,7 +24,7 @@ const selectCemetery = async (cemetery) => {
   try {
     selectedCemetery.value = cemetery
     const response = await getGraves({ cemetery_id: selectedCemetery.value.id })
-    gravesList.value = response.data || []
+    gravesList.value = response.data.data || []
     isMap.value = true
   } catch (error) {
     gravesList.value = []
