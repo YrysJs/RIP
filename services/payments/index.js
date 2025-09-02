@@ -4,7 +4,7 @@ function processCardPayment(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://194.32.140.103:8091/card',
+        url: 'http://194.32.140.103:8091/api/v1/payments/card',
         data: {
             amount: data.amount,
             cardNumber: data.cardNumber,
