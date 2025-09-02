@@ -34,7 +34,7 @@ const loadBurialData = async () => {
     loading.value = true
     error.value = null
     const response = await getBurialRequestById(route.params.id)
-    burialData.value = response.data
+    burialData.value = response.data.data
     
     // Инициализируем локальные значения дат
     deathDate.value = formatDateForInput(burialData.value?.deceased?.death_date)
