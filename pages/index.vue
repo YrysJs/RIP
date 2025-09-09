@@ -3,298 +3,696 @@ import MainPageModal from "~/components/layout/modals/MainPageModal.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
 import AppFooter from "~/components/layout/AppFooter.vue";
 
-import { getNews } from '~/services/akimat'
-import { useNewsStore } from '~/store/news.js'
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+import { getNews } from "~/services/akimat";
+import { useNewsStore } from "~/store/news.js";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import AppLoader from "~/components/loader/AppLoader.vue";
 import { useLoadingStore } from "~/store/loading.js";
 
-const dataId = ref(0)
-const mainPageModalState = ref(false)
-const loadingStore = useLoadingStore()
-
+const dataId = ref(0);
+const mainPageModalState = ref(false);
+const loadingStore = useLoadingStore();
 
 const showDetail = (id) => {
-  dataId.value = id
-  mainPageModalState.value = true
-}
-
-
-
+  dataId.value = id;
+  mainPageModalState.value = true;
+};
 
 const slides = ref([
   {
     id: 1,
-    title: 'Всеказахстанская база захоронений',
-    subtitle: 'Найдите захоронения ваших близких удаленно',
-    background: '/images/client/banner.jpg',
+    title: "Общедоступная база захоронений",
+    subtitle: "Социальный проект по поиску захоронений и уходу за ними",
+    background: "/images/client/intro-desk.jpg",
     buttons: [
-      { text: 'Поиск захоронения', action: 'search' },
-      { text: 'Добавить захоронение', action: 'add' }
-    ]
+      {
+        text: "Поиск захоронения",
+        action: "search",
+        icon: "search",
+      },
+      { text: "Забронировать место", action: "book", icon: "pencil" },
+    ],
   },
+  //   {
+  //     id: 1,
+  //     title: "Всеказахстанская база захоронений",
+  //     subtitle: "Найдите захоронения ваших близких удаленно",
+  //     background: "/images/client/banner.jpg",
+  //     buttons: [
+  //       { text: "Поиск захоронения", action: "search" },
+  //       { text: "Добавить захоронение", action: "add" },
+  //     ],
+  //   },
+  //   {
+  //     id: 1,
+  //     title: "Всеказахстанская база захоронений",
+  //     subtitle: "Найдите захоронения ваших близких удаленно",
+  //     background: "/images/client/banner.jpg",
+  //     buttons: [
+  //       { text: "Поиск захоронения", action: "search" },
+  //       { text: "Добавить захоронение", action: "add" },
+  //     ],
+  //   },
+]);
+
+const services = [
   {
     id: 1,
-    title: 'Всеказахстанская база захоронений',
-    subtitle: 'Найдите захоронения ваших близких удаленно',
-    background: '/images/client/banner.jpg',
-    buttons: [
-      { text: 'Поиск захоронения', action: 'search' },
-      { text: 'Добавить захоронение', action: 'add' }
-    ]
+    title: "Поиск захоронения",
+    img: "/images/main_service/f1.jpg",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+    link: "",
   },
   {
-    id: 1,
-    title: 'Всеказахстанская база захоронений',
-    subtitle: 'Найдите захоронения ваших близких удаленно',
-    background: '/images/client/banner.jpg',
-    buttons: [
-      { text: 'Поиск захоронения', action: 'search' },
-      { text: 'Добавить захоронение', action: 'add' }
-    ]
-  }
-])
+    id: 2,
+    title: "Благо-устройство",
+    img: "/images/main_service/f2.jpg",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+    link: "",
+  },
+  {
+    id: 3,
+    title: "Цифровой мемориал и древо памяти",
+    img: "/images/main_service/f3.jpg",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+    link: "",
+  },
+  {
+    id: 4,
+    title: "Ритуальные услуги",
+    img: "/images/main_service/f4.jpg",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+    link: "",
+  },
+  {
+    id: 5,
+    title: "Ритуальные товары",
+    img: "/images/main_service/f5.jpg",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+    link: "",
+  },
+];
 
 const router = useRouter();
 
-const newsList = ref([])
-const newsStore = useNewsStore()
+const newsList = ref([]);
+const newsStore = useNewsStore();
 
 const fetchNews = async () => {
   try {
     const response = await getNews({
       statusId: 1,
-    })
-    newsList.value = response.data
+    });
+    newsList.value = response.data;
   } catch (error) {
-    console.error('Ошибка при получении новостей:', error)
+    console.error("Ошибка при получении новостей:", error);
   }
-}
+};
 
 const goToNews = (news) => {
-  newsStore.setSelected(news)
-  router.push('/news/' + news.id)
-}
+  newsStore.setSelected(news);
+  router.push("/news/" + news.id);
+};
 
 onMounted(() => {
-  fetchNews()
-})
+  fetchNews();
+});
 </script>
 
 <template>
-    <div class="relative mt-[77px]">
-      <AppLoader v-if="loadingStore.loading" />
-      <AppHeader type="client" />
-      <div class="relative">
-        <Swiper
-            :modules="[Navigation, Pagination, Autoplay]"
-            :slides-per-view="1"
-            :loop="true"
-            :autoplay="{
-                delay: 5000,
-                disableOnInteraction: false,
-            }"
-            :navigation="{
-                nextEl: '.swiper-button-next-custom',
-                prevEl: '.swiper-button-prev-custom',
-            }"
-            :pagination="{
-                el: '.swiper-pagination-custom',
-                clickable: true,
-            }"
-            class="main-swiper"
-        >
-            <SwiperSlide v-for="slide in slides" :key="slide.id">
-                <div class="main-slide bg-cover" :style="{ backgroundImage: `url(${slide.background})` }">
-                    <div class="container">
-                        <div class="py-[210px] max-w-[476px] relative z-10">
-                            <h1 class="font-montserrat font-semibold text-white text-5xl">{{ slide.title }}</h1>
-                            <p class="text-white text-xl mt-[12px] mb-[24px] opacity-90">{{ slide.subtitle }}</p>
-                            <div class="flex gap-[24px] mt-[24px]">
-                                <button 
-                                    v-for="button in slide.buttons" 
-                                    :key="button.action"
-                                    @click="router.push(`/${button.action}`)"
-                                    class="border-2 border-[#E9EDED] text-white text-base p-[12px] rounded-lg hover:bg-white hover:text-[#224C4F] transition-all duration-300"
-                                >
-                                    {{ button.text }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </SwiperSlide>
-        </Swiper>
-        <div class="swiper-button-prev-custom absolute left-[20px] top-1/2 transform -translate-y-1/2 z-20 w-[50px] h-[50px] bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer hover:bg-white/30 transition-all duration-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <div class="swiper-button-next-custom absolute right-[20px] top-1/2 transform -translate-y-1/2 z-20 w-[50px] h-[50px] bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer hover:bg-white/30 transition-all duration-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 18L15 12L9 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <div class="swiper-pagination-custom absolute bottom-[20px] left-1/2 transform -translate-x-1/2 z-20"></div>
-      </div>
-        <div class="container">
-            <div class="flex justify-start gap-[230px] items-center py-[113px]">
-                <div class="flex flex-col gap-[35px]" @click="login = true">
-                    <h3 class="font-montserrat font-semibold text-3xl text-[#224C4F]">О проекте</h3>
-                    <img src="/images/client/rip.svg" alt="image">
-                </div>
-                <div class="max-w-[500px] flex flex-col gap-[24px]">
-                    <p class="text-xl text-[#224C4F]">
-                        Мы компания RIP - первая в Казахстане единая база захоронений, с помощью которой вы сможете удалённо найти захоронение своих близких и родных, посмотреть в каком состоянии оно сейчас находится и организовать дальнейшее сопровождение по уходу, где бы вы ни находились.
-                    </p>
-                    <a href="#services" class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px]">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></a>
-                </div>
-            </div>
-        </div>
-        <div class="container py-[43px]">
-            <div class="max-w-[976px] w-full mx-auto flex justify-around items-center rounded-xl bg-[#224C4F] py-[44px] px-[100px]">
-                <h3 class="text-white text-3xl">Наша миссия</h3>
-                <p class="text-white text-xl max-w-[480px]">
-                    Создать единую базу для поиска, организации и услуг по уходу за захоронениями и сделать её доступной для населения.
-                </p>
-            </div>
-        </div>
-        <div class="container py-[80px]" id="services">
-            <h3 class="text-4xl text-[#224C4F] font-semibold">Услуги</h3>
-            <div class="flex justify-evenly items-stretch flex-wrap gap-[25px] mt-[42px]">
-                <div class="rounded-lg max-w-[376px] flex flex-col card">
-                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/main_service/f1.jpg" alt="">
-                    <div class="p-[22px] flex flex-col flex-1">
-                        <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Поиск захоронения</h3>
-                        <p class="text-base text-[#224C4F] mt-[16px] flex-1 service-description">
-                            Вы можете заказать у нас точные координаты захоронения на цифровой карте кладбища с подробным описанием маршрута.
-                        </p>
-                        <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px] mt-[16px]" @click="showDetail(0)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
-                    </div>
-                </div>
-                <div class="rounded-lg max-w-[376px] flex flex-col card">
-                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/main_service/f2.jpg" alt="">
-                    <div class="p-[22px] flex flex-col flex-1">
-                        <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Благоустройство</h3>
-                        <p class="text-base text-[#224C4F] mt-[16px] flex-1 service-description">
-                            Мы предоставляем комплексный спектр услуг по благоустройству и уходу за захоронениями Ваших родственников и друзей.
-                        </p>
-                        <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px] mt-[16px]" @click="showDetail(1)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
-                    </div>
-                </div>
-                <div class="rounded-lg max-w-[376px] flex flex-col card">
-                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/main_service/f3.jpg" alt="">
-                    <div class="p-[22px] flex flex-col flex-1">
-                        <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Цифровой мемориал и древо памяти</h3>
-                        <p class="text-base text-[#224C4F] mt-[16px] flex-1 service-description">
-                            Создайте виртуальный памятник, в котором будет собрана вся информация о Вашем близком человеке и кто с ним связан.
-                        </p>
-                        <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px] mt-[16px]" @click="showDetail(2)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
-                    </div>
-                </div>
-                <div class="rounded-lg max-w-[376px] flex flex-col card">
-                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/main_service/f4.jpg" alt="">
-                    <div class="p-[22px] flex flex-col flex-1">
-                        <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Ритуальные услуги</h3>
-                        <p class="text-base text-[#224C4F] mt-[16px] flex-1 service-description">
-                            Полный комплекс мероприятий, включая оформление документов, подготовку церемонии и сопровождение. Обеспечиваем соблюдение всех традиций и пожеланий семьи. Гарантируем профессиональный подход и внимание к деталям.
-                        </p>
-                        <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px] mt-[16px]" @click="showDetail(3)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
-                    </div>
-                </div>
-                <div class="rounded-lg overflow-hidden max-w-[376px] flex flex-col card">
-                    <img class="rounded-t-lg max-w-[376px] max-h-[240px] h-[240px] w-full object-cover overflow-hidden" src="/images/main_service/f5.jpg" alt="">
-                    <div class="p-[22px] flex flex-col flex-1">
-                        <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">Ритуальные товары</h3>
-                        <p class="text-base text-[#224C4F] mt-[16px] flex-1 service-description">
-                            Мы предлагаем широкий ассортимент ритуальных товаров, необходимых для организации похорон с учетом всех традиций и пожеланий:
-                        </p>
-                        <button class="w-fit ml-auto text-xl text-[#224C4F] flex items-center gap-[14px] mt-[16px]" @click="showDetail(4)">Подробнее <img src="/icons/bi_arrow-right.svg" alt="arrow"></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="py-[80px] bg-[#F4F4F4]">
+  <main class="relative mt-[77px]">
+    <AppLoader v-if="loadingStore.loading" />
+    <AppHeader type="client" />
+    <section class="relative">
+      <Swiper
+        :modules="[Navigation, Pagination, Autoplay]"
+        :slides-per-view="1"
+        :loop="true"
+        :autoplay="{
+          delay: 5000,
+          disableOnInteraction: false,
+        }"
+        :navigation="{
+          nextEl: '.swiper-button-next-custom',
+          prevEl: '.swiper-button-prev-custom',
+        }"
+        :pagination="{
+          el: '.swiper-pagination-custom',
+          clickable: true,
+        }"
+        class="main-swiper"
+      >
+        <SwiperSlide v-for="slide in slides" :key="slide.id">
+          <div
+            class="main-slide bg-cover"
+            :style="{ backgroundImage: `url(${slide.background})` }"
+          >
             <div class="container">
-                <h3 class="text-4xl text-[#224C4F] font-semibold mb-[30px]">Новости</h3>
-                <div class="flex flex-col gap-[30px]">
-                    <div
-                        class="flex items-center gap-[20px] bg-white card cursor-pointer"
-                        v-for="news in newsList"
-                        :key="news.id"
-                        @click="goToNews(news)"
-                    >
-                        <img class="rounded-lg h-[167px] max-w-[264px] w-full object-cover overflow-hidden" :src="news.coverImageUrl" alt="">
-                        <div class="flex flex-col gap-[4px] rounded-lg py-[18px]">
-                            <div class="bg-[#224C4F26] text-[#4E4E4E] text-xs py-[2px] px-[6px] w-fit">{{ news.category?.name }}</div>
-                            <h3 class="font-montserrat font-semibold text-2xl text-[#224C4F]">{{news.title}}</h3>
-                            <p class="text-base text-[#224C4F]">
-                              {{ news.content.length > 230 ? news.content.slice(0, 230) + '...' : news.content }}
-                            </p>
-                        </div>
-                    </div>
+              <div class="intro__wrapper z-10 text-center">
+                <NuxtImg
+                  class="intro__img mx-auto"
+                  src="/images/client/rip.svg"
+                  alt="Company logo"
+                />
+                <h1 class="intro__content intro__title text-white">
+                  {{ slide.title }}
+                </h1>
+                <p class="intro__content text-white">
+                  {{ slide.subtitle }}
+                </p>
+                <div
+                  class="intro__btns flex justify-center gap-[32px] mt-[65px]"
+                >
+                  <button
+                    v-for="button in slide.buttons"
+                    :key="button.action"
+                    :class="['intro__btn', `intro__btn--${button.action}`]"
+                    @click="router.push(`/${button.action}`)"
+                  >
+                    <img
+                      :src="`/icons/${button.icon}.svg`"
+                      :alt="`${button.icon} icon`"
+                      class="intro__icon"
+                    />
+                    {{ button.text }}
+                  </button>
                 </div>
+              </div>
             </div>
-        </div>
-        <div class="bg-[#F4F4F4] py-[70px]">
-            <div class="max-w-[976px] w-full mx-auto bg-[#fff] py-[40px] px-[70px] rounded-2xl flex justify-between items-center gap-[50px]">
-                <div>
-                    <h3 class="text-[32px] text-[#224C4F] font-semibold leading-[initial]">
-                        У вас есть вопросы? Свяжитесь с нами
-                    </h3>
-                    <a href="mailto:info@rip-service.kz" class="text-[26px] text-[#9C9C9C]">info@ripservice.kz</a>
-                </div>
-                <div class="flex flex-col gap-[10px] min-w-[200px]">
-                    <a href="tel:++77758100110" class="text-[20px] text-[#9C9C9C] flex gap-2"><img src="/icons/phone.svg" alt=""> +7 775 810 01 10</a>
-                    <a href="tel:++77758100110" class="text-[20px] text-[#9C9C9C] flex gap-2"><img src="/icons/phone.svg" alt=""> +7 775 810 01 10</a>
-                </div>
-            </div>
-        </div>
-        <AppFooter />
-      <Teleport to="body">
-        <MainPageModal :dataId="dataId" :visible="mainPageModalState" @close="mainPageModalState = false"/>
-      </Teleport>
-    </div>
+          </div>
+        </SwiperSlide>
+      </Swiper>
+      <div
+        class="swiper-button-prev-custom absolute left-[20px] top-1/2 transform -translate-y-1/2 z-20 w-[50px] h-[50px] bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer hover:bg-white/30 transition-all duration-300"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M15 18L9 12L15 6"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+      <div
+        class="swiper-button-next-custom absolute right-[20px] top-1/2 transform -translate-y-1/2 z-20 w-[50px] h-[50px] bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer hover:bg-white/30 transition-all duration-300"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M9 18L15 12L9 6"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+      <div
+        class="swiper-pagination-custom absolute bottom-[20px] left-1/2 transform -translate-x-1/2 z-20"
+      ></div>
+    </section>
+    <div class="container">
+      <section class="about">
+        <div class="about__inner">
+          <h3 class="about__title">О проекте</h3>
+          <p class="about__paragraph">
+            Мы компания RIP - первая в&nbsp;Казахстане единая база захоронений,
+            с&nbsp;помощью которой вы сможете удалённо найти захоронение своих
+            близких и&nbsp;родных, посмотреть в&nbsp;каком состоянии оно сейчас
+            находится и&nbsp;организовать дальнейшее сопровождение
+            по&nbsp;уходу, где бы вы не&nbsp;находились.
+          </p>
+          <a href="#services" class="about__link">
+            <img src="/icons/arrow.svg" alt="" aria-hidden="true" />
+            Подробнее
+          </a>
 
+          <div class="about__media">
+            <NuxtImg
+              width="516"
+              class="about__img"
+              src="/images/about/about.jpg"
+              alt="Иллюстрация раздела"
+            />
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="container">
+      <div class="mission">
+        <h3>Наша миссия</h3>
+        <p>
+          Создать единую базу для поиска, организации и&nbsp;услуг по&nbsp;уходу
+          за&nbsp;захоронениями и&nbsp;сделать её доступной для&nbsp;населения.
+        </p>
+      </div>
+    </div>
+    <div class="container services" id="services">
+      <h3 class="services__title">Услуги</h3>
+      <ul>
+        <li
+          v-for="service in services"
+          :key="service.id"
+          class="services__item"
+        >
+          <h3 class="service__title">{{ service.title }}</h3>
+          <NuxtImg
+            :src="`${service.img}`"
+            :alt="`${service.title}`"
+            class="service__img"
+            loading="lazy"
+          />
+          <p class="service__description">{{ service.description }}</p>
+          <button :href="`${service.link}`" class="service__btn">
+            Подробнее
+          </button>
+        </li>
+      </ul>
+    </div>
+    <section class="questions">
+      <div class="questions__inner">
+        <p>Можете связаться с нами в любое время!</p>
+        <button>
+          <img src="/icons/whatsapp.svg" alt="Whatsapp icon" />
+          Написать на WhatsApp
+        </button>
+      </div>
+    </section>
+    <AppFooter />
+    <Teleport to="body">
+      <MainPageModal
+        :dataId="dataId"
+        :visible="mainPageModalState"
+        @close="mainPageModalState = false"
+      />
+    </Teleport>
+  </main>
 </template>
 
 <style lang="scss" scoped>
-// .main {
-//     background: url('/images/client/banner.jpg');
-//     background-size: cover;
-//     background-repeat: no-repeat;
-// }
 .container {
-    max-width: 1200px;
-    width: 100%;
-    margin: auto;
-}
-.card {
-    box-shadow: 0px 4px 10px -5px #000;
+  max-width: 1200px;
+  width: 100%;
+  margin: auto;
 }
 
-.service-description {
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.5;
-    height: 96px; /* Фиксированная высота для 4 строк */
+.main-slide {
+  aspect-ratio: 16 / 9;
 }
 
 .swiper-pagination-custom :deep(.swiper-pagination-bullet) {
-    background: white;
-    opacity: 0.5;
-    margin: 0 5px;
+  background: white;
+  opacity: 0.5;
+  margin: 0 5px;
 }
 
 .swiper-pagination-custom :deep(.swiper-pagination-bullet-active) {
-    opacity: 1;
-    background: white;
+  opacity: 1;
+  background: white;
+}
+
+.intro__wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(12px, 1vw + 0.5rem, 16px);
+
+  .intro__img {
+    width: clamp(12.25rem, 20vw, 14.5rem);
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+
+  .intro__icon {
+    width: clamp(1rem, 2vw, 1.5rem);
+    margin-right: 8px;
+  }
+
+  .intro__content {
+    font-size: clamp(1.2rem, 2vw, 1.625rem);
+    text-transform: uppercase;
+    line-height: 1.25;
+  }
+
+  .intro__title {
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+    position: relative;
+    letter-spacing: 2px;
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      height: 4px;
+      width: clamp(12rem, 77%, 31.25rem);
+      margin: clamp(1rem, 2vw, 1.5rem) auto 0;
+      border-radius: 2px;
+      background-color: #e9b949;
+    }
+  }
+
+  .intro__btn {
+    padding: clamp(0.5rem, 2vw, 1rem) clamp(1em, 2vw, 1.75rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    font-weight: 500;
+    line-height: 1.25;
+    border-radius: 8px;
+    white-space: nowrap;
+
+    &--search {
+      background-color: #fff;
+    }
+
+    &--book {
+      background-color: #e9b949;
+    }
+  }
+}
+
+.about {
+  padding-top: 65px;
+  width: 90%;
+  margin: 0 auto;
+
+  .about__inner {
+    display: grid;
+    column-gap: clamp(2rem, 7vw, 6.125rem);
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "title media"
+      "paragraph media"
+      "link media";
+
+    @media (max-width: 820px) {
+      align-items: center;
+    }
+
+    @media (max-width: 540px) {
+      align-items: center;
+      column-gap: 0;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "title title"
+        "paragraph paragraph"
+        "link media";
+    }
+  }
+
+  .about__title {
+    grid-area: title;
+    margin: 0 0 clamp(1rem, 5vw, 2.8rem);
+    font-family: "FoglihtenNo06", sans-serif;
+    font-size: clamp(2rem, 4vw, 4rem);
+  }
+
+  .about__paragraph {
+    grid-area: paragraph;
+    position: relative;
+    margin: 0 0 24px;
+    font-family: "Manrope", sans-serif;
+    font-size: clamp(14px, 1.5vw, 20px);
+    color: #224c4f;
+    line-height: 1.6;
+  }
+
+  .about__link {
+    grid-area: link;
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    font-family: "Manrope", sans-serif;
+    font-size: clamp(16px, 2vw, 21px);
+    text-decoration: none;
+    font-weight: 500;
+    gap: clamp(1rem, 3vw, 2rem);
+    color: #201001;
+
+    img {
+      width: clamp(3rem, 6vw, 5rem);
+    }
+  }
+
+  .about__media {
+    grid-area: media;
+
+    @media (max-width: 540px) {
+      width: 174px;
+    }
+  }
+
+  @media (max-width: 540px) {
+    padding-top: 26px;
+  }
+}
+
+.mission {
+  margin: clamp(4rem, 8vw, 6.125rem) auto 0;
+  max-width: 650px;
+  text-align: center;
+
+  h3 {
+    margin: 0 auto 20px;
+    width: fit-content;
+    position: relative;
+    font-family: "FoglihtenNo06", sans-serif;
+    font-size: clamp(2rem, 5vw, 4.125rem);
+    color: #201001;
+    &::before {
+      content: "";
+      background: url("/images/about/about-bird.png") no-repeat center;
+      background-size: contain;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: translate(-51%, -72%);
+      width: clamp(6rem, 10vw, 8rem);
+      height: clamp(8rem, 12vw, 10.8125rem);
+    }
+  }
+
+  p {
+    font-family: "Manrope", sans-serif;
+    font-size: 21px;
+    color: #212120;
+    @media (max-width: 540px) {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 540px) {
+    padding: 48px 16px 0;
+  }
+}
+
+.services {
+  padding: clamp(3rem, 5vw, 4rem) 0 2.75rem;
+
+  .services__title {
+    height: clamp(4.6rem, 5vw, 5.25rem);
+    width: fit-content;
+    margin: 0 auto clamp(2rem, 2vw, 3.125rem);
+    font-family: "FoglihtenNo06", sans-serif;
+    font-size: clamp(2rem, 5vw, 4.125rem);
+    color: #201001;
+
+    @media (max-width: 540px) {
+      display: flex;
+      align-items: end;
+    }
+  }
+
+  .services__item {
+    display: grid;
+    padding: clamp(2rem, 2vw, 2.75rem) clamp(1rem, 2vw, 2.125rem);
+    border-top: 1px solid #e9b949;
+    justify-content: space-between;
+    column-gap: 40px;
+    grid-template-columns: 1fr 1fr 1.5fr;
+    grid-template-areas:
+      "headline image description"
+      "headline image button";
+
+    @media (max-width: 820px) {
+      align-items: center;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "headline image"
+        "description description"
+        "button button";
+    }
+
+    .service__title {
+      grid-area: headline;
+      font-family: "FoglihtenNo06", sans-serif;
+      font-size: clamp(1rem, 3vw, 2rem);
+
+      @media (max-width: 540px) {
+        font-size: 28px;
+      }
+    }
+
+    .service__img {
+      grid-area: image;
+      width: 100%;
+      @media (max-width: 820px) {
+        width: 143px;
+      }
+    }
+
+    .service__description {
+      grid-area: description;
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(14px, 2vw, 16px);
+      line-height: 26px;
+      margin-bottom: 28px;
+
+      @media (max-width: 820px) {
+        margin-top: 28px;
+      }
+
+      @media (max-width: 540px) {
+        line-height: 18px;
+        margin-top: 10px;
+        margin-bottom: 16px;
+      }
+    }
+
+    .service__btn {
+      grid-area: button;
+      width: fit-content;
+      padding: 16px;
+      padding-left: 28px;
+      font-family: "Manrope", sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      background: #e9b949;
+      border-radius: 8px;
+      position: relative;
+      &::after {
+        content: "";
+        display: inline-block;
+        margin-left: 8px;
+        width: 16px;
+        height: 16px;
+        border-right: 2px solid #000;
+        border-bottom: 2px solid #000;
+        transform: rotate(-45deg);
+        vertical-align: middle;
+        @media (max-width: 540px) {
+          margin-left: 4px;
+          width: 12px;
+          height: 12px;
+        }
+      }
+
+      @media (max-width: 540px) {
+        padding: 9px 16px;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+.questions {
+  position: relative;
+  background: url("/images/question.jpg") no-repeat center;
+  background-size: contain;
+  width: 100vw;
+  height: 410px;
+
+  @media (max-width: 768px) {
+    background-size: cover;
+    height: 365px;
+  }
+
+  @media (max-width: 540px) {
+    height: clamp(200px, 52vw, 265px);
+  }
+
+  .questions__inner {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 5%);
+
+    p {
+      font-size: clamp(14px, 2vw, 21px);
+      color: #fff;
+      text-align: center;
+    }
+
+    button {
+      margin: clamp(8px, 4vw, 1.875rem) auto 0;
+      display: flex;
+      gap: 8px;
+      padding: clamp(0.75rem, 2vw, 0.875rem) 20px;
+      background: #e9b949;
+      border-radius: 8px;
+    }
+  }
+}
+
+@media (max-width: 540px) {
+  .main-slide {
+    height: calc(100vh - 64px);
+  }
+
+  .intro__wrapper {
+    top: auto;
+    bottom: 60px;
+    transform: translateX(-50%);
+    width: 84%;
+    .intro__content {
+      font-size: 14px;
+    }
+    .intro__title::after {
+      width: 260px;
+    }
+    .intro__btns {
+      flex-direction: column;
+      margin: 23px auto 0;
+      width: fit-content;
+      align-items: center;
+      justify-content: center;
+      .intro__btn {
+        padding: 9px 16px;
+        width: fit-content;
+        font-size: 14px;
+        .intro__icon {
+          width: 20px;
+          margin-right: 4px;
+        }
+      }
+    }
+  }
 }
 </style>
