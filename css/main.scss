@@ -16,13 +16,6 @@ ul li {
   list-style: none;
 }
 
-@media (max-width: 540px) {
-  html,
-  body {
-    font-size: 12px;
-  }
-}
-
 @import "modules/input";
 @import "modules/button";
 
