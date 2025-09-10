@@ -452,7 +452,9 @@ const submitMemorial = async () => {
     // const response = await createMemorial(formData);
     if (isEditMode.value) {
       await updateMemorial(formData)
-    } else const response = await createMemorialSafe(formData);
+    } else {
+      const response = await createMemorialSafe(formData);
+    }
 
     // Успешно создано/обновлено
     useState("burial").value = burial.value;
