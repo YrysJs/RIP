@@ -28,79 +28,76 @@ const slides = ref([
     title: "Общедоступная база захоронений",
     subtitle: "Социальный проект по поиску захоронений и уходу за ними",
     background: "/images/client/intro-desk.jpg",
+    backgroundMobile: "/images/client/intro-mob.jpg",
     buttons: [
       {
         text: "Поиск захоронения",
         action: "search",
         icon: "search",
       },
-      { text: "Забронировать место", action: "book", icon: "pencil" },
+      { text: "Забронировать место", action: "reserve", icon: "pencil" },
     ],
   },
-  //   {
-  //     id: 1,
-  //     title: "Всеказахстанская база захоронений",
-  //     subtitle: "Найдите захоронения ваших близких удаленно",
-  //     background: "/images/client/banner.jpg",
-  //     buttons: [
-  //       { text: "Поиск захоронения", action: "search" },
-  //       { text: "Добавить захоронение", action: "add" },
-  //     ],
-  //   },
-  //   {
-  //     id: 1,
-  //     title: "Всеказахстанская база захоронений",
-  //     subtitle: "Найдите захоронения ваших близких удаленно",
-  //     background: "/images/client/banner.jpg",
-  //     buttons: [
-  //       { text: "Поиск захоронения", action: "search" },
-  //       { text: "Добавить захоронение", action: "add" },
-  //     ],
-  //   },
+  // {
+  //   id: 2,
+  //   title: "Общедоступная база захоронений",
+  //   subtitle: "Социальный проект по поиску захоронений и уходу за ними",
+  //   background: "/images/client/intro-desk.jpg",
+  //   backgroundMobile: "/images/client/intro-mob.jpg",
+  //   buttons: [
+  //     {
+  //       text: "Поиск захоронения",
+  //       action: "search",
+  //       icon: "search",
+  //     },
+  //     { text: "Забронировать место", action: "reserve", icon: "pencil" },
+  //   ],
+  // },
 ]);
 
 const services = [
   {
-    id: 1,
+    id: 0,
     title: "Поиск захоронения",
     img: "/images/main_service/f1.jpg",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+      "Вы можете заказать у нас точные координаты захоронения на цифровой карте кладбища с подробным описанием маршрута.",
+    link: "",
+  },
+  {
+    id: 1,
+    title: "Благо-устройство",
+    img: "/images/main_service/f2.jpg",
+    description:
+      "Мы предоставляем комплексный спектр услуг по благоустройству и уходу за захоронениями Ваших родственников и друзей.",
     link: "",
   },
   {
     id: 2,
-    title: "Благо-устройство",
-    img: "/images/main_service/f2.jpg",
+    title: "Цифровой мемориал и древо памяти",
+    img: "/images/main_service/f3.jpg",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+      "Создайте виртуальный памятник, в котором будет собрана вся информация о Вашем близком человеке и кто с ним связан.",
     link: "",
   },
   {
     id: 3,
-    title: "Цифровой мемориал и древо памяти",
-    img: "/images/main_service/f3.jpg",
+    title: "Ритуальные услуги",
+    img: "/images/main_service/f4.jpg",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+      "Полный комплекс мероприятий, включая оформление документов, подготовку церемонии и сопровождение. Обеспечиваем соблюдение всех традиций и пожеланий семьи. Гарантируем профессиональный подход и внимание к деталям.",
     link: "",
   },
   {
     id: 4,
-    title: "Ритуальные услуги",
-    img: "/images/main_service/f4.jpg",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
-    link: "",
-  },
-  {
-    id: 5,
     title: "Ритуальные товары",
     img: "/images/main_service/f5.jpg",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+      "Мы предлагаем широкий ассортимент ритуальных товаров, необходимых для организации похорон с учетом всех традиций и пожеланий.",
     link: "",
   },
 ];
+
 
 const router = useRouter();
 
@@ -129,10 +126,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="relative mt-[77px]">
+  <main class="relative">
     <AppLoader v-if="loadingStore.loading" />
-    <AppHeader type="client" />
-    <section class="relative">
+    <AppHeader type="client" :style="'landing'" />
+    <section class="relative" id="main">
       <Swiper
         :modules="[Navigation, Pagination, Autoplay]"
         :slides-per-view="1"
@@ -154,7 +151,12 @@ onMounted(() => {
         <SwiperSlide v-for="slide in slides" :key="slide.id">
           <div
             class="main-slide bg-cover"
-            :style="{ backgroundImage: `url(${slide.background})` }"
+            :style="{
+              '--bg': `url(${slide.background})`,
+              '--bg-mobile': `url(${
+                slide.backgroundMobile || slide.background
+              })`,
+            }"
           >
             <div class="container">
               <div class="intro__wrapper z-10 text-center">
@@ -170,7 +172,7 @@ onMounted(() => {
                   {{ slide.subtitle }}
                 </p>
                 <div
-                  class="intro__btns flex justify-center gap-[32px] mt-[65px]"
+                  class="intro__btns flex justify-center gap-[32px] max-sm:mx-auto"
                 >
                   <button
                     v-for="button in slide.buttons"
@@ -233,7 +235,7 @@ onMounted(() => {
         class="swiper-pagination-custom absolute bottom-[20px] left-1/2 transform -translate-x-1/2 z-20"
       ></div>
     </section>
-    <div class="container">
+    <div class="container" id="about">
       <section class="about">
         <div class="about__inner">
           <h3 class="about__title">О проекте</h3>
@@ -285,7 +287,7 @@ onMounted(() => {
             loading="lazy"
           />
           <p class="service__description">{{ service.description }}</p>
-          <button :href="`${service.link}`" class="service__btn">
+          <button @click="showDetail(service.id)" class="service__btn">
             Подробнее
           </button>
         </li>
@@ -320,6 +322,17 @@ onMounted(() => {
 
 .main-slide {
   aspect-ratio: 16 / 9;
+  background-image: var(--bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  @media (max-width: 1024px) {
+    height: 558px;
+    aspect-ratio: 0;
+  }
+  @media (max-width: 640px) {
+    background-image: var(--bg-mobile);
+  }
 }
 
 .swiper-pagination-custom :deep(.swiper-pagination-bullet) {
@@ -341,8 +354,14 @@ onMounted(() => {
   font-family: "Manrope", sans-serif;
   font-size: clamp(12px, 1vw + 0.5rem, 16px);
 
+  @media (max-width: 1024px) {
+    top: auto;
+    bottom: 60px;
+    transform: translateX(-50%);
+  }
+
   .intro__img {
-    width: clamp(12.25rem, 20vw, 14.5rem);
+    width: clamp(147px, 19vw, 233px);
     margin-bottom: clamp(2rem, 4vw, 3rem);
   }
 
@@ -375,24 +394,40 @@ onMounted(() => {
       background-color: #e9b949;
     }
   }
+  .intro__btns {
+    margin-top: clamp(23px, 5vw, 65px);
 
-  .intro__btn {
-    padding: clamp(0.5rem, 2vw, 1rem) clamp(1em, 2vw, 1.75rem);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: clamp(1rem, 1.5vw, 1.25rem);
-    font-weight: 500;
-    line-height: 1.25;
-    border-radius: 8px;
-    white-space: nowrap;
+    .intro__btn {
+      padding: clamp(0.5rem, 2vw, 1rem) clamp(1em, 2vw, 1.75rem);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: clamp(1rem, 1.5vw, 1.25rem);
+      font-weight: 500;
+      line-height: 1.25;
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: all 0.3 ease;
 
-    &--search {
-      background-color: #fff;
-    }
+      &--search {
+        background-color: #fff;
+        &:hover {
+          background-color: #f1f1f2;
+        }
+        &:active {
+          background-color: #c6c9cc;
+        }
+      }
 
-    &--book {
-      background-color: #e9b949;
+      &--reserve {
+        background-color: #e9b949;
+        &:hover {
+          background-color: #d1a53f;
+        }
+        &:active {
+          background-color: #b88f34;
+        }
+      }
     }
   }
 }
@@ -592,25 +627,34 @@ onMounted(() => {
       padding-left: 28px;
       font-family: "Manrope", sans-serif;
       font-size: 16px;
+      height: 60px;
       font-weight: 500;
       background: #e9b949;
       border-radius: 8px;
       position: relative;
+      transition: all 0.4 ease;
       &::after {
         content: "";
+        background-image: url(/icons/arrow-classic.svg);
+        background-repeat: no-repeat;
+        background-size: contain;
         display: inline-block;
         margin-left: 8px;
+        margin-bottom: 2px;
         width: 16px;
         height: 16px;
-        border-right: 2px solid #000;
-        border-bottom: 2px solid #000;
-        transform: rotate(-45deg);
         vertical-align: middle;
         @media (max-width: 540px) {
           margin-left: 4px;
           width: 12px;
           height: 12px;
         }
+      }
+      &:hover {
+        background-color: #d1a53f;
+      }
+      &:active {
+        background-color: #b88f34;
       }
 
       @media (max-width: 540px) {
@@ -624,7 +668,7 @@ onMounted(() => {
 .questions {
   position: relative;
   background: url("/images/question.jpg") no-repeat center;
-  background-size: contain;
+  background-size: cover;
   width: 100vw;
   height: 410px;
 
@@ -662,13 +706,13 @@ onMounted(() => {
 }
 
 @media (max-width: 540px) {
-  .main-slide {
-    height: calc(100vh - 64px);
+  html,
+  body {
+    font-size: 12px;
   }
 
   .intro__wrapper {
     top: auto;
-    bottom: 60px;
     transform: translateX(-50%);
     width: 84%;
     .intro__content {
@@ -679,7 +723,6 @@ onMounted(() => {
     }
     .intro__btns {
       flex-direction: column;
-      margin: 23px auto 0;
       width: fit-content;
       align-items: center;
       justify-content: center;

@@ -3,12 +3,12 @@
     <div class="modal-content" @click.stop>
       <div class="payment-form">
         <h2 class="title">Оплата картой</h2>
-        
+
         <div class="form-group">
           <label class="label">Номер карты</label>
-          <input 
-            v-model="cardNumber" 
-            type="text" 
+          <input
+            v-model="cardNumber"
+            type="text"
             class="input"
             placeholder="2340 0330 0022 1331"
             maxlength="19"
@@ -18,9 +18,9 @@
 
         <div class="form-group">
           <label class="label">Email</label>
-          <input 
-            v-model="email" 
-            type="email" 
+          <input
+            v-model="email"
+            type="email"
             class="input"
             placeholder="example@test.com"
           />
@@ -29,21 +29,21 @@
         <div class="form-row">
           <div class="form-group half">
             <label class="label">Срок действия</label>
-            <input 
-              v-model="expiryDate" 
-              type="text" 
+            <input
+              v-model="expiryDate"
+              type="text"
               class="input"
               placeholder="01/25"
               maxlength="5"
               @input="formatExpiryDate"
             />
           </div>
-          
+
           <div class="form-group half">
             <label class="label">CVC код</label>
-            <input 
-              v-model="cvcCode" 
-              type="text" 
+            <input
+              v-model="cvcCode"
+              type="text"
               class="input"
               placeholder="234"
               maxlength="3"
@@ -51,8 +51,12 @@
           </div>
         </div>
 
-        <button class="pay-button" @click="processPayment" :disabled="isProcessing">
-          {{ isProcessing ? 'Обработка...' : 'Оплатить' }}
+        <button
+          class="pay-button"
+          @click="processPayment"
+          :disabled="isProcessing"
+        >
+          {{ isProcessing ? "Обработка..." : "Оплатить" }}
         </button>
       </div>
     </div>
@@ -60,113 +64,157 @@
 </template>
 
 <script>
-import { processCardPayment, confirmBurialPayment } from '~/services/payments'
-import { updateBurialRequestStatus, updateBurialRequestData, uploadDeceasedDeathCertificate } from '~/services/client'
+import { processCardPayment, confirmBurialPayment } from "~/services/payments";
+import {
+  updateBurialRequestStatus,
+  updateBurialRequestData,
+  uploadDeceasedDeathCertificate,
+} from "~/services/client";
 
 export default {
-  name: 'PaymentModal',
+  name: "PaymentModal",
   props: {
     visible: {
       type: Boolean,
-      default: false
+      default: false,
     },
     burialData: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
     deathCertificateFile: {
       type: File,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
-      cardNumber: '',
-      expiryDate: '',
-      email: '',
-      cvcCode: '',
-      isProcessing: false
-    }
+      cardNumber: "",
+      expiryDate: "",
+      email: "",
+      cvcCode: "",
+      isProcessing: false,
+    };
   },
   methods: {
     closeModal() {
       if (!this.isProcessing) {
-        this.$emit('close')
+        this.$emit("close");
       }
     },
     formatCardNumber(event) {
-      let value = event.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '')
-      let matches = value.match(/\d{4,16}/g)
-      let match = matches && matches[0] || ''
-      let parts = []
-      
+      let value = event.target.value.replace(/\s/g, "").replace(/[^0-9]/gi, "");
+      let matches = value.match(/\d{4,16}/g);
+      let match = (matches && matches[0]) || "";
+      let parts = [];
+
       for (let i = 0, len = match.length; i < len; i += 4) {
-        parts.push(match.substring(i, i + 4))
+        parts.push(match.substring(i, i + 4));
       }
-      
+
       if (parts.length) {
-        this.cardNumber = parts.join(' ')
+        this.cardNumber = parts.join(" ");
       } else {
-        this.cardNumber = value
+        this.cardNumber = value;
       }
     },
     formatExpiryDate(event) {
-      let value = event.target.value.replace(/\D/g, '')
+      let value = event.target.value.replace(/\D/g, "");
       if (value.length >= 2) {
-        this.expiryDate = value.substring(0, 2) + '/' + value.substring(2, 4)
+        this.expiryDate = value.substring(0, 2) + "/" + value.substring(2, 4);
       } else {
-        this.expiryDate = value
+        this.expiryDate = value;
       }
     },
+    async waitForPaymentConfirmation(burialId, paymentId) {
+      return new Promise((resolve, reject) => {
+        const checkPayment = async () => {
+          try {
+            await confirmBurialPayment(burialId, paymentId);
+            clearInterval(intervalId);
+            resolve();
+          } catch (error) {
+            // Если ошибка - продолжаем попытки
+            console.log('Ожидание подтверждения оплаты...');
+          }
+        };
+
+        // Проверяем каждые 5 секунд
+        const intervalId = setInterval(checkPayment, 5000);
+        
+        // Таймаут через 5 минут
+        setTimeout(() => {
+          clearInterval(intervalId);
+          reject(new Error('Таймаут ожидания подтверждения оплаты'));
+        }, 300000);
+      });
+    },
     async processPayment() {
-      if (this.isProcessing) return
-      
-      this.isProcessing = true
-      
+      if (this.isProcessing) return;
+
+      this.isProcessing = true;
+
       try {
         // Подготавливаем данные для оплаты
         const paymentData = {
           amount: 100, // Госпошлина
-          cardNumber: this.cardNumber.replace(/\s/g, ''),
-          currency: 'KZT',
+          cardNumber: this.cardNumber.replace(/\s/g, ""),
+          currency: "KZT",
           cvc: this.cvcCode,
           email: this.email, // Можно получить из профиля пользователя
-          expDate: this.expiryDate.replace('/', ''),
-        }
+          expDate: this.expiryDate.replace("/", ""),
+        };
 
         // 1. Выполняем платеж
-        const paymentResponse = await processCardPayment(paymentData)
+        const paymentResponse = await processCardPayment(paymentData);
+        console.log(paymentResponse)
 
-        const burialId = this.$route.params.id
-        await confirmBurialPayment(burialId,paymentResponse.data.data.paymentInfo.id)
+        const burialId = this.$route.params.id;
+        const paymentId = paymentResponse.data.data.paymentInfo.id;
+
+        if (paymentResponse.data.data.secure3DURL) {
+          window.open(paymentResponse.data.data.secure3DURL, '_blank');
+          
+          // Ждем подтверждения оплаты через интервал
+          await this.waitForPaymentConfirmation(burialId, paymentId);
+        } else {
+          // Если нет 3D Secure, подтверждаем платеж сразу
+          await confirmBurialPayment(burialId, paymentId);
+        }
 
         // 2. Обновляем данные захоронения (дата и время)
         if (this.burialData?.burial_date || this.burialData?.burial_time) {
           const burialUpdateData = {
             burial_date: `${this.burialData.burial_date}T${this.burialData.burial_time}:00Z`,
-            burial_time: this.burialData.burial_time
-          }
-          await updateBurialRequestData(this.burialData.id, burialUpdateData)
+            burial_time: this.burialData.burial_time,
+          };
+          await updateBurialRequestData(this.burialData.id, burialUpdateData);
         }
 
         // 4. Загружаем сертификат о смерти, если он есть
-        if (this.deathCertificateFile && this.burialData?.deceased?.id) {
-          await uploadDeceasedDeathCertificate(this.burialData.deceased.id, this.deathCertificateFile)
-        }
+        // if (this.deathCertificateFile && this.burialData?.deceased?.id) {
+        //   await uploadDeceasedDeathCertificate(
+        //     this.burialData.deceased.id,
+        //     this.deathCertificateFile
+        //   );
+        // }
 
         // 5. Закрываем модалку и сообщаем о успешной оплате
-        this.$emit('close')
-        this.$emit('success')
-
+        this.$emit("close");
+        this.$emit("success");
       } catch (error) {
-        console.error('Payment process failed:', error)
-        alert('Ошибка при обработке платежа. Пожалуйста, попробуйте снова.')
+        console.log(error)
+        console.error("Payment process failed:", error);
+        alert(
+            "Ошибка при создании мемориала: " +
+            (error.response?.data?.error || error.message)
+        );
       } finally {
-        this.isProcessing = false
+        this.isProcessing = false;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -239,7 +287,7 @@ export default {
 
 .input:focus {
   outline: none;
-  border-color: #4CAF50;
+  border-color: #4caf50;
   background-color: white;
 }
 
@@ -250,7 +298,7 @@ export default {
 .pay-button {
   width: 100%;
   padding: 16px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 8px;
@@ -279,17 +327,17 @@ export default {
   .payment-form {
     padding: 24px;
   }
-  
+
   .title {
     font-size: 20px;
     margin-bottom: 24px;
   }
-  
+
   .form-row {
     flex-direction: column;
     gap: 0;
   }
-  
+
   .modal-content {
     margin: 16px;
     width: calc(100% - 32px);

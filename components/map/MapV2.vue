@@ -1,204 +1,203 @@
 <script setup>
-import { onMounted, ref, watch, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useRuntimeConfig } from '#imports'
 
 const props = defineProps({
-  polygons: {
-    type: [Array, Object], // поддержка ref([]) и обычного []
-    required: true,
-  },
-  modelValue: {
-    type: Object,
-    default: null,
-  },
-  cemeteryBoundary: {
-    type: Object,
-    default: null,
-  },
-  centerCoords: {
-    type: Array,
-    default: null,
-  },
+  polygons: { type: [Array, Object], required: true },   // ref([]) или []
+  modelValue: { type: Object, default: null },
+  cemeteryBoundary: { type: Object, default: null },     // { polygon_data: { coordinates: [[lng,lat], ...] } }
+  centerCoords: { type: Array, default: null },          // [lat, lng]
 })
-
 const emit = defineEmits(['update:modelValue'])
 
-const mapContainerId = 'map-container'
-const mapInstance = ref(null)
-const polygonObjects = ref([])
-const cemeteryBoundaryObject = ref(null)
+const mapEl = ref(null)
+let map = null
+let cemeteryPolygon = null
+let plotObjects = []     // [{ id, polygon, data }]
+const selected = ref(props.modelValue || null)
 
-const selected = ref(null)
+/* ===== utils ===== */
+const getItems = () => (Array.isArray(props.polygons) ? props.polygons : (props.polygons?.value || []))
 
-onMounted(() => {
-  const checkDG = setInterval(() => {
-    if (window.DG) {
-      clearInterval(checkDG)
-      initializeMap()
-    }
-  }, 100)
-})
-
-// Следим за изменениями границ кладбища
-watch(() => props.cemeteryBoundary, (newBoundary) => {
-  if (mapInstance.value && newBoundary) {
-    drawCemeteryBoundary()
-  }
-}, { deep: true })
-
-// Следим за изменениями полигонов могил
-watch(() => props.polygons, () => {
-  if (mapInstance.value) {
-    clearPolygons()
-    drawPolygons()
-  }
-}, { deep: true })
-
-// Следим за изменениями координат центра карты
-watch(() => props.centerCoords, (newCoords) => {
-  if (mapInstance.value && newCoords && newCoords.length === 2) {
-    mapInstance.value.setView([newCoords[0], newCoords[1]], 15)
-  }
-}, { deep: true })
-
-function getPolygons() {
-  return Array.isArray(props.polygons) ? props.polygons : props.polygons.value
+function toLatLng(ring) {
+  // ymaps 2.1 ждёт [lat, lng] !
+  return (Array.isArray(ring) ? ring : []).map(([lng, lat]) => [lat, lng])
 }
+const isRing = (ring) => Array.isArray(ring) && ring.length >= 3 && ring.every(p => Array.isArray(p) && p.length === 2)
 
-function initializeMap() {
-  const items = getPolygons()
-  let center = [43.238949, 76.889709] // дефолтный центр
-  
-  // Приоритет использования координат:
-  // 1. Координаты центра кладбища (centerCoords)
-  // 2. Координаты границ кладбища
-  // 3. Координаты первого полигона могилы
-  if (props.centerCoords && props.centerCoords.length === 2) {
-    center = [props.centerCoords[0], props.centerCoords[1]]
-  } else if (props.cemeteryBoundary?.polygon_data?.coordinates?.length > 0) {
-    const coords = props.cemeteryBoundary.polygon_data.coordinates[0]
-    center = [coords[1], coords[0]]
-  } else if (items.length > 0) {
-    const first = items[0]?.polygon_data?.coordinates?.[0]
-    if (first) {
-      center = [first[1], first[0]]
-    }
-  }
-
-  mapInstance.value = DG.map(mapContainerId, {
-    center,
-    zoom: 18,
-  })
-
-  if (props.cemeteryBoundary) {
-    drawCemeteryBoundary()
-  }
-  
-  drawPolygons()
-}
-
-function drawCemeteryBoundary() {
-  // Удаляем предыдущие границы кладбища
-  if (cemeteryBoundaryObject.value) {
-    mapInstance.value.removeLayer(cemeteryBoundaryObject.value)
-  }
-
-  if (!props.cemeteryBoundary?.polygon_data?.coordinates) return
-
-  const latlngs = props.cemeteryBoundary.polygon_data.coordinates.map(([lng, lat]) => [lat, lng])
-
-  cemeteryBoundaryObject.value = DG.polygon(latlngs, {
-    color: '#FF0000', // красная обводка для границ кладбища
-    weight: 3,
-    fillColor: 'transparent',
-    fillOpacity: 0,
-  }).addTo(mapInstance.value)
-}
-
-function clearPolygons() {
-  polygonObjects.value.forEach(({ polygon }) => {
-    mapInstance.value.removeLayer(polygon)
-  })
-  polygonObjects.value = []
-}
-
-function drawPolygons() {
-  const items = getPolygons()
-
-  items.forEach((item) => {
-    if (!item.polygon_data?.coordinates) return
-    
-    const latlngs = item.polygon_data.coordinates.map(([lng, lat]) => [lat, lng])
-
-    const isSelected = selected.value?.id === item.id
-
-    let borderColor = '#006600'
-    if (isSelected) {
-      if (item.status === 'free') {
-        borderColor = '#38949B'
-      } else {
-        borderColor = 'gray' 
-      }
-    }
-
-    const polygon = DG.polygon(latlngs, {
-      color: borderColor,
-      weight: isSelected ? 3 : 1,
-      fillColor: getFillColor(item, isSelected),
-      fillOpacity: 0.7,
-    }).addTo(mapInstance.value)
-
-    polygon.on('click', () => {
-      selectPolygon(item)
-    })
-
-    polygonObjects.value.push({
-      id: item.id,
-      polygon,
-      data: item,
-    })
-  })
-}
-
-function getFillColor(item, isSelected) {
+function getFillColor (item, isSelected) {
   if (isSelected && item.status === 'free') return '#43DC49CC'
-  
   if (isSelected) {
     if (item.status === 'reserved') return '#FFD700'
     if (item.status === 'occupied') return '#939393'
     return '#999999'
   }
-  
   if (item.status === 'free') return '#66FF99'
   if (item.status === 'reserved') return '#FFD700'
   if (item.status === 'occupied') return '#939393'
   return '#999999'
 }
+function getStrokeColor (item, isSelected) {
+  if (!isSelected) return '#006600'
+  return item.status === 'free' ? '#38949B' : 'gray'
+}
+const strokeWidth = (isSelected) => (isSelected ? 4 : 1)
 
-function selectPolygon(item) {
+/* ===== loader для Yandex Maps API 2.1 ===== */
+async function loadYMaps21(apiKey, lang='ru_RU') {
+  if (window.ymaps && window.ymaps.load) {
+    await window.ymaps.load()
+    return window.ymaps
+  }
+  await new Promise((resolve, reject) => {
+    const s = document.createElement('script')
+    s.src = `https://api-maps.yandex.ru/2.1/?apikey=${encodeURIComponent(apiKey)}&lang=${lang}`
+    s.async = true
+    s.onload = resolve
+    s.onerror = () => reject(new Error('Failed to load Yandex Maps API 2.1'))
+    document.head.appendChild(s)
+  })
+  await window.ymaps.load()
+  return window.ymaps
+}
+
+/* ===== инициализация карты и слоёв ===== */
+function initialCenter() {
+  const items = getItems()
+  if (Array.isArray(props.centerCoords) && props.centerCoords.length === 2) {
+    const [lat, lng] = props.centerCoords
+    return [lat, lng] // в 2.1 — [lat, lng]
+  }
+  const ring = props.cemeteryBoundary?.polygon_data?.coordinates
+  if (isRing(ring)) {
+    const s = ring.reduce((a, [L,A]) => ({ lng: a.lng + L, lat: a.lat + A }), { lng: 0, lat: 0 })
+    return [s.lat / ring.length, s.lng / ring.length]
+  }
+  const first = items?.[0]?.polygon_data?.coordinates?.[0]
+  if (Array.isArray(first)) return [first[1], first[0]]
+  return [43.238949, 76.889709] // [lat, lng]
+}
+
+async function initMap() {
+  const cfg = useRuntimeConfig()
+  const API_KEY = cfg.public?.yandexMapApiKey || cfg.public?.yandexMaps?.apikey
+  if (!API_KEY) throw new Error('public.yandexMapApiKey not found')
+
+  const ymaps = await loadYMaps21(API_KEY, 'ru_RU')
+
+  map = new ymaps.Map(mapEl.value, {
+    center: initialCenter(), // [lat,lng]
+    zoom: props.centerCoords ? 15 : (props.cemeteryBoundary ? 14 : 18),
+    controls: [],
+  }, {
+    suppressMapOpenBlock: true,
+  })
+
+  // граница кладбища
+  drawCemetery()
+
+  // участки
+  drawPlots()
+
+  // вотчеры
+  unwatchers.push(
+      watch(() => props.cemeteryBoundary, () => { redrawCemetery() }, { deep: true }),
+      watch(() => props.polygons, () => { redrawPlots() }, { deep: true }),
+      watch(() => props.centerCoords, (v) => {
+        if (Array.isArray(v) && v.length === 2 && map) {
+          map.setCenter([v[0], v[1]], 15)
+        }
+      })
+  )
+}
+
+/* ===== граница кладбища ===== */
+function drawCemetery() {
+  const ymaps = window.ymaps
+  if (cemeteryPolygon) {
+    try { map.geoObjects.remove(cemeteryPolygon) } catch {}
+    cemeteryPolygon = null
+  }
+  const ring = props.cemeteryBoundary?.polygon_data?.coordinates
+  if (!isRing(ring)) return
+  cemeteryPolygon = new ymaps.Polygon([ toLatLng(ring) ], {}, {
+    fillColor: 'rgba(0,0,0,0)',
+    strokeColor: '#FF0000',
+    strokeWidth: 3,
+    zIndex: 1,
+    cursor: 'default',
+  })
+  map.geoObjects.add(cemeteryPolygon)
+}
+const redrawCemetery = () => drawCemetery()
+
+/* ===== участки ===== */
+function clearPlots() {
+  plotObjects.forEach(p => {
+    try { map.geoObjects.remove(p.polygon) } catch {}
+  })
+  plotObjects = []
+}
+
+function drawPlots() {
+  const ymaps = window.ymaps
+  const items = getItems()
+
+  items.forEach(item => {
+    const ring = item?.polygon_data?.coordinates
+    if (!isRing(ring)) return
+
+    const isSel = !!(selected.value && selected.value.id === item.id)
+    const polygon = new ymaps.Polygon([ toLatLng(ring) ], {}, {
+      fillColor: getFillColor(item, isSel),
+      strokeColor: getStrokeColor(item, isSel),
+      strokeWidth: strokeWidth(isSel),
+      zIndex: 10,
+      cursor: 'pointer',
+      // делаем «щедрый» хитбокс по контуру
+      strokeStyle: isSel ? 'solid' : 'solid',
+    })
+
+    polygon.events.add('click', () => selectPlot(item))
+    map.geoObjects.add(polygon)
+
+    plotObjects.push({ id: item.id, polygon, data: item })
+  })
+}
+
+function redrawPlots() {
+  clearPlots()
+  drawPlots()
+}
+
+/* ===== выбор и подсветка ===== */
+function selectPlot(item) {
   selected.value = item
   emit('update:modelValue', item)
-
-  polygonObjects.value.forEach(({ id, polygon, data }) => {
-    const isSel = id === item.id
-    
-    let borderColor = null
-    if (isSel) {
-      if (data.status === 'free') {
-        borderColor = '#38949B'
-      } else {
-        borderColor = 'gray' 
-      }
-    }
-    
-    polygon.setStyle({
-      fillColor: getFillColor(data, isSel),
-      color: borderColor,
-      weight: isSel ? 4 : 1,
+  plotObjects.forEach(({ id, polygon, data }) => {
+    const sel = id === item.id
+    polygon.options.set({
+      fillColor: getFillColor(data, sel),
+      strokeColor: getStrokeColor(data, sel),
+      strokeWidth: strokeWidth(sel),
+      zIndex: sel ? 12 : 10,
+      cursor: 'pointer',
     })
   })
 }
+
+/* ===== lifecycle ===== */
+const unwatchers = []
+onMounted(() => { initMap().catch(console.error) })
+onBeforeUnmount(() => {
+  unwatchers.forEach(u => { try { u() } catch {} })
+  try { if (map) map.destroy() } catch {}
+  map = null
+})
 </script>
 
 <template>
-  <div :id="mapContainerId" style="width: 100%; height: 600px;"></div>
+  <ClientOnly>
+    <div ref="mapEl" style="width:100%; height:600px;"></div>
+  </ClientOnly>
 </template>

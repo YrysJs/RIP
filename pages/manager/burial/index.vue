@@ -1,10 +1,10 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import {getBurialRequestById, getBurialRequests, getBurialRequestStatus} from '~/services/manager'
-import BurialDetailsModal from "~/components/manager/burial/BurialDetailsModal.vue";
-import {getGraveById, getGraveImages} from "~/services/client/index.js";
+import { getBurialRequestById, getBurialRequests, getBurialRequestStatus } from '~/services/manager'
+import BurialDetailsModal from '~/components/manager/burial/BurialDetailsModal.vue'
+import { getGraveById, getGraveImages } from '~/services/client'
 import { getCemeteries } from '~/services/cemetery'
-import CancelModal from "~/components/manager/booking/CancelModal.vue";
+import CancelModal from '~/components/manager/booking/CancelModal.vue'
 
 const router = useRouter()
 
@@ -17,133 +17,115 @@ const isCancelModalVisible = ref(false)
 const selectedId = ref(null)
 const grave = ref({})
 const graveImages = ref([])
+const loading = ref(false)
 
-definePageMeta({
-  middleware: ['auth', 'manager'],
-});
+definePageMeta({ middleware: ['auth', 'manager'] })
 
-// новые фильтры
+// скрытые фильтры (оставлены для БЭКа)
 const dateFrom = ref('')
-const dateTo = ref('')
+const dateTo   = ref('')
 const cemeteryId = ref(null)
+const toIsoDate = (dateStr) => (dateStr ? `${dateStr}T00:00:00Z` : undefined)
 
+/* Плейсхолдеры под макет (показываются только при пустом ответе) */
+const placeholderBurials = [
+  { id:'ph-1', request_number:1, created_at:'2025-06-07T09:05:00Z', burial_date:'2025-06-07', burial_time:'10:00',
+    deceased:{ full_name:'Иван Иванов Иванович' }, cemetery:'Северное кладбище', sector:'23', grave_id:'56', status:'confirmed' },
+  { id:'ph-2', request_number:2, created_at:'2025-06-07T09:05:00Z', burial_date:'2025-06-07', burial_time:'10:00',
+    deceased:{ full_name:'Иван Иванов Иванович' }, cemetery:'Северное кладбище', sector:'23', grave_id:'56', status:'confirmed' },
+  { id:'ph-3', request_number:3, created_at:'2025-06-07T09:05:00Z', burial_date:'2025-06-07', burial_time:'10:00',
+    deceased:{ full_name:'Иван Иванов Иванович' }, cemetery:'Северное кладбище', sector:'33', grave_id:'151', status:'paid' },
+]
+const isPlaceholderMode = computed(() => !burials.value || burials.value.length === 0)
+const displayBurials = computed(() => (isPlaceholderMode.value ? placeholderBurials : burials.value))
+
+/* Загрузка */
 const fetchBurials = async (params = { show_confirmed_and_paid: true }) => {
   try {
+    loading.value = true
     const response = await getBurialRequests(params)
-    burials.value = response.data.data.data
-  } catch (error) {
-    console.error('Ошибка при получении заявок:', error)
+    burials.value = response.data?.data?.data ?? []
+  } catch (e) {
+    console.error('Ошибка при получении заявок:', e)
+  } finally {
+    loading.value = false
   }
 }
-
 
 const fetchBurialDetails = async (id) => {
   try {
     const res = await getBurialRequestById(id)
     burial.value = res.data.data
-    console.log(burial.value)
     const response = await getGraveById(burial.value.grave_id)
     grave.value = response.data
     const images = await getGraveImages(burial.value.grave_id)
     graveImages.value = images.data
     burialDetailModalVisible.value = true
-  } catch (error) {
-    console.error('Ошибка при услуги:', error)
+  } catch (e) {
+    console.error('Ошибка при услуги:', e)
   }
-
 }
 
 const cancelRequest = (comment) => {
-  getBurialRequestStatus({
-    id: burial.value?.id,
-    status: 'cancelled',
-    comment
-  }).then(() => {
-    isCancelModalVisible.value = false
-    fetchBurials()
-  })
+  getBurialRequestStatus({ id: burial.value?.id, status: 'cancelled', comment })
+    .then(() => { isCancelModalVisible.value = false; fetchBurials() })
 }
-
 const approveRequest = () => {
-  getBurialRequestStatus({
-    id: burial.value?.id,
-    status: 'confirmed',
-    comment: ''
-  }).then(() => {
-    burialDetailModalVisible.value = false
-    fetchBurials()
-  })
+  getBurialRequestStatus({ id: burial.value?.id, status: 'confirmed', comment: '' })
+    .then(() => { burialDetailModalVisible.value = false; fetchBurials() })
 }
-
-const selectRequest = () => {
-  isCancelModalVisible.value = true
-}
+const selectRequest = () => { isCancelModalVisible.value = true }
 
 const fetchCemeteries = async () => {
   try {
     const response = await getCemeteries()
     cemeteries.value = response.data
-  } catch (error) {
-    console.error('Ошибка при получении кладбищ:', error)
+  } catch (e) {
+    console.error('Ошибка при получении кладбищ:', e)
   }
 }
 
-onMounted(() => {
-  fetchBurials()
-  fetchCemeteries()
-})
+onMounted(() => { fetchBurials(); fetchCemeteries() })
 
-const toIsoDate = (dateStr) => {
-  return dateStr ? `${dateStr}T00:00:00Z` : undefined
+/* Форматтеры */
+const fmtDateTime = (iso) => {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  return d.toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })
+}
+const fmtDate = (iso) => {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' })
+}
+const statusChip = (status) => {
+  if (status === 'paid')      return { text:'Ожидает',      class:'chip chip--orange' }
+  if (status === 'confirmed') return { text:'Подтвержден', class:'chip chip--green'  }
+  return { text: status ?? '—', class:'chip chip--gray' }
 }
 
-// Поиск (оставляем debounce)
+/* Поиск/фильтры (debounce) */
 let timeout
-watch(search, (newVal) => {
+watch(search, (val) => {
   clearTimeout(timeout)
-
-  if (newVal.length >= 3 || newVal.length === 0) {
+  if (val.length >= 3 || val.length === 0) {
     timeout = setTimeout(() => {
       fetchBurials({
         show_confirmed_and_paid: true,
-        ...(newVal.length >= 3 ? { created_by: newVal } : {}),
+        ...(val.length >= 3 ? { created_by: val } : {}),
         date_from: toIsoDate(dateFrom.value) || undefined,
-        date_to: toIsoDate(dateTo.value) || undefined,
+        date_to:   toIsoDate(dateTo.value)   || undefined,
         cemetery_id: cemeteryId.value || undefined,
       })
-    }, 500)
+    }, 400)
   }
 })
-
-// Фильтры: дата с
-watch(dateFrom, () => {
+watch([dateFrom, dateTo, cemeteryId], () => {
   fetchBurials({
     show_confirmed_and_paid: true,
     ...(search.value.length >= 3 ? { created_by: search.value } : {}),
     date_from: toIsoDate(dateFrom.value) || undefined,
-    date_to: toIsoDate(dateTo.value) || undefined,
-    cemetery_id: cemeteryId.value || undefined,
-  })
-})
-
-// Фильтры: дата по
-watch(dateTo, () => {
-  fetchBurials({
-    show_confirmed_and_paid: true,
-    ...(search.value.length >= 3 ? { created_by: search.value } : {}),
-    date_from: toIsoDate(dateFrom.value) || undefined,
-    date_to: toIsoDate(dateTo.value) || undefined,
-    cemetery_id: cemeteryId.value || undefined,
-  })
-})
-
-// Фильтры: кладбище
-watch(cemeteryId, () => {
-  fetchBurials({
-    show_confirmed_and_paid: true,
-    ...(search.value.length >= 3 ? { created_by: search.value } : {}),
-    date_from: toIsoDate(dateFrom.value) || undefined,
-    date_to: toIsoDate(dateTo.value) || undefined,
+    date_to:   toIsoDate(dateTo.value)   || undefined,
     cemetery_id: cemeteryId.value || undefined,
   })
 })
@@ -151,199 +133,146 @@ watch(cemeteryId, () => {
 
 <template>
   <NuxtLayout name="manager">
-    <div class="burial-list">
-      <div class="bg-white p-4 rounded-[8px] flex justify-between items-center flex-wrap gap-4">
-        <div class="flex gap-4 flex-wrap">
-          <div>
-            <p>Кладбище</p>
-            <select class="filter-select" v-model="cemeteryId">
-              <option :value="null">Все</option>
-              <option v-for="cemetery in cemeteries" :key="cemetery.id" :value="cemetery.id">
-                {{ cemetery.name }}
-              </option>
-            </select>
-          </div>
-          <div>
-            <p>Дата с</p>
-            <input class="filter-select date" type="date" v-model="dateFrom" />
-          </div>
-          <div>
-            <p>Дата по</p>
-            <input class="filter-select date" type="date" v-model="dateTo" />
-          </div>
+    <div class="mgr">
+      <!-- Поиск -->
+      <div class="mgr__search">
+        <div class="search">
+          <input v-model="search" class="search__input" type="text" placeholder="Поиск по бронированиям" />
+          <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none"/>
+            <path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
         </div>
       </div>
-      <div class="search-wrapper">
-        <div class="search-box">
-          <img src="/icons/search.svg" alt="Поиск" />
-          <input type="text" v-model="search" placeholder="Поиск по пользователю" />
-        </div>
-      </div>
-      <div v-for="burial in burials" :key="burial.id" class="burial-card">
-        <div class="burial-header">
-          <div class="flex items-center gap-4">
-            <span>Захоронение: <a href="#">{{ burial.request_number }}</a></span>
-            <span class="burial-date">Дата брони: {{ new Date(burial.created_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</span>
+
+      <!-- Карточки -->
+      <div
+        v-for="b in displayBurials"
+        :key="b.id || 'ph-' + b.request_number"
+        class="card"
+        :class="{ 'card--placeholder': isPlaceholderMode }"
+      >
+        <!-- Заголовок + даты -->
+        <div class="card__row">
+          <div class="head-left">
+            <span class="title">ЗАХОРОНЕНИЕ:</span>
+            <span class="num-badge">{{ String(b.request_number).padStart(3,'0') }}</span>
           </div>
-
-          <span class="burial-date__bold">Дата похорон: {{ new Date(burial.burial_date).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) }} {{ burial.burial_time }}</span>
-        </div>
-        <div class="font-medium text-base mt-2">ФИО покойного: <span class="font-bold ml-1">{{ burial.deceased.full_name }}</span></div>
-
-        <div class="flex justify-between items-center mt-4">
-          <div class="burial-info">
-            <span class="badge"><span class="font-medium">{{ burial.cemetery ? burial.cemetery : 'Северное кладбище' }}</span></span>
-<!--            <span class="badge">Сектор: <span class="font-medium ml-1">{{ burial.sector }}</span></span>-->
-            <span class="badge">Место: <span class="font-medium ml-1">{{ burial.grave_id }}</span> </span>
-
+          <div class="card__dates">
+            <div class="date-line">Дата брони: {{ fmtDateTime(b.created_at) }}</div>
+            <div class="date-line">Дата похорон: {{ fmtDate(b.burial_date) }}<span v-if="b.burial_time">&nbsp;{{ b.burial_time }}</span></div>
           </div>
-          <div class="flex items-center gap-4">
-            <span
-                class="status"
-                :class="{
-                'status--pending': burial.status === 'paid',
-                'status--confirmed': burial.status === 'confirmed',
-              }"
-            >
-              {{ burial.status === 'paid' ? 'Ожидает подтверждения' : 'Подтверждено' }}
+        </div>
+
+        <!-- Блок информации: ФИО и Статус выровнены по одной линии -->
+        <div class="info">
+          <div class="info-line">
+            <span class="label">ФИО покойного:</span>
+            <span class="value value--bold">{{ b.deceased?.full_name || '—' }}</span>
+          </div>
+          <div class="info-line">
+            <span class="label">Статус:</span>
+            <span class="value">
+              <span :class="statusChip(b.status).class">{{ statusChip(b.status).text }}</span>
             </span>
-            <button class="details-btn" @click="fetchBurialDetails(burial.id)">Подробнее</button>
           </div>
+        </div>
 
+        <!-- Чипы + кнопка -->
+        <div class="card__row card__row--bottom">
+          <div class="chips">
+            <span class="chip chip--gray">{{ b.cemetery || 'Северное кладбище' }}</span>
+            <span v-if="b.sector" class="chip chip--gray">Сектор: {{ b.sector }}</span>
+            <span class="chip chip--gray">Место: {{ b.grave_id }}</span>
+          </div>
+          <button class="btn-more" @click="fetchBurialDetails(b.id)" :disabled="!b.id">Подробнее</button>
         </div>
       </div>
     </div>
+
     <Teleport to="body">
       <BurialDetailsModal
-          :visible="burialDetailModalVisible"
-          :grave="grave"
-          :images="graveImages"
-          :booking="burial"
-          @cancel="selectRequest"
-          @confirm="approveRequest"
-          @close="burialDetailModalVisible = false" />
+        :visible="burialDetailModalVisible"
+        :grave="grave"
+        :images="graveImages"
+        :booking="burial"
+        @cancel="selectRequest"
+        @confirm="approveRequest"
+        @close="burialDetailModalVisible = false"
+      />
       <CancelModal :visible="isCancelModalVisible" @cancel="cancelRequest" />
     </Teleport>
   </NuxtLayout>
 </template>
 
 <style lang="scss" scoped>
-.burial-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.mgr{ display:flex; flex-direction:column; gap:16px; }
 
-  .burial-card {
-    border-radius: 16px;
-    background: #fff;
-    padding: 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-
-    .burial-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      font-weight: 500;
-      font-size: 18px;
-      gap: 8px;
-
-      a {
-        color: #0092cc;
-        text-decoration: none;
-      }
-
-      .burial-date {
-        color: #222;
-        font-weight: 400;
-        font-size: 14px;
-
-        &__bold {
-          font-size: 16px;
-          font-weight: 500;
-        }
-      }
-    }
-
-    .burial-info {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-top: 8px;
-
-      .badge {
-        background: #e9eded;
-        padding: 8px 4px;
-        border-radius: 8px;
-        font-size: 14px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-      }
-
-    }
-
-    .details-btn {
-      background-color: #224c4f;
-      color: #fff;
-      border: none;
-      padding: 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      height: 32px;
-      display: flex;
-      font-size: 14px;
-      font-weight: 600;
-      align-items: center;
-    }
-  }
+/* Поиск */
+.mgr__search{ background:#fff; border-radius:16px; padding:14px 16px; }
+.search{ position:relative; }
+.search__input{
+  width:100%; height:44px; border:1px solid #E6E8EC; border-radius:12px;
+  padding:0 44px 0 14px; font-size:14px; outline:none;
+}
+.search__icon{
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  width:20px; height:20px; color:#9AA0A6;
 }
 
-.status {
-  padding: 4px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 4px;
-  height: 24px;
-  display: flex;
-  letter-spacing: 0.56px;
-  align-items: center;
+/* Карточка */
+.card{
+  background:#fff; border-radius:16px; padding:16px; box-shadow:0 2px 6px rgba(0,0,0,.05);
+  display:flex; flex-direction:column; gap:12px; transition:opacity .15s ease;
+}
+.card--placeholder{ opacity:.96; }
 
-  &--pending {
-    background-color: #fef3e2;
-    color: #cb5600;
-  }
+.card__row{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+.card__row--bottom{ align-items:center; }
 
-  &--confirmed {
-    background-color: #d2f5dc;
-    color: #007c3d;
-  }
+/* Заголовок */
+.head-left{ display:flex; align-items:baseline; gap:10px; }
+.title{
+  font-family:"FoglihtenNo06", serif;
+  font-weight:700; letter-spacing:.02em; color:#1C140E; font-size:30px;
+}
+/* Жёлтый бейдж с номером (не «пилюля») */
+.num-badge{
+  color:#F7B500; font-weight:700; font-family:"FoglihtenNo06", serif;
+ display:inline-block; font-size: 32px;
 }
 
-.search-wrapper {
-  background: #FFFFFF;
-  padding: 20px;
-  border-radius: 8px;
-  width: 100%;
+/* Даты — серые */
+.card__dates{ text-align:right; color:#8C8C8C; font-size:12px; }
+.card__dates .date-line{ line-height:1.2; }
+
+/* Инфо-блок: выравнивание лейблов */
+.info{ display:flex; flex-direction:column; gap:6px; }
+.info-line{ display:flex; align-items:center; gap:8px; }
+.label{
+  --w: 150px;           /* ширина колонки лейблов — одинаковая для всех строк */
+  width:var(--w); min-width:var(--w);
+  color:#6B7280; font-size:14px;
 }
-.search-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: white;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 10px 12px;
+.value{ font-size:14px; color:#111827; }
+.value--bold{ font-weight:600; }
+
+/* Чипы */
+.chips{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.chip{
+  display:inline-flex; align-items:center; height:28px;
+  padding:0 10px; border-radius:8px; font-size:13px; font-weight:500;
 }
-.search-box input {
-  border: none;
-  outline: none;
-  flex: 1;
-  font-size: 14px;
+.chip--gray  { background:#E9EDED; color:#111827; }
+.chip--green { background:#E6F6EA; color:#1B8A36; }
+.chip--orange{ background:#FEF1DE; color:#C66A00; }
+
+/* Кнопка справа */
+.btn-more{
+  background:#F7B500; color:#1F2937; border:none;
+  height:36px; padding:0 16px; border-radius:10px;
+  font-weight:700; cursor:pointer; transition:filter .15s ease, opacity .15s ease;
 }
-.search-box img {
-  width: 16px;
-  height: 16px;
-}
+.btn-more:disabled{ opacity:.6; cursor:default; }
+.btn-more:not(:disabled):hover{ filter:brightness(.98); }
 </style>

@@ -1,169 +1,247 @@
 <script setup>
+import { ref, computed, onMounted } from 'vue'
 import { getProducts } from '~/services/supplier'
 
-const props = defineProps({
-    value: {
-        type: Number,
-        default: 0,
-    },
-
-    totalStars: {
-        type: Number,
-        default: 5,
-    },
-});
-
-// Состояние для хранения данных
+// -------- state --------
 const products = ref([])
-const loading = ref(true)
-const error = ref(null)
+const loading  = ref(true)
+const error    = ref(null)
 
-// Функция для получения данных товаров/услуг требующих доработки
+// поддерживаем и массив, и объект с items
+const items = computed(() =>
+  Array.isArray(products.value) ? products.value : (products.value?.items ?? [])
+)
+
 const fetchProducts = async () => {
-    try {
-        loading.value = true
-        const response = await getProducts({ status: 'requires_fix' })
-        products.value = response.data || []
-    } catch (err) {
-        error.value = err
-        console.error('Ошибка при загрузке продуктов требующих доработки:', err)
-    } finally {
-        loading.value = false
-    }
+  try {
+    loading.value = true
+    error.value = null
+    const resp = await getProducts({ status: 'requires_fix' })
+    products.value = resp?.data ?? []
+  } catch (e) {
+    console.error('Ошибка при загрузке продуктов требующих доработки:', e)
+    error.value = 'Ошибка при загрузке данных'
+  } finally {
+    loading.value = false
+  }
 }
+onMounted(fetchProducts)
 
-// Загружаем данные при монтировании компонента
-onMounted(() => {
-    fetchProducts()
-})
+// -------- helpers --------
+const formatPrice = (p) =>
+  new Intl.NumberFormat('ru-RU').format(Number(p ?? 0))
 
-function getStarClass(n) {
-    if (props.value >= n) return "full";
-    if (props.value >= n - 0.5 && props.value < n) return "half";
-    return "empty";
-}
+const getImageUrl = (urls) =>
+  (Array.isArray(urls) && urls[0]) || '/images/test-card-image.jpg'
 
-// Функция для форматирования цены
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('ru-RU').format(price)
-}
-
-// Функция для получения URL изображения
-const getImageUrl = (imageUrls) => {
-    if (imageUrls && imageUrls.length > 0) {
-        return imageUrls[0]
-    }
-    return '/images/test-card-image.jpg' // fallback изображение
-}
-
-// Функция для форматирования даты
-const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('ru-RU', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    })
+const formatDateTime = (iso) => {
+  if (!iso) return ''
+  const d = new Date(iso)
+  return d.toLocaleString('ru-RU', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit'
+  })
 }
 </script>
 
 <template>
-    <NuxtLayout name="supplier">
-        <div class="w-full h-[61px] pl-[20px] flex items-center bg-white rounded-[16px] text-lg font-semibold">
-            Требует доработки
-        </div>
-        
-        <!-- Лоадер -->
-        <div v-if="loading" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px] text-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#224C4F] mx-auto"></div>
-            <p class="mt-4 text-gray-600">Загрузка товаров и услуг требующих доработки...</p>
+  <NuxtLayout name="supplier">
+    <!-- заголовок -->
+    <div class="page-head">
+      <h2 class="page-title">Требует доработки</h2>
+    </div>
+
+    <!-- состояния -->
+    <div v-if="loading" class="state-card">
+      <div class="spinner" />
+      <p class="muted mt-3">Загрузка товаров и услуг, требующих доработки…</p>
+    </div>
+
+    <div v-else-if="error" class="state-card">
+      <p class="error">{{ error }}</p>
+      <button class="btn btn--primary btn--md mt-3" @click="fetchProducts">Попробовать снова</button>
+    </div>
+
+    <div v-else-if="items.length === 0" class="state-card">
+      <p class="muted">У вас пока нет товаров и услуг, требующих доработки</p>
+    </div>
+
+    <!-- список карточек -->
+    <div
+      v-else
+      v-for="product in items"
+      :key="product.id"
+      class="fix-card"
+    >
+      <!-- media -->
+      <div class="fix-card__media">
+        <img :src="getImageUrl(product.image_urls)" :alt="product.name">
+      </div>
+
+      <!-- body -->
+      <div class="fix-card__body">
+        <!-- верх -->
+        <div class="fix-card__top">
+          <div class="titlebox">
+            <h3 class="title">{{ product.name }}</h3>
+            <p class="subtitle">{{ product.category?.name || ' ' }}</p>
+          </div>
+          <div class="price-badge">{{ formatPrice(product.price) }} ₸</div>
         </div>
 
-        <!-- Ошибка -->
-        <div v-if="error && !loading" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px] text-center">
-            <div class="text-red-500">
-                <p>Ошибка при загрузке данных</p>
-                <button @click="fetchProducts" class="mt-4 px-4 py-2 bg-[#224C4F] text-white rounded hover:bg-[#1a3a3d]">
-                    Попробовать снова
-                </button>
-            </div>
+        <!-- мета -->
+        <div class="meta-row">
+          <div class="meta">
+            <!-- pin (жёлтый) -->
+            <svg class="ico ico--yellow" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" fill="currentColor"/>
+              <circle cx="12" cy="10" r="2.4" fill="#fff"/>
+            </svg>
+            <span>{{ product.country }}, {{ product.city }}</span>
+          </div>
+
+          <div class="meta">
+            <!-- calendar (жёлтый) -->
+            <svg class="ico ico--yellow" viewBox="0 0 24 24" aria-hidden="true">
+              <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 3v4M17 3v4M4 9h16"/>
+                <rect x="4" y="5" width="16" height="15" rx="2"/>
+              </g>
+            </svg>
+            <span>
+              Срок выполнения:
+              {{ product.service_time }}
+              {{ String(product.service_time) === '1' ? 'день' : 'дня/дней' }}
+            </span>
+          </div>
         </div>
 
-        <!-- Пустое состояние -->
-        <div v-if="!loading && !error && products.length === 0" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px] text-center">
-            <p class="text-gray-600">У вас пока нет товаров и услуг требующих доработки</p>
+        <!-- низ -->
+        <div class="fix-card__bottom">
+          <div class="submitted">
+            Дата и время заявки: {{ formatDateTime(product.created_at) }}
+          </div>
+
+          <NuxtLink
+            class="btn btn--primary btn--lg"
+            :to="`/supplier/services/add-service/${product.id}`"
+          >
+            Редактировать
+          </NuxtLink>
         </div>
 
-        <!-- Список товаров/услуг требующих доработки -->
-        <div v-for="product in products.items" :key="product.id" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
-            <div class="w-full flex gap-[20px]">
-                <div class="min-w-[320px] max-w-[320px] max-h-[260px] rounded-lg overflow-hidden">
-                    <img class="w-full h-full object-cover" :src="getImageUrl(product.image_urls)" :alt="product.name">
-                </div>
-                <div class="w-full">
-                    <div class="flex justify-between items-start mb-[3px]">
-                        <div>
-                            <h3 class="font-medium text-lg">{{ product.name }}</h3>
-                            <p class="text-sm text-[#939393]">{{ product.description }}</p>
-                        </div>
-                        <div class="font-medium text-xl w-[365px]">
-                            от {{ formatPrice(product.price) }} ₸
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex space-x-1">
-                            <template v-for="n in 5" :key="n">
-                                <div class="relative text-2xl select-none">
-                                    <span v-if="getStarClass(n) === 'half'" class="text-gray-300">★</span>
-                                    <span 
-                                        v-else :class="{
-                                        'text-yellow-400': getStarClass(n) === 'full',
-                                        'text-gray-300': getStarClass(n) === 'empty'
-                                        }"
-                                    >
-                                        ★
-                                    </span>
-                                    <span
-                                        v-if="getStarClass(n) === 'half'"
-                                        class="absolute inset-0 overflow-hidden text-yellow-400"
-                                        :style="{ width: '50%' }"
-                                    >
-                                        ★
-                                    </span>
-                                </div>
-                            </template>
-                        </div>
-                        <div class="flex items-center gap-[10px] text-sm font-normal mb-[8px] text-[#5C5C5C] mt-[8px]">
-                            <img src="/icons/calendar-icon.svg" alt="calendar-icon"> 
-                            Срок выполнения: {{ product.service_time }} {{ product.service_time === '1' ? 'день' : 'дня/дней' }}
-                        </div>
-                        <div class="flex items-center gap-[10px] text-sm font-normal text-[#224C4F]">
-                            <img src="/icons/geo-icon.svg" alt="geo-icon"> 
-                            {{ product.country }}, {{ product.city }}
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center mt-[40px]">
-                        <div class="flex items-center gap-[10px] text-sm font-normal mb-[5px] text-[#5C5C5C]">
-                            <img src="/icons/calendar-icon.svg" alt="calendar-icon"> 
-                            Дата подачи: {{ formatDate(product.created_at) }}
-                        </div>
-                        <nuxt-link 
-                            :to="`/supplier/services/add-service/${product.id}`" 
-                            class="py-[8px] px-[16px] rounded-md bg-[#224C4F] text-white font-semibold hover:bg-[#1a3a3d] transition-colors"
-                        >
-                            Редактировать
-                        </nuxt-link>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-[#DC6E2926] p-[10px] rounded-md mt-[10px] flex items-center gap-3 text-base">
-                <img src="/icons/attention-icon.svg" alt="icon"> 
-                Услуга требует доработки: {{ product?.moderation_comment}}
-            </div>
+        <!-- предупреждение -->
+        <div class="warn">
+          <!-- иконка предупреждения -->
+          <svg class="warn__ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3 2.7 19.5a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3L12 3Z" fill="#FEE4D5"/>
+            <path d="M12 8v6M12 18h.01" stroke="#DC6E29" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>
+            Услуга требует доработки:
+            {{ product?.moderation_comment || 'укажите точное описание и прикрепите фотографии' }}
+          </span>
         </div>
-    </NuxtLayout>
+      </div>
+    </div>
+  </NuxtLayout>
 </template>
 
-<style lang=scss scoped>
+<style scoped lang="scss">
+/* header */
+.page-head{
+  display:flex; align-items:center;
+  background:#fff; border-radius:16px;
+  padding:14px 16px; margin-bottom:12px;
+}
+.page-title{
+  font-family:"FoglihtenNo06", serif;
+  font-weight:700; letter-spacing:.02em;
+  font-size:22px; line-height:1.15; color:#1C140E; margin:0;
+}
 
+/* states */
+.state-card{
+  background:#fff; border-radius:16px;
+  padding:24px; text-align:center; margin-top:16px;
+}
+.muted{ color:#6B7280; }
+.error{ color:#D63C3C; }
+.spinner{
+  width:34px;height:34px;border-radius:50%;
+  border:3px solid #e7e9ec;border-top-color:#224C4F;
+  animation:spin .9s linear infinite;margin:0 auto;
+}
+@keyframes spin{ to { transform: rotate(360deg) } }
+
+/* card */
+.fix-card{
+  display:grid;
+  grid-template-columns: 320px 1fr;
+  gap:16px;
+  background:#F7F8FA;
+  border:1px solid #EAECEE;
+  border-radius:16px;
+  padding:12px;
+  margin-top:16px;
+}
+.fix-card__media{
+  width:100%; height:180px;
+  border-radius:12px; overflow:hidden; background:#F2F3F5;
+}
+.fix-card__media img{ width:100%; height:100%; object-fit:cover; display:block; }
+.fix-card__body{ display:flex; flex-direction:column; gap:12px; }
+
+.fix-card__top{ display:flex; justify-content:space-between; gap:12px; }
+.titlebox{ min-width:0; }
+.title{ font-weight:800; font-size:18px; color:#111827; margin:0 0 2px 0; }
+.subtitle{ font-size:12px; color:#8C8C8C; margin:0; }
+
+.price-badge{
+  align-self:flex-start;
+  background:#EEF1F4; color:#0F172A;
+  padding:8px 12px; border-radius:10px;
+  font-weight:800; font-size:14px; white-space:nowrap;
+}
+
+.meta-row{ display:flex; flex-wrap:wrap; gap:18px; }
+.meta{ display:inline-flex; align-items:center; gap:8px; color:#5C5C5C; font-size:13px; }
+.ico{ width:20px; height:20px; flex:0 0 20px; }
+.ico--yellow{ color:#F0B32E; }
+
+.fix-card__bottom{
+  display:flex; justify-content:space-between;
+  align-items:center; gap:16px; margin-top:6px;
+}
+.submitted{ color:#7C8794; font-size:14px; line-height:1.2; }
+
+/* предупреждение */
+.warn{
+  display:flex; align-items:center; gap:10px;
+  margin-top:10px;
+  background:#DC6E2926;         /* как в макете */
+  color:#9A5122;
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:14px;
+}
+.warn__ico{ width:20px; height:20px; flex:0 0 20px; }
+
+/* buttons */
+.btn{ border:none; border-radius:12px; font-weight:800; cursor:pointer; transition:filter .15s ease; }
+.btn--primary{ background:#F7B500; color:#1F2937; }
+.btn--md{ height:42px; padding:0 16px; font-size:14px; }
+.btn--lg{ height:48px; padding:0 22px; font-size:16px; }
+.btn--primary:hover{ filter:brightness(.98); }
+
+/* responsive */
+@media (max-width: 920px){
+  .fix-card{ grid-template-columns: 280px 1fr; }
+  .fix-card__media{ height:170px; }
+}
+@media (max-width: 680px){
+  .fix-card{ grid-template-columns: 1fr; }
+  .fix-card__media{ height:200px; }
+  .fix-card__bottom{ flex-direction:column; align-items:flex-start; }
+}
 </style>

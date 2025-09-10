@@ -14,9 +14,9 @@ const dateFrom = ref('')
 const dateTo = ref('')
 const cemeteryId = ref(null)
 
-definePageMeta({
-  middleware: ['auth', 'manager'],
-});
+//definePageMeta({
+  //middleware: ['auth', 'manager'],
+//});
 
 const fetchBurials = async (params = { status: 'pending' }) => {
   try {

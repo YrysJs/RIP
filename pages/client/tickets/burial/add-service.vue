@@ -143,14 +143,14 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-[#FAFAFA] min-h-[100vh] py-[70px]">
+  <div class="bg-[#faf7ee] min-h-[100vh] py-[70px]">
     <div class="container flex gap-[24px]">
       <div class="max-w-[777px] w-full">
         <div class="w-full h-[61px] p-[20px] flex items-center bg-[#fff] rounded-[16px] gap-[16px]">
           <button tybe="button" class="bg-[#EEEEEE] rounded-md px-[21px] py-[10px] flex items-center gap-[10px] font-semibold text-sm text-[#224C4F]" @click="$router.go(-1)">
             <img src="/icons/back-blue.svg" alt="" class=""> Назад
           </button>
-          <h3 class="text-4xl font-medium">Захоронение: <span class="text-[#38949B]">0000023</span></h3>
+<!--          <h3 class="text-4xl font-medium">Захоронение: <span class="text-[#38949B]">0000023</span></h3>-->
         </div>
         
         <!-- Уведомление о добавлении в корзину -->
@@ -173,7 +173,7 @@ onMounted(async () => {
           
           <!-- Отображение услуг -->
           <div v-else class="grid grid-cols-2 gap-[12px] mt-[24px]">
-            <div v-for="product in products" :key="product.id" class="p-[9px] rounded-lg max-w-[376px] w-full bg-white">
+            <div v-for="product in products" :key="product.id" class="p-[9px] rounded-lg min-w-[376px] max-w-[376px] w-full bg-white">
               <div>
                 <img class="rounded-lg overflow-hidden w-full h-[189px] object-cover" 
                      :src="product.image_urls && product.image_urls.length > 0 ? product.image_urls[0] : '/images/client/banner.jpg'" 
@@ -210,9 +210,9 @@ onMounted(async () => {
                     <span>Срок выполнения: {{ product.service_time || '1 день' }}</span>
                 </div>
                 <div class="flex gap-[10px] mt-[10px]">
-                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold">Подробнее</button>
+                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#17212A] py-[8px] font-semibold">Подробнее</button>
                     <button 
-                      class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold"
+                      class="w-[50%] text-sm rounded-lg bg-[#E9B949] text-[#17212A] py-[8px] font-semibold"
                       @click="addProductToCart(product.id)"
                       :disabled="addingToCart"
                     >
@@ -225,40 +225,6 @@ onMounted(async () => {
         </div>
       </div>
       <div class="p-[20px] bg-white rounded-lg max-w-[376px] h-fit">
-        <h3 class="text-2xl text-[#222222] font-medium my-[16px]">
-          Северное кладбище
-        </h3>
-        <div class="border-b border-[#EEEEEE] pb-[16px] flex items-center">
-          <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
-            Срок брони:
-          </h4>
-          <span class="text-base font-bold font-roboto text-[#222222]">3 дня</span>
-          <img class="ml-[16px]" src="/icons/info.svg" alt="">
-        </div>
-        <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
-          <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
-            Сектор:
-          </h4>
-          <span class="text-base font-bold font-roboto text-[#222222]">11</span>
-        </div>
-        <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
-          <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
-            Место:
-          </h4>
-          <span class="text-base font-bold font-roboto text-[#222222]">233 222</span>
-        </div>
-        <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
-          <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
-            ФИО покойного:
-          </h4>
-          <span class="text-base font-bold font-roboto text-[#222222]">Беляков Макар Максимович</span>
-        </div>
-        <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
-          <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
-            Дата похорон:
-          </h4>
-          <span class="text-base font-light font-roboto text-[#939393]">Не указано</span>
-        </div>
 
         <!-- Корзина с товарами -->
         <div v-if="hasCartItems" class="border-b border-[#EEEEEE] pb-[16px] pt-[16px]">
@@ -270,7 +236,7 @@ onMounted(async () => {
                 <p class="text-xs font-roboto text-[#5C5C5C]">{{ item.quantity }} шт. × {{ item.product.price.toLocaleString() }} ₸</p>
               </div>
               <button 
-                @click="removeProductFromCart(item.product.product_id)"
+                @click="removeProductFromCart(item.id)"
                 :disabled="removingFromCart"
                 class="ml-[8px] text-red-500 hover:text-red-700 text-sm"
               >

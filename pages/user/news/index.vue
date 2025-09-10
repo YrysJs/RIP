@@ -199,32 +199,53 @@ async function hide(news) {
 
 <style scoped>
 /* контейнер */
-.page { background:#fff; border:1px solid #ECECEC; border-radius:16px; padding:20px; margin-top:20px; }
+.page { background:#fff; }
 
 /* заголовок */
 .page-head{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
 .page-title{
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size:28px; line-height:36px; font-weight:700; text-transform:uppercase; letter-spacing:.02em; color:#111827;
+  font-family: "FoglihtenNo06", sans-serif;
+  font-size:32px; line-height:36px; font-weight:700; text-transform:uppercase; letter-spacing:.02em; color:#111827;
 }
 
 /* добавить новость */
 .add-btn{
   display:flex; align-items:center; gap:8px;
-  background:#224C4F; color:#fff; padding:10px 16px; border-radius:12px; font-weight:700; font-size:14px; border:none; cursor:pointer;
+  color:#0069FF; padding:10px 16px;  font-weight:700; font-size:14px; cursor:pointer;
 }
 
 /* фильтры */
-.filters{ display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; }
-.field{ position:relative; min-width:260px; }
+.filters{
+  display: grid;
+  grid-template-columns: 1fr 1fr minmax(260px, 0.75fr); /* 3-я колонка чуть уже */
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.field{ position: relative; min-width: 0; }
 .field__control{
-  width:100%; border:1px solid #D2D8DF; background:#fff; border-radius:12px;
-  padding:12px 40px 12px 44px; font-size:16px; line-height:24px; color:#111827;
+  width: 100%;
+  background: #0000000A;
+  border: 1px solid #E6E8EC;     
+  border-radius: 5px;            
+  padding: 12px 40px 12px 44px;
+  font-size: 16px; line-height: 20px; color: #5C6771E5; weight: 400;
   -webkit-appearance:none; -moz-appearance:none; appearance:none;
 }
+.field__control:focus{ outline: none; border-color:#D1D5DB; }
+.field__control::placeholder{ color:#6B7280; }
+
 .field__icon{ position:absolute; left:14px; top:50%; transform:translateY(-50%); pointer-events:none; }
 .field__chevron{ position:absolute; right:12px; top:50%; transform:translateY(-50%); pointer-events:none; }
 
+/* адаптив */
+@media (max-width: 1100px){
+  .filters{ grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 720px){
+  .filters{ grid-template-columns: 1fr; }
+}
 /* разделительная линия */
 .divider{ height:1px; background:#E5E7EB; margin:16px 0; }
 

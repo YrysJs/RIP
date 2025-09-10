@@ -2,7 +2,7 @@
 import { ref, watch, onMounted } from 'vue';
 import LayoutTop from '~/components/layout/LayoutTop.vue';
 import { getAllProducts, getCategories } from '~/services/supplier';
-import {addToCart, getProductById, getProductReviews} from '~/services/client'
+import {addToCart, getCart, getProductById, getProductReviews} from '~/services/client'
 import { getSupplier } from '~/services/login';
 import ServiceDetailModal from "~/components/layout/modals/ServiceDetailModal.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
@@ -137,6 +137,16 @@ async function fetchCategories() {
     }
 }
 
+const loadCart = async () => {
+  try {
+    const response = await getCart()
+    cartItems.value = response.data || []
+    console.log('Cart loaded:', cartItems.value)
+  } catch (err) {
+    console.error('Ошибка при загрузке корзины:', err)
+  }
+}
+
 const addProductToCart = async (productId) => {
   if(token.value) {
     addingToCart.value = true
@@ -153,6 +163,7 @@ const addProductToCart = async (productId) => {
       await addToCart(cartData)
       cartMessage.value = 'Товар добавлен в корзину'
       await loadCart() // Перезагружаем корзину
+      await router.push('/client/tickets/burial/add-service')
       setTimeout(() => {
         cartMessage.value = ''
       }, 3000)
@@ -209,7 +220,7 @@ function updatePriceRange(event) {
 </script>
 
 <template>
-    <div class="bg-[#FAFAFA] py-[20px]">
+    <div class="bg-[#faf7ee] py-[20px] my-[60px]">
       <AppHeader type="client" />
         <div class="container">
             <LayoutTop title="Заказать услуги и товары" :hide="true"/>
@@ -287,7 +298,7 @@ function updatePriceRange(event) {
                     </div>
                     
                     <!-- Фильтр по цене -->
-                    <div class="p-[20px] bg-white rounded-lg mt-[20px]">
+                    <div class="p-[20px] bg-white rounded-lg mt-[20px] pb-[40px]">
                         <h3 class="text-xl font-bold text-[#222222] mb-[20px]">Цена</h3>
                         <div class="mb-[20px]">
                             <div class="flex gap-[10px] mb-[10px]">
@@ -323,7 +334,7 @@ function updatePriceRange(event) {
                 <!-- Область с продуктами -->
                 <div class="max-w-[770px] w-full mt-[20px]">
                     <!-- Поиск -->
-                    <div class="w-full bg-white border-1 border-[#EEEEEE] h-[44px] relative">
+                    <div class="w-full bg-white rounded border-1 border-[#EEEEEE] h-[44px] relative mb-5">
                         <img class="absolute top-[10px] left-[15px]" src="/icons/search.svg" alt=""> 
                         <input 
                             class="bg-transparent w-full h-full pl-[45px]" 
@@ -390,8 +401,8 @@ function updatePriceRange(event) {
                                     </div>
                                 </div>
                                 <div class="flex gap-[10px] mt-[10px]">
-                                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold" @click="fetchProduct(product.id)">Подробнее</button>
-                                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold" @click="addProductToCart(product.id)">Добавить</button>
+                                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#17212A] py-[8px] font-semibold" @click="fetchProduct(product.id)">Подробнее</button>
+                                    <button class="w-[50%] text-sm rounded-lg bg-[#E9B949] text-[#17212A] py-[8px] font-semibold" @click="addProductToCart(product.id)">Добавить</button>
                                 </div>
                             </div>
                         </div>

@@ -17,13 +17,18 @@ export default defineNuxtConfig({
     "nuxt-schema-org",
     "nuxt-swiper",
     "six-dropzone",
+    'vue-yandex-maps/nuxt',
   ],
   plugins: [
     "~/plugins/v-mask.js",
     "~/plugins/axios.js",
     "~/plugins/dropzone-vue.js",
   ],
-
+  yandexMaps: {
+    apikey: 'c8be6d3f-5040-4607-8cb1-082ea246eb81',
+    lang: 'ru_RU',
+    version: '3.0',
+  },
   css: ["~/css/main.scss", "~/assets/styles/fonts.scss"],
   i18n: {
     locales: [
@@ -34,7 +39,9 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      twoGisApiKey: "ca092971-0505-4489-a478-a875c6dcbd2f",
+      apiBaseUrl: 'https://1.ripservice.kz',
+      twoGisApiKey: "0b75b800-a23a-42d2-a943-3d04be6ebfc3",
+      yandexMapApiKey: "c8be6d3f-5040-4607-8cb1-082ea246eb81",
     },
   },
   tailwindcss: {
