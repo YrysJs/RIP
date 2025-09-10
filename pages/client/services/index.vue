@@ -152,9 +152,6 @@ function changePageSize(newSize) {
 // Методы для работы с модалкой отзыва
 function openCommentModal(order) {
   selectedOrder.value = order;
-  console.log("Выбранный заказ:", order);
-  console.log("Product ID:", order?.items?.[0]?.product?.id);
-  console.log("Supplier Phone:", order?.items?.[0]?.product?.supplier_phone);
   showCommentModal.value = true;
 }
 

@@ -167,7 +167,6 @@ export default {
 
         // 1. Выполняем платеж
         const paymentResponse = await processCardPayment(paymentData);
-        console.log(paymentResponse)
 
         const burialId = this.$route.params.id;
         const paymentId = paymentResponse.data.data.paymentInfo.id;

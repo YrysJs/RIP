@@ -5,6 +5,7 @@ import {
   getBurialRequestById,
   getMemorialById,
   getDeceasedById,
+  updateMemorial
 } from "~/services/client";
 
 const route = useRoute();
@@ -144,7 +145,6 @@ const loadBurialData = async () => {
       //   const response = await getBurialRequestById(route.query.id);
       const response = await getBurialRequestByIdSafe(route.query.id);
       burial.value = response.data;
-      console.log('sadas',  burial.value)
     }
   } catch (error) {
     console.error("Ошибка при загрузке данных захоронения:", error);
@@ -450,7 +450,9 @@ const submitMemorial = async () => {
     }
 
     // const response = await createMemorial(formData);
-    const response = await createMemorialSafe(formData);
+    if (isEditMode.value) {
+      await updateMemorial(formData)
+    } else const response = await createMemorialSafe(formData);
 
     // Успешно создано/обновлено
     useState("burial").value = burial.value;

@@ -1,6 +1,6 @@
 <script setup>
 import CemeteryCard from '@/components/manager/cemetery/CemeteryCard.vue'
-import {getCemeteries, getGraves} from "~/services/cemetery"
+import {getManagerCemeteries, getGraves} from "~/services/cemetery"
 import CemeteryMap from "~/components/map/CemeteryMap.vue";
 import {getGraveById, getGraveImages} from "~/services/client/index.js";
 import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
@@ -52,7 +52,7 @@ const fetchGraveDetails = async (id) => {
 
 onMounted((async () => {
   try {
-    const response = await getCemeteries()
+    const response = await getManagerCemeteries()
     cemeteries.value = response.data.data
   } catch (error) {
     console.error('Ошибка при получении заявок:', error)
@@ -64,10 +64,10 @@ onMounted((async () => {
 
 <template>
   <NuxtLayout name="manager">
-   <ManagerProfileCard  
-      class="mb-1 md:mb-1"
-      :profile="managerProfile"
-      @edit="router.push('/manager/profile/edit')"  />
+<!--   <ManagerProfileCard  -->
+<!--      class="mb-1 md:mb-1"-->
+<!--      :profile="managerProfile"-->
+<!--      @edit="router.push('/manager/profile/edit')"  />-->
 
     <p class="opacity-0">{{selectedCemetery.id}}</p>
       <CemeteryCard

@@ -51,7 +51,6 @@ const fetchOrderData = async () => {
       await getCemetryInfoById(response.data.items[0].product.id);
     }
 
-    console.log("Order data:", orderData.value);
   } catch (err) {
     error.value = err.message || "Ошибка при загрузке данных заказа";
     console.error("Error fetching order:", err);
@@ -67,7 +66,6 @@ const getCemetryInfoById = async (id) => {
   try {
     const response = await getCemeteryById(id);
     cemeteryData.value = response.data;
-    console.log("Order data:", orderData.value);
   } catch (err) {
     error.value = err.message || "Ошибка при загрузке данных заказа";
     console.error("Error fetching order:", err);

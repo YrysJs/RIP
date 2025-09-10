@@ -343,6 +343,47 @@ function createMemorial(data) {
     })
 }
 
+function updateMemorial(data) {
+    const { $axios } = useNuxtApp()
+
+    const formData = new FormData()
+
+    if (data.deceased_id) formData.append('deceased_id', data.deceased_id)
+    if (data.epitaph) formData.append('epitaph', data.epitaph)
+    if (data.about_person) formData.append('about_person', data.about_person)
+    if (data.is_public !== undefined) formData.append('is_public', data.is_public)
+
+    if (data.photos) {
+        if (Array.isArray(data.photos)) {
+            data.photos.forEach(photo => formData.append('photos', photo))
+        } else {
+            formData.append('photos', data.photos)
+        }
+    }
+
+    if (data.achievements) {
+        if (Array.isArray(data.achievements)) {
+            data.achievements.forEach(achievement => formData.append('achievements', achievement))
+        } else {
+            formData.append('achievements', data.achievements)
+        }
+    }
+
+    if (data.video_urls) {
+        if (Array.isArray(data.video_urls)) {
+            data.video_urls.forEach(url => formData.append('video_urls', url))
+        } else {
+            formData.append('video_urls', data.video_urls)
+        }
+    }
+
+    return $axios({
+        method: 'PUT',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/memorials',
+        data: formData,
+    })
+}
+
 function getMemorialById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -383,5 +424,6 @@ export {
     getAppeals,
     createAppeal,
     createProductReview,
-    createRequest
+    createRequest,
+    updateMemorial
 }

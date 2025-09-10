@@ -66,7 +66,6 @@ const create = async () => {
   try {
     const res = await CreateCemetery(form)
     showSuccessModal.value = true
-    console.log(res)
   }
   catch (err) {
     console.log(err)

@@ -106,10 +106,8 @@ async function fetchProducts() {
         if (filters.value.max_price) params.max_price = filters.value.max_price;
         if (filters.value.city) params.city = filters.value.city;
         if (filters.value.search) params.search = filters.value.search;
-        
-        console.log('Запрос продуктов с параметрами:', params);
+
         const response = await getAllProducts(params);
-        console.log('Ответ API продуктов:', response.data);
         
         // Обновляем для правильной структуры ответа API
         products.value = response.data?.items || [];

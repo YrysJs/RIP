@@ -46,7 +46,6 @@ watch(inn, async (newValue) => {
       response.data.data.person_data.fullName
     );
     loadingStore.stopLoading();
-    console.log("Ответ от pkbGetData:", response);
   } catch (err) {
     console.error("Ошибка при запросе:", err);
   }

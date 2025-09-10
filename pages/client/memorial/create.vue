@@ -31,8 +31,6 @@ const loadBurialData = async () => {
     if (route.query.id) {
       const response = await getBurialRequestById(route.query.id);
       burial.value = response.data.data;
-      console.log(response)
-      console.log(burial.value )
     }
   } catch (error) {
     console.error("Ошибка при загрузке данных захоронения:", error);
@@ -144,7 +142,6 @@ const removeAchievementPhoto = (index) => {
 const submitMemorial = async () => {
   try {
     isSubmitting.value = true;
-    console.log('submitMemorial', burial.value)
     // Подготавливаем данные для отправки
     const formData = {
       deceased_id: +burial.value.deceased_id,
