@@ -16,17 +16,64 @@ onMounted(async () => {
 </script>
 
 <template>
-    <section class="supplier bg-[#FAFAFA] relative mt-[77px]">
-      <AppHeader type="supplier" />
-        <!-- <SuccessModal title="Заявка завершена!" text="Заявка завершена!" @close="true"/> -->
-        <LayoutTop title="Кабинет Поставщика Услуг" :hide="false" :info="supplierInfo" type="supplier"/>
-        <main class="supplier-content max-w-[1175px] mx-auto w-full flex gap-[20px] min-h-[100vh] my-[20px] rounded-[12px]">
-            <LayoutSidebar />
-            <div class="w-full">
-                <slot/>
-            </div>
-        </main>
-    </section>
+  <section class="supplier">
+    <AppHeader type="supplier" />
+
+    <div class="supplier__wrap">
+      <aside class="supplier__sidebar">
+        <LayoutSidebar title="Кабинет поставщика услуг" />
+      </aside>
+
+      <main class="supplier__content">
+        <slot />
+      </main>
+    </div>
+  </section>
 </template>
 
-<style lang="scss" scoped></style>
+<script setup lang="ts"></script>
+
+<style scoped lang="scss">
+.supplier {
+  background: #faf7ef;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+
+  &__wrap {
+    width: 100%;
+    max-width: 1160px;
+    margin: 24px auto 40px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+
+    @media (max-width: 1100px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__sidebar {
+    background: #ffffff;
+    border: 1px solid #ece7da;
+    border-radius: 16px;
+    padding: 28px 16px;
+    align-self: start;
+    position: sticky;
+    top: 12px;
+
+    @media (max-width: 1100px) {
+      position: static;
+    }
+  }
+
+  &__content {
+    background: #ffffff;
+    border: 1px solid #ece7da;
+    border-radius: 16px;
+    padding: 20px;
+    color: #1c1c1c;
+    min-height: 640px;
+  }
+}
+</style>
