@@ -1,6 +1,6 @@
 <template>
   <NuxtLayout name="user">
-    <div class="w-full rounded-[16px] mt-[20px] p-[20px]">
+    <div class="w-full rounded-[16px]">
       <!-- Заголовок -->
       <h2 class="page-title">Новые заявки</h2>
 
@@ -54,7 +54,7 @@
           </div>
 
           <!-- Сортировка (справа) -->
-          <div class="ml-auto field relative min-w-[260px]">
+          <div class="ml-auto field relative min-w-[270px]">
             <span class="field__icon" aria-hidden>
               <!-- sort -->
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -77,7 +77,7 @@
         <!-- Нижний ряд: статус / период / заявитель (+ кастомные даты) -->
         <div class="filters-row flex flex-wrap gap-[12px] mb-[16px]">
           <!-- Статус -->
-          <div class="field relative min-w-[330px]">
+          <div class="field relative min-w-[270px]">
             <span class="field__icon" aria-hidden>
               <!-- clock -->
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -103,7 +103,7 @@
           </div>
 
           <!-- Период заявки -->
-          <div class="field relative min-w-[330px]">
+          <div class="field relative min-w-[270px]">
             <span class="field__icon" aria-hidden>
               <!-- calendar -->
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -132,7 +132,7 @@
           </div>
 
           <!-- Заявитель -->
-          <div class="field relative min-w-[330px]">
+          <div class="field relative min-w-[250px]">
             <span class="field__icon" aria-hidden>
               <!-- user -->
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -472,9 +472,10 @@ onMounted(async () => {
 <style lang="scss" scoped>
 /* Заголовок как в фигме (высота строки 48px) */
 .page-title {
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 48px;
+  letter-spacing: 0.02em;
+  line-height: 44px;
+  font-family: "FoglihtenNo06", sans-serif;
+  font-size: 32px;
   margin-bottom: 8px;
 }
 

@@ -199,13 +199,13 @@ async function hide(news) {
 
 <style scoped>
 /* контейнер */
-.page { background:#fff; border:1px solid #ECECEC; border-radius:16px; padding:20px; margin-top:20px; }
+.page { background:#fff; }
 
 /* заголовок */
 .page-head{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
 .page-title{
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size:28px; line-height:36px; font-weight:700; text-transform:uppercase; letter-spacing:.02em; color:#111827;
+  font-family: "FoglihtenNo06", sans-serif;
+  font-size:32px; line-height:36px; font-weight:700; text-transform:uppercase; letter-spacing:.02em; color:#111827;
 }
 
 /* добавить новость */

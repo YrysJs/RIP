@@ -351,22 +351,21 @@ function download(doc) {
 /* card container */
 .card {
   background: #ffffff;
-  border: 1px solid #ECECEC;
-  border-radius: 16px;
   padding: 20px;
   margin-top: 12px;
 }
 
 /* header */
 .head {
+  
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
 }
 .case-title {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 28px;
+  font-family: "FoglihtenNo06", sans-serif;
+  font-size: 32px;
   line-height: 36px;
   font-weight: 700;
   text-transform: uppercase;

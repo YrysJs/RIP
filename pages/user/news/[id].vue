@@ -1,6 +1,6 @@
 <template>
   <NuxtLayout name="user">
-    <div class="news-detail w-full bg-white rounded-[16px] mt-[20px] p-[20px]">
+    <div class="news-detail w-full bg-white">
       <button class="btn btn-back mb-[16px]" @click="router.push('/user/news')">
         <img src="/icons/arrow-left-primary.svg" class="w-4 h-4 mr-[10px]" />
         Назад

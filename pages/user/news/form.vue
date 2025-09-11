@@ -6,8 +6,8 @@
       Вернуться
     </button>
 
-    <div class="news-create bg-white rounded-[16px] p-[24px] mt-[20px] w-full">
-      <h1 class="page-title mb-[20px]">СОЗДАНИЕ НОВОСТИ</h1>
+    <div class="news-create ">
+      <h1 class="page-title">СОЗДАНИЕ НОВОСТИ</h1>
 
       <!-- Категория (узкий селект + плейсхолдер) -->
       <div class="form-group form-group--select mb-[12px]">
@@ -238,20 +238,18 @@ const addNews = async () => {
 <style lang="scss" scoped>
 .news-create{
   background:#fff;
-  box-shadow:0 4px 6px rgba(0,0,0,.04);
-  border-radius:16px;
 }
 
 /* Назад */
 .btn-back{
   display:flex; align-items:center;
   color:#B0892E; background:transparent; border:none;
-  padding:8px 0; font-weight:600; font-size:14px; cursor:pointer;
+  font-weight:600; font-size:14px; cursor:pointer;
 }
 
 /* Заголовок */
 .page-title{
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: "FoglihtenNo06", sans-serif;
   text-transform:uppercase; letter-spacing:.02em;
   font-weight:700; font-size:28px; line-height:36px; color:#111827;
 }
