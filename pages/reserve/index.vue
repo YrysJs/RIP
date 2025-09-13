@@ -255,316 +255,322 @@ function selectCemetery(item) {
 </script>
 
 <template>
-  <main
-    class="py-[24px] min-h-[100vh] rounded-lg flex gap-[24px] max-sm:flex-col-reverse max-sm:py-0 max-sm:gap-0"
-  >
+  <main>
     <div
-      class="bg-white p-[20px] max-w-[408px] w-full relative max-sm:max-w-full rounded-lg"
+      class="py-[24px] min-h-[100vh] rounded-lg flex gap-[24px] max-sm:flex-col-reverse max-sm:py-0 max-sm:gap-0"
     >
-      <h3 class="font-foglihten text-fluid">Забронировать место</h3>
-
-      <div class="reserve__city flex justify-between items-center">
-        <div class="flex justify-between items-center">
-          <span class="text-base text-[#050202] mr-[15px]">Город:</span>
-          <template v-if="selectedCity">
-            <img src="/icons/pin.svg" alt="icon" class="w-4 h-5 mr-[9px]" />
-            <span class="text-sm text-[#999999]"> {{ selectedCity }}</span>
-          </template>
-          <template v-else> Не выбрано </template>
-        </div>
-        <button
-          class="bg-[#224C4F26] text-[#224C4F] font-bold py-[8px] px-[12px] rounded-lg"
-          @click="cityListState = true"
-        >
-          Выбрать
-        </button>
-      </div>
-
       <div
-        v-if="cityListState"
-        class="absolute bg-white top-0 left-0 w-full p-[20px] flex flex-col gap-[8px] z-10"
+        class="bg-white p-[20px] max-w-[408px] w-full relative max-sm:max-w-full rounded-lg"
       >
-        <p
-          v-for="item of sities"
-          :key="item"
-          class="text-base text-[#222222] cursor-pointer"
-          @click="pickCity(item)"
-        >
-          {{ item }}
-        </p>
-      </div>
+        <h3 class="font-foglihten text-fluid">Забронировать место</h3>
 
-      <select
-        id=""
-        v-model="selectedReligios"
-        name=""
-        placeholder="Религия"
-        class="w-full border border-[#EEEEEE] rounded-lg py-[8px] px-[12px] input select"
-      >
-        <option value="" disabled>Религия</option>
-        <option v-for="item of religios" :key="item" :value="item">
-          {{ item }}
-        </option>
-      </select>
-
-      <p class="text-[#222222]">{{ cemetriessList.length }} результатов</p>
-
-      <!-- Список кладбищ -->
-      <div class="flex flex-col gap-[12px] mt-[24px]">
-        <template v-if="!cemetriessList.length">
-          <div
-            class="p-[16px] border rounded-lg text-sm text-[#666] bg-[#fafafa]"
-          >
-            Ничего не найдено. Измените фильтры или выберите город.
+        <div class="reserve__city flex justify-between items-center">
+          <div class="flex justify-between items-center">
+            <span class="text-base text-[#050202] mr-[15px]">Город:</span>
+            <template v-if="selectedCity">
+              <img src="/icons/pin.svg" alt="icon" class="w-4 h-5 mr-[9px]" />
+              <span class="text-sm text-[#999999]"> {{ selectedCity }}</span>
+            </template>
+            <template v-else> Не выбрано </template>
           </div>
-        </template>
+          <button
+            class="bg-[#224C4F26] text-[#224C4F] font-bold py-[8px] px-[12px] rounded-lg"
+            @click="cityListState = true"
+          >
+            Выбрать
+          </button>
+        </div>
 
         <div
-          v-else
-          v-for="item in cemetriessList"
-          :key="item.id"
-          class="cemetry__item flex justify-between items-center p-[20px] gap-3 rounded-xl cursor-pointer"
-          :class="
-            selectedCemetery?.id === item.id ? 'bg-[#F4E4BE]' : 'bg-[#F4F0E7]'
-          "
-          @click="selectCemetery(item)"
+          v-if="cityListState"
+          class="absolute bg-white top-0 left-0 w-full p-[20px] flex flex-col gap-[8px] z-10"
         >
-          <img src="/icons/islam.svg" alt="Islam icon" class="w-6 h-6" />
-          <div class="w-full">
+          <p
+            v-for="item of sities"
+            :key="item"
+            class="text-base text-[#222222] cursor-pointer"
+            @click="pickCity(item)"
+          >
+            {{ item }}
+          </p>
+        </div>
+
+        <select
+          id=""
+          v-model="selectedReligios"
+          name=""
+          placeholder="Религия"
+          class="w-full border border-[#EEEEEE] rounded-lg py-[8px] px-[12px] input select"
+        >
+          <option value="" disabled>Религия</option>
+          <option v-for="item of religios" :key="item" :value="item">
+            {{ item }}
+          </option>
+        </select>
+
+        <p class="text-[#222222]">{{ cemetriessList.length }} результатов</p>
+
+        <!-- Список кладбищ -->
+        <div class="flex flex-col gap-[12px] mt-[24px]">
+          <template v-if="!cemetriessList.length">
             <div
-              class="flex justify-between text-base font-medium text-[#050202]"
+              class="p-[16px] border rounded-lg text-sm text-[#666] bg-[#fafafa]"
             >
-              <h3>
-                {{ item.name }}
-              </h3>
-              <div>{{ item.distance }}км</div>
+              Ничего не найдено. Измените фильтры или выберите город.
             </div>
-            <h4 class="text-sm font-normal text-[#939393]">
-              {{ item.type }}
-            </h4>
-            <p class="text-[13px] font-normal text-[#5C6771]">
-              {{ item.street_name }}, {{ item.city }}
-            </p>
-          </div>
-          <div class="flex flex-col gap-[14px] justify-end items-end">
-            <div class="w-[24px] h-[24px] relative">
-              <span class="arrow"></span>
+          </template>
+
+          <div
+            v-else
+            v-for="item in cemetriessList"
+            :key="item.id"
+            class="cemetry__item flex justify-between items-center p-[20px] gap-3 rounded-xl cursor-pointer"
+            :class="
+              selectedCemetery?.id === item.id ? 'bg-[#F4E4BE]' : 'bg-[#F4F0E7]'
+            "
+            @click="selectCemetery(item)"
+          >
+            <img src="/icons/islam.svg" alt="Islam icon" class="w-6 h-6" />
+            <div class="w-full">
+              <div
+                class="flex justify-between text-base font-medium text-[#050202]"
+              >
+                <h3>
+                  {{ item.name }}
+                </h3>
+                <div>{{ item.distance }}км</div>
+              </div>
+              <h4 class="text-sm font-normal text-[#939393]">
+                {{ item.type }}
+              </h4>
+              <p class="text-[13px] font-normal text-[#5C6771]">
+                {{ item.street_name }}, {{ item.city }}
+              </p>
+            </div>
+            <div class="flex flex-col gap-[14px] justify-end items-end">
+              <div class="w-[24px] h-[24px] relative">
+                <span class="arrow"></span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="w-full">
-      <div class="w-full h-[50vh] rounded-xl overflow-hidden">
-        <ClientOnly>
-          <MapSecond
-            :polygons="gravesList"
-            :cemetery-boundary="selectedCemetery"
-            :center-coords="selectedCemetery.location_coords"
-            v-model="selected"
-          />
-          <template #fallback>
-            <div
-              class="w-full h-full flex items-center justify-center text-[#666]"
-            >
-              Загрузка карты…
-            </div>
-          </template>
-        </ClientOnly>
-      </div>
-
-      <div id="mobile-info-anchor" class="hidden max-sm:block"></div>
-
-      <Teleport
-        to="#mobile-info-anchor"
-        v-if="
-          isMobile &&
-          selectedCemetery?.id &&
-          !showGraveDetails &&
-          showInfoMobile
-        "
-      >
-        <transition name="fade-slide">
-          <div
-            :key="selectedCemetery?.id"
-            class="bg-[#FFF] py-6 px-[18px] rounded-lg"
-            v-if="selectedCemetery?.id && !showGraveDetails"
-          >
-            <div
-              class="relative flex justify-between items-start max-sm:flex-col"
-            >
-              <button
-                class="absolute top-0 right-0"
-                @click="
-                  showInfoMobile = false;
-                  selectedCemetery = {};
-                "
+      <div class="w-full">
+        <div class="w-full h-[50vh] rounded-xl overflow-hidden">
+          <ClientOnly>
+            <MapSecond
+              :polygons="gravesList"
+              :cemetery-boundary="selectedCemetery"
+              :center-coords="selectedCemetery.location_coords"
+              v-model="selected"
+            />
+            <template #fallback>
+              <div
+                class="w-full h-full flex items-center justify-center text-[#666]"
               >
-                <img src="/icons/x.svg" alt="Exit button" />
-              </button>
+                Загрузка карты…
+              </div>
+            </template>
+          </ClientOnly>
+        </div>
 
-              <div>
-                <div class="flex gap-fluid items-center max-lg:leading-6">
-                  <img
-                    src="/icons/islam.svg"
-                    alt="Islam icon"
-                    class="w-6 h-6"
-                  />
-                  <h3 class="text-fluid text-[#201001] font-foglihten">
-                    {{ selectedCemetery?.name }}
-                  </h3>
+        <div id="mobile-info-anchor" class="hidden max-sm:block"></div>
+
+        <Teleport
+          to="#mobile-info-anchor"
+          v-if="
+            isMobile &&
+            selectedCemetery?.id &&
+            !showGraveDetails &&
+            showInfoMobile
+          "
+        >
+          <transition name="fade-slide">
+            <div
+              :key="selectedCemetery?.id"
+              class="bg-[#FFF] py-6 px-[18px] rounded-lg"
+              v-if="selectedCemetery?.id && !showGraveDetails"
+            >
+              <div
+                class="relative flex justify-between items-start max-sm:flex-col"
+              >
+                <button
+                  class="absolute top-0 right-0"
+                  @click="
+                    showInfoMobile = false;
+                    selectedCemetery = {};
+                  "
+                >
+                  <img src="/icons/x.svg" alt="Exit button" />
+                </button>
+
+                <div>
+                  <div class="flex gap-fluid items-center max-lg:leading-6">
+                    <img
+                      src="/icons/islam.svg"
+                      alt="Islam icon"
+                      class="w-6 h-6"
+                    />
+                    <h3 class="text-fluid text-[#201001] font-foglihten">
+                      {{ selectedCemetery?.name }}
+                    </h3>
+                  </div>
+                  <p class="text-[#939393] text-sm mt-[4px] mb-[8px]">
+                    {{ selectedCemetery?.type }}
+                  </p>
                 </div>
-                <p class="text-[#939393] text-sm mt-[4px] mb-[8px]">
-                  {{ selectedCemetery?.type }}
+                <div
+                  class="flex gap-4 items-center max-lg:flex-col my-[14.5px] max-lg:items-start max-lg:gap-[6px] max-lg:my-0"
+                >
+                  <div class="flex gap-[8px] items-center">
+                    <div
+                      class="w-[36px] h-[16px] rounded-sm bg-[#43DC4966] border-2 border-[#43DC49]"
+                    ></div>
+                    <p class="text-sm sm:text-[13px]">
+                      Сводобные места: {{ selectedCemetery?.free_spaces }}
+                    </p>
+                  </div>
+                  <div class="flex gap-[8px] items-center">
+                    <div
+                      class="w-[36px] h-[16px] rounded-sm bg-[#DCBA4366] border-2 border-[#DCBA43]"
+                    ></div>
+                    <p class="text-sm sm:text-[13px]">
+                      Зарезервировано: {{ selectedCemetery?.reserved }}
+                    </p>
+                  </div>
+                  <div class="flex gap-[8px] items-center">
+                    <div
+                      class="w-[36px] h-[16px] rounded-sm bg-[#93939366] border-2 border-[#939393]"
+                    ></div>
+                    <p class="text-sm sm:text-[13px]">
+                      Занято: {{ selectedCemetery?.taken }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="flex items-center gap-[26px] pb-4 border-b border-b-[#eee] leading-10 max-lg:flex-col max-lg:gap-0 max-lg:items-start"
+              >
+                <div class="flex items-center max-lg:h-8 max-lg:mt-2">
+                  <img src="/icons/pin.svg" alt="" class="mr-2" />
+                  <span class="text-sm text-[#201001]">{{
+                    selectedCemetery?.street_name
+                  }}</span>
+                  <span class="text-[#999] text-sm ml-1"
+                    >({{ selectedCemetery?.distance }} км от вас)</span
+                  >
+                </div>
+                <div class="flex gap-[8px] items-center">
+                  <img src="/icons/phone.svg" alt="" />
+                  <a
+                    :href="`tel:${selectedCemetery?.phone2}`"
+                    class="text-[13px]"
+                    >{{ selectedCemetery?.phone }}</a
+                  >
+                </div>
+              </div>
+
+              <!-- <div class="flex gap-[24px] mt-[16px] mb-[32px]">
+          <span class="text-base font-medium"
+            >Вместимость: {{ selectedCemetery?.capacity }}</span
+          >
+          <span class="text-base font-medium"
+            >Cвободных мест: {{ selectedCemetery?.free_spaces }}</span
+          >
+          <span class="text-base font-medium">Стоимость брони: 10 000₸</span>
+        </div> -->
+              <p class="text-base text-[#222] py-4">
+                {{ selectedCemetery?.description }}
+              </p>
+
+              <button class="reserve__btn w-full" @click="reserve">
+                <img
+                  src="/icons/pencil.svg"
+                  alt="Reserve icon"
+                  class="w-5 h-5"
+                />
+                Забронировать место
+              </button>
+            </div>
+          </transition>
+        </Teleport>
+
+        <!-- Инфо по кладбищу -->
+        <div
+          class="bg-[#FFF] py-6 px-[18px] mt-2 rounded-lg"
+          v-if="
+            selectedCemetery?.id &&
+            !showGraveDetails &&
+            !(isMobile && showInfoMobile)
+          "
+        >
+          <div class="flex justify-between items-start flex-wrap">
+            <div>
+              <div
+                class="align-c flex gap-fluid items-baseline max-lg:leading-6"
+              >
+                <img src="/icons/islam.svg" alt="Islam icon" class="w-6 h-6" />
+                <h3 class="text-fluid text-[#201001] font-foglihten">
+                  {{ selectedCemetery?.name }}
+                </h3>
+              </div>
+              <p class="text-[#939393] text-sm mt-[4px] mb-[8px]">
+                {{ selectedCemetery?.type }}
+              </p>
+            </div>
+            <div
+              class="flex gap-4 items-center max-lg:flex-col my-[14.5px] max-lg:items-start max-lg:gap-[6px] max-lg:my-0"
+            >
+              <div class="flex gap-[8px] items-center">
+                <div
+                  class="w-[36px] h-[16px] rounded-sm bg-[#43DC4966] border-2 border-[#43DC49]"
+                ></div>
+                <p class="text-sm sm:text-[13px]">
+                  Сводобные места: {{ selectedCemetery?.free_spaces }}
                 </p>
               </div>
-              <div
-                class="flex gap-4 items-center max-lg:flex-col my-[14.5px] max-lg:items-start max-lg:gap-[6px] max-lg:my-0"
-              >
-                <div class="flex gap-[8px] items-center">
-                  <div
-                    class="w-[36px] h-[16px] rounded-sm bg-[#43DC4966] border-2 border-[#43DC49]"
-                  ></div>
-                  <p class="text-sm sm:text-[13px]">
-                    Сводобные места: {{ selectedCemetery?.free_spaces }}
-                  </p>
-                </div>
-                <div class="flex gap-[8px] items-center">
-                  <div
-                    class="w-[36px] h-[16px] rounded-sm bg-[#DCBA4366] border-2 border-[#DCBA43]"
-                  ></div>
-                  <p class="text-sm sm:text-[13px]">
-                    Зарезервировано: {{ selectedCemetery?.reserved }}
-                  </p>
-                </div>
-                <div class="flex gap-[8px] items-center">
-                  <div
-                    class="w-[36px] h-[16px] rounded-sm bg-[#93939366] border-2 border-[#939393]"
-                  ></div>
-                  <p class="text-sm sm:text-[13px]">
-                    Занято: {{ selectedCemetery?.taken }}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div
-              class="flex items-center gap-[26px] pb-4 border-b border-b-[#eee] leading-10 max-lg:flex-col max-lg:gap-0 max-lg:items-start"
-            >
-              <div class="flex items-center max-lg:h-8 max-lg:mt-2">
-                <img src="/icons/pin.svg" alt="" class="mr-2" />
-                <span class="text-sm text-[#201001]">{{
-                  selectedCemetery?.street_name
-                }}</span>
-                <span class="text-[#999] text-sm ml-1"
-                  >({{ selectedCemetery?.distance }} км от вас)</span
-                >
+              <div class="flex gap-[8px] items-center">
+                <div
+                  class="w-[36px] h-[16px] rounded-sm bg-[#DCBA4366] border-2 border-[#DCBA43]"
+                ></div>
+                <p class="text-sm sm:text-[13px]">
+                  Зарезервировано: {{ selectedCemetery?.reserved }}
+                </p>
               </div>
               <div class="flex gap-[8px] items-center">
-                <img src="/icons/phone.svg" alt="" />
-                <a
-                  :href="`tel:${selectedCemetery?.phone2}`"
-                  class="text-[13px]"
-                  >{{ selectedCemetery?.phone }}</a
-                >
+                <div
+                  class="w-[36px] h-[16px] rounded-sm bg-[#93939366] border-2 border-[#939393]"
+                ></div>
+                <p class="text-sm sm:text-[13px]">
+                  Занято: {{ selectedCemetery?.taken }}
+                </p>
               </div>
             </div>
-
-            <!-- <div class="flex gap-[24px] mt-[16px] mb-[32px]">
-          <span class="text-base font-medium"
-            >Вместимость: {{ selectedCemetery?.capacity }}</span
-          >
-          <span class="text-base font-medium"
-            >Cвободных мест: {{ selectedCemetery?.free_spaces }}</span
-          >
-          <span class="text-base font-medium">Стоимость брони: 10 000₸</span>
-        </div> -->
-            <p class="text-base text-[#222] py-4">
-              {{ selectedCemetery?.description }}
-            </p>
-
-            <button
-              class="reserve__btn w-full"
-              @click="router.push(`/${button.action}`)"
-            >
-              <img src="/icons/pencil.svg" alt="Reserve icon" class="w-5 h-5" />
-              Забронировать место
-            </button>
-          </div>
-        </transition>
-      </Teleport>
-
-      <!-- Инфо по кладбищу -->
-      <div
-        class="bg-[#FFF] py-6 px-[18px] mt-2 rounded-lg"
-        v-if="
-          selectedCemetery?.id &&
-          !showGraveDetails &&
-          !(isMobile && showInfoMobile)
-        "
-      >
-        <div class="flex justify-between items-start flex-wrap">
-          <div>
-            <div class="align-c flex gap-fluid items-baseline max-lg:leading-6">
-              <img src="/icons/islam.svg" alt="Islam icon" class="w-6 h-6" />
-              <h3 class="text-fluid text-[#201001] font-foglihten">
-                {{ selectedCemetery?.name }}
-              </h3>
-            </div>
-            <p class="text-[#939393] text-sm mt-[4px] mb-[8px]">
-              {{ selectedCemetery?.type }}
-            </p>
           </div>
           <div
-            class="flex gap-4 items-center max-lg:flex-col my-[14.5px] max-lg:items-start max-lg:gap-[6px] max-lg:my-0"
+            class="flex items-center gap-[26px] pb-4 border-b border-b-[#eee] leading-10 max-lg:flex-col max-lg:gap-0 max-lg:items-start"
           >
-            <div class="flex gap-[8px] items-center">
-              <div
-                class="w-[36px] h-[16px] rounded-sm bg-[#43DC4966] border-2 border-[#43DC49]"
-              ></div>
-              <p class="text-sm sm:text-[13px]">
-                Сводобные места: {{ selectedCemetery?.free_spaces }}
-              </p>
+            <div class="flex items-center max-lg:h-8 max-lg:mt-2">
+              <img src="/icons/pin.svg" alt="" class="mr-2" />
+              <span class="text-sm text-[#201001]">{{
+                selectedCemetery?.street_name
+              }}</span>
+              <span class="text-[#999] text-sm ml-1"
+                >({{ selectedCemetery?.distance }} км от вас)</span
+              >
             </div>
             <div class="flex gap-[8px] items-center">
-              <div
-                class="w-[36px] h-[16px] rounded-sm bg-[#DCBA4366] border-2 border-[#DCBA43]"
-              ></div>
-              <p class="text-sm sm:text-[13px]">
-                Зарезервировано: {{ selectedCemetery?.reserved }}
-              </p>
-            </div>
-            <div class="flex gap-[8px] items-center">
-              <div
-                class="w-[36px] h-[16px] rounded-sm bg-[#93939366] border-2 border-[#939393]"
-              ></div>
-              <p class="text-sm sm:text-[13px]">
-                Занято: {{ selectedCemetery?.taken }}
-              </p>
+              <img src="/icons/phone.svg" alt="" />
+              <a
+                :href="`tel:${selectedCemetery?.phone2}`"
+                class="text-[13px]"
+                >{{ selectedCemetery?.phone }}</a
+              >
             </div>
           </div>
-        </div>
-        <div
-          class="flex items-center gap-[26px] pb-4 border-b border-b-[#eee] leading-10 max-lg:flex-col max-lg:gap-0 max-lg:items-start"
-        >
-          <div class="flex items-center max-lg:h-8 max-lg:mt-2">
-            <img src="/icons/pin.svg" alt="" class="mr-2" />
-            <span class="text-sm text-[#201001]">{{
-              selectedCemetery?.street_name
-            }}</span>
-            <span class="text-[#999] text-sm ml-1"
-              >({{ selectedCemetery?.distance }} км от вас)</span
-            >
-          </div>
-          <div class="flex gap-[8px] items-center">
-            <img src="/icons/phone.svg" alt="" />
-            <a :href="`tel:${selectedCemetery?.phone2}`" class="text-[13px]">{{
-              selectedCemetery?.phone
-            }}</a>
-          </div>
-        </div>
 
-        <!-- <div class="flex gap-[24px] mt-[16px] mb-[32px]">
+          <!-- <div class="flex gap-[24px] mt-[16px] mb-[32px]">
           <span class="text-base font-medium"
             >Вместимость: {{ selectedCemetery?.capacity }}</span
           >
@@ -573,18 +579,18 @@ function selectCemetery(item) {
           >
           <span class="text-base font-medium">Стоимость брони: 10 000₸</span>
         </div> -->
-        <p class="text-base text-[#222] py-4">
-          {{ selectedCemetery?.description }}
-        </p>
+          <p class="text-base text-[#222] py-4">
+            {{ selectedCemetery?.description }}
+          </p>
 
-        <button class="reserve__btn" @click="router.push(`/${button.action}`)">
-          <img src="/icons/pencil.svg" alt="Reserve icon" class="w-5 h-5" />
-          Забронировать место
-        </button>
-      </div>
+          <button class="reserve__btn" @click="reserve">
+            <img src="/icons/pencil.svg" alt="Reserve icon" class="w-5 h-5" />
+            Забронировать место
+          </button>
+        </div>
 
-      <!-- Блок информации о выбранной могиле -->
-      <div
+        <!-- Блок информации о выбранной могиле -->
+        <!-- <div
         class="bg-[#FFF] p-[24px] mt-[24px] rounded-lg"
         v-if="showGraveDetails && selectedGrave"
       >
@@ -618,9 +624,9 @@ function selectCemetery(item) {
         </div>
         <p class="text-[#939393] text-sm mt-[4px] mb-[8px]">
           {{ getGraveStatusText(selectedGrave.status) }}
-        </p>
+        </p> -->
         <!-- Блок фотографий участка -->
-        <div
+        <!-- <div
           v-if="
             selectedGrave &&
             selectedGrave.photos_urls &&
@@ -690,6 +696,7 @@ function selectCemetery(item) {
         <p class="text-base text-[#222222]">
           {{ selectedGrave.description || "Информация об участке отсутствует" }}
         </p>
+      </div> -->
       </div>
     </div>
   </main>

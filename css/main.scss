@@ -12,6 +12,12 @@ main {
   background-color: #faf7ee;
 }
 
+@media (max-width: 540px) {
+  main {
+    background-color: #fff;
+  }
+}
+
 ul li {
   list-style: none;
 }
