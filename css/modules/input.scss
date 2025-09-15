@@ -10,24 +10,22 @@
   line-height: 16px;
 
   border-radius: 8px;
-  font-family: 'Roboto';
+  font-family: inherit;
   box-sizing: border-box;
   border: 1px solid #222222;
   touch-action: manipulation;
   cursor: text;
   resize: none;
 
-
   &.textarea {
     height: 100px;
   }
-
 }
 
 .checkbox {
   width: 18px;
   height: 18px;
-  border: 2px solid #38949B;
+  border: 2px solid #38949b;
   border-radius: 4px;
   appearance: none;
   cursor: pointer;
@@ -37,11 +35,11 @@
 }
 
 .checkbox:checked {
-  background-color: #38949B;
+  background-color: #38949b;
 }
 
 .checkbox:checked::after {
-  content: '✔';
+  content: "✔";
   color: white;
   font-size: 12px;
   position: absolute;
@@ -55,13 +53,10 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   border: 1px solid #d1d5db;
-  background: #D3D3D30D;
+  background: #d3d3d30d;
   padding: 8px 12px;
-  background-image: url('~/public/icons/select-arrow.svg');
-  background-position:
-          calc(100% - 5px) 50%,
-          calc(100% - 20px) 1em,
-          100% 0;
+  background-image: url("~/public/icons/select-arrow.svg");
+  background-position: calc(100% - 5px) 50%, calc(100% - 20px) 1em, 100% 0;
   background-repeat: no-repeat;
   padding-right: 40px;
   height: 44px;
@@ -83,7 +78,7 @@
   -webkit-appearance: none;
   -moz-appearance: none;
 
-  background-image: url('~/public/icons/arrow-down.svg');
+  background-image: url("~/public/icons/arrow-down.svg");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 20px 20px;
