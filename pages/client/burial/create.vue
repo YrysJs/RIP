@@ -93,7 +93,7 @@ async function userCreateAppeal() {
     let proofRes
     let docRes
     sertFormData.append('Authorization', Cookies.get('token'))
-    if (death_certificate.value) {
+    if (death_certificate.value.length) {
       if (Array.isArray(death_certificate.value)) {
         death_certificate.value.forEach(achievement => sertFormData.append('files', achievement.file))
       } else {
@@ -103,7 +103,7 @@ async function userCreateAppeal() {
     }
 
     proofFormData.append('Authorization', Cookies.get('token'))
-    if (proof_of_relation.value) {
+    if (proof_of_relation.value.length) {
       if (Array.isArray(proof_of_relation.value)) {
         proof_of_relation.value.forEach(achievement => proofFormData.append('files', achievement.file))
       } else {
@@ -113,7 +113,7 @@ async function userCreateAppeal() {
     }
 
     docFormData.append('Authorization', Cookies.get('token'))
-    if (grave_doc.value) {
+    if (grave_doc.value.length) {
       if (Array.isArray(grave_doc.value)) {
         grave_doc.value.forEach(achievement => docFormData.append('files', achievement.file))
       } else {
@@ -130,12 +130,13 @@ async function userCreateAppeal() {
       reason: reason.value,
       foreign_cemetry: foreign_cemetry.value,
       akimatId: 6,
-      death_certificate: sertRes.data.files[0].fileUrl,
-      proof_of_relation: proofRes.data.files[0].fileUrl,
-      grave_doc: docRes.data.files[0].fileUrl
+      death_certificate: death_certificate.value.length ? sertRes.data.files[0].fileUrl : '',
+      proof_of_relation: proof_of_relation.value.length ? proofRes.data.files[0].fileUrl : '',
+      grave_doc: grave_doc.value.length ? docRes.data.files[0].fileUrl: ''
     })
+    router.push('/client/goverment/requests')
     console.log(response)
-    // router.push('/client/goverment/requests')
+
   } catch (error) {
     console.log(error)
   }
