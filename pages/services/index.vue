@@ -2,7 +2,7 @@
 import { ref, watch, onMounted } from 'vue';
 import LayoutTop from '~/components/layout/LayoutTop.vue';
 import { getAllProducts, getCategories } from '~/services/supplier';
-import {addToCart, getProductById, getProductReviews} from '~/services/client'
+import {addToCart, getCart, getProductById, getProductReviews} from '~/services/client'
 import { getSupplier } from '~/services/login';
 import ServiceDetailModal from "~/components/layout/modals/ServiceDetailModal.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
@@ -137,6 +137,16 @@ async function fetchCategories() {
     }
 }
 
+const loadCart = async () => {
+  try {
+    const response = await getCart()
+    cartItems.value = response.data || []
+    console.log('Cart loaded:', cartItems.value)
+  } catch (err) {
+    console.error('Ошибка при загрузке корзины:', err)
+  }
+}
+
 const addProductToCart = async (productId) => {
   if(token.value) {
     addingToCart.value = true
@@ -153,6 +163,7 @@ const addProductToCart = async (productId) => {
       await addToCart(cartData)
       cartMessage.value = 'Товар добавлен в корзину'
       await loadCart() // Перезагружаем корзину
+      await router.push('/client/tickets/burial/add-service')
       setTimeout(() => {
         cartMessage.value = ''
       }, 3000)

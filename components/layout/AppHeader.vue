@@ -22,9 +22,6 @@
       <!-- Правый блок -->
       <div class="right-actions">
         <template v-if="token">
-          <button v-if="type === 'client'" class="icon-btn">
-            <img src="/icons/cart.svg" alt="Корзина" />
-          </button>
           <div class="icon-btn relative flex items-center gap-2">
             <!-- Кнопка меню -->
             <button @click="toggleDropdown">
