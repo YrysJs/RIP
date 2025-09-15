@@ -27,6 +27,7 @@ import AppHeader from "~/components/layout/AppHeader.vue";
 .user {
   background: #faf7ef;
   min-height: 100dvh;
+  margin-top: 76px;
   display: flex;
   flex-direction: column;
 

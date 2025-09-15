@@ -34,29 +34,29 @@ const slides = ref([
         action: "search",
         icon: "search",
       },
-      { text: "Забронировать место", action: "book", icon: "pencil" },
+      { text: "Забронировать место", action: "reserve", icon: "pencil" },
     ],
   },
-  //   {
-  //     id: 1,
-  //     title: "Всеказахстанская база захоронений",
-  //     subtitle: "Найдите захоронения ваших близких удаленно",
-  //     background: "/images/client/banner.jpg",
-  //     buttons: [
-  //       { text: "Поиск захоронения", action: "search" },
-  //       { text: "Добавить захоронение", action: "add" },
-  //     ],
-  //   },
-  //   {
-  //     id: 1,
-  //     title: "Всеказахстанская база захоронений",
-  //     subtitle: "Найдите захоронения ваших близких удаленно",
-  //     background: "/images/client/banner.jpg",
-  //     buttons: [
-  //       { text: "Поиск захоронения", action: "search" },
-  //       { text: "Добавить захоронение", action: "add" },
-  //     ],
-  //   },
+  {
+    id: 1,
+    title: "Всеказахстанская база захоронений",
+    subtitle: "Найдите захоронения ваших близких удаленно",
+    background: "/images/client/banner.jpg",
+    buttons: [
+      { text: "Поиск захоронения", action: "search" },
+      { text: "Добавить захоронение", action: "add" },
+    ],
+  },
+  {
+    id: 1,
+    title: "Всеказахстанская база захоронений",
+    subtitle: "Найдите захоронения ваших близких удаленно",
+    background: "/images/client/banner.jpg",
+    buttons: [
+      { text: "Поиск захоронения", action: "search" },
+      { text: "Добавить захоронение", action: "add" },
+    ],
+  },
 ]);
 
 const services = [
@@ -391,7 +391,7 @@ onMounted(() => {
       background-color: #fff;
     }
 
-    &--book {
+    &--reserve {
       background-color: #e9b949;
     }
   }
@@ -624,7 +624,7 @@ onMounted(() => {
 .questions {
   position: relative;
   background: url("/images/question.jpg") no-repeat center;
-  background-size: contain;
+  background-size: cover;
   width: 100vw;
   height: 410px;
 
@@ -662,6 +662,11 @@ onMounted(() => {
 }
 
 @media (max-width: 540px) {
+  html,
+  body {
+    font-size: 12px;
+  }
+
   .main-slide {
     height: calc(100vh - 64px);
   }
