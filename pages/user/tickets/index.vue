@@ -261,6 +261,26 @@
           </div>
         </div>
       </template>
+
+      <template v-if="activeTab === 'akimat'">
+        <div class="w-full rounded-[12px] border border-[#EEEEEE] mt-[20px] p-[20px]" v-for="appeal of appeals" :key="appeal.id">
+          <div class="flex justify-between gap-[10px] items-end">
+            <div class="flex flex-col gap-[10px] text-lg font-semibold">
+              <h3>Тип обращения: <span class="ml-6 px-3 py-1 rounded-lg text-white" :class="appeal.type.value === 'COMPLAINT' ? 'bg-[#38949B]' : appeal.type.value === 'OFFER' ? 'bg-[#FFA500]' : 'bg-[#008000]'">{{ appeal.type.nameRu }}</span></h3>
+              <h3 class="my-2">Дата создания: <span>{{ new Date(appeal.createTime).toLocaleString('ru-RU') }}</span></h3>
+              <div class="flex flex-col gap-[0px]">
+                <h3>Обращение:</h3>
+                <p class="text-gray-500">
+                  {{ appeal.content }}
+                </p>
+              </div>
+            </div>
+            <!--            <div class="flex flex-col items-end">-->
+            <!--              <button class="details-btn" @click="openAppealChat">Чат</button>-->
+            <!--            </div>-->
+          </div>
+        </div>
+      </template>
     </div>
 
     <!-- модалки -->
