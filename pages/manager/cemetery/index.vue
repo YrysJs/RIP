@@ -4,7 +4,7 @@ import {getCemeteries, getGraves} from "~/services/cemetery"
 import CemeteryMap from "~/components/map/CemeteryMap.vue";
 import {getGraveById, getGraveImages} from "~/services/client/index.js";
 import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
-
+import ManagerProfileCard from '@/components/manager/ManagerProfileCard.vue'
 
 const cemeteries = ref([])
 const selectedCemetery = ref({})
@@ -16,9 +16,14 @@ const graveDetailModalVisible = ref(false)
 const grave = ref({})
 const graveImages = ref([])
 
-definePageMeta({
-  middleware: ['auth', 'manager'],
-});
+const managerProfile = ref({
+  fullName: 'Алтынбекова Сымбат Ержанкызы',
+  iin: '981231300267',
+  phone: '77777777777' // можно и сразу с +7
+})
+// definePageMeta({
+//   middleware: ['auth', 'manager'],
+// });
 
 const selectCemetery = async (cemetery) => {
   try {
@@ -59,6 +64,11 @@ onMounted((async () => {
 
 <template>
   <NuxtLayout name="manager">
+   <ManagerProfileCard  
+      class="mb-1 md:mb-1"
+      :profile="managerProfile"
+      @edit="router.push('/manager/profile/edit')"  />
+
     <p class="opacity-0">{{selectedCemetery.id}}</p>
       <CemeteryCard
           v-for="(cemetery, index) in cemeteries"

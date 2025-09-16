@@ -150,7 +150,7 @@ onMounted(async () => {
           <button tybe="button" class="bg-[#EEEEEE] rounded-md px-[21px] py-[10px] flex items-center gap-[10px] font-semibold text-sm text-[#224C4F]" @click="$router.go(-1)">
             <img src="/icons/back-blue.svg" alt="" class=""> Назад
           </button>
-          <h3 class="text-4xl font-medium">Захоронение: <span class="text-[#38949B]">0000023</span></h3>
+<!--          <h3 class="text-4xl font-medium">Захоронение: <span class="text-[#38949B]">0000023</span></h3>-->
         </div>
         
         <!-- Уведомление о добавлении в корзину -->

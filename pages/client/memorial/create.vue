@@ -140,6 +140,8 @@ const removeAchievementPhoto = (index) => {
   achievementPhotos.value.splice(index, 1)
 }
 
+
+
 // Функция создания мемориала
 const submitMemorial = async () => {
   try {
@@ -166,8 +168,7 @@ const submitMemorial = async () => {
     // await navigateTo('/client/memorials')
     
   } catch (error) {
-    console.error('Error creating memorial:', error)
-    alert('Ошибка при создании мемориала: ' + (error.response?.data?.message || error.message))
+    alert('Ошибка при создании мемориала: ' + (error.response?.data?.error || error.message))
   } finally {
     isSubmitting.value = false
   }
