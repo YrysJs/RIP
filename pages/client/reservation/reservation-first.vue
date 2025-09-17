@@ -134,7 +134,7 @@ const handleBooking = async () => {
             class="h-[46px] flex items-center gap-[11px] border-b border-b-[#2010011F]"
           >
             <h4 class="text-base text-[#050202]">ФИО покойного:</h4>
-            <span class="text-sm text-[#999]">{{ fullName || "" }}Someone</span>
+            <span class="text-sm text-[#999]">{{ fullName || "" }}</span>
           </div>
           <div class="h-[38px] flex items-end gap-[11px]">
             <h4 class="text-base text-[#050202]">Дата похорон:</h4>
@@ -218,7 +218,7 @@ const handleBooking = async () => {
           </div>
           <div
             v-if="switcher"
-            class="switcher-data grid grid-cols-2 gap-[12px] gap-y-[24px] mt-4"
+            class="switcher-data grid grid-cols-2 gap-[12px] gap-y-[24px] mt-4 max-lg:grid-cols-1"
           >
             <div>
               <p class="text-sm text-[#222222] font-normal">Дата смерти</p>

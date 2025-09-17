@@ -8,6 +8,8 @@ import { onMounted } from "vue";
 const burialRequests = ref([]);
 const loading = ref(true);
 
+const localePath = useLocalePath();
+
 // onMounted(async () => {
 //   try {
 //     const response = await getBurialRequests({
@@ -186,12 +188,17 @@ onMounted(async () => {
             <p class="p-[4px] rounded-md black-16 mr-4">Отсутствуют</p>
           </div>
         </div>
-        <button
+        <NuxtLink
           class="py-[15px] px-5 rounded-lg bg-[#E9B949] text-black text-sm font-medium mt-[16px] max-sm:w-full"
-          @click="$router.push(`/client/tickets/active/${request.id}`)"
+          :to="
+            localePath({
+              name: 'client-tickets-active-id',
+              params: { id: request.id },
+            })
+          "
         >
           Завершить оформление
-        </button>
+        </NuxtLink>
       </div>
     </template>
     <div
