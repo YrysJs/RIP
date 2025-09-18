@@ -218,7 +218,7 @@ const handleBooking = async () => {
           </div>
           <div
             v-if="switcher"
-            class="switcher-data grid grid-cols-2 gap-[12px] gap-y-[24px] mt-4 max-lg:grid-cols-1"
+            class="switcher-data grid grid-cols-2 gap-4 mt-4 max-lg:grid-cols-1"
           >
             <div>
               <p class="text-sm text-[#222222] font-normal">Дата смерти</p>
