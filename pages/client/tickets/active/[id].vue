@@ -408,7 +408,7 @@ const burialDateClass = computed(() => {
             </div>
             <div
               v-if="switcher"
-              class="grid grid-cols-2 max-sm:gap-4 gap-y-[24px] mt-[24px] max-lg:grid-cols-1"
+              class="grid grid-cols-2 max-sm:gap-4 gap-4 mt-[24px] max-lg:grid-cols-1"
             >
               <div>
                 <p class="text-sm text-[#222222] font-normal">Дата смерти</p>
@@ -471,6 +471,7 @@ const burialDateClass = computed(() => {
           :visible="paymentModalVisible"
           :burial-data="burialData"
           :death-certificate-file="deathCertificateFile"
+          :use-mock="true"
           @close="paymentModalVisible = false"
           @success="handlePaymentSuccess"
         />

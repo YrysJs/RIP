@@ -29,13 +29,13 @@ onMounted(async () => {
       class="py-[24px] min-h-[100vh] rounded-lg flex gap-[24px] max-sm:flex-col-reverse max-sm:py-0 max-sm:gap-0"
     >
       <aside
-        class="bg-white p-[20px] max-w-[408px] min-w-[305px] w-full relative max-sm:max-w-full rounded-lg"
+        class="bg-white p-[20px] max-w-[408px] min-w-[305px] relative max-sm:max-w-full rounded-lg"
       >
         <ClientSidebar title="ЛИЧНЫЙ КАБИНЕТ" />
       </aside>
 
       <div
-        class="w-full h-fit flex flex-col gap-10 bg-white rounded-lg py-6 px-[18px] max-sm:pt-6 max-sm:px-4 max-sm:pb-9"
+        class="min-w-0 w-full h-fit flex flex-col gap-10 bg-white rounded-lg py-6 px-[18px] max-sm:pt-6 max-sm:px-4 max-sm:pb-9"
       >
         <slot />
       </div>
