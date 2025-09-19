@@ -1,152 +1,150 @@
 <script setup>
-import { ref } from 'vue'
-import { createMemorial, getBurialRequestById } from '~/services/client'
+import { ref } from "vue";
+import { createMemorial, getBurialRequestById } from "~/services/client";
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
 // Данные захоронения
-const burial = ref(null)
+const burial = ref(null);
 
-const selectedImages = ref([])
-const imagePreviews = ref([])
+const selectedImages = ref([]);
+const imagePreviews = ref([]);
 
 // Состояние для видео
-const showVideoInput = ref(false)
-const videoUrl = ref('')
-const videos = ref([])
+const showVideoInput = ref(false);
+const videoUrl = ref("");
+const videos = ref([]);
 
 // Состояние для достижений (фото)
-const achievementPhotos = ref([])
+const achievementPhotos = ref([]);
 
 // Состояние формы
-const epitaph = ref('')
-const aboutPerson = ref('')
-const isPublic = ref(false)
-const isSubmitting = ref(false)
+const epitaph = ref("");
+const aboutPerson = ref("");
+const isPublic = ref(false);
+const isSubmitting = ref(false);
 
-const deceasedId = ref(2)
+const deceasedId = ref(2);
 
 // Загрузка данных захоронения
 const loadBurialData = async () => {
   try {
     if (route.query.id) {
-      const response = await getBurialRequestById(route.query.id)
-      burial.value = response.data
+      const response = await getBurialRequestById(route.query.id);
+      burial.value = response.data;
     }
   } catch (error) {
-    console.error('Ошибка при загрузке данных захоронения:', error)
+    console.error("Ошибка при загрузке данных захоронения:", error);
   }
-}
+};
 
 // Загружаем данные при монтировании компонента
 onMounted(() => {
-  loadBurialData()
-})
+  loadBurialData();
+});
 
 const handleImageUpload = (event) => {
-  const files = Array.from(event.target.files)
-  
-  files.forEach(file => {
-    if (file && file.type.startsWith('image/')) {
-      selectedImages.value.push(file)
-      
+  const files = Array.from(event.target.files);
+
+  files.forEach((file) => {
+    if (file && file.type.startsWith("image/")) {
+      selectedImages.value.push(file);
+
       // Создаем URL для превью
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
         imagePreviews.value.push({
           id: Date.now() + Math.random(), // уникальный ID
           url: e.target.result,
-          file: file
-        })
-      }
-      reader.readAsDataURL(file)
+          file: file,
+        });
+      };
+      reader.readAsDataURL(file);
     }
-  })
-  
+  });
+
   // Очищаем input для возможности повторной загрузки
-  event.target.value = ''
-}
+  event.target.value = "";
+};
 
 const removeImage = (index) => {
-  selectedImages.value.splice(index, 1)
-  imagePreviews.value.splice(index, 1)
-}
+  selectedImages.value.splice(index, 1);
+  imagePreviews.value.splice(index, 1);
+};
 
 const removeAllImages = () => {
-  selectedImages.value = []
-  imagePreviews.value = []
-}
+  selectedImages.value = [];
+  imagePreviews.value = [];
+};
 
 // Функции для работы с видео
 const showVideoInputField = () => {
-  showVideoInput.value = true
-}
+  showVideoInput.value = true;
+};
 
 const extractYouTubeId = (url) => {
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
-  const match = url.match(regExp)
-  return (match && match[2].length === 11) ? match[2] : null
-}
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[2].length === 11 ? match[2] : null;
+};
 
 const addVideo = () => {
   if (videoUrl.value.trim()) {
-    const videoId = extractYouTubeId(videoUrl.value)
+    const videoId = extractYouTubeId(videoUrl.value);
     if (videoId) {
       const newVideo = {
         id: Date.now() + Math.random(),
         url: videoUrl.value,
         embedUrl: `http://www.youtube.com/embed/${videoId}`,
-        title: `Видео ${videos.value.length + 1}`
-      }
-      videos.value.push(newVideo)
-      videoUrl.value = ''
-      showVideoInput.value = false
+        title: `Видео ${videos.value.length + 1}`,
+      };
+      videos.value.push(newVideo);
+      videoUrl.value = "";
+      showVideoInput.value = false;
     }
   }
-}
+};
 
 const removeVideo = (index) => {
-  videos.value.splice(index, 1)
-}
+  videos.value.splice(index, 1);
+};
 
 const cancelVideoInput = () => {
-  videoUrl.value = ''
-  showVideoInput.value = false
-}
+  videoUrl.value = "";
+  showVideoInput.value = false;
+};
 
 // Функции для достижений (фото)
 const handleAchievementPhotoUpload = (event) => {
-  const files = Array.from(event.target.files)
-  
-  files.forEach(file => {
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader()
+  const files = Array.from(event.target.files);
+
+  files.forEach((file) => {
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
       reader.onload = (e) => {
         achievementPhotos.value.push({
           id: Date.now() + Math.random(),
           url: e.target.result,
-          file: file
-        })
-      }
-      reader.readAsDataURL(file)
+          file: file,
+        });
+      };
+      reader.readAsDataURL(file);
     }
-  })
-  
-  event.target.value = ''
-}
+  });
+
+  event.target.value = "";
+};
 
 const removeAchievementPhoto = (index) => {
-  achievementPhotos.value.splice(index, 1)
-}
-
-
+  achievementPhotos.value.splice(index, 1);
+};
 
 // Функция создания мемориала
 const submitMemorial = async () => {
   try {
-    isSubmitting.value = true
-    
+    isSubmitting.value = true;
+
     // Подготавливаем данные для отправки
     const formData = {
       deceased_id: +burial.value?.deceased?.id,
@@ -154,570 +152,679 @@ const submitMemorial = async () => {
       about_person: aboutPerson.value,
       is_public: isPublic.value,
       photos: selectedImages.value, // основные фото мемориала
-      achievements: achievementPhotos.value.map(photo => photo.file), // фото достижений
-      video_urls: videos.value.map(video => video.url) // URL видео
-    }
-    
-    const response = await createMemorial(formData)
-    
+      achievements: achievementPhotos.value.map((photo) => photo.file), // фото достижений
+      video_urls: videos.value.map((video) => video.url), // URL видео
+    };
+
+    const response = await createMemorial(formData);
+
     // Успешно создано
-    alert('Мемориал успешно создан!')
-    console.log('Memorial created:', response)
-    
+    useState("burial").value = burial.value;
+    useState("imagePreviews").value = imagePreviews.value;
+    useState("epitaph").value = epitaph.value;
+    useState("aboutPerson").value = aboutPerson.value;
+    useState("videos").value = videos.value;
+
+    router.push("/client/memorial/created");
+
     // Можно перенаправить пользователя
     // await navigateTo('/client/memorials')
-    
   } catch (error) {
-    alert('Ошибка при создании мемориала: ' + (error.response?.data?.error || error.message))
+    alert(
+      "Ошибка при создании мемориала: " +
+        (error.response?.data?.error || error.message)
+    );
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
-}
+};
 </script>
 
 <template>
-    <div class="container">
-        <div class="flex items-center bg-white p-5 rounded-2xl mb-4 bg-[#fff]">
-            <button class="btn btn-back mr-4" @click="router.push('/client/memorial')">
-                <img class="w-4 h-4 mr-[10px]" src="/icons/arrow-left-primary.svg" alt="">
-                Назад
-            </button>
+  <NuxtLayout name="client" content-class="bg-transparent py-0 px-0">
+    <div>
+      <button
+        class="btn-back mb-6 mr-4 ml-[2px] text-base font-medium flex items-center"
+        @click="router.push('/client/memorial')"
+      >
+        <img
+          class="w-4 h-4 mr-[10px]"
+          src="/icons/arrow-left-orange.svg"
+          alt=""
+        />
+        Вернуться
+      </button>
 
-            <h1 class="text-[32px] font-medium">Мемориал</h1>
+      <div class="bg-white py-6 px-[18px] rounded-2xl">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-sm text-[#999]">Мемориал</p>
+            <h3 class="text-fluid font-medium font-foglihten">
+              {{
+                isEditMode
+                  ? deceased?.full_name || `Мемориал ID: ${memorial?.id}`
+                  : burial?.deceased?.full_name
+              }}
+            </h3>
+          </div>
+          <button
+            class="flex items-center gap-2 bg-[#00000014] py-[10px] px-4 rounded-[10px]"
+          >
+            <img src="/icons/share.svg" alt="" /> Поделиться
+          </button>
         </div>
-        <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-[24px] font-medium">{{ burial?.deceased?.full_name }}</h3>
-                <button class="flex items-center gap-2">
-                    <img src="/icons/share.svg" alt=""> поделиться
-                </button>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="photo-upload-container">
-                    <!-- Область загрузки фото -->
-                    <div 
-                        v-if="imagePreviews.length === 0"
-                        class="upload-area"
-                        @click="$refs.fileInput.click()"
-                    >
-                        <div class="upload-content">
-                            <div class="upload-icon">📷</div>
-                            <p class="upload-text">Загрузить фото</p>
-                            <p class="upload-hint">Нажмите для выбора нескольких файлов</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Галерея превью изображений внутри блока загрузки -->
-                    <div v-else class="upload-area-with-images">
-                        <div class="gallery-header">
-                            <h4>Загруженные фото ({{ imagePreviews.length }})</h4>
-                            <button 
-                                @click="removeAllImages"
-                                class="remove-all-btn"
-                            >
-                                Удалить все
-                            </button>
-                        </div>
-                        
-                        <div class="gallery-grid">
-                            <div 
-                                v-for="(preview, index) in imagePreviews" 
-                                :key="preview.id"
-                                class="image-preview-container"
-                            >
-                                <img :src="preview.url" alt="Preview" class="image-preview">
-                                <div class="image-overlay">
-                                    <button 
-                                        @click="removeImage(index)"
-                                        class="remove-btn"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                                <div class="image-number">{{ index + 1 }}</div>
-                            </div>
-                        </div>
-                        
-                        <!-- Кнопка добавления еще фото -->
-                        <button 
-                            @click="$refs.fileInput.click()"
-                            class="add-more-btn"
-                        >
-                            + Добавить еще фото
-                        </button>
-                    </div>
-                    
-                    <!-- Скрытый input для файлов -->
-                    <input 
-                        ref="fileInput"
-                        type="file" 
-                        accept="image/*" 
-                        multiple
-                        @change="handleImageUpload"
-                        class="hidden"
-                    >
+
+        <div class="grid grid-cols-2 gap-4 my-4 items-stretch">
+          <div class="photo-upload-container h-full min-h-[250px]">
+            <!-- Область загрузки фото -->
+            <div
+              v-if="imagePreviews.length === 0"
+              class="upload-area min-h-[250px]"
+              @click="$refs.fileInput.click()"
+            >
+              <div class="upload-content">
+                <div class="flex justify-center mb-[20px]">
+                  <img src="/icons/upload.svg" alt="" class="upload-icon" />
                 </div>
-                <div>
-                    <div class="border-b border-[#EEEEEE] pb-4 font-medium text-base">
-                        <p>Дата смерти: {{ new Date(burial?.deceased?.death_date).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) }}</p>
-                    </div>
-                    <div>
-                        <h3 class="text-[18px] font-medium mb-4">
-                            Информация о захоронении
-                        </h3>
-                        <div class="flex justify-between text-base font-medium">
-                            <div>Страна</div>
-                            <div>Казахстан</div>
-                        </div>
-                        <div class="flex justify-between text-base font-medium">
-                            <div>Город</div>
-                            <div>Алматы</div>
-                        </div>
-                        <div class="flex justify-between text-base font-medium">
-                            <div>Кладбище:</div>
-                            <div>{{ burial?.cemetery_name }}</div>
-                        </div>
-                        <div class="flex justify-between text-base font-medium">
-                            <div>Сектор</div>
-                            <div>{{ burial?.sector_number }}</div>
-                        </div>
-                        <div class="flex justify-between text-base font-medium">
-                            <div>Место:</div>
-                            <div>{{ burial?.grave_id }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <h3 class="text-[18px] font-medium mb-1">
-                    Эпитафия
-                </h3>
-                <textarea 
-                    v-model="epitaph"
-                    class="border border-[#222222] rounded-lg p-4 w-full" 
-                    placeholder="Введите эпитафию..."
-                    rows="4"
-                ></textarea>                
-            </div>
-            <div>
-                <h3 class="text-[18px] font-medium mb-1">
-                    О человеке
-                </h3>
-                <textarea 
-                    v-model="aboutPerson"
-                    class="border border-[#222222] rounded-lg p-4 w-full" 
-                    placeholder="Расскажите о человеке..."
-                    rows="4"
-                ></textarea>                
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="text-[18px] font-semibold">Публичная личность </span> 
-                <input v-model="isPublic" type="checkbox"> 
-                <span class="text-base text-[#939393]">Цифровой мемориал этого человека приватный и доступен только по ссылке</span>
-            </div>
-            <div>
-                <h3 class="text-[18px] font-medium mb-1">
-                    Достижения
-                </h3>
-                
-                <!-- Кнопка загрузки фото -->
-                <button 
-                    @click="$refs.achievementFileInput.click()"
-                    class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"
+                <p class="upload-text">Загрузить фото</p>
+                <p class="upload-hint">
+                  Перетащите файлы или загрузите файлы до N мб в формате: .png,
+                  .jpeg
+                </p>
+                <button
+                  class="py-2 px-3 border border-[#D6DADF] bg-white rounded-lg mt-5"
                 >
-                    Добавить
+                  Загрузить
                 </button>
-                
-                <!-- Скрытый input для файлов -->
-                <input 
-                    ref="achievementFileInput"
-                    type="file" 
-                    accept="image/*" 
-                    multiple
-                    @change="handleAchievementPhotoUpload"
-                    class="hidden"
-                >
-                
-                <!-- Галерея фото достижений -->
-                <div v-if="achievementPhotos.length > 0" class="achievement-photos-gallery">
-                    <div class="gallery-header">
-                        <h4>Фото достижений ({{ achievementPhotos.length }})</h4>
-                    </div>
-                    
-                    <div class="gallery-grid">
-                        <div 
-                            v-for="(photo, index) in achievementPhotos" 
-                            :key="photo.id"
-                            class="image-preview-container"
-                        >
-                            <img :src="photo.url" alt="Achievement photo" class="image-preview">
-                            <div class="image-overlay">
-                                <button 
-                                    @click="removeAchievementPhoto(index)"
-                                    class="remove-btn"
-                                >
-                                    ✕
-                                </button>
-                            </div>
-                            <div class="image-number">{{ index + 1 }}</div>
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
-            <div>
-                <h3 class="text-[18px] font-medium mb-1">
-                    Видеоматериалы
-                </h3>
-                
-                <!-- Кнопка добавления видео -->
-                <button 
-                    v-if="!showVideoInput" 
-                    @click="showVideoInputField"
-                    class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"
-                >
-                    Добавить
+
+            <!-- Галерея превью изображений внутри блока загрузки -->
+            <div v-else class="upload-area-with-images min-h-[250px]">
+              <div class="gallery-header">
+                <h4>Загруженные фото ({{ imagePreviews.length }})</h4>
+                <button @click="removeAllImages" class="remove-all-btn">
+                  Удалить все
                 </button>
-                
-                <!-- Поле ввода ссылки -->
-                <div v-if="showVideoInput" class="video-input-container">
-                    <div class="flex gap-2 mb-4">
-                        <input 
-                            v-model="videoUrl"
-                            type="text" 
-                            placeholder="Вставьте ссылку на YouTube видео"
-                            class="flex-1 border border-[#222222] rounded-lg p-3 text-base"
-                            @keyup.enter="addVideo"
-                        >
-                        <button 
-                            @click="addVideo"
-                            class="bg-[#224C4F] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#1a3a3c] transition-colors"
-                        >
-                            Добавить
-                        </button>
-                        <button 
-                            @click="cancelVideoInput"
-                            class="bg-[#EF4444] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#DC2626] transition-colors"
-                        >
-                            Отмена
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Список видео плееров -->
-                <div v-if="videos.length > 0" class="videos-list">
-                    <div class="videos-header mb-4">
-                        <h4 class="text-base font-medium">Добавленные видео ({{ videos.length }})</h4>
-                    </div>
-                    
-                    <div class="videos-grid">
-                        <div 
-                            v-for="(video, index) in videos" 
-                            :key="video.id"
-                            class="video-item"
-                        >
-                            <div class="flex justify-between items-center mb-3">
-                                <h5 class="text-sm font-medium text-gray-700">{{ video.title }}</h5>
-                                <button 
-                                    @click="removeVideo(index)"
-                                    class="text-[#EF4444] hover:text-[#DC2626] font-medium transition-colors text-sm"
-                                >
-                                    Удалить
-                                </button>
-                            </div>
-                            <div class="video-wrapper">
-                                <iframe 
-                                    :src="video.embedUrl"
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowfullscreen
-                                    class="video-iframe"
-                                ></iframe>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Кнопка создания мемориала -->
-            <div class="bg-white p-5 rounded-2xl flex justify-end">
-                <button 
-                    @click="submitMemorial"
-                    :disabled="isSubmitting"
-                    class="bg-[#224C4F] text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-[#1a3a3c] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              </div>
+
+              <div class="gallery-grid">
+                <div
+                  v-for="(preview, index) in imagePreviews"
+                  :key="preview.id"
+                  class="image-preview-container"
                 >
-                    <span v-if="isSubmitting">Создание мемориала...</span>
-                    <span v-else>Создать мемориал</span>
-                </button>
+                  <img :src="preview.url" alt="Preview" class="image-preview" />
+                  <div class="image-overlay">
+                    <button @click="removeImage(index)" class="remove-btn">
+                      ✕
+                    </button>
+                  </div>
+                  <div class="image-number">{{ index + 1 }}</div>
+                </div>
+              </div>
+
+              <!-- Кнопка добавления еще фото -->
+              <button @click="$refs.fileInput.click()" class="add-more-btn">
+                + Добавить еще фото
+              </button>
             </div>
+
+            <!-- Скрытый input для файлов -->
+            <input
+              ref="fileInput"
+              type="file"
+              accept="image/*"
+              multiple
+              @change="handleImageUpload"
+              class="hidden"
+            />
+          </div>
+          <div class="h-full min-h-[250px]">
+            <!-- <div class="border-b border-[#EEEEEE] pb-4 font-medium text-base">
+              <p>
+                Дата смерти:
+                {{
+                  new Date(burial?.deceased?.death_date).toLocaleString(
+                    "ru-RU",
+                    { day: "2-digit", month: "2-digit", year: "numeric" }
+                  )
+                }}
+              </p>
+            </div> -->
+            <div class="bg-[#F4F0E7] p-5 rounded-xl">
+              <h3 class="text-[18px] font-medium mb-2">
+                Информация о захоронении
+              </h3>
+              <div class="pb-2 border-b border-b-[#2010011F]">
+                <p class="text-lg text-[#1A1C1F]">01.01.1900 - 01.01.2000</p>
+                <p class="text-xs text-[#666C72]">
+                  Дата рождения - Дата смерти
+                </p>
+              </div>
+              <!-- <div class="flex justify-between text-base font-medium">
+                <div>Страна</div>
+                <div>Казахстан</div>
+              </div>
+              <div class="flex justify-between text-base font-medium">
+                <div>Город</div>
+                <div>Алматы</div>
+              </div> -->
+
+              <div class="flex flex-col gap-2">
+                <div
+                  class="mt-2 h-[30px] flex justify-between items-center text-base font-medium gap-[11px]"
+                >
+                  <div class="w-[100px] text-base text-[#050202]">
+                    Кладбище:
+                  </div>
+                  <div class="text-sm text-[#999]">
+                    {{ burial?.cemetery_name }}
+                  </div>
+                </div>
+                <div class="flex">
+                  <div
+                    class="h-[30px] flex justify-between items-center text-base font-medium gap-[11px]"
+                  >
+                    <div class="w-[100px] text-base text-[#050202]">Сектор</div>
+                    <div class="text-sm text-[#999]">
+                      {{ burial?.sector_number }}
+                    </div>
+                  </div>
+                  <div
+                    class="h-[30px] flex justify-between items-center text-base font-medium gap-[11px]"
+                  >
+                    <div class="w-[100px] text-base text-[#050202]">Место:</div>
+                    <div class="text-sm text-[#999]">
+                      {{ burial?.grave_id }}
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="h-11 flex justify-between items-center text-base font-medium gap-[11px]"
+                >
+                  <div class="w-[100px] text-base text-[#050202]">
+                    Координаты:
+                  </div>
+                  <div class="text-sm text-[#999]">
+                    56.35107309557659, 62.01158847670595
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <div class="pb-4 border-b border-b-[#eee]">
+          <h3 class="text-[18px] mb-2">Эпитафия</h3>
+          <textarea
+            v-model="epitaph"
+            class="border border-[#AFB5C166] rounded-lg py-[18px] px-3 w-full focus:outline-none"
+            placeholder="Введите эпитафию..."
+            rows="4"
+          ></textarea>
+        </div>
+        <div class="py-4 border-b border-b-[#eee]">
+          <h3 class="text-[18px] mb-2">Память о человеке:</h3>
+          <textarea
+            v-model="aboutPerson"
+            class="border border-[#AFB5C166] rounded-lg py-[18px] px-3 w-full focus:outline-none"
+            placeholder="Расскажите о человеке..."
+            rows="4"
+          ></textarea>
+        </div>
+        <div class="flex gap-[14px] py-4 border-b border-b-[#eee]">
+          <div>
+            <label
+              class="relative inline-block w-10 h-6 cursor-pointer select-none align-middle"
+            >
+              <input
+                v-model="switcher"
+                type="checkbox"
+                class="sr-only peer input"
+              />
+              <span
+                class="absolute inset-0 bg-gray-200 rounded-full transition-colors peer-checked:bg-[#E9B949] peer-checked:ring-2 peer-checked:ring-[#E9B949]"
+              />
+              <span
+                class="absolute left-[1px] top-[1px] bg-white w-[21.18px] h-[20.9px] rounded-full shadow-md transition-transform peer-checked:translate-x-[15px]"
+              />
+            </label>
+          </div>
+
+          <div>
+            <div class="text-base font-medium">Публичная личность</div>
+
+            <p class="text-sm font-medium text-[#5C6771E6]">
+              Цифровой мемориал этого человека приватный и доступен только по
+              ссылке
+            </p>
+          </div>
+        </div>
+        <div class="py-4 border-b border-b-[#eee]">
+          <h3 class="text-[18px] mb-1">Достижения</h3>
+
+          <!-- Кнопка загрузки фото -->
+          <div
+            @click="$refs.achievementFileInput.click()"
+            class="upload-area bg-[#E7E8EA] rounded-lg hover:bg-[#DDD] transition-colors py-4 flex flex-col"
+          >
+            <div class="flex justify-center mb-2">
+              <img
+                src="/icons/upload.svg"
+                alt=""
+                class="w-[17px] h-[18px] m-[3px] mr-1"
+              />
+            </div>
+            <p class="text-base text-[#3F474F]">
+              <span class="font-medium text-[#E9B949]">Загрузите файлы</span>
+              или перетащите их
+            </p>
+          </div>
+
+          <!-- Скрытый input для файлов -->
+          <input
+            ref="achievementFileInput"
+            type="file"
+            accept="image/*"
+            multiple
+            @change="handleAchievementPhotoUpload"
+            class="hidden"
+          />
+
+          <!-- Галерея фото достижений -->
+          <div
+            v-if="achievementPhotos.length > 0"
+            class="achievement-photos-gallery"
+          >
+            <div class="gallery-header">
+              <h4>Фото достижений ({{ achievementPhotos.length }})</h4>
+            </div>
+
+            <div class="gallery-grid">
+              <div
+                v-for="(photo, index) in achievementPhotos"
+                :key="photo.id"
+                class="image-preview-container"
+              >
+                <img
+                  :src="photo.url"
+                  alt="Achievement photo"
+                  class="image-preview"
+                />
+                <div class="image-overlay">
+                  <button
+                    @click="removeAchievementPhoto(index)"
+                    class="remove-btn"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div class="image-number">{{ index + 1 }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-[18px] font-medium mb-1">Видеоматериалы</h3>
+
+          <!-- Кнопка добавления видео -->
+          <button
+            v-if="!showVideoInput"
+            @click="showVideoInputField"
+            class="upload-area bg-[#E7E8EA] rounded-lg hover:bg-[#DDD] transition-colors py-4 flex flex-col"
+          >
+            <div class="flex justify-center mb-2">
+              <img src="/icons/upload-video.svg" alt="" class="w-6 h-6" />
+            </div>
+            <p class="text-base text-[#3F474F]">
+              <span class="font-medium text-[#E9B949]">Загрузите файлы</span>
+              или перетащите их
+            </p>
+          </button>
+
+          <!-- Поле ввода ссылки -->
+          <div v-if="showVideoInput" class="video-input-container">
+            <div class="flex gap-2 mb-4">
+              <input
+                v-model="videoUrl"
+                type="text"
+                placeholder="Вставьте ссылку на YouTube видео"
+                class="flex-1 border border-[#222222] rounded-lg p-3 text-base"
+                @keyup.enter="addVideo"
+              />
+              <button
+                @click="addVideo"
+                class="bg-[#224C4F] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#1a3a3c] transition-colors"
+              >
+                Добавить
+              </button>
+              <button
+                @click="cancelVideoInput"
+                class="bg-[#EF4444] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#DC2626] transition-colors"
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+
+          <!-- Список видео плееров -->
+          <div v-if="videos.length > 0" class="videos-list">
+            <div class="videos-header mb-4">
+              <h4 class="text-base font-medium">
+                Добавленные видео ({{ videos.length }})
+              </h4>
+            </div>
+
+            <div class="videos-grid">
+              <div
+                v-for="(video, index) in videos"
+                :key="video.id"
+                class="video-item"
+              >
+                <div class="flex justify-between items-center mb-3">
+                  <h5 class="text-sm font-medium text-gray-700">
+                    {{ video.title }}
+                  </h5>
+                  <button
+                    @click="removeVideo(index)"
+                    class="text-[#EF4444] hover:text-[#DC2626] font-medium transition-colors text-sm"
+                  >
+                    Удалить
+                  </button>
+                </div>
+                <div class="video-wrapper">
+                  <iframe
+                    :src="video.embedUrl"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    class="video-iframe"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Кнопка создания мемориала -->
+        <div class="flex justify-end">
+          <button
+            :disabled="isSubmitting"
+            class="bg-[#E9B949] text-black px-8 py-4 rounded-lg font-medium text-sm transition-colors disabled:bg-gray-400"
+            @click="submitMemorial"
+          >
+            <span v-if="isSubmitting">Создание мемориала...</span>
+            <span v-else>Создать мемориал</span>
+          </button>
+        </div>
+      </div>
     </div>
+  </NuxtLayout>
 </template>
 
 <style lang="scss" scoped>
-.container {
-    max-width: 1170px;
-    width: 100%;
-    margin: auto;
-    padding-top: 40px;
-    padding-bottom: 40px;
+.text-fluid {
+  font-size: clamp(24px, 3vw, 32px);
 }
 
 .photo-upload-container {
-    width: 100%;
-    position: relative;
+  width: 100%;
+  position: relative;
 }
 
 .upload-area {
-    width: 100%;
-    height: 225px;
-    border: 2px dashed #E5E7EB;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background-color: #F9FAFB;
-    margin-bottom: 20px;
+  width: 100%;
+  border: 2px dashed #e5e7eb;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #f9fafb;
+  margin-bottom: 20px;
 
-    &:hover {
-        border-color: #6366F1;
-        background-color: #F0F7FF;
-    }
+  &:hover {
+    border-color: #6366f1;
+    background-color: #f0f7ff;
+  }
 }
 
 .upload-content {
-    text-align: center;
-    padding: 20px;
+  text-align: center;
+  padding: 20px;
 }
 
 .upload-icon {
-    font-size: 48px;
-    margin: 0 auto 16px;
-    opacity: 0.6;
-    display: block;
+  height: 27px;
+  width: 25.5px;
+  margin: 4.5px;
+  margin-right: 6px;
+  opacity: 0.6;
+  display: block;
 }
 
 .upload-text {
-    font-size: 18px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
 }
 
 .upload-hint {
-    font-size: 14px;
-    color: #6B7280;
+  font-size: 12px;
+  font-weight: 500;
+  color: #686973;
 }
 
 .upload-area-with-images {
-    width: 100%;
-    min-height: 225px;
-    border: 2px solid #E5E7EB;
-    border-radius: 12px;
-    padding: 20px;
-    background-color: #F9FAFB;
-    margin-bottom: 20px;
+  width: 100%;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  background-color: #f9fafb;
+  margin-bottom: 20px;
 }
 
 .add-more-btn {
-    width: 100%;
-    padding: 12px;
-    background-color: #F3F4F6;
-    border: 2px dashed #D1D5DB;
-    border-radius: 8px;
-    color: #6B7280;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 16px;
+  width: 100%;
+  padding: 12px;
+  background-color: #f3f4f6;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  color: #6b7280;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 16px;
 
-    &:hover {
-        background-color: #E5E7EB;
-        border-color: #9CA3AF;
-        color: #374151;
-    }
+  &:hover {
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
+    color: #374151;
+  }
 }
 
 .gallery-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    
-    h4 {
-        font-size: 16px;
-        font-weight: 600;
-        color: #374151;
-        margin: 0;
-    }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+  }
 }
 
 .remove-all-btn {
-    padding: 6px 12px;
-    background-color: #EF4444;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  padding: 6px 12px;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 
-    &:hover {
-        background-color: #DC2626;
-    }
+  &:hover {
+    background-color: #dc2626;
+  }
 }
 
 .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
 }
 
 .image-preview-container {
-    width: 100%;
-    height: 120px;
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 2px solid #E5E7EB;
+  width: 100%;
+  height: 120px;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e5e7eb;
 }
 
 .image-preview {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .image-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 
-    .image-preview-container:hover & {
-        opacity: 1;
-    }
+  .image-preview-container:hover & {
+    opacity: 1;
+  }
 }
 
 .image-number {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 4px;
-    min-width: 20px;
-    text-align: center;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  min-width: 20px;
+  text-align: center;
 }
 
-.change-btn, .remove-btn {
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 500;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
+.change-btn,
+.remove-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
 }
 
 .change-btn {
-    background-color: #6366F1;
-    color: white;
+  background-color: #6366f1;
+  color: white;
 
-    &:hover {
-        background-color: #5B5BF7;
-    }
+  &:hover {
+    background-color: #5b5bf7;
+  }
 }
 
 .remove-btn {
-    background-color: #EF4444;
-    color: white;
-    font-size: 18px;
-    padding: 4px 8px;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background-color: #ef4444;
+  color: white;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    &:hover {
-        background-color: #DC2626;
-    }
+  &:hover {
+    background-color: #dc2626;
+  }
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 // Стили для видео компонентов
 .video-input-container {
-    margin-top: 16px;
+  margin-top: 16px;
 }
 
 .videos-list {
-    margin-top: 16px;
+  margin-top: 16px;
 }
 
 .videos-header {
-    h4 {
-        color: #374151;
-        margin: 0;
-    }
+  h4 {
+    color: #374151;
+    margin: 0;
+  }
 }
 
 .videos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
 }
 
 .video-item {
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    padding: 16px;
-    background-color: #F9FAFB;
-    transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  background-color: #f9fafb;
+  transition: all 0.3s ease;
 
-    &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .video-wrapper {
-    position: relative;
-    width: 100%;
-    height: 0;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio */
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .video-iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
 }
 
 // Стили для галереи достижений
 .achievement-photos-gallery {
-    margin-top: 16px;
+  margin-top: 16px;
 }
 </style>
