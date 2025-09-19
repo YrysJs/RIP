@@ -5,6 +5,7 @@ import { useCemeteryStore } from "~/store/cemetery.js";
 import { getCemeteries, getGraves } from "~/services/cemetery";
 import ShareCoordModal from "~/components/layout/modals/ShareCoordModal.vue";
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
+import AppHeader from "~/components/layout/AppHeader.vue";
 
 const router = useRouter();
 
@@ -32,7 +33,6 @@ const sities = [
   "Кызылорда",
 ];
 const religios = [
-  "muslim",
   "Ислам",
   "Христианство",
   "Иудаизм",
@@ -89,64 +89,6 @@ async function getCemeteriesReq() {
   } catch (error) {
     console.log(error);
 
-    // Заглушка, чтобы вёрстка была видна
-    // cemetriessList.value = [
-    //   {
-    //     id: "stub1",
-    //     name: "Примерное кладбище",
-    //     distance: 4.6,
-    //     religion: "Ислам",
-    //     type: "Мусульманское кладбище",
-    //     country: "KZ",
-    //     city: "Алматы",
-    //     capacity: 100,
-    //     free_spaces: 12,
-    //     reserved: 6,
-    //     taken: 12,
-    //     street_name: "ул. Примерная, 1",
-    //     phone: "+7 (777) 000-00-00",
-    //     phone2: "+77770000000",
-    //     location_coords: [43.24, 76.93],
-    //     description:
-    //       "Крупнейшее кладбище города с общей площадью 20 га. На территории расположены мемориальные зоны, посвященные жертвам войны, и семейные участки. Здесь похоронены несколько известных деятелей культуры и науки.Услуги: организация похорон, аренда мест, благоустройство.",
-    //   },
-    //   {
-    //     id: "stub2",
-    //     name: "Примерное кладбище",
-    //     distance: 4.6,
-    //     religion: "Ислам",
-    //     type: "Мусульманское кладбище",
-    //     country: "KZ",
-    //     city: "Алматы",
-    //     capacity: 100,
-    //     free_spaces: 12,
-    //     reserved: 6,
-    //     taken: 12,
-    //     street_name: "Улица Сарсенбаева, 187",
-    //     phone: "+7 (777) 000-00-00",
-    //     phone2: "+77770000000",
-    //     location_coords: [43.24, 76.93],
-    //     description: "Демо-описание",
-    //   },
-    //   {
-    //     id: "stub3",
-    //     name: "Примерное кладбище",
-    //     distance: 4.6,
-    //     religion: "Ислам",
-    //     type: "Мусульманское кладбище",
-    //     country: "KZ",
-    //     city: "Алматы",
-    //     capacity: 100,
-    //     free_spaces: 36,
-    //     reserved: 6,
-    //     taken: 12,
-    //     street_name: "ул. Примерная, 1",
-    //     phone: "+7 (777) 000-00-00",
-    //     phone2: "+77770000000",
-    //     location_coords: [43.24, 76.93],
-    //     description: "Демо-описание",
-    //   },
-    // ];
   }
 }
 
@@ -255,8 +197,9 @@ function selectCemetery(item) {
 
 <template>
   <main>
+    <AppHeader type="client" />
     <div
-      class="py-[24px] min-h-[100vh] rounded-lg flex gap-[24px] max-sm:flex-col-reverse max-sm:py-0 max-sm:gap-0"
+      class="py-[24px] min-h-[calc(100vh-110px)] mt-[110px] rounded-lg flex gap-[24px] max-sm:flex-col-reverse max-sm:py-0 max-sm:gap-0"
     >
       <div
         class="bg-white p-[20px] max-w-[408px] w-full relative max-sm:max-w-full rounded-lg"
@@ -500,7 +443,6 @@ function selectCemetery(item) {
           class="bg-[#FFF] py-6 px-[18px] mt-2 rounded-lg"
           v-if="
             selectedCemetery?.id &&
-            !showGraveDetails &&
             !(isMobile && showInfoMobile)
           "
         >
@@ -582,124 +524,124 @@ function selectCemetery(item) {
             {{ selectedCemetery?.description }}
           </p>
 
-          <button class="reserve__btn" @click="reserve">
+          <button v-if="showGraveDetails" class="reserve__btn" @click="reserve">
             <img src="/icons/pencil.svg" alt="Reserve icon" class="w-5 h-5" />
             Забронировать место
           </button>
         </div>
 
         <!-- Блок информации о выбранной могиле -->
-        <div
-          class="bg-[#FFF] p-[24px] mt-[24px] rounded-lg"
-          v-if="showGraveDetails && selectedGrave"
-        >
-          <div class="flex justify-between items-center">
-            <h3 class="text-2xl font-medium text-[#222222]">
-              Участок {{ selectedGrave.sector_number }}-{{
-                selectedGrave.grave_number
-              }}
-            </h3>
-            <div class="flex gap-[34px] items-center">
-              <button
-                class="flex items-center gap-[8px] text-base font-medium text-[#222222]"
-                @click="shareGraveData"
-              >
-                <img src="/icons/share.svg" alt="" /> Отправить
-              </button>
-              <button
-                class="w-[90px] h-[50px] border-2 border-[#224C4F] rounded-lg bg-[#fff] text-[#224C4F] text-base font-medium"
-                @click="cancelGraveSelection"
-              >
-                Отмена
-              </button>
-              <button
-                v-if="selectedGrave.status == 'free'"
-                class="w-[257px] h-[50px] border-2 border-[#224C4F] rounded-lg bg-[#224C4F] text-[#fff] text-base font-medium"
-                @click="reserve"
-              >
-                Забронировать место
-              </button>
-            </div>
-          </div>
-          <p class="text-[#939393] text-sm mt-[4px] mb-[8px]">
-            {{ getGraveStatusText(selectedGrave.status) }}
-          </p>
-          <!-- Блок фотографий участка -->
-          <div
-            v-if="
-              selectedGrave &&
-              selectedGrave.photos_urls &&
-              selectedGrave.photos_urls.length > 0
-            "
-            class="mb-6"
-          >
-            <div class="flex gap-4 overflow-x-auto pb-2">
-              <div
-                v-for="(photo, index) in selectedGrave.photos_urls"
-                :key="index"
-                class="min-w-[200px] h-[150px] rounded-lg overflow-hidden bg-gray-100 flex-shrink-0"
-              >
-                <img
-                  :src="photo"
-                  :alt="`Фото участка ${index + 1}`"
-                  class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
-                />
-              </div>
-            </div>
-          </div>
-          <div v-else class="mb-6">
-            <div class="flex gap-4 overflow-x-scroll">
-              <div
-                class="w-[752px] h-[221px] aspect-square rounded-lg overflow-hidden bg-gray-100 flex overflow-x-scroll"
-              >
-                <img
-                  src="/images/placeholder.png"
-                  alt="Фото"
-                  class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
-                />
-                <img
-                  src="/images/placeholder.png"
-                  alt="Фото"
-                  class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
-                />
-              </div>
-            </div>
-          </div>
+<!--        <div-->
+<!--          class="bg-[#FFF] p-[24px] mt-[24px] rounded-lg"-->
+<!--          v-if="showGraveDetails && selectedGrave"-->
+<!--        >-->
+<!--          <div class="flex justify-between items-center">-->
+<!--            <h3 class="text-2xl font-medium text-[#222222]">-->
+<!--              Участок {{ selectedGrave.sector_number }}-{{-->
+<!--                selectedGrave.grave_number-->
+<!--              }}-->
+<!--            </h3>-->
+<!--            <div class="flex gap-[34px] items-center">-->
+<!--              <button-->
+<!--                class="flex items-center gap-[8px] text-base font-medium text-[#222222]"-->
+<!--                @click="shareGraveData"-->
+<!--              >-->
+<!--                <img src="/icons/share.svg" alt="" /> Отправить-->
+<!--              </button>-->
+<!--              <button-->
+<!--                class="w-[90px] h-[50px] border-2 border-[#224C4F] rounded-lg bg-[#fff] text-[#224C4F] text-base font-medium"-->
+<!--                @click="cancelGraveSelection"-->
+<!--              >-->
+<!--                Отмена-->
+<!--              </button>-->
+<!--              <button-->
+<!--                v-if="selectedGrave.status == 'free'"-->
+<!--                class="w-[257px] h-[50px] border-2 border-[#224C4F] rounded-lg bg-[#224C4F] text-[#fff] text-base font-medium"-->
+<!--                @click="reserve"-->
+<!--              >-->
+<!--                Забронировать место-->
+<!--              </button>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <p class="text-[#939393] text-sm mt-[4px] mb-[8px]">-->
+<!--            {{ getGraveStatusText(selectedGrave.status) }}-->
+<!--          </p>-->
+<!--          &lt;!&ndash; Блок фотографий участка &ndash;&gt;-->
+<!--          <div-->
+<!--            v-if="-->
+<!--              selectedGrave &&-->
+<!--              selectedGrave.photos_urls &&-->
+<!--              selectedGrave.photos_urls.length > 0-->
+<!--            "-->
+<!--            class="mb-6"-->
+<!--          >-->
+<!--            <div class="flex gap-4 overflow-x-auto pb-2">-->
+<!--              <div-->
+<!--                v-for="(photo, index) in selectedGrave.photos_urls"-->
+<!--                :key="index"-->
+<!--                class="min-w-[200px] h-[150px] rounded-lg overflow-hidden bg-gray-100 flex-shrink-0"-->
+<!--              >-->
+<!--                <img-->
+<!--                  :src="photo"-->
+<!--                  :alt="`Фото участка ${index + 1}`"-->
+<!--                  class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"-->
+<!--                />-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div v-else class="mb-6">-->
+<!--            <div class="flex gap-4 overflow-x-scroll">-->
+<!--              <div-->
+<!--                class="w-[752px] h-[221px] aspect-square rounded-lg overflow-hidden bg-gray-100 flex overflow-x-scroll"-->
+<!--              >-->
+<!--                <img-->
+<!--                  src="/images/placeholder.png"-->
+<!--                  alt="Фото"-->
+<!--                  class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"-->
+<!--                />-->
+<!--                <img-->
+<!--                  src="/images/placeholder.png"-->
+<!--                  alt="Фото"-->
+<!--                  class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"-->
+<!--                />-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
 
-          <div class="flex gap-[24px] items-center text-[#222222]">
-            <div class="flex gap-[8px] items-center">
-              <span class="text-sm"
-                >Сектор: {{ selectedGrave.sector_number }}</span
-              >
-            </div>
-            <div class="flex gap-[8px] items-center">
-              <span class="text-sm"
-                >Место: {{ selectedGrave.grave_number }}</span
-              >
-            </div>
-            <div class="flex gap-[8px] items-center">
-              <span class="text-sm"
-                >Размер: {{ selectedGrave.width }}x{{
-                  selectedGrave.height
-                }}
-                м</span
-              >
-            </div>
-          </div>
-          <div class="flex gap-[24px] mt-[16px] mb-[32px]">
-            <span class="text-base font-medium"
-              >Статус: {{ getGraveStatusText(selectedGrave.status) }}</span
-            >
-            <span class="text-base font-medium"
-              >ID участка: {{ selectedGrave.id }}</span
-            >
-          </div>
-          <p class="text-base text-[#222222]">
-            {{
-              selectedGrave.description || "Информация об участке отсутствует"
-            }}
-          </p>
-        </div>
+<!--          <div class="flex gap-[24px] items-center text-[#222222]">-->
+<!--            <div class="flex gap-[8px] items-center">-->
+<!--              <span class="text-sm"-->
+<!--                >Сектор: {{ selectedGrave.sector_number }}</span-->
+<!--              >-->
+<!--            </div>-->
+<!--            <div class="flex gap-[8px] items-center">-->
+<!--              <span class="text-sm"-->
+<!--                >Место: {{ selectedGrave.grave_number }}</span-->
+<!--              >-->
+<!--            </div>-->
+<!--            <div class="flex gap-[8px] items-center">-->
+<!--              <span class="text-sm"-->
+<!--                >Размер: {{ selectedGrave.width }}x{{-->
+<!--                  selectedGrave.height-->
+<!--                }}-->
+<!--                м</span-->
+<!--              >-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="flex gap-[24px] mt-[16px] mb-[32px]">-->
+<!--            <span class="text-base font-medium"-->
+<!--              >Статус: {{ getGraveStatusText(selectedGrave.status) }}</span-->
+<!--            >-->
+<!--            <span class="text-base font-medium"-->
+<!--              >ID участка: {{ selectedGrave.id }}</span-->
+<!--            >-->
+<!--          </div>-->
+<!--          <p class="text-base text-[#222222]">-->
+<!--            {{-->
+<!--              selectedGrave.description || "Информация об участке отсутствует"-->
+<!--            }}-->
+<!--          </p>-->
+<!--        </div>-->
       </div>
     </div>
   </main>

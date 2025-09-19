@@ -6,9 +6,15 @@ import { useCemeteryStore } from "~/store/cemetery";
 import { pkbGetDeceasedData } from "~/services/login/index.js";
 import { useLoadingStore } from "~/store/loading.js";
 import ClientLogin from "~/components/auth/ClientLogin.vue";
+import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
+import AppHeader from "~/components/layout/AppHeader.vue";
 
 const router = useRouter();
 const cemeteryStore = useCemeteryStore();
+
+const showSuccessModal = ref(false);
+const time = ref(3)
+let timerId
 
 const switcher = ref(false);
 const inn = ref("");
@@ -41,6 +47,10 @@ watch(inn, async (newValue) => {
   }
 });
 
+const closeSuccessModal = () => {
+  showSuccessModal.value = false;
+};
+
 function capitalizeFullName(str) {
   return str
     .toLowerCase() // всё в нижний регистр
@@ -60,20 +70,35 @@ const handleBooking = async () => {
       grave_id: cemeteryStore.selectedGrave.id,
     };
 
-    // const burialRequest = await createBurialRequest(dataBurial);
-    showLogin.value = true;
+    await createBurialRequest(dataBurial);
+    // showLogin.value = true;
+    showSuccessModal.value = true;
+    timerId = setInterval(() => {
+      time.value--
+      if (time.value <= 0) {
+        clearInterval(timerId)
+        router.push('/client/tickets/active')
+      }
+    }, 1000)
 
-    // router.push("/client/tickets/active");
+
   } catch (error) {
     console.error("Ошибка при отправке данных:", error);
   }
 };
+
+onMounted(() => {
+  if (!cemeteryStore.selectedGrave) {
+    router.push('/')
+  }
+})
 </script>
 
 <template>
   <main class="max-sm:bg-white">
+    <AppHeader type="client" />
     <div
-      class="min-h-[100vh] py-5 flex gap-6 max-sm:flex-col max-sm:py-0 max-sm:gap-0"
+      class="min-h-[calc(100vh-110px)] mt-[110px] py-5 flex gap-6 max-sm:flex-col max-sm:py-0 max-sm:gap-0"
     >
       <div
         class="bg-white p-[20px] max-w-fluid w-full relative rounded-lg max-sm:max-w-full max-sm:pt-2 max-sm:px-[13px] max-sm:pb-0"
@@ -176,9 +201,9 @@ const handleBooking = async () => {
                 class="py-[18px] px-3 w-[100%] !border !border-[#AFB5C166] rounded-lg text-base input"
                 placeholder="ИИН"
               />
-              <span class="text-sm text-[#D63C3C]"
-                >Поле обязательно к заполнению</span
-              >
+<!--              <span class="text-sm text-[#D63C3C]"-->
+<!--                >Поле обязательно к заполнению</span-->
+<!--              >-->
             </div>
             <div class="flex flex-col">
               <input
@@ -187,9 +212,9 @@ const handleBooking = async () => {
                 class="py-[18px] px-3 w-[100%] !border !border-[#AFB5C166] rounded-lg text-base input"
                 placeholder="ФИО"
               />
-              <span class="text-sm text-[#D63C3C]"
-                >Поле обязательно к заполнению</span
-              >
+<!--              <span class="text-sm text-[#D63C3C]"-->
+<!--                >Поле обязательно к заполнению</span-->
+<!--              >-->
             </div>
           </div>
         </div>
@@ -269,7 +294,16 @@ const handleBooking = async () => {
         </button>
       </div>
     </div>
-    <ClientLogin v-if="showLogin" @close="showLogin = false" />
+<!--    <ClientLogin v-if="showLogin" @close="showLogin = false" />-->
+    <Teleport to="body">
+      <SuccessModal
+          v-if="showSuccessModal"
+          title="Запрос отправлен"
+          text="Ожидайте подтверждения ..."
+          :subtext="'Перенаправление в личный кабинет через ' + time"
+          @close="closeSuccessModal"
+      />
+    </Teleport>
   </main>
 </template>
 

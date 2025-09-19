@@ -38,23 +38,17 @@ const slides = ref([
     ],
   },
   {
-    id: 1,
-    title: "Всеказахстанская база захоронений",
-    subtitle: "Найдите захоронения ваших близких удаленно",
-    background: "/images/client/banner.jpg",
+    id: 2,
+    title: "Общедоступная база захоронений",
+    subtitle: "Социальный проект по поиску захоронений и уходу за ними",
+    background: "/images/client/intro-desk.jpg",
     buttons: [
-      { text: "Поиск захоронения", action: "search" },
-      { text: "Добавить захоронение", action: "add" },
-    ],
-  },
-  {
-    id: 1,
-    title: "Всеказахстанская база захоронений",
-    subtitle: "Найдите захоронения ваших близких удаленно",
-    background: "/images/client/banner.jpg",
-    buttons: [
-      { text: "Поиск захоронения", action: "search" },
-      { text: "Добавить захоронение", action: "add" },
+      {
+        text: "Поиск захоронения",
+        action: "search",
+        icon: "search",
+      },
+      { text: "Забронировать место", action: "reserve", icon: "pencil" },
     ],
   },
 ]);
@@ -129,9 +123,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="relative mt-[77px]">
+  <main class="relative">
     <AppLoader v-if="loadingStore.loading" />
-    <AppHeader type="client" />
+    <AppHeader type="client" :style="'landing'" />
     <section class="relative">
       <Swiper
         :modules="[Navigation, Pagination, Autoplay]"

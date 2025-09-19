@@ -10,6 +10,10 @@ const props = defineProps({
     type: String,
     default: "Закрыть",
   },
+  subtext: {
+    type: String,
+    default: "",
+  },
 });
 
 const emit = defineEmits(["close"]);
@@ -33,8 +37,8 @@ const handleClose = () => {
       <p class="mt-4 mb-6 text-base text-[#17212A] max-sm:mt-2 max-sm:mb-4">
         {{ props.text }}
       </p>
-      <p class="text-sm text-[#939393] mb-[13px] max-sm:mb-2">
-        Перенаправление в личный кабинет через 3
+      <p v-if="props.subtext" class="text-sm text-[#939393] mb-[13px] max-sm:mb-2">
+        {{props.subtext}}
       </p>
       <NuxtLink
         to="/client/tickets/burial"

@@ -1,56 +1,71 @@
 <template>
-  <header class="app-header">
+  <header class="app-header" :class="{ 'app-header--transparent': isClientTop }">
     <div class="container">
       <!-- Логотип -->
       <div class="flex items-center">
-        <NuxtLink to="/" class="mr-[22px]" :class="{'mr-[80px]': type === 'client'} ">
-          <img src="/icons/logo.svg" alt="logo" />
+        <NuxtLink to="/">
+          <img src="/icons/logo.png" alt="logo" />
         </NuxtLink>
-
-        <nav v-if="type === 'client'" class="nav-links">
-          <NuxtLink to="/reserve">Забронировать место</NuxtLink>
-          <NuxtLink to="/services">Заказать услуги / товары</NuxtLink>
-        </nav>
-
-        <div v-else class="type-badge">
-          {{types[type]}}
-        </div>
 
       </div>
 
 
       <!-- Правый блок -->
       <div class="right-actions">
-        <template v-if="token">
-          <div class="icon-btn relative flex items-center gap-2">
-            <!-- Кнопка меню -->
-            <button @click="toggleDropdown">
-              <img src="/icons/menu.svg" alt="Меню" />
+        <nav class="nav-links">
+          <NuxtLink to="/">Главная</NuxtLink>
+          <NuxtLink to="/services">Услуги</NuxtLink>
+        </nav>
+
+        <div class="flex gap-4 ml-[100px]">
+          <button class="reserve__btn" @click="router.push('/reserve')">
+            <img src="/icons/pencil.svg" alt="Reserve icon" class="w-5 h-5" />
+            Забронировать место
+          </button>
+          <template v-if="token">
+            <button class="profile__btn" @click="profileClick">
+              <img src="/icons/person.svg" alt="Reserve icon" class="w-5 h-5" />
+              {{userInfo?.name}} {{userInfo?.surname}}
             </button>
-
-            <!-- Кнопка профиля -->
-            <button @click="profileClick">
-              <img src="/icons/user.svg" alt="Профиль" />
+          </template>
+          <template v-else>
+            <button class="profile__btn" @click="toggleLoginMenu">
+              <img src="/icons/person.svg" alt="Reserve icon" class="w-5 h-5" />
+              Войти
             </button>
+          </template>
+        </div>
 
-            <!-- Дропдаун меню -->
-            <div
-                v-if="showDropdownMenu"
-                class="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
-            >
-              <button
-                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                  @click="logout"
-              >
-                Выйти
-              </button>
-            </div>
-          </div>
-        </template>
+<!--        <template v-if="token">-->
+<!--          <div class="icon-btn relative flex items-center gap-2">-->
+<!--            &lt;!&ndash; Кнопка меню &ndash;&gt;-->
+<!--            <button @click="toggleDropdown">-->
+<!--              <img src="/icons/menu.svg" alt="Меню" />-->
+<!--            </button>-->
 
-        <template v-else>
-          <div class="login-link cursor-pointer" @click="toggleLoginMenu">Войти</div>
-        </template>
+<!--            &lt;!&ndash; Кнопка профиля &ndash;&gt;-->
+<!--            <button @click="profileClick">-->
+<!--              <img src="/icons/user.svg" alt="Профиль" />-->
+<!--            </button>-->
+
+<!--            &lt;!&ndash; Дропдаун меню &ndash;&gt;-->
+<!--            <div-->
+<!--                v-if="showDropdownMenu"-->
+<!--                class="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"-->
+<!--            >-->
+<!--              <button-->
+<!--                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"-->
+<!--                  @click="logout"-->
+<!--              >-->
+<!--                Выйти-->
+<!--              </button>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </template>-->
+
+<!--        <template v-else>-->
+<!--          <div class="login-link cursor-pointer" @click="toggleLoginMenu">Войти</div>-->
+<!--        </template>-->
       </div>
     </div>
 
@@ -89,15 +104,15 @@
           <span class="font-medium">Войти как поставщик услуг</span>
         </div>
 
-        <div class="text-gray-400 text-sm mt-4 mb-2">Администрация</div>
-        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('manager')">
-          <img src="/icons/home.svg" class="w-5 h-5" />
-          <span class="font-medium">Войти как менеджер кладбища</span>
-        </div>
-        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('akimat')">
-          <img src="/icons/building.svg" class="w-5 h-5" />
-          <span class="font-medium">Кабинет Акимата</span>
-        </div>
+<!--        <div class="text-gray-400 text-sm mt-4 mb-2">Администрация</div>-->
+<!--        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('manager')">-->
+<!--          <img src="/icons/home.svg" class="w-5 h-5" />-->
+<!--          <span class="font-medium">Войти как менеджер кладбища</span>-->
+<!--        </div>-->
+<!--        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('akimat')">-->
+<!--          <img src="/icons/building.svg" class="w-5 h-5" />-->
+<!--          <span class="font-medium">Кабинет Акимата</span>-->
+<!--        </div>-->
       </div>
     </div>
   </Teleport>
@@ -112,16 +127,20 @@ import ManagerLogin from "~/components/auth/ManagerLogin.vue";
 import SupplierLogin from "~/components/auth/SupplierLogin.vue";
 import Cookies from 'js-cookie'
 import {parseJwt} from '~/utils/parseJwt';
+import {getCurrentUser} from "~/services/login/index.js";
 
 const token = ref(Cookies.get('token'))
 const router = useRouter()
 const showLoginMenu = ref(false);
 const activeModal = ref('')
 
-const userStore = useUserStore()
+const userStore = useUserStore();
+
+const userInfo = ref(null);
 
 const props = defineProps({
-  type: String
+  type: String,
+  style: String
 });
 
 const types = {
@@ -187,23 +206,56 @@ function logout() {
   router.push('/')
 }
 
+const isTop = ref(true)
+const isClientTop = computed(() => props.style === 'landing' && isTop.value)
+
+const handleScroll = () => {
+  // считаем "верхом" первые ~8px, чтобы не дёргалось на микроскроллах/тачах
+  isTop.value = (window.scrollY || window.pageYOffset) <= 8
+}
+
+onMounted(async () => {
+  const response = await getCurrentUser({
+    id: localStorage.getItem("user_id"),
+  });
+
+  userInfo.value = response.data;
+
+  userStore.setUser(userInfo.value);
+  if (import.meta.client) {
+    handleScroll()                 // проверить позицию сразу при монтировании
+    window.addEventListener('scroll', handleScroll, { passive: true })
+  }
+})
+
+onUnmounted(() => {
+  if (import.meta.client) {
+    window.removeEventListener('scroll', handleScroll)
+  }
+})
 </script>
 
 <style scoped>
 .app-header {
-  background-color: white;
+  background-color: #201001;
+  transition: background-color 200ms ease;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  border-bottom: 1px solid #e5e7eb;
   padding: 0 24px;
   z-index: 2;
+  height: 104px;
+}
+
+.app-header--transparent {
+  background-color: transparent;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
+  height: 104px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -218,11 +270,11 @@ function logout() {
 
 .nav-links {
   display: flex;
-  gap: 32px;
+  gap: 80px;
 }
 
 .nav-links a {
-  color: #111827;
+  color: white;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -265,5 +317,35 @@ function logout() {
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
+}
+
+.reserve__btn {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  border-radius: 8px;
+  white-space: nowrap;
+  background-color: #e9b949;
+}
+
+.profile__btn {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  border-radius: 8px;
+  white-space: nowrap;
+  color: white;
+  background-color: transparent;
+  border: 1px solid white;
 }
 </style>

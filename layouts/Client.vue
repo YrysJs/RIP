@@ -30,10 +30,10 @@ onMounted(async () => {
 
 <template>
   <main>
-    <!-- <AppHeader type="client" /> -->
+     <AppHeader type="client" />
 
     <div
-      class="py-[24px] min-h-[100vh] rounded-lg flex gap-[24px] max-sm:flex-col-reverse max-sm:py-0 max-sm:gap-0"
+      class="py-[24px] min-h-[100vh] mt-[110px] rounded-lg flex gap-[24px] max-sm:flex-col-reverse max-sm:py-0 max-sm:gap-0"
     >
       <aside
         class="bg-white p-[20px] max-w-[408px] min-w-[305px] relative max-sm:max-w-full rounded-lg"
