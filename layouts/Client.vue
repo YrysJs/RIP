@@ -10,6 +10,13 @@ const userStore = useUserStore();
 
 const userInfo = ref(null);
 
+const props = defineProps({
+  contentClass: {
+    type: [String, Array, Object],
+    default: "bg-white py-6 px-[18px]",
+  },
+});
+
 onMounted(async () => {
   const response = await getCurrentUser({
     id: localStorage.getItem("user_id"),
@@ -35,15 +42,16 @@ onMounted(async () => {
       </aside>
 
       <div
-        class="min-w-0 w-full h-fit flex flex-col gap-10 bg-white rounded-lg py-6 px-[18px] max-sm:pt-6 max-sm:px-4 max-sm:pb-9"
+        :class="[
+          'min-w-0 w-full h-fit flex flex-col gap-10 rounded-lg max-sm:pt-6 max-sm:px-4 max-sm:pb-9',
+          props.contentClass,
+        ]"
       >
         <slot />
       </div>
     </div>
   </main>
 </template>
-
-<script setup lang="ts"></script>
 
 <style lang="scss" scoped>
 // .client {
