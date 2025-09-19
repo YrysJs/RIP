@@ -1,7 +1,6 @@
 <script setup>
 import { getProducts, updateProductStatus } from '~/services/supplier'
 
-// Убираем статичные props для рейтинга
 
 // Состояние для хранения данных
 const products = ref([])
@@ -12,7 +11,7 @@ const error = ref(null)
 const fetchProducts = async () => {
     try {
         loading.value = true
-        const response = await getProducts({ status: 'active' })
+        const response = await getProducts({ status: 'deactive' })
         products.value = response.data || []
     } catch (err) {
         error.value = err

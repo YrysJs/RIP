@@ -1,101 +1,80 @@
 <script setup>
-import {onMounted, ref} from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import Cookies from 'js-cookie'
+
 import { createRequest } from '~/services/client'
 import { setAkimatFile } from '~/services/akimat'
-import {getCemeteries} from "~/services/cemetery/index.js";
-import {getUser} from "~/services/login/index.js";
-import Cookies from "js-cookie";
-import {parseJwt} from '~/utils/parseJwt';
+import { getCemeteries } from '~/services/cemetery'
+import { getUser } from '~/services/login'
+import { parseJwt } from '~/utils/parseJwt'
 
 const router = useRouter()
-const token = ref(Cookies.get('token'))
 
-const foreign_cemetry = ref('')
-const reason = ref('')
+/* ---- state ---- */
+const token = ref(Cookies.get('token'))
+const userInfo = ref(null)
+
 const cemeteries = ref([])
 const fromBurialId = ref(0)
-const toBurialId = ref(0)
-const death_certificate = ref([])
-const proof_of_relation = ref([])
-const grave_doc = ref([])
-const userInfo = ref(null);
+const toBurialId   = ref(0)
+const reason       = ref('')
+const foreign_cemetry = ref('')
 
+/* файлы */
+const death_certificate = ref([])  // свидетельство о смерти
+const proof_of_relation  = ref([]) // подтверждение родства
+const grave_doc          = ref([]) // документ на могилу
 
-const removeDeathSert = (index) => {
-  death_certificate.value.splice(index, 1)
+/* ---- helpers: превью + drag&drop ---- */
+const pushFileWithPreview = (listRef, file) => {
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    listRef.value.push({
+      id: Date.now() + Math.random(),
+      url: e.target.result,
+      file
+    })
+  }
+  reader.readAsDataURL(file)
+}
+const onDrop = (listRef, e) => {
+  e.preventDefault()
+  const files = Array.from(e.dataTransfer?.files || [])
+  files.forEach(f => pushFileWithPreview(listRef, f))
 }
 
-const removeProof = (index) => {
-  proof_of_relation.value.splice(index, 1)
+/* инпуты */
+const handleSertUpload = (e) => {
+  Array.from(e.target.files).forEach(f => pushFileWithPreview(death_certificate, f))
+  e.target.value = ''
+}
+const handleProofUpload = (e) => {
+  Array.from(e.target.files).forEach(f => pushFileWithPreview(proof_of_relation, f))
+  e.target.value = ''
+}
+const handleDocumentUpload = (e) => {
+  Array.from(e.target.files).forEach(f => pushFileWithPreview(grave_doc, f))
+  e.target.value = ''
 }
 
-const removeDoc = (index) => {
-  grave_doc.value.splice(index, 1)
-}
+/* удалить */
+const removeDeathSert = (i, ev) => { ev?.stopPropagation?.(); death_certificate.value.splice(i, 1) }
+const removeProof     = (i, ev) => { ev?.stopPropagation?.(); proof_of_relation.value.splice(i, 1) }
+const removeDoc       = (i, ev) => { ev?.stopPropagation?.(); grave_doc.value.splice(i, 1) }
 
-const handleSertUpload = (event) => {
-  const files = Array.from(event.target.files)
-
-  files.forEach(file => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      death_certificate.value.push({
-        id: Date.now() + Math.random(),
-        url: e.target.result,
-        file: file
-      })
-    }
-    reader.readAsDataURL(file)
-  })
-  event.target.value = ''
-}
-
-const handleProofUpload = (event) => {
-  const files = Array.from(event.target.files)
-
-  files.forEach(file => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      proof_of_relation.value.push({
-        id: Date.now() + Math.random(),
-        url: e.target.result,
-        file: file
-      })
-    }
-    reader.readAsDataURL(file)
-  })
-  event.target.value = ''
-}
-
-const handleDocumentUpload = (event) => {
-  const files = Array.from(event.target.files)
-
-  files.forEach(file => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      grave_doc.value.push({
-        id: Date.now() + Math.random(),
-        url: e.target.result,
-        file: file
-      })
-    }
-    reader.readAsDataURL(file)
-  })
-  event.target.value = ''
-}
-
-async function userCreateAppeal() {
+/* ---- submit (как у тебя) ---- */
+async function userCreateAppeal () {
   try {
     const sertFormData = new FormData()
     const proofFormData = new FormData()
-    const docFormData = new FormData()
-    let sertRes
-    let proofRes
-    let docRes
+    const docFormData   = new FormData()
+    let sertRes, proofRes, docRes
+
     sertFormData.append('Authorization', Cookies.get('token'))
     if (death_certificate.value.length) {
       if (Array.isArray(death_certificate.value)) {
-        death_certificate.value.forEach(achievement => sertFormData.append('files', achievement.file))
+        death_certificate.value.forEach(item => sertFormData.append('files', item.file))
       } else {
         sertFormData.append('files', death_certificate.value.file)
       }
@@ -105,7 +84,7 @@ async function userCreateAppeal() {
     proofFormData.append('Authorization', Cookies.get('token'))
     if (proof_of_relation.value.length) {
       if (Array.isArray(proof_of_relation.value)) {
-        proof_of_relation.value.forEach(achievement => proofFormData.append('files', achievement.file))
+        proof_of_relation.value.forEach(item => proofFormData.append('files', item.file))
       } else {
         proofFormData.append('files', proof_of_relation.value.file)
       }
@@ -115,206 +94,129 @@ async function userCreateAppeal() {
     docFormData.append('Authorization', Cookies.get('token'))
     if (grave_doc.value.length) {
       if (Array.isArray(grave_doc.value)) {
-        grave_doc.value.forEach(achievement => docFormData.append('files', achievement.file))
+        grave_doc.value.forEach(item => docFormData.append('files', item.file))
       } else {
         docFormData.append('files', grave_doc.value.file)
       }
       docRes = await setAkimatFile(docFormData)
     }
 
-
-    const response = await createRequest({
+    await createRequest({
       userPhone: userInfo.value.phone,
       fromBurialId: fromBurialId.value,
       toBurialId: toBurialId.value,
       reason: reason.value,
       foreign_cemetry: foreign_cemetry.value,
       akimatId: 6,
-      death_certificate: death_certificate.value.length ? sertRes.data.files[0].fileUrl : '',
-      proof_of_relation: proof_of_relation.value.length ? proofRes.data.files[0].fileUrl : '',
-      grave_doc: grave_doc.value.length ? docRes.data.files[0].fileUrl: ''
+      death_certificate: death_certificate.value.length ? (sertRes.data?.files?.[0]?.fileUrl || '') : '',
+      proof_of_relation: proof_of_relation.value.length ? (proofRes.data?.files?.[0]?.fileUrl || '') : '',
+      grave_doc:          grave_doc.value.length ? (docRes.data?.files?.[0]?.fileUrl   || '') : ''
     })
-    router.push('/client/goverment/requests')
-    console.log(response)
 
-  } catch (error) {
-    console.log(error)
+    router.push('/client/goverment/requests')
+  } catch (e) {
+    console.error(e)
   }
 }
 
-onMounted((async () => {
-  const parsedToken = parseJwt(token.value)
-  const response = await getUser({
-    phone: parsedToken.sub
-  });
+/* ---- кладбища ---- */
+const fallbackCemeteries = [
+  { id: 101, name: 'Центральное кладбище' },
+  { id: 102, name: 'Северное кладбище' },
+  { id: 103, name: 'Южное кладбище' }
+]
+const cemeteryOptions = computed(() =>
+  Array.isArray(cemeteries.value) && cemeteries.value.length ? cemeteries.value : fallbackCemeteries
+)
 
-  userInfo.value = response.data;
+onMounted(async () => {
+  const parsed = parseJwt(token.value)
+  const u = await getUser({ phone: parsed.sub })
+  userInfo.value = u.data
+
   try {
-    const response = await getCemeteries()
-    cemeteries.value = response.data
-  } catch (error) {
-    console.error('Ошибка при получении заявок:', error)
-  } finally {
-    console.log('finally')
-  }
-}))
-
+    const c = await getCemeteries()
+    cemeteries.value = c.data || []
+  } catch { cemeteries.value = [] }
+})
 </script>
 
 <template>
   <NuxtLayout name="client">
-    <div class="w-full h-[61px] pl-[20px] flex items-center bg-white rounded-[16px] text-lg font-semibold">
-      Создание заявки на перезахоронение
+    <!-- Заголовок -->
+    <div class="page-head">
+      <h1 class="page-title">Создание запроса на перезахоронение</h1>
     </div>
-    <div class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
-      <div class="flex flex-col gap-[10px]">
-        <div>
-          <label class="block text-sm mb-1">Старое место захоронения</label>
-          <select v-model="fromBurialId" class="input select">
-            <option v-for="cemetery in cemeteries" :key="cemetery.id" :value="cemetery.id">
-              {{ cemetery.name }}
-            </option>
-          </select>
-        </div>
 
-        <div>
-          <label class="block text-sm mb-1">Новое место захоронения</label>
-          <select v-model="toBurialId" class="input select">
-            <option v-for="cemetery in cemeteries" :key="cemetery.id" :value="cemetery.id">
-              {{ cemetery.name }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm mb-1">Причина</label>
-          <textarea v-model="reason" rows="3" class="input textarea"></textarea>
-        </div>
-        <div>
-          <h3 class="text-[18px] font-medium mb-1">
-            Свидетельство о смерти
-          </h3>
-
-          <!-- Кнопка загрузки фото -->
-          <button
-              @click="$refs.sertFileInput.click()"
-              class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"
-          >
-            Добавить
-          </button>
-
-          <!-- Скрытый input для файлов -->
-          <input
-              ref="sertFileInput"
-              type="file"
-              multiple
-              @change="handleSertUpload"
-              class="hidden"
-          >
-          <!-- Галерея фото достижений -->
-          <div v-if="death_certificate.length > 0" class="achievement-photos-gallery">
-
-            <div class="gallery-grid">
-              <div
-                  v-for="(photo, index) in death_certificate"
-                  :key="photo.id"
-                  class="image-preview-container"
-              >
-                <img src="/images/doc.png" alt="Achievement photo" class="image-preview">
-                <div class="image-overlay">
-                  <button
-                      @click="removeDeathSert(index)"
-                      class="remove-btn"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div class="image-number">{{ index + 1 }}</div>
-              </div>
-            </div>
+    <!-- Форма -->
+    <div class="form-card">
+      <div class="form-grid">
+        <!-- Старое место -->
+        <div class="field">
+          <label class="field__label">Старое место захоронения:</label>
+          <div class="select-wrap">
+            <select v-model="fromBurialId" class="select">
+              <option value="0" disabled>Выберите кладбище</option>
+              <option v-for="cem in cemeteryOptions" :key="cem.id" :value="cem.id">{{ cem.name }}</option>
+            </select>
           </div>
         </div>
-        <div>
-          <h3 class="text-[18px] font-medium mb-1">
-            Подтверждение родства заявителя
-          </h3>
 
-          <!-- Кнопка загрузки фото -->
-          <button
-              @click="$refs.proofFileInput.click()"
-              class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"
-          >
-            Добавить
-          </button>
-
-          <!-- Скрытый input для файлов -->
-          <input
-              ref="proofFileInput"
-              type="file"
-              multiple
-              @change="handleProofUpload"
-              class="hidden"
-          >
-          <!-- Галерея фото достижений -->
-          <div v-if="proof_of_relation.length > 0" class="achievement-photos-gallery">
-
-            <div class="gallery-grid">
-              <div
-                  v-for="(photo, index) in proof_of_relation"
-                  :key="photo.id"
-                  class="image-preview-container"
-              >
-                <img src="/images/doc.png" alt="Achievement photo" class="image-preview">
-                <div class="image-overlay">
-                  <button
-                      @click="removeProof(index)"
-                      class="remove-btn"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div class="image-number">{{ index + 1 }}</div>
-              </div>
-            </div>
+        <!-- Новое место -->
+        <div class="field">
+          <label class="field__label">Новое место захоронения:</label>
+          <div class="select-wrap">
+            <select v-model="toBurialId" class="select">
+              <option value="0" disabled>Выберите кладбище</option>
+              <option v-for="cem in cemeteryOptions" :key="cem.id" :value="cem.id">{{ cem.name }}</option>
+            </select>
           </div>
         </div>
-        <div>
-          <h3 class="text-[18px] font-medium mb-1">
-            Документ на могилу
-          </h3>
 
-          <!-- Кнопка загрузки фото -->
-          <button
-              @click="$refs.docFileInput.click()"
-              class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"
+        <!-- Причина -->
+        <div class="field">
+          <label class="field__label">Причина:</label>
+          <div class="textarea-wrap">
+            <textarea v-model="reason" maxlength="500" class="textarea" placeholder="Причина перезахоронения..."/>
+            <div class="counter">{{ reason.length }}/500</div>
+          </div>
+        </div>
+
+        <!-- Свидетельство о смерти -->
+        <div class="field">
+          <div class="field__label">Свидетельство о смерти:</div>
+
+          <!-- нет файлов — дроп-зона -->
+          <div
+            v-if="!death_certificate.length"
+            class="dropzone"
+            @click="$refs.dcInput.click()"
+            @dragover.prevent
+            @drop="onDrop(death_certificate, $event)"
           >
-            Добавить
-          </button>
+            <input ref="dcInput" type="file" multiple class="hidden" @change="handleSertUpload" />
+            <div class="dz-row">
+              <svg viewBox="0 0 24 24" class="dz-ico">
+                <path d="M12 3v12m0-12l-4 4m4-4l4 4M4 15v4a2 2 0 002 2h12a2 2 0 002-2v-4"
+                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span class="dz-accent">Загрузите файлы</span>
+              <span class="dz-sub">или перетащите их</span>
+            </div>
+          </div>
 
-          <!-- Скрытый input для файлов -->
-          <input
-              ref="docFileInput"
-              type="file"
-              multiple
-              @change="handleDocumentUpload"
-              class="hidden"
-          >
-          <!-- Галерея фото достижений -->
-          <div v-if="grave_doc.length > 0" class="achievement-photos-gallery">
-
+          <!-- есть файлы — центр карточки -->
+          <div v-else class="gallery-center">
             <div class="gallery-grid">
               <div
-                  v-for="(photo, index) in grave_doc"
-                  :key="photo.id"
-                  class="image-preview-container"
+                v-for="(photo, index) in death_certificate"
+                :key="photo.id"
+                class="image-preview-container"
+                @click.stop
               >
-                <img src="/images/doc.png" alt="Achievement photo" class="image-preview">
+                <img src="/images/doc.png" alt="Документ" class="image-preview">
                 <div class="image-overlay">
-                  <button
-                      @click="removeDoc(index)"
-                      class="remove-btn"
-                  >
-                    ✕
-                  </button>
+                  <button class="remove-btn" @click="removeDeathSert(index, $event)">✕</button>
                 </div>
                 <div class="image-number">{{ index + 1 }}</div>
               </div>
@@ -322,100 +224,161 @@ onMounted((async () => {
           </div>
         </div>
 
-        <button @click="userCreateAppeal" class="bg-[#38949B] text-white px-[16px] py-[8px] rounded-[8px]">Создать заявку</button>
+        <!-- Подтверждение родства заявителя -->
+        <div class="field">
+          <div class="field__label">Подтверждение родства заявителя:</div>
+
+          <div
+            v-if="!proof_of_relation.length"
+            class="dropzone"
+            @click="$refs.prInput.click()"
+            @dragover.prevent
+            @drop="onDrop(proof_of_relation, $event)"
+          >
+            <input ref="prInput" type="file" multiple class="hidden" @change="handleProofUpload" />
+            <div class="dz-row">
+              <svg viewBox="0 0 24 24" class="dz-ico">
+                <path d="M12 3v12m0-12l-4 4m4-4l4 4M4 15v4a2 2 0 002 2h12a2 2 0 002-2v-4"
+                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span class="dz-accent">Загрузите файлы</span>
+              <span class="dz-sub">или перетащите их</span>
+            </div>
+          </div>
+
+          <div v-else class="gallery-center">
+            <div class="gallery-grid">
+              <div
+                v-for="(photo, index) in proof_of_relation"
+                :key="photo.id"
+                class="image-preview-container"
+                @click.stop
+              >
+                <img src="/images/doc.png" alt="Документ" class="image-preview">
+                <div class="image-overlay">
+                  <button class="remove-btn" @click="removeProof(index, $event)">✕</button>
+                </div>
+                <div class="image-number">{{ index + 1 }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Документ на могилу -->
+        <div class="field">
+          <div class="field__label">Документ на могилу:</div>
+
+          <div
+            v-if="!grave_doc.length"
+            class="dropzone"
+            @click="$refs.gdInput.click()"
+            @dragover.prevent
+            @drop="onDrop(grave_doc, $event)"
+          >
+            <input ref="gdInput" type="file" multiple class="hidden" @change="handleDocumentUpload" />
+            <div class="dz-row">
+              <svg viewBox="0 0 24 24" class="dz-ico">
+                <path d="M12 3v12m0-12l-4 4m4-4l4 4M4 15v4a2 2 0 002 2h12a2 2 0 002-2v-4"
+                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span class="dz-accent">Загрузите файлы</span>
+              <span class="dz-sub">или перетащите их</span>
+            </div>
+          </div>
+
+          <div v-else class="gallery-center">
+            <div class="gallery-grid">
+              <div
+                v-for="(photo, index) in grave_doc"
+                :key="photo.id"
+                class="image-preview-container"
+                @click.stop
+              >
+                <img src="/images/doc.png" alt="Документ" class="image-preview">
+                <div class="image-overlay">
+                  <button class="remove-btn" @click="removeDoc(index, $event)">✕</button>
+                </div>
+                <div class="image-number">{{ index + 1 }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Кнопка -->
+      <div class="actions">
+        <button class="btn-yellow" @click="userCreateAppeal">Создать запрос в акимат</button>
       </div>
     </div>
   </NuxtLayout>
 </template>
 
 <style scoped>
+/* Заголовок */
+.page-head{ background:#fff; border-radius:16px; padding:16px 20px; display:flex; align-items:center;}
+.page-title{ font-family:"FoglihtenNo06", serif; font-weight:700; letter-spacing:.02em; font-size:28px; color:#1C140E; margin:0; }
 
-.achievement-photos-gallery {
-  margin-top: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+/* Карточка */
+.form-card{ background:#fff; border-radius:16px; padding:20px 16px; }
+.form-grid{ display:flex; flex-direction:column; gap:16px; }
+
+/* Поля */
+.field{ display:flex; flex-direction:column; gap:8px; }
+.field__label{ color:#1F2937; font-size:14px; }
+
+.select-wrap{ position:relative; border:1px solid #E6E6E6; border-radius:10px; height:44px; overflow:hidden; }
+.select{
+  appearance:none; width:100%; height:44px; padding:0 44px 0 12px; font-size:14px; color:#111827; outline:none; border:none;
+  background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="%238C8C8C" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>') no-repeat right 12px center/18px;
 }
 
-.gallery-grid {
-  margin-top: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+.textarea-wrap{ position:relative; }
+.textarea{ width:100%; min-height:100px; resize:vertical; border:1px solid #E6E6E6; border-radius:10px; padding:10px 12px; font-size:14px; outline:none; }
+.counter{ position:absolute; right:12px; bottom:8px; font-size:12px; color:#8C8C8C; }
+
+/* Дроп-зона */
+.dropzone{
+  border:1px dashed #E6E6E6; border-radius:12px; min-height:120px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:background .15s ease; padding:14px;
+}
+.dropzone:hover{ background:#FAFAFA; }
+.dz-row{ display:flex; align-items:center; gap:8px; white-space:nowrap; }
+.dz-ico{ width:22px; height:22px; color:#9AA0A6; }
+.dz-accent{ font-weight:800; color:#F7B500; }
+.dz-sub{ font-size:14px; color:#8C8C8C; }
+
+/* Галерея карточек — центр */
+.gallery-center{ display:flex; justify-content:center; }
+.gallery-grid{ margin-top:8px; display:flex; flex-wrap:wrap; gap:16px; justify-content:center; }
+
+/* Плитка документа (как у тебя была) */
+.image-preview-container{
+  width:120px; height:120px; position:relative; border-radius:8px; overflow:hidden; border:2px solid #E5E7EB;
+}
+.image-preview{ width:120px; height:100%; display:block; }
+.image-overlay{
+  position:absolute; inset:0; background:rgba(0,0,0,.7); display:flex; align-items:center; justify-content:center;
+  gap:12px; opacity:0; transition:opacity .25s ease;
+}
+.image-preview-container:hover .image-overlay{ opacity:1; }
+.remove-btn{
+  background:#EF4444; color:#fff; font-size:18px; padding:4px 8px; border-radius:50%; width:32px; height:32px;
+  display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;
+}
+.image-number{
+  position:absolute; top:4px; left:4px; background:rgba(0,0,0,.7); color:#fff; font-size:12px; font-weight:600;
+  padding:2px 6px; border-radius:4px; min-width:20px; text-align:center;
 }
 
-.image-preview-container {
-  width: 120px;
-  height: 120px;
-  position: relative;
-
-  border-radius: 8px;
-  overflow: hidden;
-  border: 2px solid #E5E7EB;
+/* Кнопка */
+.actions{ margin-top:24px; display:flex; justify-content:flex-end; }
+.btn-yellow{
+  background:#F7B500; color:#1F2937; font-weight:700; border:none; cursor:pointer;
+  height:44px; padding:0 18px; border-radius:10px; transition:filter .15s ease; box-shadow:0 1px 0 rgba(0,0,0,.06);
 }
+.btn-yellow:hover{ filter:brightness(.98); }
 
-.image-preview {
-  width: 120px;
-  height: 100%;
-  display: block;
-}
-
-.image-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-
-  .image-preview-container:hover & {
-    opacity: 1;
-  }
-}
-
-.image-number {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
-  min-width: 20px;
-  text-align: center;
-}
-
-.change-btn {
-  background-color: #6366F1;
-  color: white;
-
-  &:hover {
-    background-color: #5B5BF7;
-  }
-}
-
-.remove-btn {
-  background-color: #EF4444;
-  color: white;
-  font-size: 18px;
-  padding: 4px 8px;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background-color: #DC2626;
-  }
-}
+/* утилиты */
+.hidden{ display:none; }
 </style>

@@ -50,7 +50,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <NuxtLayout name="client" content-class="bg-transparent">
+  <NuxtLayout name="client" content-class="bg-transparent mr-[18px]">
     <div class="flex flex-col gap-[24px]">
       <ClientOnly>
         <div
@@ -71,14 +71,14 @@ onMounted(() => {
             <div
               v-for="memorial in memorials"
               :key="memorial.id"
-              class="memorial flex justify-between items-center bg-white rounded-[16px] p-[20px] gap-[30px] cursor-pointer"
+              class="memorial flex justify-between items-center bg-white rounded-[16px] p-[20px] gap-[30px] cursor-pointer hover:bg-[#E7E8EA] transition max-sm:bg-[#F4F0E7]"
               @click="$router.push(`/client/memorial/${memorial.id}`)"
             >
               <div>
-                <h3 class="text-[27px] font-medium">
+                <h3 class="text-fluid-16 font-medium">
                   {{ memorial.about_person }}
                 </h3>
-                <p class="text-sm text-[#999]">
+                <p class="text-sm text-[#999] max-sm:text-[13px]">
                   {{
                     memorial.is_public
                       ? "Публичный"
@@ -118,6 +118,10 @@ onMounted(() => {
   font-size: clamp(24px, 3vw, 32px);
 }
 
+.text-fluid-16 {
+  font-size: clamp(16px, 2vw, 27px);
+}
+
 .memorial {
   position: relative;
   &::after {
@@ -131,6 +135,12 @@ onMounted(() => {
     border-right: 2px solid #001529;
     border-bottom: 2px solid #001529;
     pointer-events: none;
+  }
+}
+
+@media (max-width: 639px) {
+  main {
+    background-color: #fff;
   }
 }
 </style>

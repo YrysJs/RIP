@@ -494,7 +494,7 @@ const submitMemorial = async () => {
           {{ isEditMode ? "Редактирование мемориала" : "Создание мемориала" }}
         </h1>
       </div> -->
-      <div class="bg-white py-6 px-[18px] rounded-2xl mb-4">
+      <div class="bg-white py-6 px-[18px] rounded-2xl">
         <div class="flex justify-between items-center">
           <div>
             <p class="text-sm text-[#999]">Мемориал</p>
@@ -750,24 +750,53 @@ const submitMemorial = async () => {
             rows="4"
           ></textarea>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="text-[18px] font-semibold">Публичная личность </span>
-          <input v-model="isPublic" type="checkbox" />
-          <span class="text-base text-[#939393]"
-            >Цифровой мемориал этого человека приватный и доступен только по
-            ссылке</span
-          >
+        <div class="flex gap-[14px] py-4 border-b border-b-[#eee]">
+          <div>
+            <label
+              class="relative inline-block w-10 h-6 cursor-pointer select-none align-middle"
+            >
+              <input
+                v-model="switcher"
+                type="checkbox"
+                class="sr-only peer input"
+              />
+              <span
+                class="absolute inset-0 bg-gray-200 rounded-full transition-colors peer-checked:bg-[#E9B949] peer-checked:ring-2 peer-checked:ring-[#E9B949]"
+              />
+              <span
+                class="absolute left-[1px] top-[1px] bg-white w-[21.18px] h-[20.9px] rounded-full shadow-md transition-transform peer-checked:translate-x-[15px]"
+              />
+            </label>
+          </div>
+          <div>
+            <div class="text-base font-medium">Публичная личность</div>
+
+            <p class="text-sm font-medium text-[#5C6771E6]">
+              Цифровой мемориал этого человека приватный и доступен только по
+              ссылке
+            </p>
+          </div>
         </div>
-        <div>
-          <h3 class="text-[18px] font-medium mb-1">Достижения</h3>
+        <div class="py-4 border-b border-b-[#eee]">
+          <h3 class="text-[18px] mb-1">Достижения</h3>
 
           <!-- Кнопка загрузки фото -->
-          <button
+          <div
             @click="$refs.achievementFileInput.click()"
-            class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"
+            class="upload-area bg-[#E7E8EA] rounded-lg hover:bg-[#DDD] transition-colors py-4 flex flex-col"
           >
-            Добавить
-          </button>
+            <div class="flex justify-center mb-2">
+              <img
+                src="/icons/upload.svg"
+                alt=""
+                class="w-[17px] h-[18px] m-[3px] mr-1"
+              />
+            </div>
+            <p class="text-base text-[#3F474F]">
+              <span class="font-medium text-[#E9B949]">Загрузите файлы</span>
+              или перетащите их
+            </p>
+          </div>
 
           <!-- Скрытый input для файлов -->
           <input
@@ -816,17 +845,23 @@ const submitMemorial = async () => {
             </div>
           </div>
         </div>
-        <div>
-          <h3 class="text-[18px] font-medium mb-1">Видеоматериалы</h3>
+        <div class="py-4">
+          <h3 class="text-[18px] mb-1">Видеоматериалы</h3>
 
           <!-- Кнопка добавления видео -->
-          <button
+          <div
             v-if="!showVideoInput"
             @click="showVideoInputField"
-            class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"
+            class="upload-area bg-[#E7E8EA] rounded-lg hover:bg-[#DDD] transition-colors py-4 flex flex-col"
           >
-            Добавить
-          </button>
+            <div class="flex justify-center mb-2">
+              <img src="/icons/upload-video.svg" alt="" class="w-6 h-6" />
+            </div>
+            <p class="text-base text-[#3F474F]">
+              <span class="font-medium text-[#E9B949]">Загрузите файлы</span>
+              или перетащите их
+            </p>
+          </div>
 
           <!-- Поле ввода ссылки -->
           <div v-if="showVideoInput" class="video-input-container">
@@ -897,11 +932,11 @@ const submitMemorial = async () => {
         </div>
 
         <!-- Кнопка создания мемориала -->
-        <div class="bg-white p-5 rounded-2xl flex justify-end">
+        <div class="flex justify-end">
           <button
             @click="submitMemorial"
             :disabled="isSubmitting"
-            class="bg-[#224C4F] text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-[#1a3a3c] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            class="bg-[#E9B949] text-black px-8 py-4 rounded-lg font-medium text-sm transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             <span v-if="isSubmitting">
               {{

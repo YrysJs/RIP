@@ -39,6 +39,7 @@ onMounted(async () => {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  margin-top: 76px;
 
   &__wrap {
     width: 100%;

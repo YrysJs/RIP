@@ -262,25 +262,115 @@
         </div>
       </template>
 
-      <template v-if="activeTab === 'akimat'">
-        <div class="w-full rounded-[12px] border border-[#EEEEEE] mt-[20px] p-[20px]" v-for="appeal of appeals" :key="appeal.id">
-          <div class="flex justify-between gap-[10px] items-end">
-            <div class="flex flex-col gap-[10px] text-lg font-semibold">
-              <h3>Тип обращения: <span class="ml-6 px-3 py-1 rounded-lg text-white" :class="appeal.type.value === 'COMPLAINT' ? 'bg-[#38949B]' : appeal.type.value === 'OFFER' ? 'bg-[#FFA500]' : 'bg-[#008000]'">{{ appeal.type.nameRu }}</span></h3>
-              <h3 class="my-2">Дата создания: <span>{{ new Date(appeal.createTime).toLocaleString('ru-RU') }}</span></h3>
-              <div class="flex flex-col gap-[0px]">
-                <h3>Обращение:</h3>
-                <p class="text-gray-500">
-                  {{ appeal.content }}
-                </p>
-              </div>
-            </div>
-            <!--            <div class="flex flex-col items-end">-->
-            <!--              <button class="details-btn" @click="openAppealChat">Чат</button>-->
-            <!--            </div>-->
-          </div>
+     <template v-if="activeTab === 'akimat'">
+  <!-- Фильтры сверху: поиск / тип / сортировка -->
+  <div class="filters-row flex items-center gap-[12px] flex-wrap mb-[12px]">
+
+    <!-- Поиск по обращениям -->
+    <div class="field relative flex-1 min-w-[260px]">
+      <span class="field__icon" aria-hidden>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M21 21l-4.2-4.2M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"
+                stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <input
+        class="field__control w-full"
+        type="text"
+        placeholder="Поиск по обращениям"
+        v-model="appealSearch"
+        @input="onAppealSearch"
+      />
+    </div>
+
+    <!-- Тип обращения -->
+    <div class="field relative min-w-[260px]">
+      <span class="field__icon" aria-hidden>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M20 7L10 17l-6-6" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <select
+        class="field__control appearance-none w-full pr-[40px]"
+        v-model="appealType"
+        @change="refetchAppeals()"
+        required
+      >
+        <option value="" disabled hidden>Тип обращения</option>
+        <option value="COMPLAINT">Жалоба</option>
+        <option value="OFFER">Предложение</option>
+        <option value="REQUEST">Запрос</option>
+      </select>
+      <span class="field__chevron" aria-hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </div>
+
+    <!-- Сортировка (справа) -->
+    <div class="ml-auto field relative min-w-[260px]">
+      <span class="field__icon" aria-hidden>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M7 4v16M7 4l-3 3M7 4l3 3M17 20V4m0 16l3-3m-3 3l-3-3"
+                stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <select class="field__control appearance-none w-full pr-[40px]" v-model="appealSort" @change="refetchAppeals()">
+        <option value="newest">Сначала новые</option>
+        <option value="oldest">Сначала старые</option>
+      </select>
+      <span class="field__chevron" aria-hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </div>
+  </div>
+
+  <!-- Карточки обращений -->
+  <div class="appeal-cards">
+    <div class="appeal-card" v-for="a in appeals" :key="a.id">
+      <div class="appeal-card__top">
+        <h3 class="appeal-card__title">Обращение №{{ a.id }}</h3>
+        <div class="appeal-card__date">
+          Дата обращения : {{ formatDate(a.createTime || a.createdAt) }}
         </div>
-      </template>
+      </div>
+
+      <div class="appeal-card__row">
+        <span class="appeal-card__label">Заявитель:</span>
+        <span class="appeal-card__value">
+          {{ a.applicant?.fullName || a.user?.fullName || a.fullName || '—' }}
+        </span>
+      </div>
+
+      <div class="appeal-card__row">
+        <span class="appeal-card__label">Тип обращения:</span>
+        <span class="appeal-card__value">
+          {{ a.type?.nameRu || a.type?.name || '—' }}
+        </span>
+      </div>
+
+      <div class="appeal-card__row" v-if="a.document?.url || a.documentUrl">
+        <span class="appeal-card__label">Документ:</span>
+        <a class="appeal-card__file" :href="a.document?.url || a.documentUrl" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z" stroke="#297D85" stroke-width="1.6"/>
+            <path d="M14 2v6h6" stroke="#297D85" stroke-width="1.6"/>
+          </svg>
+          <span>{{ a.document?.name || 'Document.pdf' }}</span>
+        </a>
+      </div>
+
+      <div class="appeal-card__row">
+        <span class="appeal-card__label">Обращение:</span>
+        <p class="appeal-card__text">{{ a.content || a.text }}</p>
+      </div>
+    </div>
+  </div>
+  </template>
+
     </div>
 
     <!-- модалки -->
@@ -309,7 +399,10 @@ const activeTab = ref('relocation');
 
 const roles = ref([]);
 const relocationCount = 5;
-const akimatCount = 0;
+const akimatCount = ref(0);
+const appealSearch = ref('');
+const appealSort = ref('newest');
+const appealType = ref('');
 
 const requests = ref([]);
 const appeals = ref([]);
@@ -332,7 +425,23 @@ const selectedRequest = ref({});
 const isSetResponsibleModal = ref(false);
 const applicants = ref([]); // если будет список заявителей — подставится сюда
 
+
 // лёгкий debounce для поиска
+let tAppeal = null
+const onAppealSearch = () => {
+  clearTimeout(tAppeal)
+  tAppeal = setTimeout(() => refetchAppeals(), 350)
+}
+
+// единая перезагрузка списка обращений
+function refetchAppeals() {
+  return fetchAppeals({
+    search: appealSearch.value || undefined,
+    sort: appealSort.value || undefined,
+    type: appealType.value || undefined,
+  })
+}
+
 let t = null;
 const onSearchInput = () => {
   clearTimeout(t);
@@ -443,10 +552,12 @@ function statusClass(value) {
 
 const closeSuccessModal = () => { showSuccessModal.value = false; };
 
-async function fetchAppeals() {
-  const response = await getAppeals();
-  appeals.value = response.data;
+async function fetchAppeals(params = {}) {
+  const response = await getAppeals(params)
+  appeals.value = response.data?.items ?? response.data ?? []
+  akimatCount.value = appeals.value.length
 }
+
 async function fetchStatuses() {
   const response = await getStatuses();
   statuses.value = response.data;
@@ -647,6 +758,57 @@ option[disabled][hidden] { display: none; }
   border: none;
 }
 .details-btn:hover { filter: brightness(0.98); }
+/* АКИМАТ — карточки */
+.appeal-cards { display: flex; flex-direction: column; gap: 12px; }
+
+.appeal-card{
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  background: #fff;
+  padding: 16px;
+}
+
+.appeal-card__top{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.appeal-card__title{
+  font-size: 24px;
+  font-weight: 700;
+  color: #1C140E;
+  margin: 0;
+}
+
+.appeal-card__date{ color: #6B7280; font-size: 14px; }
+
+.appeal-card__row{
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: start;
+  column-gap: 16px;
+  row-gap: 6px;
+  margin: 6px 0;
+}
+
+.appeal-card__label{ color:#6B7280; font-weight:600; }
+.appeal-card__value{ color:#111827; }
+.appeal-card__text{ color:#111827; line-height: 1.5; }
+
+.appeal-card__file{
+  display: inline-flex; align-items: center; gap: 8px;
+  color: #297D85; font-weight: 700; text-decoration: none;
+}
+.appeal-card__file:hover{ text-decoration: underline; }
+
+@media (max-width: 720px){
+  .appeal-card__top{ flex-direction: column; align-items: flex-start; gap: 4px; }
+  .appeal-card__row{ grid-template-columns: 1fr; }
+}
+
 
 /* адаптив: правая колонка вниз */
 @media (max-width: 720px) {

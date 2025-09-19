@@ -1,7 +1,43 @@
 <script setup>
 import { getOrders } from '~/services/supplier'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed} from 'vue'
 
+
+const placeholderRows = [
+  { product: 'Организация перевозки', customer: 'Бакадыр Нұрбике Бекзатқызы', date: '2025-12-12', status: 'in_progress' },
+  { product: 'Организация перевозки', customer: 'Сергей Иванович',            date: '2025-12-02', status: 'cancelled'   },
+  { product: 'Организация перевозки', customer: 'Анна Петровна',              date: '2025-02-18', status: 'in_progress' },
+  { product: 'Доставка цветов',        customer: 'Бакадыр Нұрбике Бекзатқызы', date: '2025-08-14', status: 'accepted'    },
+]
+
+// Когда будут реальные заказы — показываем их, иначе плейсхолдеры
+const displayRows = computed(() => {
+  if (orders.value?.length) {
+    return orders.value.map(o => ({
+      product: getProductName(o),
+      customer: o.customer?.fullName || o.user_name || o.user_phone || '—',
+      date: o.burial_date || o.created_at,
+      status: o.status || 'in_progress',
+    }))
+  }
+  return placeholderRows
+})
+
+// Чип статуса (текст + класс под цвет бейджа)
+function statusChip(status) {
+  const map = {
+    in_progress: { text: 'Выполняется', kind: 'orange' },
+    processing:  { text: 'Выполняется', kind: 'orange' },
+    new:         { text: 'Выполняется', kind: 'orange' },
+    cancelled:   { text: 'Отменен',     kind: 'red'    },
+    rejected:    { text: 'Отменен',     kind: 'red'    },
+    accepted:    { text: 'Принят',      kind: 'green'  },
+    approved:    { text: 'Принят',      kind: 'green'  },
+    completed:   { text: 'Завершен',    kind: 'green'  },
+  }
+  const m = map[status] || { text: status || '—', kind: 'orange' }
+  return { text: m.text, class: `chip chip--${m.kind}` }
+}
 // Реактивные переменные
 const orders = ref([])
 const loading = ref(true)
@@ -137,196 +173,288 @@ onMounted(() => {
 </script>
 
 <template>
-    <NuxtLayout name="supplier">
-        <div class="w-full h-[61px] pl-[20px] pr-[20px] flex items-center justify-between bg-white rounded-[16px] text-lg font-semibold">
-            <span>Активные заявки</span>
+  <NuxtLayout name="supplier">
+    <div class="page-head">
+      <h2 class="page-title">Активные заявки</h2>
 
-            <div class="flex items-center gap-[10px] cursor-pointer" @click="toggleFilters">
-                <span>Фильтры</span>
-            </div>
+      <button class="fbtn" @click="toggleFilters">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16M7 12h10M10 17h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        Фильтры
+      </button>
+    </div>
+
+    <!-- Панель фильтров -->
+    <div v-if="showFilters" class="filters-panel">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Фильтр по ID заказа на похороны -->
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700 mb-2">ID заказа на похороны</label>
+          <input v-model="filters.burial_order_id" type="text" placeholder="Введите ID заказа"
+            class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
 
-        <!-- Панель фильтров -->
-        <div v-if="showFilters" class="w-full bg-white rounded-[16px] mt-[20px] p-[20px]">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Фильтр по ID заказа на похороны -->
-                <div class="flex flex-col">
-                    <label class="text-sm font-medium text-gray-700 mb-2">ID заказа на похороны</label>
-                    <input 
-                        v-model="filters.burial_order_id"
-                        type="text"
-                        placeholder="Введите ID заказа"
-                        class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                </div>
-
-                <!-- Фильтр по дате от -->
-                <div class="flex flex-col">
-                    <label class="text-sm font-medium text-gray-700 mb-2">Дата от</label>
-                    <input 
-                        v-model="filters.date_from"
-                        type="date"
-                        class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                </div>
-
-                <!-- Фильтр по дате до -->
-                <div class="flex flex-col">
-                    <label class="text-sm font-medium text-gray-700 mb-2">Дата до</label>
-                    <input 
-                        v-model="filters.date_to"
-                        type="date"
-                        class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                </div>
-
-                <!-- Фильтр по типу -->
-                <div class="flex flex-col">
-                    <label class="text-sm font-medium text-gray-700 mb-2">Тип</label>
-                    <select 
-                        v-model="filters.type"
-                        class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        <option v-for="option in typeOptions" :key="option.value" :value="option.value">
-                            {{ option.text }}
-                        </option>
-                    </select>
-                </div>
-
-                <!-- Фильтр по статусу -->
-                <div class="flex flex-col">
-                    <label class="text-sm font-medium text-gray-700 mb-2">Статус</label>
-                    <select 
-                        v-model="filters.status"
-                        class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        <option v-for="option in statusOptions" :key="option.value" :value="option.value">
-                            {{ option.text }}
-                        </option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Кнопки действий -->
-            <div class="flex gap-4 mt-4">
-                <button 
-                    @click="applyFilters"
-                    class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                >
-                    Применить
-                </button>
-                <button 
-                    @click="resetFilters"
-                    class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
-                >
-                    Сбросить
-                </button>
-            </div>
+        <!-- Фильтр по дате от -->
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700 mb-2">Дата от</label>
+          <input v-model="filters.date_from" type="date"
+            class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
 
-        <div class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
-            <!-- Индикатор загрузки -->
-            <div v-if="loading" class="flex justify-center items-center py-8">
-                <div class="text-gray-500">Загрузка заказов...</div>
-            </div>
-            
-            <!-- Сообщение об ошибке -->
-            <div v-else-if="error" class="flex justify-center items-center py-8">
-                <div class="text-red-500">{{ error }}</div>
-                <button @click="fetchOrders" class="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    Повторить
-                </button>
-            </div>
-            
-            <!-- Данные заказов -->
-            <div v-else-if="orders.length > 0" class="rip-table">
-                <div class="rip-table__header">
-                    <div>Номер заказа</div>
-                    <div>Заказчик</div>
-                    <div>Дата</div>
-                    <div>Статус</div>
-                </div>
-                <nuxt-link 
-                    v-for="order in orders" 
-                    :key="order.id" 
-                    :to="`/supplier/tickets/active/${order.id}`" 
-                    class="rip-table__content"
-                >
-                    <div class="rip-table__content-val">
-                        {{ order.id }}
-                    </div>
-                    <div class="rip-table__content-val">
-                        {{ order.user_phone || 'Не указано' }}
-                    </div>
-                    <div class="rip-table__content-val">
-                        {{ formatDate(order.created_at) }}
-                    </div>
-                    <div class="rip-table__content-val flex items-center gap-[15px]">
-                        <span class="status" :class="getStatusInfo(order.status).class">
-                            {{ getStatusInfo(order.status).text }}
-                        </span> 
-                        <img src="/icons/link.svg" alt="arrow"> 
-                    </div>
-                </nuxt-link>
-            </div>
-            
-            <!-- Сообщение о пустом списке -->
-            <div v-else class="flex justify-center items-center py-8">
-                <div class="text-gray-500">Нет активных заказов</div>
-            </div>
+        <!-- Фильтр по дате до -->
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700 mb-2">Дата до</label>
+          <input v-model="filters.date_to" type="date"
+            class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
-    </NuxtLayout>
+
+        <!-- Фильтр по типу -->
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700 mb-2">Тип</label>
+          <select v-model="filters.type"
+            class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option v-for="option in typeOptions" :key="option.value" :value="option.value">
+              {{ option.text }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Фильтр по статусу -->
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700 mb-2">Статус</label>
+          <select v-model="filters.status"
+            class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+              {{ option.text }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Кнопки действий -->
+      <div class="flex gap-4 mt-4">
+        <button @click="applyFilters"
+          class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+          Применить
+        </button>
+        <button @click="resetFilters"
+          class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
+          Сбросить
+        </button>
+      </div>
+    </div>
+
+    <div class="orders-table-wrap">
+      <!-- загрузка -->
+      <div v-if="loading" class="orders-empty">Загрузка…</div>
+
+      <!-- ошибка -->
+      <div v-else-if="error" class="orders-empty">
+        {{ error }}
+        <button class="retry-btn" @click="fetchOrders">Повторить</button>
+      </div>
+
+      <!-- данные (реальные или плейсхолдеры) -->
+      <template v-else>
+        <div class="orders-table">
+          <div class="orders-row orders-head">
+            <div>Товар/услуга</div>
+            <div>Заказчик</div>
+            <div>Дата похорон</div>
+            <div>Статус</div>
+          </div>
+
+          <div v-for="(row, i) in displayRows" :key="i" class="orders-row" :class="{ 'orders-row--alt': i % 2 === 1 }">
+            <div class="orders-cell">{{ row.product }}</div>
+            <div class="orders-cell">{{ row.customer }}</div>
+            <div class="orders-cell">{{ formatDate(row.date) || row.date }}</div>
+            <div class="orders-cell">
+              <span :class="statusChip(row.status).class">
+                <i class="chip__dot"></i>
+                {{ statusChip(row.status).text }}
+              </span>
+            </div>
+          </div>
+
+          <!-- <div v-if="orders.length === 0" class="orders-empty">
+            Нет активных заявок
+          </div> -->
+        </div>
+      </template>
+    </div>
+
+  </NuxtLayout>
 </template>
 
 <style lang="scss" scoped>
-.status {
-    padding: 4px;
-    border-radius: 4px;
+  /* шапка (у тебя уже стоит – оставляю на случай, если нет) */
+  .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-radius: 16px;
+    padding: 10px 16px;
+    margin-bottom: 12px;
+  }
 
-    font-family: Roboto;
-    font-weight: 600;
+  .page-title {
+    font-family: "FoglihtenNo06", serif;
+    font-weight: 700;
+    letter-spacing: .02em;
+    font-size: 28px;
+    line-height: 1.15;
+    color: #1C140E;
+    margin: 0;
+  }
+
+  .fbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 12px;
     font-size: 14px;
-    line-height: 100%;
-    letter-spacing: 4.5%;
+    border: 1px solid #E6E8EC;
+    background: #F5F6F7;
+    color: #374151;
+    font-weight: 700;
+  }
+
+  .fbtn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* панель фильтров */
+  .filters-panel {
+    background: #fff;
+    border: 1px solid #EEE;
+    border-radius: 16px;
+    padding: 12px;
+    margin-top: 16px;
+  }
+
+  /* таблица */
+  .orders-table-wrap {
+    background: #fff;
+    border-radius: 16px;
+    padding: 4px 0 8px;
+    margin-top: 16px;
+  }
+
+  .orders-table {
+    width: 100%;
+  }
+
+  .orders-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1.6fr 0.9fr 0.9fr;
+    align-items: center;
+    padding: 10px 16px;
+    /* было 14px 20px */
+    font-size: 15px;
+    /* было 18px */
+    color: #111827;
+  }
+
+  .orders-head {
+    background: #E9EEF5;
+    border-radius: 10px;
+    font-weight: 700;
+    padding: 10px 16px;
+  }
+
+  .orders-row--alt {
+    background: #F3F6FA;
+  }
+
+  /* зебра чуть светлее */
+
+  .orders-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .orders-empty {
+    text-align: center;
+    padding: 16px;
+    color: #6B7280;
+  }
+
+  .retry-btn {
+    margin-left: 12px;
+    background: #224C4F;
     color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
 
-    &-danger {
-        background: #DC6E29;
-    }
-    &-cancel {
-        background: #D63C3C;
-    }
-    &-close {
-        background: #339B38;
-    }
-}
+  /* чипы статуса */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 10px;
+  }
 
-.rip-table {
-    &__header, &__content {
-        display: grid;
-        grid-template-columns: 152px 259px 127px 147px;
-        gap: 16px
+  .chip__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: .9;
+  }
+
+  .chip--orange {
+    background: #FFE8CC;
+    color: #C77700;
+  }
+
+  .chip--red {
+    background: #FDECEC;
+    color: #D33030;
+  }
+
+  .chip--green {
+    background: #E8F6EC;
+    color: #2F9B3C;
+  }
+
+  /* адаптив */
+  @media (max-width:960px) {
+    .orders-row {
+      grid-template-columns: 1.4fr 1.2fr .9fr .9fr;
+      font-size: 14px;
+      padding: 9px 14px;
     }
 
-    &__header {
-        font-family: Roboto;
-        font-weight: 400;
-        font-size: 14px;
-        line-height: 100%;
-        color: #565656;
-        padding-top: 12px;
-        padding-bottom: 12px;
+    .orders-head {
+      padding: 9px 14px;
     }
-    &__content {
-        padding-top: 12px;
-        padding-bottom: 12px;
 
-        &-val {
-            font-family: Roboto;
-            font-weight: 400;
-            font-size: 14px;
-            line-height: 100%;
-        }
+    .page-title {
+      font-size: 26px;
     }
-}
+  }
+
+  @media (max-width:680px) {
+    .orders-row {
+      grid-template-columns: 1fr;
+      row-gap: 8px;
+      align-items: start;
+    }
+
+    .orders-head {
+      display: none;
+    }
+  }
 </style>
