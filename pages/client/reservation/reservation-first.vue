@@ -5,12 +5,10 @@ import { useRouter } from "vue-router";
 import { useCemeteryStore } from "~/store/cemetery";
 import { pkbGetDeceasedData } from "~/services/login/index.js";
 import { useLoadingStore } from "~/store/loading.js";
+import ClientLogin from "~/components/auth/ClientLogin.vue";
 
 const router = useRouter();
 const cemeteryStore = useCemeteryStore();
-
-// Заглушка: включить/выключить одним флагом
-const STUB_MODE = true;
 
 const switcher = ref(false);
 const inn = ref("");
@@ -21,6 +19,8 @@ const burialTime = ref("");
 const isFcb = ref(false);
 
 const loadingStore = useLoadingStore();
+
+const showLogin = ref(false);
 
 watch(inn, async (newValue) => {
   if (newValue.length !== 12) return;
@@ -51,40 +51,7 @@ function capitalizeFullName(str) {
 
 // Функция для бронирования
 const handleBooking = async () => {
-  if (STUB_MODE) {
-    try {
-      loadingStore.startLoading();
-      // можно проверить минимальные поля (по желанию)
-      if (!inn.value || !fullName.value) {
-        loadingStore.stopLoading();
-        alert("Заглушка: заполните ИИН и ФИО, пожалуйста.");
-        return;
-      }
-
-      // имитация сетевой задержки
-      await new Promise((r) => setTimeout(r, 700));
-
-      // здесь можно записать что-то в консоль, чтобы видеть данные
-      console.log("[STUB] Забронировать место:", {
-        cemetery_id: cemeteryStore.selectedGrave?.cemetery_id,
-        grave_id: cemeteryStore.selectedGrave?.id,
-        inn: inn.value,
-        full_name: fullName.value,
-        death_date: deathDate.value,
-        burial_date: burialDate.value,
-        burial_time: burialTime.value,
-      });
-
-      alert("Заглушка: место успешно забронировано (демо).");
-      router.push("/client/tickets/active");
-    } finally {
-      loadingStore.stopLoading();
-    }
-    return;
-  }
-
   try {
-    loadingStore.startLoading();
     const dataBurial = {
       cemetery_id: cemeteryStore.selectedGrave.cemetery_id,
       full_name: fullName.value,
@@ -93,13 +60,12 @@ const handleBooking = async () => {
       grave_id: cemeteryStore.selectedGrave.id,
     };
 
-    await createBurialRequest(dataBurial);
-    router.push("/client/tickets/active");
+    // const burialRequest = await createBurialRequest(dataBurial);
+    showLogin.value = true;
+
+    // router.push("/client/tickets/active");
   } catch (error) {
     console.error("Ошибка при отправке данных:", error);
-    alert("Не удалось забронировать место. Попробуйте позже.");
-  } finally {
-    loadingStore.stopLoading();
   }
 };
 </script>
@@ -168,7 +134,7 @@ const handleBooking = async () => {
             class="h-[46px] flex items-center gap-[11px] border-b border-b-[#2010011F]"
           >
             <h4 class="text-base text-[#050202]">ФИО покойного:</h4>
-            <span class="text-sm text-[#999]">{{ fullName || "" }}Someone</span>
+            <span class="text-sm text-[#999]">{{ fullName || "" }}</span>
           </div>
           <div class="h-[38px] flex items-end gap-[11px]">
             <h4 class="text-base text-[#050202]">Дата похорон:</h4>
@@ -252,7 +218,7 @@ const handleBooking = async () => {
           </div>
           <div
             v-if="switcher"
-            class="switcher-data grid grid-cols-2 gap-[12px] gap-y-[24px] mt-4"
+            class="switcher-data grid grid-cols-2 gap-4 mt-4 max-lg:grid-cols-1"
           >
             <div>
               <p class="text-sm text-[#222222] font-normal">Дата смерти</p>
@@ -303,6 +269,7 @@ const handleBooking = async () => {
         </button>
       </div>
     </div>
+    <ClientLogin v-if="showLogin" @close="showLogin = false" />
   </main>
 </template>
 
