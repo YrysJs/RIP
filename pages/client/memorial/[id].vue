@@ -456,9 +456,13 @@ const submitMemorial = async () => {
     const response = await createMemorialSafe(formData);
 
     // Успешно создано/обновлено
-    const action = isEditMode.value ? "обновлен" : "создан";
-    alert(`Мемориал успешно ${action}!`);
-    console.log("Memorial processed:", response);
+    useState("burial").value = burial.value;
+    useState("imagePreviews").value = imagePreviews.value;
+    useState("epitaph").value = epitaph.value;
+    useState("aboutPerson").value = aboutPerson.value;
+    useState("videos").value = videos.value;
+
+    router.push("/client/memorial/created");
 
     // Можно перенаправить пользователя
     // await navigateTo('/client/memorials')
@@ -732,6 +736,7 @@ const submitMemorial = async () => {
             </div>
           </div>
         </div>
+
         <div class="pb-4 border-b border-b-[#eee]">
           <h3 class="text-[18px] mb-2">Эпитафия</h3>
           <textarea
@@ -768,6 +773,7 @@ const submitMemorial = async () => {
               />
             </label>
           </div>
+
           <div>
             <div class="text-base font-medium">Публичная личность</div>
 
