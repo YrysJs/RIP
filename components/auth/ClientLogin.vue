@@ -52,159 +52,159 @@ function close() {
   emit("close");
 }
 
-watch(iin, (val) => {
-  if (val.length !== 12) return;
-
-  processing.value = true;
-  overlayMessage.value =
-    "Вам придет смс от 1414, подтвердите согласие на передачу данных!";
-
-  // ⚠️ Оставляем только ОДИН фейковый поток
-  fakeTimeoutId1 = setTimeout(() => {
-    overlayMessage.value = "Нашли данные. Заполняем…";
-    fakeTimeoutId2 = setTimeout(() => {
-      fio.value = "Иван Иванов Иванович";
-      phone_number.value = "+7 (777) 610-98-28";
-      processing.value = false;
-      currentModal.value = "form"; // модалка с формой на месте
-    }, 1500);
-  }, 2000);
-});
-
-// watch(iin, async (newValue) => {
-//   if (newValue.length !== 12) return;
-
-//   let timeoutId; // чтобы можно было отменить повторы
-
-//   try {
-//     loadingStore.startLoading();
-//     const pkbToken = await getPkbToken();
-
-//     const poll = async () => {
-//       try {
-//         const res = await getPkbRequest({
-//           params: { iin: newValue },
-//           data: pkbToken.data.access.hash,
-//         });
-
-//         if (
-//           res?.data?.code === "OK" &&
-//           res.data?.data?.status_code === "VALID"
-//         ) {
-//           console.log("VALID получен, делаем pkbGetData");
-
-//           // вызываем pkbGetData
-//           const response = await pkbGetData({
-//             id: res.data.data.request_id,
-//             params: {
-//               iin: newValue,
-//               requestId: res.data.data.request_id,
-//             },
-//             data: pkbToken.data.access.hash,
-//           });
-//           isFcb.value = true;
-//           name.value = capitalize(response.data.data.person_data.name);
-//           surname.value = capitalize(response.data.data.person_data.surname);
-//           patronymic.value = capitalize(
-//             response.data.data.person_data.patronymic
-//           );
-//           loadingStore.stopLoading();
-//           console.log("Ответ от pkbGetData:", response);
-
-//           // остановить дальнейшие попытки
-//           if (timeoutId) {
-//             clearTimeout(timeoutId);
-//             timeoutId = null;
-//           }
-//         } else {
-//           console.log(
-//             "Ожидаем VALID, текущий статус:",
-//             res?.data?.data?.status_code
-//           );
-//           // запланировать следующий вызов через 10 секунд
-//           timeoutId = setTimeout(poll, 10000);
-//         }
-//       } catch (err) {
-//         console.error("Ошибка при запросе:", err);
-//         // запланировать повтор при ошибке
-//         timeoutId = setTimeout(poll, 10000);
-//       }
-//     };
-
-//     // запускаем первый вызов
-//     await poll();
-//   } catch (error) {
-//     console.error("Ошибка при получении токена:", error);
-//   }
+// watch(iin, (val) => {
+//   if (val.length !== 12) return;
+//
+//   processing.value = true;
+//   overlayMessage.value =
+//     "Вам придет смс от 1414, подтвердите согласие на передачу данных!";
+//
+//   // ⚠️ Оставляем только ОДИН фейковый поток
+//   fakeTimeoutId1 = setTimeout(() => {
+//     overlayMessage.value = "Нашли данные. Заполняем…";
+//     fakeTimeoutId2 = setTimeout(() => {
+//       fio.value = "Иван Иванов Иванович";
+//       phone_number.value = "+7 (777) 610-98-28";
+//       processing.value = false;
+//       currentModal.value = "form"; // модалка с формой на месте
+//     }, 1500);
+//   }, 2000);
 // });
+
+watch(iin, async (newValue) => {
+  if (newValue.length !== 12) return;
+
+  let timeoutId; // чтобы можно было отменить повторы
+
+  try {
+    loadingStore.startLoading();
+    const pkbToken = await getPkbToken();
+
+    const poll = async () => {
+      try {
+        const res = await getPkbRequest({
+          params: { iin: newValue },
+          data: pkbToken.data.access.hash,
+        });
+
+        if (
+          res?.data?.code === "OK" &&
+          res.data?.data?.status_code === "VALID"
+        ) {
+          console.log("VALID получен, делаем pkbGetData");
+
+          // вызываем pkbGetData
+          const response = await pkbGetData({
+            id: res.data.data.request_id,
+            params: {
+              iin: newValue,
+              requestId: res.data.data.request_id,
+            },
+            data: pkbToken.data.access.hash,
+          });
+          isFcb.value = true;
+          name.value = capitalize(response.data.data.person_data.name);
+          surname.value = capitalize(response.data.data.person_data.surname);
+          patronymic.value = capitalize(
+            response.data.data.person_data.patronymic
+          );
+          loadingStore.stopLoading();
+          console.log("Ответ от pkbGetData:", response);
+
+          // остановить дальнейшие попытки
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+          }
+        } else {
+          console.log(
+            "Ожидаем VALID, текущий статус:",
+            res?.data?.data?.status_code
+          );
+          // запланировать следующий вызов через 10 секунд
+          timeoutId = setTimeout(poll, 10000);
+        }
+      } catch (err) {
+        console.error("Ошибка при запросе:", err);
+        // запланировать повтор при ошибке
+        timeoutId = setTimeout(poll, 10000);
+      }
+    };
+
+    // запускаем первый вызов
+    await poll();
+  } catch (error) {
+    console.error("Ошибка при получении токена:", error);
+  }
+});
 
 // function capitalize(str) {
 //   if (!str) return "";
 //   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 // }
 
-// async function run() {
-//   try {
-//     let response;
-//     // if (isFcb.value) {
-//     //   response = await signupClientFcb({
-//     //     otpRequest: {
-//     //       id: loginId.value,
-//     //       code: code.value
-//     //     },
-//     //     iin: iin.value,
-//     //   })
-//     // }
-//     // else {
-//     response = await signupClient({
-//       otpRequest: {
-//         id: loginId.value,
-//         code: code.value,
-//       },
-//       iin: iin.value,
-//       name: name.value,
-//       surname: surname.value,
-//       patronymic: patronymic.value,
-//     });
-//     // }
-//     Cookies.set("token", response.data.token);
-//     Cookies.set("role", "client");
-//     await router.push("/client/tickets/active");
-//   } catch (error) {
-//     console.error("Ошибка при логине:", error);
-
-//     if (
-//       error?.response?.status === 500 &&
-//       error?.response?.data?.description?.includes("Role not found for phone")
-//     ) {
-//       step.value++;
-//     }
-//   } finally {
-//     console.log("login");
-//   }
-// }
-
 async function run() {
-  console.log("[run] click");
-  if (isSubmitting.value) return;
-
   try {
-    isSubmitting.value = true;
-    console.log("[run] submitting...");
+    let response;
+    // if (isFcb.value) {
+    //   response = await signupClientFcb({
+    //     otpRequest: {
+    //       id: loginId.value,
+    //       code: code.value
+    //     },
+    //     iin: iin.value,
+    //   })
+    // }
+    // else {
+    response = await signupClient({
+      otpRequest: {
+        id: loginId.value,
+        code: code.value,
+      },
+      iin: iin.value,
+      name: name.value,
+      surname: surname.value,
+      patronymic: patronymic.value,
+    });
+    // }
+    Cookies.set("token", response.data.token);
+    Cookies.set("role", "client");
+    await router.push("/client/tickets/active");
+  } catch (error) {
+    console.error("Ошибка при логине:", error);
 
-    // ⛳️ ФЕЙК вместо signupClient — просто подождём
-    await new Promise((r) => setTimeout(r, 1200));
-
-    // важно: снимаем оверлей, переключаем модалку
-    processing.value = false;
-    currentModal.value = "success";
-    console.log("[run] switched to", currentModal.value);
-  } catch (e) {
-    console.error("[run] error", e);
+    if (
+      error?.response?.status === 500 &&
+      error?.response?.data?.description?.includes("Role not found for phone")
+    ) {
+      step.value++;
+    }
   } finally {
-    isSubmitting.value = false;
+    console.log("login");
   }
 }
+
+// async function run() {
+//   console.log("[run] click");
+//   if (isSubmitting.value) return;
+//
+//   try {
+//     isSubmitting.value = true;
+//     console.log("[run] submitting...");
+//
+//     // ⛳️ ФЕЙК вместо signupClient — просто подождём
+//     await new Promise((r) => setTimeout(r, 1200));
+//
+//     // важно: снимаем оверлей, переключаем модалку
+//     processing.value = false;
+//     currentModal.value = "success";
+//     console.log("[run] switched to", currentModal.value);
+//   } catch (e) {
+//     console.error("[run] error", e);
+//   } finally {
+//     isSubmitting.value = false;
+//   }
+// }
 
 function goToTickets() {
   router.push("/client/tickets/active");
@@ -335,13 +335,13 @@ const otpCheck = async () => {
               type="text"
               placeholder="Введите номер телефона"
             />
-            <button
-              class="bg-[#E9B949] py-[18px] rounded-lg text-[#000] font-medium max-lg:py-[15px]"
-              :class="{ '!bg-[#38949B] text-white': phone_number.length >= 18 }"
-              @click="step++"
-            >
-              Получить код в WhatsApp
-            </button>
+<!--            <button-->
+<!--              class="bg-[#E9B949] py-[18px] rounded-lg text-[#000] font-medium max-lg:py-[15px]"-->
+<!--              :class="{ '!bg-[#38949B] text-white': phone_number.length >= 18 }"-->
+<!--              @click="step++"-->
+<!--            >-->
+<!--              Получить код в WhatsApp-->
+<!--            </button>-->
             <button
               class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#17212A] font-medium my-4 max-lg:py-[15px] max-lg:mt-2 max-lg:mb-4"
               :class="{ '!bg-[#38949B] text-white': phone_number.length >= 18 }"
