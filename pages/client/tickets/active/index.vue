@@ -189,7 +189,7 @@ onMounted(async () => {
           </div>
         </div>
         <NuxtLink
-          class="block py-[15px] px-5 rounded-lg bg-[#E9B949] text-black text-sm font-medium mt-[16px] max-sm:w-full"
+          class="block w-fit py-[15px] px-5 rounded-lg bg-[#E9B949] text-black text-sm font-medium mt-[16px] max-sm:w-full text-center"
           :to="
             localePath({
               name: 'client-tickets-active-id',
