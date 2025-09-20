@@ -1,174 +1,317 @@
 <script setup>
+import { ref, computed, onMounted, reactive, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { getProducts, updateProductStatus } from '~/services/supplier'
 
+// -------- router --------
+const router = useRouter()
 
-// Состояние для хранения данных
+// -------- state --------
 const products = ref([])
-const loading = ref(true)
-const error = ref(null)
+const loading  = ref(true)
+const error    = ref(null)
 
-// Функция для получения данных
+// поддерживаем и массив, и объект с items
+const items = computed(() =>
+  Array.isArray(products.value) ? products.value : (products.value?.items ?? [])
+)
+
 const fetchProducts = async () => {
-    try {
-        loading.value = true
-        const response = await getProducts({ status: 'deactive' })
-        products.value = response.data || []
-    } catch (err) {
-        error.value = err
-        console.error('Ошибка при загрузке продуктов:', err)
-    } finally {
-        loading.value = false
-    }
+  try {
+    loading.value = true
+    error.value = null
+    const resp = await getProducts({ status: 'active' })
+    products.value = resp?.data ?? []
+  } catch (e) {
+    console.error('Ошибка при загрузке активных товаров и услуг:', e)
+    error.value = 'Ошибка при загрузке данных'
+  } finally {
+    loading.value = false
+  }
 }
+onMounted(fetchProducts)
 
-// Функция для деактивации товара/услуги
-const deactivateProduct = async (productId) => {
-    try {
-        const response = await updateProductStatus(productId, 'inactive')
-        
-        if (response.data?.status === 'ok' || response.status === 200) {
-            if (products.value?.items) {
-                products.value.items = products.value.items.filter(product => product.id !== productId)
-            }
-            alert('Товар/услуга успешно деактивирован')
-        } else {
-            if (products.value?.items) {
-                products.value.items = products.value.items.filter(product => product.id !== productId)
-            }
-            alert('Товар/услуга успешно деактивирован')
-        }
-    } catch (err) {
-        if (err.response?.status === 200 || err.response?.data?.status === 'ok') {
-            if (products.value?.items) {
-                products.value.items = products.value.items.filter(product => product.id !== productId)
-            }
-            alert('Товар/услуга успешно деактивирован')
-        } else {
-            alert('Ошибка при деактивации товара/услуги')
-        }
-    }
-}
-
-onMounted(() => {
-    fetchProducts()
+// -------- success modal (UI) --------
+const success = reactive({
+  open: false,
+  title: 'Товар деактивирован',
+  text: 'перемещён в «Неактивные».',
 })
+function lockScroll(v){ document.body.style.overflow = v ? 'hidden' : '' }
+function openSuccess(custom = {}){ Object.assign(success, custom, { open: true }); lockScroll(true) }
+function closeSuccess(){ success.open = false; lockScroll(false); router.push('/supplier/services/inactive') }
 
-function getStarClass(rating, n) {
-    if (rating >= n) return "full";
-    if (rating >= n - 0.5 && rating < n) return "half";
-    return "empty";
-}
+const onKey = (e) => { if (e.key === 'Escape' && success.open) closeSuccess() }
+onMounted(() => window.addEventListener('keydown', onKey))
+onUnmounted(() => window.removeEventListener('keydown', onKey))
 
-// Функция для форматирования цены
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('ru-RU').format(price)
-}
+// -------- actions --------
+const deactivating = ref(new Set())
+const deactivateProduct = async (id) => {
+  try {
+    deactivating.value.add(id)
+    await updateProductStatus(id, 'inactive')
 
-// Функция для получения URL изображения
-const getImageUrl = (imageUrls) => {
-    if (imageUrls && imageUrls.length > 0) {
-        return imageUrls[0]
+    // оптимистично убираем карточку
+    if (Array.isArray(products.value)) {
+      products.value = products.value.filter(p => p.id !== id)
+    } else if (products.value?.items) {
+      products.value.items = products.value.items.filter(p => p.id !== id)
     }
-    return '/images/test-card-car.jpg' // fallback изображение
+
+    // модалка успеха
+    openSuccess({
+      title: 'Товар деактивирован',
+      text: 'перемещён в «Неактивные».',
+    })
+  } catch (e) {
+    alert('Не удалось деактивировать. Попробуйте ещё раз.')
+    console.error(e)
+  } finally {
+    deactivating.value.delete(id)
+  }
+}
+
+// -------- helpers --------
+const formatPrice = (p) =>
+  new Intl.NumberFormat('ru-RU').format(Number(p ?? 0))
+
+const getImageUrl = (urls) =>
+  (Array.isArray(urls) && urls[0]) || '/images/test-card-image.jpg'
+
+const pluralDays = (v) => {
+  const n = Number(String(v).replace(/\D/g, '')) || 0
+  const mod10 = n % 10, mod100 = n % 100
+  if (mod10 === 1 && mod100 !== 11) return 'день'
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'дня'
+  return 'дней'
 }
 </script>
 
 <template>
-    <NuxtLayout name="supplier">
-        <div class="w-full h-[61px] pl-[20px] flex items-center bg-white rounded-[16px] text-lg font-semibold">
-            Активные товары и услуги
-        </div>
-        
-        <!-- Лоадер -->
-        <div v-if="loading" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px] text-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#224C4F] mx-auto"></div>
-            <p class="mt-4 text-gray-600">Загрузка товаров и услуг...</p>
+  <NuxtLayout name="supplier">
+    <!-- заголовок -->
+    <div class="page-head">
+      <h2 class="page-title">Активные товары и услуги</h2>
+    </div>
+
+    <!-- состояния -->
+    <div v-if="loading" class="state-card">
+      <div class="spinner" />
+      <p class="muted mt-3">Загрузка активных товаров и услуг…</p>
+    </div>
+
+    <div v-else-if="error" class="state-card">
+      <p class="error">{{ error }}</p>
+      <button class="btn btn--primary btn--md mt-3" @click="fetchProducts">Попробовать снова</button>
+    </div>
+
+    <div v-else-if="items.length === 0" class="state-card">
+      <p class="muted">Нет активных заявок</p>
+    </div>
+
+    <!-- список карточек -->
+    <div v-else v-for="product in items" :key="product.id" class="active-card">
+      <!-- media -->
+      <div class="active-card__media">
+        <img :src="getImageUrl(product.image_urls)" :alt="product.name">
+      </div>
+
+      <!-- body -->
+      <div class="active-card__body">
+        <!-- верх -->
+        <div class="active-card__top">
+          <div class="titlebox">
+            <h3 class="title">{{ product.name }}</h3>
+            <p class="subtitle">{{ product.category?.name || ' ' }}</p>
+          </div>
+          <div class="price-badge">от {{ formatPrice(product.price) }} ₸</div>
         </div>
 
-        <!-- Ошибка -->
-        <div v-if="error && !loading" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px] text-center">
-            <div class="text-red-500">
-                <p>Ошибка при загрузке данных</p>
-                <button @click="fetchProducts" class="mt-4 px-4 py-2 bg-[#224C4F] text-white rounded hover:bg-[#1a3a3d]">
-                    Попробовать снова
-                </button>
-            </div>
+        <!-- мета -->
+        <div class="meta-row">
+          <div class="meta">
+            <svg class="ico ico--yellow" viewBox="0 0 24 24" aria-hidden>
+              <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" fill="currentColor"/>
+              <circle cx="12" cy="10" r="2.4" fill="#fff"/>
+            </svg>
+            <span>{{ product.country }}, {{ product.city }}</span>
+          </div>
+
+          <div class="meta">
+            <svg class="ico ico--yellow" viewBox="0 0 24 24" aria-hidden>
+              <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 3v4M17 3v4M4 9h16"/>
+                <rect x="4" y="5" width="16" height="15" rx="2"/>
+              </g>
+            </svg>
+            <span>
+              Срок выполнения: {{ product.service_time }} {{ pluralDays(product.service_time) }}
+            </span>
+          </div>
         </div>
 
-        <!-- Пустое состояние -->
-        <div v-if="!loading && !error && products.length === 0" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px] text-center">
-            <p class="text-gray-600">У вас пока нет активных товаров и услуг</p>
-        </div>
+        <!-- низ -->
+        <div class="active-card__bottom">
+          <button
+            class="btn btn--danger btn--lg"
+            :disabled="deactivating.has(product.id)"
+            @click="deactivateProduct(product.id)"
+          >
+            <span v-if="deactivating.has(product.id)">Деактивируем…</span>
+            <span v-else>Деактивировать</span>
+          </button>
 
-        <!-- Список товаров/услуг -->
-        <div v-for="product in products.items" :key="product.id" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]">
-            <div class="w-full flex gap-[20px]">
-                <div class="min-w-[320px] max-w-[320px] max-h-[260px] rounded-lg overflow-hidden">
-                    <img class="w-full h-full object-cover" :src="getImageUrl(product.image_urls)" :alt="product.name">
-                </div>
-                <div class="w-full">
-                    <div class="flex justify-between items-start mb-[3px]">
-                        <div>
-                            <h3 class="font-medium text-lg">{{ product.name }}</h3>
-                            <p class="text-sm text-[#939393]">{{ product.description }}</p>
-                        </div>
-                        <div class="font-medium text-xl w-[365px]">
-                            от {{ formatPrice(product.price) }} ₸
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex items-center space-x-1">
-                            <template v-for="n in 5" :key="n">
-                                <div class="relative text-2xl select-none">
-                                    <span v-if="getStarClass(product.average_rating, n) === 'half'" class="text-gray-300">★</span>
-                                    <span 
-                                        v-else :class="{
-                                        'text-yellow-400': getStarClass(product.average_rating, n) === 'full',
-                                        'text-gray-300': getStarClass(product.average_rating, n) === 'empty'
-                                        }"
-                                    >
-                                        ★
-                                    </span>
-                                    <span
-                                        v-if="getStarClass(product.average_rating, n) === 'half'"
-                                        class="absolute inset-0 overflow-hidden text-yellow-400"
-                                        :style="{ width: '50%' }"
-                                    >
-                                        ★
-                                    </span>
-                                </div>
-                            </template>
-                            <span class="text-[#38949B] ml-2">{{ product.average_rating ? product.average_rating.toFixed(1) : '0.0' }}</span>
-                        </div>
-                        <div class="flex items-center gap-[10px] text-sm font-normal mb-[8px] text-[#5C5C5C] mt-[8px]">
-                            <img src="/icons/calendar-icon.svg" alt="calendar-icon"> 
-                            Срок выполнения: {{ product.service_time }} {{ product.service_time === '1' ? 'день' : 'дня/дней' }}
-                        </div>
-                        <div class="flex items-center gap-[10px] text-sm font-normal text-[#224C4F]">
-                            <img src="/icons/geo-icon.svg" alt="geo-icon"> 
-                            {{ product.country }}, {{ product.city }}
-                        </div>
-                    </div>
-                    <div class="flex justify-end gap-[10px] items-center mt-[40px]">
-                        <button 
-                            @click="deactivateProduct(product.id)"
-                            class="py-[8px] px-[16px] rounded-md bg-[#D63C3C26] text-[#D63C3C] font-semibold hover:bg-[#D63C3C33] transition-colors"
-                        >
-                            Деактивировать
-                        </button>
-                        <nuxt-link 
-                            :to="`/supplier/services/add-service/${product.id}`" 
-                            class="py-[8px] px-[16px] rounded-md bg-[#224C4F] text-white font-semibold hover:bg-[#1a3a3d] transition-colors"
-                        >
-                            Редактировать
-                        </nuxt-link>
-                    </div>
-                </div>
-            </div>
+          <NuxtLink
+            class="btn btn--primary btn--lg"
+            :to="`/supplier/services/add-service/${product.id}`"
+          >
+            Редактировать
+          </NuxtLink>
         </div>
-    </NuxtLayout>
+      </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div v-if="success.open" class="su-modal__overlay" @click.self="closeSuccess">
+      <div class="su-modal" role="dialog" aria-modal="true" aria-labelledby="su-modal-title">
+        <div class="su-modal__icon">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+            <circle cx="12" cy="12" r="10" stroke="#22C55E" stroke-width="1.6" fill="white"/>
+            <path d="M7.5 12.5l3 3 6-6" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 id="su-modal-title" class="su-modal__title">{{ success.title }}</h3>
+        <p class="su-modal__text">{{ success.text }}</p>
+        <button type="button" class="btn btn--primary btn--block su-modal__btn" @click="closeSuccess">
+          Перейти в неактивные
+        </button>
+      </div>
+    </div>
+  </NuxtLayout>
 </template>
 
-<style lang=scss scoped>
+<style scoped lang="scss">
+/* ---------- header ---------- */
+.page-head{
+  display:flex; align-items:center;
+  background:#fff; border-radius:16px;
+  padding:14px 16px; margin-bottom:12px;
+}
+.page-title{
+  font-family:"FoglihtenNo06", serif;
+  font-weight:700; letter-spacing:.02em;
+  font-size:22px; line-height:1.15; margin:0; color:#1C140E;
+}
 
+/* ---------- states ---------- */
+.state-card{
+  background:#fff; border-radius:16px;
+  padding:24px; text-align:center; margin-top:16px;
+}
+.muted{ color:#6B7280; }
+.error{ color:#D63C3C; }
+.spinner{
+  width:34px; height:34px; border-radius:50%;
+  border:3px solid #e7e9ec; border-top-color:#224C4F;
+  animation:spin .9s linear infinite; margin:0 auto;
+}
+@keyframes spin{ to { transform: rotate(360deg) } }
+
+/* ---------- CARD (в точности как в inactive) ---------- */
+.active-card{
+  display:grid;
+  grid-template-columns: 320px 1fr;
+  gap:16px;
+  background:#F7F8FA;
+  border:1px solid #EAECEE;
+  border-radius:16px;
+  padding:12px;
+  margin-top:16px;
+}
+.active-card__media{
+  width:100%; height:180px;
+  border-radius:12px; overflow:hidden; background:#F2F3F5;
+}
+.active-card__media img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+.active-card__body{ display:flex; flex-direction:column; gap:12px; }
+
+.active-card__top{ display:flex; justify-content:space-between; gap:12px; }
+.titlebox{ min-width:0; }
+.title{ font-weight:800; font-size:18px; color:#111827; margin:0 0 2px 0; }
+.subtitle{ font-size:12px; color:#8C8C8C; margin:0; }
+
+.price-badge{
+  align-self:flex-start;
+  background:#EEF1F4; color:#0F172A;
+  padding:8px 12px; border-radius:10px;
+  font-weight:800; font-size:14px; white-space:nowrap;
+}
+
+/* meta (место + календарь) */
+.meta-row{ display:flex; flex-wrap:wrap; gap:18px; }
+.meta{ display:inline-flex; align-items:center; gap:8px; color:#5C5C5C; font-size:13px; }
+.ico{ width:20px; height:20px; flex:0 0 20px; }
+.ico--yellow{ color:#F0B32E; }
+
+/* низ карточки — кнопки справа как в inactive */
+.active-card__bottom{
+  display:flex; justify-content:flex-end; align-items:center;
+  gap:10px; margin-top:40px; flex-wrap:wrap;
+}
+
+/* ---------- BUTTONS (такие же размеры/радиусы) ---------- */
+.btn{
+  border:none; border-radius:12px; font-weight:800;
+  cursor:pointer; transition:filter .15s ease, background-color .15s ease;
+}
+.btn--md{ height:42px; padding:0 16px; font-size:14px; }
+.btn--lg{ height:48px; padding:0 22px; font-size:14px; font-weight:500; }
+
+.btn--primary{ background:#F7B500; color:#1F2937; }
+.btn--danger{  background:#D63C3C26; color:#D63C3C; }
+.btn--outline{ background:transparent; color:#1F2937; border:1px solid #E0E4EA; }
+.btn--block{ display:block; width:100%; }
+
+.btn--primary:hover,
+.btn--danger:hover,
+.btn--outline:hover{ filter:brightness(.98); }
+
+/* ---------- SUCCESS MODAL (широкая кнопка) ---------- */
+.su-modal__overlay{
+  position:fixed; inset:0; background:rgba(17,24,39,.45);
+  display:flex; align-items:center; justify-content:center;
+  z-index:1000; backdrop-filter:blur(2px);
+}
+.su-modal{
+  position:relative; width:min(520px,92vw);
+  background:#fff; border-radius:16px; padding:28px 24px 22px;
+  box-shadow:0 20px 60px rgba(0,0,0,.18); text-align:center;
+}
+.su-modal__icon{
+  width:56px; height:56px; margin:0 auto 12px; display:grid; place-items:center;
+  border-radius:50%; background:#ECFDF5; border:1px solid #A7F3D0;
+}
+.su-modal__icon svg{ width:34px; height:34px; }
+.su-modal__title{ font-size:22px; font-weight:800; color:#0F172A; margin:6px 0 4px; }
+.su-modal__text{ font-size:16px; color:#475569; margin-bottom:18px; }
+.su-modal__btn{
+  display: block;      /* важно */
+  width: 100%;         /* растягиваем */
+  height: 52px;        /* как в макете */
+  border-radius: 12px; /* красивая пилюля */
+  font-weight: 800; 
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 920px){
+  .active-card{ grid-template-columns: 280px 1fr; }
+  .active-card__media{ height:170px; }
+}
+@media (max-width: 680px){
+  .active-card{ grid-template-columns: 1fr; }
+  .active-card__media{ height:200px; }
+  .active-card__bottom{ justify-content:flex-start; }
+}
 </style>

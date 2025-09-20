@@ -341,7 +341,7 @@
       <div class="appeal-card__row">
         <span class="appeal-card__label">Заявитель:</span>
         <span class="appeal-card__value">
-          {{ a.applicant?.fullName || a.user?.fullName || a.fullName || '—' }}
+          {{ applicantName(a) }}
         </span>
       </div>
 
@@ -386,7 +386,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { getRequests, getAppeals, getStatuses, setRequestResponsible } from '@/services/akimat';
 import { getUsersByRole } from '~/services/login';
@@ -397,9 +397,19 @@ const router = useRouter();
 
 const activeTab = ref('relocation');
 
+const relocationCount = computed(() => {
+  const src = requests.value?.items ?? requests.value;
+   if (Array.isArray(src)) return src.length;
+   if (typeof requests.value?.total === 'number') return requests.value.total;
+   return 0;
+});
 const roles = ref([]);
-const relocationCount = 5;
-const akimatCount = ref(0);
+const akimatCount = computed(() => {
+  const src = appeals.value?.items ?? appeals.value;
+  if (Array.isArray(src)) return src.length;
+  if (typeof appeals.value?.total === 'number') return appeals.value.total;
+  return 0;
+});
 const appealSearch = ref('');
 const appealSort = ref('newest');
 const appealType = ref('');
@@ -555,7 +565,6 @@ const closeSuccessModal = () => { showSuccessModal.value = false; };
 async function fetchAppeals(params = {}) {
   const response = await getAppeals(params)
   appeals.value = response.data?.items ?? response.data ?? []
-  akimatCount.value = appeals.value.length
 }
 
 async function fetchStatuses() {
@@ -564,7 +573,7 @@ async function fetchStatuses() {
 }
 async function fetchRequests(params) {
   const response = await getRequests(params);
-  requests.value = response.data;
+  requests.value = response.data?.items ?? response.data ?? [];
 }
 const fetchUsers = async () => {
   try {
@@ -598,6 +607,21 @@ onMounted(async () => {
   await fetchAppeals();
   await fetchUsers();
 });
+
+const applicantName = (a) => {
+   const u = a?.applicant || a?.user || null
+   if (u) {
+     // 1) готовые поля
+     if (u.fullName) return u.fullName
+     if (u.fio)      return u.fio
+     // 2) склеиваем сами
+     const glued = [u.surname, u.name, u.patronymic].filter(Boolean).join(' ').trim()
+     if (glued) return glued
+   }
+   // 3) если нет ФИО — показываем телефон как у заявок на перезахоронение
+   const phone = u?.phone || a?.userPhone
+   return phone ? formatPhoneNumber(String(phone)) : '—'
+ }
 </script>
 
 <style lang="scss" scoped>

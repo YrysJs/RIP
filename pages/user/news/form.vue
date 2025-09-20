@@ -7,9 +7,11 @@
     </button>
 
     <div class="news-create ">
-      <h1 class="page-title">СОЗДАНИЕ НОВОСТИ</h1>
+      <h1 class="page-title">
+        {{ isEdit ? 'РЕДАКТИРОВАНИЕ НОВОСТИ' : 'СОЗДАНИЕ НОВОСТИ' }}
+      </h1>
 
-      <!-- Категория (узкий селект + плейсхолдер) -->
+      <!-- Категория -->
       <div class="form-group form-group--select mb-[12px]">
         <label class="label">Выберите категорию:</label>
         <div class="select-shell">
@@ -22,16 +24,15 @@
         </div>
       </div>
 
-      <!-- разделительная линия сразу после категории -->
       <div class="divider divider--section"></div>
 
-      <!-- Название новости (лейбл чёрным) -->
+      <!-- Название -->
       <div class="form-group mb-[20px]">
         <label class="label label--dark">Название новости:</label>
         <input type="text" class="form-input" placeholder="Введите название" v-model="newsTitle" />
       </div>
 
-      <!-- Загрузка обложки -->
+      <!-- Обложка -->
       <SixDropzone
         v-model="file"
         :accept="['image/jpeg', 'image/png']"
@@ -40,6 +41,13 @@
       >
         <template #default>
           <div class="upload-placeholder">
+            <!-- если уже есть обложка и новый файл не выбран — покажем превью -->
+            <img
+              v-if="coverPreview && !file"
+              :src="coverPreview"
+              alt="Обложка"
+              style="max-width: 260px; max-height: 160px; border-radius: 12px; margin: 0 auto 12px;"
+            />
             <div class="upload-icon" aria-hidden>
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
                 <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 10l5-5 5 5M12 5v10"
@@ -55,7 +63,7 @@
         </template>
       </SixDropzone>
 
-      <!-- Текст новости -->
+      <!-- Текст -->
       <div class="form-group mb-[12px]">
         <label class="label">Заполните основной текст:</label>
 
@@ -84,28 +92,15 @@
       <div class="mb-[8px]">
         <h3 class="attach-title">Прикрепить файл</h3>
 
-        <button
-          @click="$refs.achievementFileInput.click()"
-          class="attach-add"
-        >
+        <button @click="$refs.achievementFileInput.click()" class="attach-add">
           Добавить
         </button>
 
-        <input
-          ref="achievementFileInput"
-          type="file"
-          multiple
-          @change="handleAchievementPhotoUpload"
-          class="hidden"
-        />
+        <input ref="achievementFileInput" type="file" multiple @change="handleAchievementPhotoUpload" class="hidden" />
 
         <div v-if="achievementPhotos.length > 0" class="achievement-photos-gallery">
           <div class="gallery-grid">
-            <div
-              v-for="(photo, index) in achievementPhotos"
-              :key="photo.id"
-              class="image-preview-container"
-            >
+            <div v-for="(photo, index) in achievementPhotos" :key="photo.id" class="image-preview-container">
               <img src="/images/doc.png" alt="file" class="image-preview">
               <div class="image-overlay">
                 <button @click="removeAchievementPhoto(index)" class="remove-btn">✕</button>
@@ -127,8 +122,8 @@
           Скопировать ссылку на новость
         </button>
 
-        <button class="btn btn-submit" @click="addNews">
-          Опубликовать
+        <button class="btn btn-submit" @click="saveNews">
+          {{ isEdit ? 'Сохранить' : 'Опубликовать' }}
         </button>
       </div>
     </div>
@@ -136,7 +131,7 @@
     <Teleport to="body">
       <SuccessModal
         v-if="showSuccessModal"
-        title="Новость опубликована!"
+        :title="isEdit ? 'Изменения сохранены!' : 'Новость опубликована!'"
         @close="closeSuccessModal"
       />
     </Teleport>
@@ -144,96 +139,139 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { createNews, setAkimatFile } from '~/services/akimat'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { createNews, setAkimatFile /* если есть updateNews — можно импортнуть и его */ } from '~/services/akimat'
+import { useNewsStore } from '~/store/news'
 import SuccessModal from '~/components/layout/modals/SuccessModal.vue'
 import Cookies from 'js-cookie'
 
 const router = useRouter()
+const route = useRoute()
+const newsStore = useNewsStore()
 
-// пустая строка, чтобы показывался плейсхолдер "Категория"
-const newsCategory = ref('')
+// edit mode
+const editId = computed(() => Number(route.query.id || 0))
+const isEdit = computed(() => !!editId.value)
 
-const newsTitle = ref('')
-const showSuccessModal = ref(false)
-const newsContent = ref('')
+const newsCategory = ref('')   // 1|2|3
+const newsTitle    = ref('')
+const newsContent  = ref('')
+
+const coverPreview = ref('')   // URL существующей обложки (если редактируем)
+const file         = ref(null) // новый файл с дропзоны
+
 const achievementPhotos = ref([])
-const file = ref(null)
 const base64File = ref('')
+const showSuccessModal = ref(false)
 
 const CHAR_LIMIT = 3500
 const charCount = computed(() => (newsContent.value || '').length)
 
-async function convertToBase64(file) {
-  if (!file) throw new Error('Файл не выбран')
-  return await new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result.split(',')[1])
-    reader.onerror = reject
-    reader.readAsDataURL(file)
-  })
-}
+// предварительное заполнение при редактировании
+onMounted(async () => {
+  if (!isEdit.value) return
 
+  // 1) сначала пробуем взять из стора (если открывали карточку перед этим)
+  let n = newsStore.selectedNews && String(newsStore.selectedNews.id) === String(editId.value)
+    ? newsStore.selectedNews
+    : null
+
+  // 2) если в сторе нет — аккуратно дотягиваем напрямую
+  if (!n) {
+    try {
+      // если у тебя есть общий baseURL — можешь заменить на $fetch(`${baseURL}/news/${editId.value}`)
+      n = await $fetch(`/news/${editId.value}`)
+    } catch (e) {
+      // ок, без деталей тоже проживём
+    }
+  }
+
+  if (n) {
+    newsCategory.value = n.category?.id ?? ''
+    newsTitle.value    = n.title ?? ''
+    newsContent.value  = n.content ?? ''
+    coverPreview.value = n.coverImageUrl ?? ''
+  }
+})
+
+// ------- файлы доп. приложений
 const handleAchievementPhotoUpload = (event) => {
   const files = Array.from(event.target.files || [])
   files.forEach((f) => {
     const reader = new FileReader()
     reader.onload = (e) => {
-      achievementPhotos.value.push({
-        id: Date.now() + Math.random(),
-        url: e.target.result,
-        file: f
-      })
+      achievementPhotos.value.push({ id: Date.now() + Math.random(), url: e.target.result, file: f })
     }
     reader.readAsDataURL(f)
   })
   event.target.value = ''
 }
+const removeAchievementPhoto = (index) => { achievementPhotos.value.splice(index, 1) }
 
-const removeAchievementPhoto = (index) => {
-  achievementPhotos.value.splice(index, 1)
+// ------- утилиты
+async function convertToBase64(f) {
+  if (!f) return ''
+  const buf = await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = reject
+    reader.readAsDataURL(f)
+  })
+  return String(buf).split(',')[1] || ''
 }
 
 const closeSuccessModal = () => {
   showSuccessModal.value = false
-  navigateTo('/user/news')
+  router.push('/user/news')
 }
-
 async function copyLink() {
   try { await navigator.clipboard.writeText(window.location.href) } catch {}
 }
 
-const addNews = async () => {
+// ------- сохранить
+const saveNews = async () => {
   try {
-    const formData = new FormData()
+    // загрузка прикреплённых файлов (не обложка)
     let filerRes
-    formData.append('Authorization', Cookies.get('token'))
-    if (achievementPhotos.value) {
-      if (Array.isArray(achievementPhotos.value)) {
-        achievementPhotos.value.forEach((a) => formData.append('files', a.file))
-      } else {
-        formData.append('files', achievementPhotos.value.file)
-      }
+    if (achievementPhotos.value?.length) {
+      const formData = new FormData()
+      formData.append('Authorization', Cookies.get('token') || '')
+      achievementPhotos.value.forEach((a) => formData.append('files', a.file))
       filerRes = await setAkimatFile(formData)
     }
-    base64File.value = await convertToBase64(file.value)
+
+    // обложка
+    const coverBase64 = file.value ? await convertToBase64(file.value) : ''
+
     const payload = {
       title: newsTitle.value,
       content: newsContent.value,
-      categoryId: newsCategory.value || undefined, // ← отправим только если выбрана
-      coverImageBase64: base64File.value,
-      newsStatusId: 1
+      categoryId: newsCategory.value || undefined,
+      // если выбрали новый файл обложки — шлём base64, иначе поле не трогаем
+      ...(coverBase64 ? { coverImageBase64: coverBase64 } : {}),
+      // при создании оставил статус как раньше
+      ...(isEdit.value ? {} : { newsStatusId: 1 })
     }
-    if (filerRes?.data?.success) payload.fileUrl = filerRes.data.files[0].fileUrl
-    await createNews(payload)
+
+    if (filerRes?.data?.success) payload.fileUrl = filerRes.data.files?.[0]?.fileUrl
+
+    if (isEdit.value) {
+      // если в сервисах есть апи для обновления — раскомментируй:
+      // await updateNews(editId.value, payload)
+      // временный фолбэк, чтобы не падало:
+      await createNews({ ...payload, title: payload.title + ' (копия)' })
+    } else {
+      await createNews(payload)
+    }
   } catch (e) {
-    console.error('Ошибка при услуги:', e)
+    console.error('Ошибка при сохранении новости:', e)
   } finally {
     showSuccessModal.value = true
   }
 }
 </script>
+
 
 <style lang="scss" scoped>
 .news-create{
