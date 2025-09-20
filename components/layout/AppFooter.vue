@@ -6,10 +6,10 @@
       <ul class="contacts__list">
         <li>г. Алматы, Ул.&nbsp;Тимирязева. 428</li>
         <li>
-          <a href="tel:+77776109828">+7 (777) 610-98-28</a>
+          <a href="tel:+77758100110">+7 (775) 810-01-10</a>
         </li>
         <li>
-          <a href="mailto:john@ripservice.com ">john@ripservice.com</a>
+          <a href="mailto:info@ripservice.kz ">info@ripservice.kz</a>
         </li>
       </ul>
       <div class="footer__links">

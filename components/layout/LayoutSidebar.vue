@@ -14,21 +14,20 @@ const openA = ref(true);  // Мои заявки
 const openB = ref(true);  // Мои товары и услуги
 
 const sectionA = [
-  { title: 'Активные', path: '/supplier/tickets/active', count: 4 },
+  { title: 'Активные', path: '/supplier/tickets/active', count: 0 },
   { title: 'Архив',    path: '/supplier/tickets/archive' }
 ];
 
 const sectionB = [
-  { title: 'Активные',          path: '/supplier/services/active',         count: 4 },
-  { title: 'На рассмотрении',   path: '/supplier/services/consideration',  count: 1 },
-  { title: 'Требует доработки', path: '/supplier/services/improvement',    count: 1 },
+  { title: 'Активные',          path: '/supplier/services/active' },
+  { title: 'На рассмотрении',   path: '/supplier/services/consideration' },
+  { title: 'Требует доработки', path: '/supplier/services/improvement' },
   { title: 'Не активные',       path: '/supplier/services/inactive' }
 ];
 
 const singles = [
   { title: 'Добавить товар или услугу', path: '/supplier/services/add-service', kind: 'add' },
   { title: 'Отзывы',                     path: '/supplier/reviews' },
-  { title: 'Уведомления',                path: '/supplier/notifications' },
   { title: 'Отчеты',                     path: '/supplier/reports' },
   { title: 'Обращение в Акимат',         path: '/supplier/goverment/requests' }
 ];

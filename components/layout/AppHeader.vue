@@ -1,5 +1,11 @@
 <template>
-  <header class="app-header" :class="{ 'app-header--transparent': isClientTop }">
+  <header
+      class="app-header"
+      :class="{
+    'app-header--transparent': props.style === 'landing' && isTop,
+    'app-header--solid': !(props.style === 'landing' && isTop)
+  }"
+  >
     <div class="container">
       <!-- Логотип -->
       <div class="flex items-center">
@@ -27,6 +33,22 @@
               <img src="/icons/person.svg" alt="Reserve icon" class="w-5 h-5" />
               {{userInfo?.name}} {{userInfo?.surname}}
             </button>
+            <div class="relative flex items-center">
+              <button @click="toggleDropdown">
+                <img src="/icons/menu-new.svg" alt="Меню" />
+              </button>
+              <div
+                  v-if="showDropdownMenu"
+                  class="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
+              >
+                <button
+                    class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                    @click="logout"
+                >
+                  Выйти
+                </button>
+              </div>
+            </div>
           </template>
           <template v-else>
             <button class="profile__btn" @click="toggleLoginMenu">
@@ -36,36 +58,7 @@
           </template>
         </div>
 
-<!--        <template v-if="token">-->
-<!--          <div class="icon-btn relative flex items-center gap-2">-->
-<!--            &lt;!&ndash; Кнопка меню &ndash;&gt;-->
-<!--            <button @click="toggleDropdown">-->
-<!--              <img src="/icons/menu.svg" alt="Меню" />-->
-<!--            </button>-->
 
-<!--            &lt;!&ndash; Кнопка профиля &ndash;&gt;-->
-<!--            <button @click="profileClick">-->
-<!--              <img src="/icons/user.svg" alt="Профиль" />-->
-<!--            </button>-->
-
-<!--            &lt;!&ndash; Дропдаун меню &ndash;&gt;-->
-<!--            <div-->
-<!--                v-if="showDropdownMenu"-->
-<!--                class="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"-->
-<!--            >-->
-<!--              <button-->
-<!--                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"-->
-<!--                  @click="logout"-->
-<!--              >-->
-<!--                Выйти-->
-<!--              </button>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </template>-->
-
-<!--        <template v-else>-->
-<!--          <div class="login-link cursor-pointer" @click="toggleLoginMenu">Войти</div>-->
-<!--        </template>-->
       </div>
     </div>
 
@@ -207,49 +200,48 @@ function logout() {
 }
 
 const isTop = ref(true)
-const isClientTop = computed(() => props.style === 'landing' && isTop.value)
 
 const handleScroll = () => {
-  // считаем "верхом" первые ~8px, чтобы не дёргалось на микроскроллах/тачах
   isTop.value = (window.scrollY || window.pageYOffset) <= 8
 }
 
-onMounted(async () => {
-  const response = await getCurrentUser({
-    id: localStorage.getItem("user_id"),
-  });
+onMounted(() => {
+  // навешиваем слушатель сразу
+  handleScroll()
+  window.addEventListener('scroll', handleScroll, { passive: true })
 
-  userInfo.value = response.data;
-
-  userStore.setUser(userInfo.value);
-  if (import.meta.client) {
-    handleScroll()                 // проверить позицию сразу при монтировании
-    window.addEventListener('scroll', handleScroll, { passive: true })
-  }
+  // дальше можно грузить пользователя параллельно
+  getCurrentUser({ id: localStorage.getItem('user_id') })
+      .then((response) => {
+        userInfo.value = response.data
+        userStore.setUser(userInfo.value)
+      })
+      .catch(() => {})
 })
 
 onUnmounted(() => {
-  if (import.meta.client) {
-    window.removeEventListener('scroll', handleScroll)
-  }
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
 <style scoped>
 .app-header {
-  background-color: #201001;
-  transition: background-color 200ms ease;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 0 24px;
-  z-index: 2;
+  top: 0; left: 0; right: 0;
   height: 104px;
+  padding: 0 24px;
+  z-index: 50;
+  transition: background-color 200ms ease;
 }
 
-.app-header--transparent {
+/* когда вверху */
+.app-header.app-header--transparent {
   background-color: transparent;
+}
+
+/* когда не вверху (или не landing) */
+.app-header.app-header--solid {
+  background-color: #201001;
 }
 
 .container {
