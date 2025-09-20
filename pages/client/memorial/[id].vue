@@ -483,7 +483,7 @@ const submitMemorial = async () => {
   <NuxtLayout name="client" content-class="bg-transparent py-0 px-0">
     <div>
       <button
-        class="btn-back mb-6 mr-4 ml-[2px] text-base font-medium flex items-center"
+        class="btn-back mb-6 mr-4 ml-[2px] text-base text-[#B88F34] font-medium flex items-center"
         @click="router.push('/client/memorial')"
       >
         <img

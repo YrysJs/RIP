@@ -1,18 +1,25 @@
 <script setup>
-import LayoutTop from '~/components/layout/LayoutTop.vue'
-import LayoutSidebar from '~/components/layout/LayoutSidebar.vue'
-import SuccessModal from '~/components/layout/modals/SuccessModal.vue';
+import LayoutTop from "~/components/layout/LayoutTop.vue";
+import LayoutSidebar from "~/components/layout/LayoutSidebar.vue";
+import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
-import { getSupplierInfo } from '~/services/supplier';
-import { onMounted } from 'vue';
+import { getSupplierInfo } from "~/services/supplier";
+import { onMounted } from "vue";
 
 const supplierInfo = ref(null);
 
-onMounted(async () => {
-    const response = await getSupplierInfo();
+const props = defineProps({
+  transparentContent: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-    supplierInfo.value = response.data;
-})
+onMounted(async () => {
+  const response = await getSupplierInfo();
+
+  supplierInfo.value = response.data;
+});
 </script>
 
 <template>
@@ -24,7 +31,12 @@ onMounted(async () => {
         <LayoutSidebar title="Кабинет поставщика услуг" />
       </aside>
 
-      <main class="supplier__content">
+      <main
+        :class="[
+          'supplier__content',
+          props.transparentContent ? 'supplier__content--transparent' : '',
+        ]"
+      >
         <slot />
       </main>
     </div>
@@ -75,6 +87,12 @@ onMounted(async () => {
     padding: 20px;
     color: #1c1c1c;
     min-height: 640px;
+
+    &--transparent {
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
   }
 }
 </style>
