@@ -17,6 +17,7 @@ const menu: MenuItem[] = [
   { title: "Личные данные", path: "/client/profile" },
   { title: "Заявка на захоронение", path: "/client/tickets/burial" }, //, count: 1
   { title: "Дополнительные услуги", path: "/client/services" },
+  { title: "История услуг", path: "/client/history" },
   { title: "Цифровой мемориал", path: "/client/memorial" },
   { title: "Запрос на перезахоронение", path: "/client/burial/requests" },
   { title: "Обращение в акимат", path: "/client/goverment/requests" },
