@@ -1,5 +1,5 @@
 <template>
-  <footer class="app-footer">
+  <footer class="app-footer" id="contact">
     <div class="container">
       <h3>Контакты</h3>
       <p>Мы проводим консультации ежедневно с 09:00 до 18:00</p>
@@ -14,17 +14,14 @@
       </ul>
       <div class="footer__links">
         <ul class="links__left">
-          <li>Главная</li>
-          <li>О компании</li>
-          <li>Услуги</li>
-          <li>Контакты</li>
+          <li><a href="#main">Главная</a></li>
+          <li><a href="#about">О компании</a></li>
+          <li><a href="#services">Услуги</a></li>
+          <li><a href="#contact">Контакты</a></li>
         </ul>
         <div class="links__middle">
-          <a>Политика конфиденциальности</a>
+          <RouterLink to="/instructions">Политика конфиденциальности</RouterLink>
           <ul>
-            <li>
-              <a><img src="/icons/telegram.svg" alt="Telegram icon" /></a>
-            </li>
             <li>
               <a
                 href="http://www.instagram.com/ripservice.kz/profilecard/?igsh=NWlmZzJieW9lMGFt"
@@ -71,6 +68,7 @@
 
 <script setup>
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
+import {RouterLink} from "#vue-router";
 
 const showSuccessModal = ref(false);
 
@@ -167,7 +165,7 @@ const closeSuccessModal = () => {
       font-size: 16px;
       ul {
         display: flex;
-        justify-content: space-between;
+        justify-content: space-around;
       }
 
       @media (max-width: 540px) {

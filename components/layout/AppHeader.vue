@@ -10,7 +10,7 @@
       <!-- Логотип -->
       <div class="flex items-center">
         <NuxtLink to="/">
-          <img src="/icons/logo.png" alt="logo" />
+          <img src="/icons/logo2.svg" alt="logo" />
         </NuxtLink>
 
       </div>
