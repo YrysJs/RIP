@@ -25,7 +25,7 @@ function save() {
       </h3>
 
       <div class="flex gap-4 mt-4 flex-wrap">
-        <div class="bg-[#F1F2F4] rounded-lg p-4 w-[478px]">
+        <div class="bg-[#F1F2F4] rounded-lg p-4 w-[478px] max-w-full">
           <div class="text-[#999] text-sm mb-1">ИИН</div>
           <input
             :value="user.iin"
@@ -33,7 +33,7 @@ function save() {
           />
         </div>
 
-        <div class="bg-[#F1F2F4] rounded-lg p-4 w-[478px]">
+        <div class="bg-[#F1F2F4] rounded-lg p-4 w-[478px] max-w-full">
           <div class="text-[#999] text-sm mb-1">ФИО</div>
           <input
             :value="user.fullName"
@@ -47,11 +47,14 @@ function save() {
         <input
           v-model="form.phone"
           placeholder="Номер телефона"
-          class="border border-[#D6DADF] rounded-lg p-4 outline-none w-[478px]"
+          class="border border-[#D6DADF] rounded-lg p-4 outline-none w-[478px] max-w-full"
         />
       </div>
 
-      <button class="mt-6 py-[15px] px-5 rounded-lg bg-[#E9B949]" @click="save">
+      <button
+        class="mt-6 py-[15px] px-5 rounded-lg bg-[#E9B949] hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
+        @click="save"
+      >
         Сохранить
       </button>
     </div>

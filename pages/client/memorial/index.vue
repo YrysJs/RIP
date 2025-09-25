@@ -51,7 +51,7 @@ onMounted(() => {
 
 <template>
   <NuxtLayout name="client" content-class="bg-transparent mr-[18px]">
-    <div class="flex flex-col gap-[24px]">
+    <div class="flex flex-col gap-[24px] max-sm:h-[50vh]">
       <ClientOnly>
         <div
           v-if="loading"

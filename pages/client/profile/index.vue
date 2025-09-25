@@ -8,14 +8,14 @@ const userMock = ref({
 
 <template>
   <NuxtLayout name="client">
-    <div>
+    <div class="max-sm:h-[50vh]">
       <div
-        class="flex items-center justify-between border-b border-b-[#2010011F] pb-4"
+        class="flex items-center justify-between border-b border-b-[#2010011F] pb-4 flex-wrap-reverse gap-3"
       >
-        <h3 class="font-foglihten text-fluid">Личные данные</h3>
+        <h3 class="w-[500px] font-foglihten text-fluid">Личные данные</h3>
         <NuxtLink
           to="/client/profile/edit"
-          class="flex bg-[#E9B949] py-[15px] px-5 rounded-lg gap-2"
+          class="flex bg-[#E9B949] py-[15px] px-5 rounded-lg gap-2 hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
         >
           <img src="/icons/pencil.svg" alt="" />
           Редактировать

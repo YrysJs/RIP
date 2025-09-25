@@ -28,6 +28,7 @@ const slides = ref([
     title: "Общедоступная база захоронений",
     subtitle: "Социальный проект по поиску захоронений и уходу за ними",
     background: "/images/client/intro-desk.jpg",
+    backgroundMobile: "/images/client/intro-mob.jpg",
     buttons: [
       {
         text: "Поиск захоронения",
@@ -37,20 +38,21 @@ const slides = ref([
       { text: "Забронировать место", action: "reserve", icon: "pencil" },
     ],
   },
-  {
-    id: 2,
-    title: "Общедоступная база захоронений",
-    subtitle: "Социальный проект по поиску захоронений и уходу за ними",
-    background: "/images/client/intro-desk.jpg",
-    buttons: [
-      {
-        text: "Поиск захоронения",
-        action: "search",
-        icon: "search",
-      },
-      { text: "Забронировать место", action: "reserve", icon: "pencil" },
-    ],
-  },
+  // {
+  //   id: 2,
+  //   title: "Общедоступная база захоронений",
+  //   subtitle: "Социальный проект по поиску захоронений и уходу за ними",
+  //   background: "/images/client/intro-desk.jpg",
+  //   backgroundMobile: "/images/client/intro-mob.jpg",
+  //   buttons: [
+  //     {
+  //       text: "Поиск захоронения",
+  //       action: "search",
+  //       icon: "search",
+  //     },
+  //     { text: "Забронировать место", action: "reserve", icon: "pencil" },
+  //   ],
+  // },
 ]);
 
 const services = [
@@ -60,7 +62,7 @@ const services = [
     img: "/images/main_service/f1.jpg",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
-    link: "",
+    link: "/",
   },
   {
     id: 2,
@@ -148,7 +150,12 @@ onMounted(() => {
         <SwiperSlide v-for="slide in slides" :key="slide.id">
           <div
             class="main-slide bg-cover"
-            :style="{ backgroundImage: `url(${slide.background})` }"
+            :style="{
+              '--bg': `url(${slide.background})`,
+              '--bg-mobile': `url(${
+                slide.backgroundMobile || slide.background
+              })`,
+            }"
           >
             <div class="container">
               <div class="intro__wrapper z-10 text-center">
@@ -164,7 +171,7 @@ onMounted(() => {
                   {{ slide.subtitle }}
                 </p>
                 <div
-                  class="intro__btns flex justify-center gap-[32px] mt-[65px]"
+                  class="intro__btns flex justify-center gap-[32px] max-sm:mx-auto"
                 >
                   <button
                     v-for="button in slide.buttons"
@@ -314,6 +321,17 @@ onMounted(() => {
 
 .main-slide {
   aspect-ratio: 16 / 9;
+  background-image: var(--bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  @media (max-width: 1024px) {
+    height: 558px;
+    aspect-ratio: 0;
+  }
+  @media (max-width: 640px) {
+    background-image: var(--bg-mobile);
+  }
 }
 
 .swiper-pagination-custom :deep(.swiper-pagination-bullet) {
@@ -335,8 +353,14 @@ onMounted(() => {
   font-family: "Manrope", sans-serif;
   font-size: clamp(12px, 1vw + 0.5rem, 16px);
 
+  @media (max-width: 1024px) {
+    top: auto;
+    bottom: 60px;
+    transform: translateX(-50%);
+  }
+
   .intro__img {
-    width: clamp(12.25rem, 20vw, 14.5rem);
+    width: clamp(147px, 19vw, 233px);
     margin-bottom: clamp(2rem, 4vw, 3rem);
   }
 
@@ -369,24 +393,40 @@ onMounted(() => {
       background-color: #e9b949;
     }
   }
+  .intro__btns {
+    margin-top: clamp(23px, 5vw, 65px);
 
-  .intro__btn {
-    padding: clamp(0.5rem, 2vw, 1rem) clamp(1em, 2vw, 1.75rem);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: clamp(1rem, 1.5vw, 1.25rem);
-    font-weight: 500;
-    line-height: 1.25;
-    border-radius: 8px;
-    white-space: nowrap;
+    .intro__btn {
+      padding: clamp(0.5rem, 2vw, 1rem) clamp(1em, 2vw, 1.75rem);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: clamp(1rem, 1.5vw, 1.25rem);
+      font-weight: 500;
+      line-height: 1.25;
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: all 0.3 ease;
 
-    &--search {
-      background-color: #fff;
-    }
+      &--search {
+        background-color: #fff;
+        &:hover {
+          background-color: #f1f1f2;
+        }
+        &:active {
+          background-color: #c6c9cc;
+        }
+      }
 
-    &--reserve {
-      background-color: #e9b949;
+      &--reserve {
+        background-color: #e9b949;
+        &:hover {
+          background-color: #d1a53f;
+        }
+        &:active {
+          background-color: #b88f34;
+        }
+      }
     }
   }
 }
@@ -590,21 +630,29 @@ onMounted(() => {
       background: #e9b949;
       border-radius: 8px;
       position: relative;
+      transition: all 0.4 ease;
       &::after {
         content: "";
+        background-image: url(/icons/arrow-classic.svg);
+        background-repeat: no-repeat;
+        background-size: contain;
         display: inline-block;
         margin-left: 8px;
+        margin-bottom: 2px;
         width: 16px;
         height: 16px;
-        border-right: 2px solid #000;
-        border-bottom: 2px solid #000;
-        transform: rotate(-45deg);
         vertical-align: middle;
         @media (max-width: 540px) {
           margin-left: 4px;
           width: 12px;
           height: 12px;
         }
+      }
+      &:hover {
+        background-color: #d1a53f;
+      }
+      &:active {
+        background-color: #b88f34;
       }
 
       @media (max-width: 540px) {
@@ -661,13 +709,8 @@ onMounted(() => {
     font-size: 12px;
   }
 
-  .main-slide {
-    height: calc(100vh - 64px);
-  }
-
   .intro__wrapper {
     top: auto;
-    bottom: 60px;
     transform: translateX(-50%);
     width: 84%;
     .intro__content {
@@ -678,7 +721,6 @@ onMounted(() => {
     }
     .intro__btns {
       flex-direction: column;
-      margin: 23px auto 0;
       width: fit-content;
       align-items: center;
       justify-content: center;

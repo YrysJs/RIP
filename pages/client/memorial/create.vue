@@ -181,10 +181,13 @@ const submitMemorial = async () => {
 </script>
 
 <template>
-  <NuxtLayout name="client" content-class="bg-transparent py-0 px-0">
+  <NuxtLayout
+    name="client"
+    content-class="bg-transparent py-0 px-0 max-sm:bg-white"
+  >
     <div>
       <button
-        class="btn-back mb-6 mr-4 ml-[2px] text-base font-medium flex items-center"
+        class="btn-back mb-6 mr-4 ml-[2px] text-base text-[#B88F34] font-medium flex items-center"
         @click="router.push('/client/memorial')"
       >
         <img
@@ -195,10 +198,10 @@ const submitMemorial = async () => {
         Вернуться
       </button>
 
-      <div class="bg-white py-6 px-[18px] rounded-2xl">
-        <div class="flex justify-between items-center">
+      <div class="bg-white py-6 px-[18px] rounded-2xl max-sm:p-0">
+        <div class="flex justify-between items-center gap-2">
           <div>
-            <p class="text-sm text-[#999]">Мемориал</p>
+            <p class="text-sm text-[#999] max-sm:hidden">Мемориал</p>
             <h3 class="text-fluid font-medium font-foglihten">
               {{
                 isEditMode
@@ -208,13 +211,16 @@ const submitMemorial = async () => {
             </h3>
           </div>
           <button
-            class="flex items-center gap-2 bg-[#00000014] py-[10px] px-4 rounded-[10px]"
+            class="flex items-center gap-2 bg-[#00000014] py-[10px] px-4 rounded-[10px] hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition max-sm:bg-transparent"
           >
-            <img src="/icons/share.svg" alt="" /> Поделиться
+            <img src="/icons/share.svg" alt="" class="max-sm:w-5 max-sm:h-5" />
+            <span class="max-sm:hidden">Поделиться</span>
           </button>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 my-4 items-stretch">
+        <div
+          class="grid grid-cols-2 gap-4 my-4 items-stretch max-lg:grid-cols-1"
+        >
           <div class="photo-upload-container h-full min-h-[250px]">
             <!-- Область загрузки фото -->
             <div
@@ -226,7 +232,7 @@ const submitMemorial = async () => {
                 <div class="flex justify-center mb-[20px]">
                   <img src="/icons/upload.svg" alt="" class="upload-icon" />
                 </div>
-                <p class="upload-text">Загрузить фото</p>
+                <p class="upload-text">Загрузите фотографии</p>
                 <p class="upload-hint">
                   Перетащите файлы или загрузите файлы до N мб в формате: .png,
                   .jpeg
@@ -280,7 +286,7 @@ const submitMemorial = async () => {
               class="hidden"
             />
           </div>
-          <div class="h-full min-h-[250px]">
+          <div class="memorial-info h-full min-h-[250px] max-sm:min-h-fit">
             <!-- <div class="border-b border-[#EEEEEE] pb-4 font-medium text-base">
               <p>
                 Дата смерти:
@@ -313,7 +319,7 @@ const submitMemorial = async () => {
 
               <div class="flex flex-col gap-2">
                 <div
-                  class="mt-2 h-[30px] flex justify-between items-center text-base font-medium gap-[11px]"
+                  class="mt-2 h-[30px] flex items-center text-base font-medium gap-[11px]"
                 >
                   <div class="w-[100px] text-base text-[#050202]">
                     Кладбище:
@@ -324,7 +330,7 @@ const submitMemorial = async () => {
                 </div>
                 <div class="flex">
                   <div
-                    class="h-[30px] flex justify-between items-center text-base font-medium gap-[11px]"
+                    class="h-[30px] flex items-center text-base font-medium gap-[11px]"
                   >
                     <div class="w-[100px] text-base text-[#050202]">Сектор</div>
                     <div class="text-sm text-[#999]">
@@ -332,7 +338,7 @@ const submitMemorial = async () => {
                     </div>
                   </div>
                   <div
-                    class="h-[30px] flex justify-between items-center text-base font-medium gap-[11px]"
+                    class="h-[30px] flex items-center text-base font-medium gap-[11px]"
                   >
                     <div class="w-[100px] text-base text-[#050202]">Место:</div>
                     <div class="text-sm text-[#999]">
@@ -341,7 +347,7 @@ const submitMemorial = async () => {
                   </div>
                 </div>
                 <div
-                  class="h-11 flex justify-between items-center text-base font-medium gap-[11px]"
+                  class="h-11 flex items-center text-base font-medium gap-[11px]"
                 >
                   <div class="w-[100px] text-base text-[#050202]">
                     Координаты:
@@ -355,7 +361,7 @@ const submitMemorial = async () => {
           </div>
         </div>
 
-        <div class="pb-4 border-b border-b-[#eee]">
+        <div class="pb-4 border-b border-b-[#eee] max-sm:border-b-0">
           <h3 class="text-[18px] mb-2">Эпитафия</h3>
           <textarea
             v-model="epitaph"
@@ -364,7 +370,9 @@ const submitMemorial = async () => {
             rows="4"
           ></textarea>
         </div>
-        <div class="py-4 border-b border-b-[#eee]">
+        <div
+          class="py-4 border-b border-b-[#eee] max-sm:py-0 max-sm:border-b-0"
+        >
           <h3 class="text-[18px] mb-2">Память о человеке:</h3>
           <textarea
             v-model="aboutPerson"
@@ -373,7 +381,9 @@ const submitMemorial = async () => {
             rows="4"
           ></textarea>
         </div>
-        <div class="flex gap-[14px] py-4 border-b border-b-[#eee]">
+        <div
+          class="flex gap-[14px] py-4 border-b border-b-[#eee] max-sm:border-b-0"
+        >
           <div>
             <label
               class="relative inline-block w-10 h-6 cursor-pointer select-none align-middle"
@@ -551,7 +561,7 @@ const submitMemorial = async () => {
         <div class="flex justify-end">
           <button
             :disabled="isSubmitting"
-            class="bg-[#E9B949] text-black px-8 py-4 rounded-lg font-medium text-sm transition-colors disabled:bg-gray-400"
+            class="bg-[#E9B949] text-black px-8 py-4 rounded-lg font-medium text-sm transition-colors disabled:bg-gray-400 hover:bg-[#D1A53F] active:bg-[#B88F34]"
             @click="submitMemorial"
           >
             <span v-if="isSubmitting">Создание мемориала...</span>
@@ -571,23 +581,38 @@ const submitMemorial = async () => {
 .photo-upload-container {
   width: 100%;
   position: relative;
+  order: 1;
+  @media (max-width: 1023px) {
+    order: 2;
+  }
+}
+
+.memorial-info {
+  order: 2;
+  @media (max-width: 1023px) {
+    order: 1;
+  }
 }
 
 .upload-area {
   width: 100%;
-  border: 2px dashed #e5e7eb;
+  background-color: #f3f4f6;
+  border: 2px dashed #d1d5db;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  background-color: #f9fafb;
   margin-bottom: 20px;
 
+  @media (max-width: 639px) {
+    height: 124px;
+  }
+
   &:hover {
-    border-color: #6366f1;
-    background-color: #f0f7ff;
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
   }
 }
 

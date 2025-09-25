@@ -3,7 +3,6 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { getMyRequests } from "~/services/akimat";
 
-
 const router = useRouter();
 const appeals = ref([]);
 const loading = ref(true);
@@ -49,7 +48,7 @@ const formatPhoneNumber = (phone) => {
 
 <template>
   <NuxtLayout name="client">
-    <div>
+    <div class="h-[50vh]">
       <!-- заголовок -->
       <h2 class="page-title">Запрос на перезахоронение</h2>
 
@@ -58,7 +57,6 @@ const formatPhoneNumber = (phone) => {
         <div class="spinner" />
         <p class="muted">Загружаем ваши заявки…</p>
       </div>
-
 
       <!-- пустое состояние -->
       <div v-else-if="isEmpty" class="empty">
@@ -138,7 +136,7 @@ const formatPhoneNumber = (phone) => {
   font-family: "FoglihtenNo06", serif;
   font-weight: 500;
   letter-spacing: 0.02em;
-  font-size: 32px;
+  font-size: clamp(24px, 3vw, 32px);
   color: #1c140e;
   margin-bottom: 16px;
 }
@@ -176,11 +174,19 @@ const formatPhoneNumber = (phone) => {
   min-height: 360px;
   display: flex; /* вертикальный центр */
   justify-content: center; /* горизонтальный центр */
+  @media (max-width: 640px) {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 .empty__card {
   text-align: center;
   color: #1f2937;
   max-width: 360px;
+  @media (max-width: 640px) {
+    max-width: 100%;
+    width: 100%;
+  }
 }
 .empty__icon {
   width: 64px;
@@ -296,10 +302,20 @@ const formatPhoneNumber = (phone) => {
   transition: filter 0.15s ease;
 }
 .btn--yellow {
-  background: #f7b500;
+  background: #e9b949;
   color: #1f2937;
   height: 48px;
   padding: 0 20px;
+  &:hover {
+    background-color: #d1a53f;
+  }
+  &:active {
+    background-color: #b88f34;
+  }
+
+  @media (max-width: 639px) {
+    width: 100%;
+  }
 }
 .btn--ghost {
   background: #f3f4f6;

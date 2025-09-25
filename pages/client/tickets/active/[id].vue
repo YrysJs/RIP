@@ -7,6 +7,7 @@ import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 const cemeteryStore = useCemeteryStore();
 const switcher = ref(false);
 const route = useRoute();
+const selectedFiles = ref([]);
 
 /** ---- МОК-ФУНКЦИЯ: имитируем ответ бэка ---- */
 const mockFetchBurialById = async (id) => {
@@ -120,6 +121,7 @@ watch(
 
 // Функция для обработки выбора файла
 const handleFileSelect = (event) => {
+  selectedFiles.value = Array.from(event.target.files);
   const file = event.target.files[0];
   if (file && file.type === "application/pdf") {
     deathCertificateFile.value = file;
@@ -128,6 +130,12 @@ const handleFileSelect = (event) => {
     event.target.value = "";
   }
 };
+
+function formatFileSize(size) {
+  if (size < 1024) return size + " B";
+  if (size < 1024 * 1024) return (size / 1024).toFixed(1) + " KB";
+  return (size / (1024 * 1024)).toFixed(1) + " MB";
+}
 
 // Функция для открытия модалки оплаты
 const openPaymentModal = () => {
@@ -358,9 +366,6 @@ const burialDateClass = computed(() => {
                   placeholder="ИИН"
                   readonly
                 />
-                <span class="text-sm text-[#D63C3C]"
-                  >Поле обязательно к заполнению</span
-                >
               </div>
               <div class="flex flex-col">
                 <input
@@ -370,9 +375,6 @@ const burialDateClass = computed(() => {
                   placeholder="ФИО"
                   readonly
                 />
-                <span class="text-sm text-[#D63C3C]"
-                  >Поле обязательно к заполнению</span
-                >
               </div>
             </div>
           </div>
@@ -408,7 +410,7 @@ const burialDateClass = computed(() => {
             </div>
             <div
               v-if="switcher"
-              class="grid grid-cols-2 max-sm:gap-4 gap-4 mt-[24px] max-lg:grid-cols-1"
+              class="switcher-data grid grid-cols-2 max-sm:gap-4 gap-4 mt-[24px]"
             >
               <div>
                 <p class="text-sm text-[#222222] font-normal">Дата смерти</p>
@@ -419,13 +421,55 @@ const burialDateClass = computed(() => {
                 />
               </div>
               <div>
-                <p class="text-sm text-[#222222] font-normal pb-2">
-                  Заключение о смерти от мед учреждения:
+                <p class="text-sm text-[#222222] font-normal">
+                  Заключение о смерти от мед учереждении:
                 </p>
+
+                <label
+                  v-if="selectedFiles.length === 0"
+                  for="file"
+                  class="flex items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#9ca3af] hover:bg-[#e5e7eb] transition-all"
+                >
+                  <img src="/icons/upload.svg" alt="upload" class="w-5 h-5" />
+                  <span>
+                    <span class="text-[#B88F34]">Загрузите файлы</span> или
+                    перетащите их
+                  </span>
+                </label>
+
+                <div
+                  v-else
+                  class="flex flex-col gap-2 py-2 px-3 border rounded-lg bg-[#f9fafb]"
+                >
+                  <div
+                    v-for="(file, i) in selectedFiles"
+                    :key="i"
+                    class="text-[#222222] flex justify-between items-center"
+                  >
+                    <div class="flex gap-3">
+                      <img src="/icons/file.svg" alt="" />
+                      <div class="flex flex-col">
+                        <span class="text-base">{{ file.name }}</span>
+                        <span class="text-sm text-[#5C6771E6]">{{
+                          formatFileSize(file.size)
+                        }}</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      class="shrink-0 text-xl text-[#5C6771E6] grid place-items-center rounded-lg"
+                      @click="selectedFiles.splice(i, 1)"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
                 <input
+                  id="file"
                   type="file"
-                  accept=".pdf"
-                  class="w-[100%] h-[60px] rounded-lg text-base file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#38949B] file:text-white hover:file:bg-[#2a6f75]"
+                  class="hidden"
+                  multiple
                   @change="handleFileSelect"
                 />
               </div>
@@ -447,13 +491,15 @@ const burialDateClass = computed(() => {
                 />
               </div>
             </div>
-            <div class="mt-16">
-              <h3 class="text-fluid font-medium text-[#222222] mb-[38px]">
+            <div class="mt-16 max-sm:h-[44px] max-sm:mt-4 max-sm:mb-2">
+              <h3
+                class="text-fluid font-medium text-[#222222] mb-[38px] max-sm:mb-0"
+              >
                 К оплате: 57 000 ₸
               </h3>
             </div>
             <button
-              class="text-base py-[18px] px-[28px] rounded-lg bg-[#E9B949] text-black max-sm:w-full"
+              class="text-base py-[18px] px-[28px] rounded-lg bg-[#E9B949] text-black max-sm:w-full hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
               :disabled="burialData?.status !== 'pending'"
               :class="{
                 'opacity-50 cursor-not-allowed':
@@ -512,9 +558,13 @@ const burialDateClass = computed(() => {
   }
 }
 
-@media (max-width: 1200px) {
-  .switcher-data {
+.switcher-data {
+  @media (max-width: 1200px) {
     grid-template-columns: 1fr;
+  }
+  @media (max-width: 640px) {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
   }
 }
 </style>

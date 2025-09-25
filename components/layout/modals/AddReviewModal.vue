@@ -1,4 +1,3 @@
-<!-- components/layout/modals/AddReviewModal.vue -->
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
@@ -89,7 +88,7 @@ function submit() {
 
       <!-- modal -->
       <div
-        class="relative w-[92vw] max-w-[560px] bg-white rounded-2xl shadow-xl p-8 md:p-6 z-10"
+        class="relative w-[92vw] max-w-[560px] bg-white rounded-2xl shadow-xl p-4 md:p-8 z-10 max"
       >
         <!-- header -->
         <div class="flex items-start justify-between gap-4 mb-8">

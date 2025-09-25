@@ -11,10 +11,11 @@ import AppHeader from "~/components/layout/AppHeader.vue";
 
 const router = useRouter();
 const cemeteryStore = useCemeteryStore();
+const selectedFiles = ref([]);
 
 const showSuccessModal = ref(false);
-const time = ref(3)
-let timerId
+const time = ref(3);
+let timerId;
 
 const switcher = ref(false);
 const inn = ref("");
@@ -27,6 +28,10 @@ const isFcb = ref(false);
 const loadingStore = useLoadingStore();
 
 const showLogin = ref(false);
+const errors = reactive({
+  inn: "",
+  fullName: "",
+});
 
 watch(inn, async (newValue) => {
   if (newValue.length !== 12) return;
@@ -61,6 +66,8 @@ function capitalizeFullName(str) {
 
 // Функция для бронирования
 const handleBooking = async () => {
+  if (!validateRequired()) return;
+
   try {
     const dataBurial = {
       cemetery_id: cemeteryStore.selectedGrave.cemetery_id,
@@ -74,14 +81,12 @@ const handleBooking = async () => {
     // showLogin.value = true;
     showSuccessModal.value = true;
     timerId = setInterval(() => {
-      time.value--
+      time.value--;
       if (time.value <= 0) {
-        clearInterval(timerId)
-        router.push('/client/tickets/active')
+        clearInterval(timerId);
+        router.push("/client/tickets/active");
       }
-    }, 1000)
-
-
+    }, 1000);
   } catch (error) {
     console.error("Ошибка при отправке данных:", error);
   }
@@ -89,9 +94,34 @@ const handleBooking = async () => {
 
 onMounted(() => {
   if (!cemeteryStore.selectedGrave) {
-    router.push('/')
+    router.push("/");
   }
-})
+});
+
+function validateRequired() {
+  errors.inn = inn.value.trim() ? "" : "Поле обязательно к заполнению";
+  errors.fullName = fullName.value.trim()
+    ? ""
+    : "Поле обязательно к заполнению";
+  return !errors.inn && !errors.fullName;
+}
+
+const handleFileSelect = (event) => {
+  selectedFiles.value = Array.from(event.target.files);
+  const file = event.target.files[0];
+  if (file && file.type === "application/pdf") {
+    deathCertificateFile.value = file;
+  } else {
+    alert("Пожалуйста, выберите PDF файл");
+    event.target.value = "";
+  }
+};
+
+function formatFileSize(size) {
+  if (size < 1024) return size + " B";
+  if (size < 1024 * 1024) return (size / 1024).toFixed(1) + " KB";
+  return (size / (1024 * 1024)).toFixed(1) + " MB";
+}
 </script>
 
 <template>
@@ -103,11 +133,12 @@ onMounted(() => {
       <div
         class="bg-white p-[20px] max-w-fluid w-full relative rounded-lg max-sm:max-w-full max-sm:pt-2 max-sm:px-[13px] max-sm:pb-0"
       >
-        <button
+        <NuxtLink
           class="flex items-center gap-2 text-base font-medium text-[#B88F34]"
+          to="/reserve"
         >
           <img src="/icons/arrow-left-orange.svg" alt="" /> Вернуться к выбору
-        </button>
+        </NuxtLink>
         <div
           class="max-sm:hidden align-center my-6 flex gap-fluid items-baseline"
         >
@@ -156,7 +187,7 @@ onMounted(() => {
             </div>
           </div>
           <div
-            class="h-[46px] flex items-center gap-[11px] border-b border-b-[#2010011F]"
+            class="min-h-[46px] flex flex-wrap items-center gap-[11px] border-b border-b-[#2010011F]"
           >
             <h4 class="text-base text-[#050202]">ФИО покойного:</h4>
             <span class="text-sm text-[#999]">{{ fullName || "" }}</span>
@@ -198,23 +229,25 @@ onMounted(() => {
               <input
                 v-model="inn"
                 type="text"
-                class="py-[18px] px-3 w-[100%] !border !border-[#AFB5C166] rounded-lg text-base input"
+                class="py-[18px] px-3 w-[100%] border !border-[#AFB5C166] rounded-lg text-base input focus:outline-none"
+                :class="errors.inn ? '!border-red-500' : ''"
                 placeholder="ИИН"
               />
-<!--              <span class="text-sm text-[#D63C3C]"-->
-<!--                >Поле обязательно к заполнению</span-->
-<!--              >-->
+              <span v-if="errors.inn" class="text-sm text-[#D63C3C]">{{
+                errors.inn
+              }}</span>
             </div>
             <div class="flex flex-col">
               <input
                 v-model="fullName"
                 type="text"
-                class="py-[18px] px-3 w-[100%] !border !border-[#AFB5C166] rounded-lg text-base input"
+                class="py-[18px] px-3 w-[100%] !border !border-[#AFB5C166] rounded-lg text-base input focus:outline-none"
+                :class="errors.fullName ? '!border-red-500' : ''"
                 placeholder="ФИО"
               />
-<!--              <span class="text-sm text-[#D63C3C]"-->
-<!--                >Поле обязательно к заполнению</span-->
-<!--              >-->
+              <span v-if="errors.fullName" class="text-sm text-[#D63C3C]">
+                {{ errors.fullName }}</span
+              >
             </div>
           </div>
         </div>
@@ -236,7 +269,7 @@ onMounted(() => {
                   class="absolute inset-0 bg-gray-200 rounded-full transition-colors peer-checked:bg-blue-500 peer-checked:ring-2 peer-checked:ring-blue-500"
                 />
                 <span
-                  class="absolute left-[1px] top-[1px] bg-white w-[21.18px] h-[20.9px] rounded-full shadow-md transition-transform peer-checked:translate-x-[15px]"
+                  class="absolute left-[2px] top-[2px] bg-white w-[21.18px] h-[20.9px] rounded-full shadow-md transition-transform peer-checked:translate-x-[15px]"
                 />
               </label>
             </div>
@@ -257,9 +290,11 @@ onMounted(() => {
               <p class="text-sm text-[#222222] font-normal">
                 Заключение о смерти от мед учереждении:
               </p>
+
               <label
+                v-if="selectedFiles.length === 0"
                 for="file"
-                class="flex items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400"
+                class="flex items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#9ca3af] hover:bg-[#e5e7eb] transition-all"
               >
                 <img src="/icons/upload.svg" alt="upload" class="w-5 h-5" />
                 <span>
@@ -267,7 +302,42 @@ onMounted(() => {
                   перетащите их
                 </span>
               </label>
-              <input id="file" type="file" class="hidden" multiple />
+
+              <div
+                v-else
+                class="flex flex-col gap-2 py-2 px-3 border rounded-lg bg-[#f9fafb]"
+              >
+                <div
+                  v-for="(file, i) in selectedFiles"
+                  :key="i"
+                  class="text-[#222222] flex justify-between items-center"
+                >
+                  <div class="flex gap-3">
+                    <img src="/icons/file.svg" alt="" />
+                    <div class="flex flex-col">
+                      <span class="text-base">{{ file.name }}</span>
+                      <span class="text-sm text-[#5C6771E6]">{{
+                        formatFileSize(file.size)
+                      }}</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="shrink-0 text-xl text-[#5C6771E6] grid place-items-center rounded-lg"
+                    @click="selectedFiles.splice(i, 1)"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              <input
+                id="file"
+                type="file"
+                class="hidden"
+                multiple
+                @change="handleFileSelect"
+              />
             </div>
             <div>
               <p class="text-sm text-[#222222] font-normal">Дата похорон</p>
@@ -294,14 +364,14 @@ onMounted(() => {
         </button>
       </div>
     </div>
-<!--    <ClientLogin v-if="showLogin" @close="showLogin = false" />-->
+    <!--    <ClientLogin v-if="showLogin" @close="showLogin = false" />-->
     <Teleport to="body">
       <SuccessModal
-          v-if="showSuccessModal"
-          title="Запрос отправлен"
-          text="Ожидайте подтверждения ..."
-          :subtext="'Перенаправление в личный кабинет через ' + time"
-          @close="closeSuccessModal"
+        v-if="showSuccessModal"
+        title="Запрос отправлен"
+        text="Ожидайте подтверждения ..."
+        :subtext="'Перенаправление в личный кабинет через ' + time"
+        @close="closeSuccessModal"
       />
     </Teleport>
   </main>
@@ -339,6 +409,13 @@ onMounted(() => {
   border-radius: 8px;
   white-space: nowrap;
   background-color: #e9b949;
+  transition: all 0.3 ease;
+  &:hover {
+    background: #d1a53f;
+  }
+  &:active {
+    background: #b88f34;
+  }
 }
 
 @media (max-width: 1200px) {

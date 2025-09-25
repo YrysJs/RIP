@@ -97,7 +97,7 @@ const showGraveDataModal = async (id) => {
 </script>
 
 <template>
-  <NuxtLayout name="client" content-class="bg-transparent">
+  <NuxtLayout name="client" content-class="bg-transparent max-sm:bg-white">
     <div
       v-if="!burialRequests || burialRequests?.length === 0"
       class="flex justify-center items-center p-10"
@@ -108,7 +108,7 @@ const showGraveDataModal = async (id) => {
       <div
         v-for="request in burialRequests"
         :key="request.id"
-        class="bg-white py-6 px-[18px] rounded-lg"
+        class="bg-white py-6 px-[18px] rounded-lg max-sm:p-0"
       >
         <div
           class="flex justify-between items-start pb-4 border-b-2 border-b-[#eee] max-lg:flex-col max-sm:border-none max-sm:pb-0"
@@ -216,13 +216,13 @@ const showGraveDataModal = async (id) => {
         </div>
         <div class="flex gap-4 mt-[16px] max-lg:flex-col">
           <button
-            class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-sm font-medium"
+            class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-sm font-medium hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
             @click="$router.push(`/client/memorial/create?id=${request.id}`)"
           >
             Создать мемориал
           </button>
           <button
-            class="block py-[15px] px-[20px] rounded-lg bg-[#AFB5C133] text-[#17212A] text-sm font-medium"
+            class="block py-[15px] px-[20px] rounded-lg bg-[#AFB5C133] text-[#17212A] text-sm font-medium hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition"
             @click="
               $router.push(
                 `/client/tickets/burial/add-service?burial_id=${request.id}`
@@ -232,7 +232,7 @@ const showGraveDataModal = async (id) => {
             Добавить услуги и товары
           </button>
           <button
-            class="py-[15px] px-[20px] rounded-lg text-[#17212A] bg-white text-sm font-medium flex items-center justify-center gap-[8px]"
+            class="py-[15px] px-[20px] rounded-lg text-[#17212A] bg-white text-sm font-medium flex items-center justify-center gap-[8px] hover:bg-[#F1F1F2] active:bg-[#C6C9CC] transition"
             @click="shareGraveData(request.grave_id)"
           >
             <img src="/icons/share.svg" alt="" /> Поделиться координатами

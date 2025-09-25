@@ -70,7 +70,7 @@ onMounted(async () => {
       <div
         v-for="request in burialRequests"
         :key="request.id"
-        class="bg-white py-6 px-[18px] rounded-lg"
+        class="bg-white py-6 px-[18px] rounded-lg max-sm:p-0"
       >
         <div
           class="flex justify-between items-start pb-4 border-b-2 border-b-[#eee] max-lg:flex-col max-sm:border-none max-sm:pb-0"
@@ -193,7 +193,7 @@ onMounted(async () => {
           </div>
         </div>
         <NuxtLink
-          class="block w-fit py-[15px] px-5 rounded-lg bg-[#E9B949] text-black text-sm font-medium mt-[16px] max-sm:w-full text-center"
+          class="block w-fit py-[15px] px-5 rounded-lg bg-[#E9B949] text-black text-sm font-medium mt-[16px] max-sm:w-full text-center hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
           :to="
             localePath({
               name: 'client-tickets-active-id',

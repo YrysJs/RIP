@@ -1,10 +1,10 @@
 <template>
   <header
-      class="app-header"
-      :class="{
-    'app-header--transparent': props.style === 'landing' && isTop,
-    'app-header--solid': !(props.style === 'landing' && isTop)
-  }"
+    class="app-header"
+    :class="{
+      'app-header--transparent': props.style === 'landing' && isTop,
+      'app-header--solid': !(props.style === 'landing' && isTop),
+    }"
   >
     <div class="container">
       <!-- Логотип -->
@@ -12,9 +12,7 @@
         <NuxtLink to="/">
           <img src="/icons/logo.png" alt="logo" />
         </NuxtLink>
-
       </div>
-
 
       <!-- Правый блок -->
       <div class="right-actions">
@@ -31,19 +29,19 @@
           <template v-if="token">
             <button class="profile__btn" @click="profileClick">
               <img src="/icons/person.svg" alt="Reserve icon" class="w-5 h-5" />
-              {{userInfo?.name}} {{userInfo?.surname}}
+              {{ userInfo?.name }} {{ userInfo?.surname }}
             </button>
             <div class="relative flex items-center">
               <button @click="toggleDropdown">
                 <img src="/icons/menu-new.svg" alt="Меню" />
               </button>
               <div
-                  v-if="showDropdownMenu"
-                  class="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
+                v-if="showDropdownMenu"
+                class="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
               >
                 <button
-                    class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                    @click="logout"
+                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                  @click="logout"
                 >
                   Выйти
                 </button>
@@ -57,25 +55,22 @@
             </button>
           </template>
         </div>
-
-
       </div>
     </div>
-
-
-
-
   </header>
 
   <Teleport to="body">
     <ClientLogin v-if="activeModal === 'client'" @close="activeModal = ''" />
     <ManagerLogin v-if="activeModal === 'manager'" @close="activeModal = ''" />
-    <SupplierLogin v-if="activeModal === 'supplier'" @close="activeModal = ''" />
+    <SupplierLogin
+      v-if="activeModal === 'supplier'"
+      @close="activeModal = ''"
+    />
     <AkimatLogin v-if="activeModal === 'akimat'" @close="activeModal = ''" />
     <div
-        v-if="showLoginMenu"
-        class="fixed inset-0 bg-black/40 z-40 flex items-center justify-center"
-        @click.self="closeMenu"
+      v-if="showLoginMenu"
+      class="fixed inset-0 bg-black/40 z-40 flex items-center justify-center"
+      @click.self="closeMenu"
     >
       <div class="bg-white rounded-xl w-[340px] p-6 shadow-xl">
         <div class="flex justify-between items-center mb-4">
@@ -86,46 +81,51 @@
         </div>
 
         <div class="text-gray-400 text-sm mb-2">Клиентам</div>
-        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('client')">
+        <div
+          class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]"
+          @click="login('client')"
+        >
           <img src="/icons/user.svg" class="w-5 h-5" />
           <span class="font-medium">Войти/Зарегистрироваться</span>
         </div>
 
         <div class="text-gray-400 text-sm mt-4 mb-2">Партнерам</div>
-        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('supplier')">
+        <div
+          class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]"
+          @click="login('supplier')"
+        >
           <img src="/icons/shop.svg" class="w-5 h-5" />
           <span class="font-medium">Войти как поставщик услуг</span>
         </div>
 
-<!--        <div class="text-gray-400 text-sm mt-4 mb-2">Администрация</div>-->
-<!--        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('manager')">-->
-<!--          <img src="/icons/home.svg" class="w-5 h-5" />-->
-<!--          <span class="font-medium">Войти как менеджер кладбища</span>-->
-<!--        </div>-->
-<!--        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('akimat')">-->
-<!--          <img src="/icons/building.svg" class="w-5 h-5" />-->
-<!--          <span class="font-medium">Кабинет Акимата</span>-->
-<!--        </div>-->
+        <!--        <div class="text-gray-400 text-sm mt-4 mb-2">Администрация</div>-->
+        <!--        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('manager')">-->
+        <!--          <img src="/icons/home.svg" class="w-5 h-5" />-->
+        <!--          <span class="font-medium">Войти как менеджер кладбища</span>-->
+        <!--        </div>-->
+        <!--        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('akimat')">-->
+        <!--          <img src="/icons/building.svg" class="w-5 h-5" />-->
+        <!--          <span class="font-medium">Кабинет Акимата</span>-->
+        <!--        </div>-->
       </div>
     </div>
   </Teleport>
-
 </template>
 
 <script setup>
-import { useUserStore } from '~/store/user.js'
+import { useUserStore } from "~/store/user.js";
 import ClientLogin from "~/components/auth/ClientLogin.vue";
 import AkimatLogin from "~/components/auth/AkimatLogin.vue";
 import ManagerLogin from "~/components/auth/ManagerLogin.vue";
 import SupplierLogin from "~/components/auth/SupplierLogin.vue";
-import Cookies from 'js-cookie'
-import {parseJwt} from '~/utils/parseJwt';
-import {getCurrentUser} from "~/services/login/index.js";
+import Cookies from "js-cookie";
+import { parseJwt } from "~/utils/parseJwt";
+import { getCurrentUser } from "~/services/login/index.js";
 
-const token = ref(Cookies.get('token'))
-const router = useRouter()
+const token = ref(Cookies.get("token"));
+const router = useRouter();
 const showLoginMenu = ref(false);
-const activeModal = ref('')
+const activeModal = ref("");
 
 const userStore = useUserStore();
 
@@ -133,20 +133,20 @@ const userInfo = ref(null);
 
 const props = defineProps({
   type: String,
-  style: String
+  style: String,
 });
 
 const types = {
-  manager: 'Менеджер Кладбища',
-  suppliar: 'Поставщик услуг',
-  akimat: 'Кабинет Aкимата',
-  admin: 'Админ панель'
+  manager: "Менеджер Кладбища",
+  suppliar: "Поставщик услуг",
+  akimat: "Кабинет Aкимата",
+  admin: "Админ панель",
 };
 
-const showDropdownMenu = ref(false)
+const showDropdownMenu = ref(false);
 
 function toggleDropdown() {
-  showDropdownMenu.value = !showDropdownMenu.value
+  showDropdownMenu.value = !showDropdownMenu.value;
 }
 
 function toggleLoginMenu() {
@@ -158,76 +158,78 @@ function closeMenu() {
 }
 
 function login(type) {
-  toggleLoginMenu()
-  userStore.setAuthType(type)
-  
-  activeModal.value = type
+  toggleLoginMenu();
+  userStore.setAuthType(type);
+
+  activeModal.value = type;
 }
 
 function profileClick() {
-  const parsedToken = parseJwt(token.value)
+  const parsedToken = parseJwt(token.value);
   switch (parsedToken.role) {
-    case 'ADMIN':
-      router.push('/admin/cemetery')
+    case "ADMIN":
+      router.push("/admin/cemetery");
       break;
-    case 'AKIMAT_MANAGER':
-      router.push('/user/tickets')
+    case "AKIMAT_MANAGER":
+      router.push("/user/tickets");
       break;
-    case 'AKIMAT_ADMIN':
-      router.push('/user/tickets')
+    case "AKIMAT_ADMIN":
+      router.push("/user/tickets");
       break;
-    case 'GOVERNMENT':
-      router.push('/user/tickets')
+    case "GOVERNMENT":
+      router.push("/user/tickets");
       break;
-    case 'CEMETERY_MANAGER':
-      router.push('/manager/booking')
+    case "CEMETERY_MANAGER":
+      router.push("/manager/booking");
       break;
-    case 'USER':
-      router.push('/client/tickets/active')
+    case "USER":
+      router.push("/client/tickets/active");
       break;
-    case 'SUPPLIER':
-      router.push('/supplier/tickets/active')
+    case "SUPPLIER":
+      router.push("/supplier/tickets/active");
       break;
   }
 }
 
 function logout() {
-  toggleDropdown()
-  Cookies.remove('token')
-  token.value = undefined
+  toggleDropdown();
+  Cookies.remove("token");
+  token.value = undefined;
 
-  router.push('/')
+  router.push("/");
 }
 
-const isTop = ref(true)
+const isTop = ref(true);
 
 const handleScroll = () => {
-  isTop.value = (window.scrollY || window.pageYOffset) <= 8
-}
+  isTop.value = (window.scrollY || window.pageYOffset) <= 8;
+};
 
 onMounted(() => {
   // навешиваем слушатель сразу
-  handleScroll()
-  window.addEventListener('scroll', handleScroll, { passive: true })
+  handleScroll();
+  window.addEventListener("scroll", handleScroll, { passive: true });
 
   // дальше можно грузить пользователя параллельно
-  getCurrentUser({ id: localStorage.getItem('user_id') })
-      .then((response) => {
-        userInfo.value = response.data
-        userStore.setUser(userInfo.value)
-      })
-      .catch(() => {})
-})
+  getCurrentUser({ id: localStorage.getItem("user_id") })
+    .then((response) => {
+      userInfo.value = response.data;
+      userStore.setUser(userInfo.value);
+    })
+    .catch(() => {});
+});
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>
 
 <style scoped>
 .app-header {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 104px;
   padding: 0 24px;
   z-index: 50;
@@ -256,7 +258,7 @@ onUnmounted(() => {
 .logo {
   font-size: 24px;
   font-weight: bold;
-  color: #224C4F;
+  color: #224c4f;
   text-decoration: none;
 }
 
@@ -282,13 +284,13 @@ onUnmounted(() => {
   padding: 10px 8px;
   font-size: 16px;
   font-weight: 700;
-  color: #224C4F;
+  color: #224c4f;
   border-radius: 8px;
-  background-color: #FAFAFA;
+  background-color: #fafafa;
 }
 
 .icon-btn {
-  background: #FAFAFA;
+  background: #fafafa;
   border: none;
   padding: 8px;
   border-radius: 8px;
@@ -323,6 +325,15 @@ onUnmounted(() => {
   border-radius: 8px;
   white-space: nowrap;
   background-color: #e9b949;
+  transition: all 0.3 ease;
+}
+
+.reserve__btn:hover {
+  background: #d1a53f;
+}
+
+.reserve__btn:active {
+  background: #b88f34;
 }
 
 .profile__btn {
@@ -339,5 +350,10 @@ onUnmounted(() => {
   color: white;
   background-color: transparent;
   border: 1px solid white;
+  transition: all 150ms ease;
+}
+.profile__btn:hover,
+.profile__btn:active {
+  filter: brightness(0.5);
 }
 </style>

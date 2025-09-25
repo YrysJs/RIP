@@ -55,6 +55,15 @@ const filtered = computed(() =>
     ? orders.value.filter((o) => o.status !== "done")
     : orders.value.filter((o) => o.status === "done")
 );
+
+// когда модалка открыта — добавим классы на body
+useHead({
+  bodyAttrs: {
+    class: computed(() =>
+      showReview.value ? "overflow-hidden overscroll-none" : ""
+    ),
+  },
+});
 </script>
 
 <template>
@@ -82,7 +91,7 @@ const filtered = computed(() =>
         <article
           v-for="o in filtered"
           :key="o.id"
-          class="bg-[#0000000A] rounded-2xl flex gap-3 md:gap-4 items-stretch"
+          class="bg-[#0000000A] rounded-2xl flex gap-3 md:gap-4 items-stretch max-xl:flex-col max-xl:max-w-[457px]"
         >
           <!-- image -->
           <div class="shrink-0">
@@ -94,9 +103,13 @@ const filtered = computed(() =>
           </div>
 
           <!-- content -->
-          <div class="flex-1 flex flex-col pt-3 pr-6 pb-6 gap-2">
-            <div class="flex items-start justify-between">
-              <div class="text-[22px] font-semibold">Заказ №{{ o.number }}</div>
+          <div class="flex-1 flex flex-col pt-3 pr-6 pb-6 gap-2 max-xl:px-6">
+            <div
+              class="flex items-start justify-between flex-wrap-reverse gap-2"
+            >
+              <div class="text-[22px] font-semibold w-[250px]">
+                Заказ №{{ o.number }}
+              </div>
 
               <!-- status -->
               <div
@@ -110,8 +123,8 @@ const filtered = computed(() =>
                 {{ statusView[o.status].label }}
               </div>
             </div>
-            <div class="text-sm text-[#5C6771E6]">
-              {{ o.title }}, телефон: {{ o.phone }}
+            <div class="text-sm text-[#5C6771E6] flex flex-wrap">
+              {{ o.title }}, <span>телефон: {{ o.phone }}</span>
             </div>
             <div class="flex items-center gap-2">
               <span><img src="/icons/pin.svg" alt="" /></span>
@@ -136,7 +149,7 @@ const filtered = computed(() =>
                 class="rounded-lg py-[9px] px-[37px] text-sm font-medium transition"
                 :class="
                   o.status === 'done'
-                    ? 'bg-[#E9B949] text-black hover:opacity-90 cursor-pointer'
+                    ? 'bg-[#E9B949] text-black hover:bg-[#D1A53F] cursor-pointer active:bg-[#B88F34]'
                     : 'bg-[#E9B949] text-black opacity-50 cursor-not-allowed'
                 "
                 :disabled="o.status !== 'done'"

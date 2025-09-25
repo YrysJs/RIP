@@ -27,98 +27,40 @@ const proof_of_relation = ref([]); // подтверждение родства
 const grave_doc = ref([]); // документ на могилу
 
 /* ---- helpers: превью + drag&drop ---- */
-const pushFileWithPreview = (listRef, file) => {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    listRef.value.push({
-      id: Date.now() + Math.random(),
-      url: e.target.result,
-      file,
-    });
-  };
-  reader.readAsDataURL(file);
-};
-const onDrop = (listRef, e) => {
+const onDrop = (list, e) => {
   e.preventDefault();
   const files = Array.from(e.dataTransfer?.files || []);
-  files.forEach((f) => pushFileWithPreview(listRef, f));
+  list.push(...files);
 };
 
 /* инпуты */
-const handleSertUpload = (e) => {
-  Array.from(e.target.files).forEach((f) =>
-    pushFileWithPreview(death_certificate, f)
-  );
-  e.target.value = "";
-};
-const handleProofUpload = (e) => {
-  Array.from(e.target.files).forEach((f) =>
-    pushFileWithPreview(proof_of_relation, f)
-  );
-  e.target.value = "";
-};
-const handleDocumentUpload = (e) => {
-  Array.from(e.target.files).forEach((f) => pushFileWithPreview(grave_doc, f));
-  e.target.value = "";
+const handleUpload = (list, e) => {
+  const files = Array.from(e.target.files || []);
+  list.push(...files);
+  if (e.target) e.target.value = "";
 };
 
 /* удалить */
-const removeDeathSert = (i, ev) => {
+const removeFile = (list, i, ev) => {
   ev?.stopPropagation?.();
-  death_certificate.value.splice(i, 1);
-};
-const removeProof = (i, ev) => {
-  ev?.stopPropagation?.();
-  proof_of_relation.value.splice(i, 1);
-};
-const removeDoc = (i, ev) => {
-  ev?.stopPropagation?.();
-  grave_doc.value.splice(i, 1);
+  list.splice(i, 1);
 };
 
 /* ---- submit (как у тебя) ---- */
+const uploadToAkimat = async (files) => {
+  if (!files?.length) return "";
+  const fd = new FormData();
+  fd.append("Authorization", Cookies.get("token")); // если бэку нужен именно field
+  for (const f of files) fd.append("files", f); // массив File
+  const res = await setAkimatFile(fd);
+  return res?.data?.files?.[0]?.fileUrl || "";
+};
+
 async function userCreateAppeal() {
   try {
-    const sertFormData = new FormData();
-    const proofFormData = new FormData();
-    const docFormData = new FormData();
-    let sertRes, proofRes, docRes;
-
-    sertFormData.append("Authorization", Cookies.get("token"));
-    if (death_certificate.value.length) {
-      if (Array.isArray(death_certificate.value)) {
-        death_certificate.value.forEach((item) =>
-          sertFormData.append("files", item.file)
-        );
-      } else {
-        sertFormData.append("files", death_certificate.value.file);
-      }
-      sertRes = await setAkimatFile(sertFormData);
-    }
-
-    proofFormData.append("Authorization", Cookies.get("token"));
-    if (proof_of_relation.value.length) {
-      if (Array.isArray(proof_of_relation.value)) {
-        proof_of_relation.value.forEach((item) =>
-          proofFormData.append("files", item.file)
-        );
-      } else {
-        proofFormData.append("files", proof_of_relation.value.file);
-      }
-      proofRes = await setAkimatFile(proofFormData);
-    }
-
-    docFormData.append("Authorization", Cookies.get("token"));
-    if (grave_doc.value.length) {
-      if (Array.isArray(grave_doc.value)) {
-        grave_doc.value.forEach((item) =>
-          docFormData.append("files", item.file)
-        );
-      } else {
-        docFormData.append("files", grave_doc.value.file);
-      }
-      docRes = await setAkimatFile(docFormData);
-    }
+    const dcUrl = await uploadToAkimat(death_certificate.value);
+    const prUrl = await uploadToAkimat(proof_of_relation.value);
+    const gdUrl = await uploadToAkimat(grave_doc.value);
 
     await createRequest({
       userPhone: userInfo.value.phone,
@@ -127,18 +69,12 @@ async function userCreateAppeal() {
       reason: reason.value,
       foreign_cemetry: foreign_cemetry.value,
       akimatId: 6,
-      death_certificate: death_certificate.value.length
-        ? sertRes.data?.files?.[0]?.fileUrl || ""
-        : "",
-      proof_of_relation: proof_of_relation.value.length
-        ? proofRes.data?.files?.[0]?.fileUrl || ""
-        : "",
-      grave_doc: grave_doc.value.length
-        ? docRes.data?.files?.[0]?.fileUrl || ""
-        : "",
+      death_certificate: dcUrl,
+      proof_of_relation: prUrl,
+      grave_doc: gdUrl,
     });
 
-    router.push("/client/goverment/requests");
+    router.push("/client/burial/requests");
   } catch (e) {
     console.error(e);
   }
@@ -244,20 +180,13 @@ onMounted(async () => {
                 type="file"
                 multiple
                 class="hidden"
-                @change="handleSertUpload"
+                @change="handleUpload(death_certificate, $event)"
               />
-              <div class="dz-row">
-                <svg viewBox="0 0 24 24" class="dz-ico">
-                  <path
-                    d="M12 3v12m0-12l-4 4m4-4l4 4M4 15v4a2 2 0 002 2h12a2 2 0 002-2v-4"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
-                </svg>
-                <span class="dz-accent">Загрузите файлы</span>
-                <span class="dz-sub">или перетащите их</span>
+              <div class="dz-in">
+                <img class="dz-ico" src="/icons/upload.svg" alt="" />
+                <p class="dz-accent">
+                  Загрузите файлы <span class="dz-sub">или перетащите их</span>
+                </p>
               </div>
             </div>
 
@@ -265,25 +194,29 @@ onMounted(async () => {
             <div v-else class="gallery-center">
               <div class="gallery-grid">
                 <div
-                  v-for="(photo, index) in death_certificate"
-                  :key="photo.id"
-                  class="image-preview-container"
-                  @click.stop
+                  v-for="(file, index) in death_certificate"
+                  :key="index"
+                  class="file-card"
                 >
-                  <img
-                    src="/images/doc.png"
-                    alt="Документ"
-                    class="image-preview"
-                  />
-                  <div class="image-overlay">
-                    <button
-                      class="remove-btn"
-                      @click="removeDeathSert(index, $event)"
-                    >
-                      ✕
-                    </button>
+                  <div class="image-preview-container">
+                    <img
+                      src="/images/doc.png"
+                      alt="Документ"
+                      class="image-preview"
+                    />
+                    <div class="image-overlay">
+                      <button
+                        class="remove-btn"
+                        @click="removeFile(death_certificate, index, $event)"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div class="image-number">{{ index + 1 }}</div>
                   </div>
-                  <div class="image-number">{{ index + 1 }}</div>
+                  <p class="gallery-in">
+                    {{ file.name }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -305,45 +238,42 @@ onMounted(async () => {
                 type="file"
                 multiple
                 class="hidden"
-                @change="handleProofUpload"
+                @change="handleUpload(proof_of_relation, $event)"
               />
-              <div class="dz-row">
-                <svg viewBox="0 0 24 24" class="dz-ico">
-                  <path
-                    d="M12 3v12m0-12l-4 4m4-4l4 4M4 15v4a2 2 0 002 2h12a2 2 0 002-2v-4"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
-                </svg>
-                <span class="dz-accent">Загрузите файлы</span>
-                <span class="dz-sub">или перетащите их</span>
+              <div class="dz-in">
+                <img class="dz-ico" src="/icons/upload.svg" alt="" />
+                <p class="dz-accent">
+                  Загрузите файлы <span class="dz-sub">или перетащите их</span>
+                </p>
               </div>
             </div>
 
             <div v-else class="gallery-center">
               <div class="gallery-grid">
                 <div
-                  v-for="(photo, index) in proof_of_relation"
-                  :key="photo.id"
-                  class="image-preview-container"
-                  @click.stop
+                  v-for="(file, index) in proof_of_relation"
+                  :key="index"
+                  class="file-card"
                 >
-                  <img
-                    src="/images/doc.png"
-                    alt="Документ"
-                    class="image-preview"
-                  />
-                  <div class="image-overlay">
-                    <button
-                      class="remove-btn"
-                      @click="removeProof(index, $event)"
-                    >
-                      ✕
-                    </button>
+                  <div class="image-preview-container">
+                    <img
+                      src="/images/doc.png"
+                      alt="Документ"
+                      class="image-preview"
+                    />
+                    <div class="image-overlay">
+                      <button
+                        class="remove-btn"
+                        @click="removeFile(proof_of_relation, index, $event)"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div class="image-number">{{ index + 1 }}</div>
                   </div>
-                  <div class="image-number">{{ index + 1 }}</div>
+                  <p class="gallery-in">
+                    {{ file.name }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -365,45 +295,42 @@ onMounted(async () => {
                 type="file"
                 multiple
                 class="hidden"
-                @change="handleDocumentUpload"
+                @change="handleUpload(grave_doc, $event)"
               />
-              <div class="dz-row">
-                <svg viewBox="0 0 24 24" class="dz-ico">
-                  <path
-                    d="M12 3v12m0-12l-4 4m4-4l4 4M4 15v4a2 2 0 002 2h12a2 2 0 002-2v-4"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
-                </svg>
-                <span class="dz-accent">Загрузите файлы</span>
-                <span class="dz-sub">или перетащите их</span>
+              <div class="dz-in">
+                <img class="dz-ico" src="/icons/upload.svg" alt="" />
+                <p class="dz-accent">
+                  Загрузите файлы <span class="dz-sub">или перетащите их</span>
+                </p>
               </div>
             </div>
 
             <div v-else class="gallery-center">
               <div class="gallery-grid">
                 <div
-                  v-for="(photo, index) in grave_doc"
-                  :key="photo.id"
-                  class="image-preview-container"
-                  @click.stop
+                  v-for="(file, index) in grave_doc"
+                  :key="index"
+                  class="file-card"
                 >
-                  <img
-                    src="/images/doc.png"
-                    alt="Документ"
-                    class="image-preview"
-                  />
-                  <div class="image-overlay">
-                    <button
-                      class="remove-btn"
-                      @click="removeDoc(index, $event)"
-                    >
-                      ✕
-                    </button>
+                  <div class="image-preview-container">
+                    <img
+                      src="/images/doc.png"
+                      alt="Документ"
+                      class="image-preview"
+                    />
+                    <div class="image-overlay">
+                      <button
+                        class="remove-btn"
+                        @click="removeFile(grave_doc, index, $event)"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div class="image-number">{{ index + 1 }}</div>
                   </div>
-                  <div class="image-number">{{ index + 1 }}</div>
+                  <p class="gallery-in">
+                    {{ file.name }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -426,7 +353,7 @@ onMounted(async () => {
 .page-title {
   font-family: "FoglihtenNo06", serif;
   letter-spacing: 0.02em;
-  font-size: 32px;
+  font-size: clamp(24px, 3vw, 32px);
   color: #1c140e;
   margin: 0;
 }
@@ -496,37 +423,31 @@ onMounted(async () => {
 
 /* Дроп-зона */
 .dropzone {
-  border: 1px dashed #e6e6e6;
+  background-color: #f3f4f6;
+  border: 2px dashed #d1d5db;
   border-radius: 12px;
   min-height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: all 0.15s ease;
   padding: 14px;
 }
 .dropzone:hover {
-  background: #fafafa;
-}
-.dz-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
 }
 .dz-ico {
-  width: 22px;
-  height: 22px;
-  color: #9aa0a6;
+  margin: 0 auto 8px;
 }
 .dz-accent {
-  font-weight: 800;
-  color: #f7b500;
+  font-weight: 500;
+  color: #e9b949;
 }
 .dz-sub {
-  font-size: 14px;
-  color: #8c8c8c;
+  font-size: 16px;
+  color: #17212a;
 }
 
 /* Галерея карточек — центр */
@@ -535,11 +456,21 @@ onMounted(async () => {
   justify-content: center;
 }
 .gallery-grid {
-  margin-top: 8px;
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
   justify-content: center;
+}
+.gallery-in {
+  margin-top: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+.file-card {
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Плитка документа (как у тебя была) */
@@ -605,9 +536,10 @@ onMounted(async () => {
   justify-content: flex-end;
 }
 .btn-yellow {
-  background: #f7b500;
-  color: #1f2937;
-  font-weight: 700;
+  background: #e9b949;
+  color: #000;
+  font-weight: 500;
+  font-size: 14px;
   border: none;
   cursor: pointer;
   height: 44px;
@@ -617,11 +549,20 @@ onMounted(async () => {
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
 }
 .btn-yellow:hover {
-  filter: brightness(0.98);
+  background-color: #d1a53f;
+}
+.btn-yellow:active {
+  background-color: #b88f34;
 }
 
 /* утилиты */
 .hidden {
   display: none;
+}
+
+@media (max-width: 639px) {
+  .btn-yellow {
+    width: 100%;
+  }
 }
 </style>
