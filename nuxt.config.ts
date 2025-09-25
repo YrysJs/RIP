@@ -34,7 +34,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      twoGisApiKey: "ca092971-0505-4489-a478-a875c6dcbd2f",
+      twoGisApiKey: "0b75b800-a23a-42d2-a943-3d04be6ebfc3",
     },
   },
   tailwindcss: {

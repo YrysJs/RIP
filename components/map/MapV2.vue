@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref, watch, computed } from 'vue'
+import { useRuntimeConfig } from '#imports'
 
 const props = defineProps({
   polygons: {
@@ -84,9 +85,13 @@ function initializeMap() {
     }
   }
 
+  const config = useRuntimeConfig()
+  const apiKey = config.public.twoGisApiKey
+
   mapInstance.value = DG.map(mapContainerId, {
     center,
     zoom: 18,
+    key: apiKey,
   })
 
   if (props.cemeteryBoundary) {
