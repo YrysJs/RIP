@@ -74,7 +74,7 @@ const statusMeta = (s) => {
           <div class="empty__subtitle">У вас пока нет созданных обращений</div>
           <button
             class="btn btn--yellow"
-            @click="router.push('/client/goverment/create')"
+            @click="router.push('/client/government/create')"
           >
             Создать обращение
           </button>

@@ -119,7 +119,7 @@ async function userCreateAppeal() {
     }
 
     await createAppeal(payload);
-    router.push("/client/goverment/requests");
+    router.push("/client/government/requests");
   } catch (e) {
     console.error(e);
     errors.value = ["Не удалось создать обращение. Попробуйте позже."];
@@ -259,7 +259,7 @@ const cnt = computed(() => `${appeal_content.value.length}/${maxLen}`);
 }
 .page-title {
   font-family: "FoglihtenNo06", serif;
-  font-size: 32px;
+  font-size: clamp(24px, 3vw, 32px);
   color: #201001;
 }
 
@@ -357,6 +357,11 @@ const cnt = computed(() => `${appeal_content.value.length}/${maxLen}`);
   opacity: 0.6;
   cursor: not-allowed;
   filter: none;
+}
+@media (max-width: 639px) {
+  .btn-yellow {
+    width: 100%;
+  }
 }
 
 /* Дроп-зона */

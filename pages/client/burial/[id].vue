@@ -107,7 +107,7 @@ function fileTitle(url) {
 }
 
 function goCreateNew() {
-  router.push("/client/goverment/reburial/create");
+  router.push("/client/government/burial/create");
 }
 </script>
 

@@ -74,7 +74,7 @@ async function userCreateAppeal() {
       grave_doc: gdUrl,
     });
 
-    router.push("/client/burial/requests");
+    router.push("/client/burial");
   } catch (e) {
     console.error(e);
   }

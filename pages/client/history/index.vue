@@ -91,7 +91,7 @@ useHead({
         <article
           v-for="o in filtered"
           :key="o.id"
-          class="bg-[#0000000A] rounded-2xl flex gap-3 md:gap-4 items-stretch max-xl:flex-col max-xl:max-w-[457px]"
+          class="bg-[#0000000A] rounded-2xl flex gap-3 md:gap-4 items-stretch max-xl:flex-col max-xl:max-w-[457px] max-sm:max-w-full"
         >
           <!-- image -->
           <div class="shrink-0">

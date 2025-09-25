@@ -65,7 +65,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <NuxtLayout name="client" content-class="bg-transparent">
+  <NuxtLayout name="client" content-class="bg-transparent max-sm:bg-white">
     <template v-if="burialRequests && burialRequests.length > 0">
       <div
         v-for="request in burialRequests"

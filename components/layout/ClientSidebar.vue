@@ -19,8 +19,8 @@ const menu: MenuItem[] = [
   { title: "Дополнительные услуги", path: "/client/services" },
   { title: "История услуг", path: "/client/history" },
   { title: "Цифровой мемориал", path: "/client/memorial" },
-  { title: "Запрос на перезахоронение", path: "/client/burial/requests" },
-  { title: "Обращение в акимат", path: "/client/goverment/requests" },
+  { title: "Запрос на перезахоронение", path: "/client/burial" },
+  { title: "Обращение в акимат", path: "/client/government" },
 ];
 
 const route = useRoute();

@@ -31,29 +31,35 @@ onMounted(async () => {
 <template>
   <main>
     <AppHeader type="client" />
-
-    <div
-      class="py-[24px] min-h-[100vh] mt-[104px] rounded-lg flex gap-[24px] max-sm:flex-col-reverse max-sm:py-0 max-sm:gap-0"
-    >
-      <aside
-        class="bg-white p-[20px] max-w-[408px] min-w-[305px] relative max-sm:max-w-full rounded-lg"
-      >
-        <ClientSidebar title="ЛИЧНЫЙ КАБИНЕТ" />
-      </aside>
-
+    <div class="container">
       <div
-        :class="[
-          'min-w-0 w-full h-fit flex flex-col gap-10 rounded-lg max-sm:pt-6 max-sm:px-4 max-sm:pb-9',
-          props.contentClass,
-        ]"
+        class="py-[24px] min-h-[100vh] mt-[104px] rounded-lg flex gap-[24px] max-sm:flex-col-reverse max-sm:py-0 max-sm:gap-0"
       >
-        <slot />
+        <aside
+          class="bg-white p-[20px] max-w-[408px] min-w-[305px] relative max-sm:max-w-full rounded-lg"
+        >
+          <ClientSidebar title="ЛИЧНЫЙ КАБИНЕТ" />
+        </aside>
+
+        <div
+          :class="[
+            'min-w-0 w-full h-fit flex flex-col gap-10 rounded-lg max-sm:pt-6 max-sm:px-4 max-sm:pb-9',
+            props.contentClass,
+          ]"
+        >
+          <slot />
+        </div>
       </div>
     </div>
   </main>
 </template>
 
 <style lang="scss" scoped>
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: auto;
+}
 // .client {
 //   background: #faf7ef;
 //   min-height: 100dvh;
