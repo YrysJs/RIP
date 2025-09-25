@@ -5,7 +5,7 @@ import AppFooter from "~/components/layout/AppFooter.vue";
 </script>
 
 <template>
-    <div class="relative">
+    <div class="relative mt-[60px]">
         <AppHeader type="client" />
         <div class="container py-[100px] flex flex-col gap-[20px] mb-[56px]">
             <h1 class="text-2xl font-bold">Пользователям</h1>

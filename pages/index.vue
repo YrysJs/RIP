@@ -57,46 +57,47 @@ const slides = ref([
 
 const services = [
   {
-    id: 1,
+    id: 0,
     title: "Поиск захоронения",
     img: "/images/main_service/f1.jpg",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
-    link: "/",
+      "Вы можете заказать у нас точные координаты захоронения на цифровой карте кладбища с подробным описанием маршрута.",
+    link: "",
   },
   {
-    id: 2,
+    id: 1,
     title: "Благо-устройство",
     img: "/images/main_service/f2.jpg",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+      "Мы предоставляем комплексный спектр услуг по благоустройству и уходу за захоронениями Ваших родственников и друзей.",
+    link: "",
+  },
+  {
+    id: 2,
+    title: "Цифровой мемориал и древо памяти",
+    img: "/images/main_service/f3.jpg",
+    description:
+      "Создайте виртуальный памятник, в котором будет собрана вся информация о Вашем близком человеке и кто с ним связан.",
     link: "",
   },
   {
     id: 3,
-    title: "Цифровой мемориал и древо памяти",
-    img: "/images/main_service/f3.jpg",
+    title: "Ритуальные услуги",
+    img: "/images/main_service/f4.jpg",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+      "Полный комплекс мероприятий, включая оформление документов, подготовку церемонии и сопровождение. Обеспечиваем соблюдение всех традиций и пожеланий семьи. Гарантируем профессиональный подход и внимание к деталям.",
     link: "",
   },
   {
     id: 4,
-    title: "Ритуальные услуги",
-    img: "/images/main_service/f4.jpg",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
-    link: "",
-  },
-  {
-    id: 5,
     title: "Ритуальные товары",
     img: "/images/main_service/f5.jpg",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+      "Мы предлагаем широкий ассортимент ритуальных товаров, необходимых для организации похорон с учетом всех традиций и пожеланий.",
     link: "",
   },
 ];
+
 
 const router = useRouter();
 
@@ -128,7 +129,7 @@ onMounted(() => {
   <main class="relative">
     <AppLoader v-if="loadingStore.loading" />
     <AppHeader type="client" :style="'landing'" />
-    <section class="relative">
+    <section class="relative" id="main">
       <Swiper
         :modules="[Navigation, Pagination, Autoplay]"
         :slides-per-view="1"
@@ -234,7 +235,7 @@ onMounted(() => {
         class="swiper-pagination-custom absolute bottom-[20px] left-1/2 transform -translate-x-1/2 z-20"
       ></div>
     </section>
-    <div class="container">
+    <div class="container" id="about">
       <section class="about">
         <div class="about__inner">
           <h3 class="about__title">О проекте</h3>
@@ -286,7 +287,7 @@ onMounted(() => {
             loading="lazy"
           />
           <p class="service__description">{{ service.description }}</p>
-          <button :href="`${service.link}`" class="service__btn">
+          <button @click="showDetail(service.id)" class="service__btn">
             Подробнее
           </button>
         </li>
@@ -626,6 +627,7 @@ onMounted(() => {
       padding-left: 28px;
       font-family: "Manrope", sans-serif;
       font-size: 16px;
+      height: 60px;
       font-weight: 500;
       background: #e9b949;
       border-radius: 8px;
