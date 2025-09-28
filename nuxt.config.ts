@@ -25,9 +25,9 @@ export default defineNuxtConfig({
     "~/plugins/dropzone-vue.js",
   ],
   yandexMaps: {
-    apikey: '60105bd2-2780-4882-af38-068f2b3ae03f',
-    initializeOn: 'onPluginInit',
+    apikey: 'c8be6d3f-5040-4607-8cb1-082ea246eb81',
     lang: 'ru_RU',
+    version: '3.0',
   },
   css: ["~/css/main.scss", "~/assets/styles/fonts.scss"],
   i18n: {
@@ -40,7 +40,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       twoGisApiKey: "0b75b800-a23a-42d2-a943-3d04be6ebfc3",
-      yandexMapApiKey: "60105bd2-2780-4882-af38-068f2b3ae03f",
+      yandexMapApiKey: "c8be6d3f-5040-4607-8cb1-082ea246eb81",
     },
   },
   tailwindcss: {
