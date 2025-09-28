@@ -98,15 +98,15 @@
           <span class="font-medium">Войти как поставщик услуг</span>
         </div>
 
-        <!--        <div class="text-gray-400 text-sm mt-4 mb-2">Администрация</div>-->
-        <!--        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('manager')">-->
-        <!--          <img src="/icons/home.svg" class="w-5 h-5" />-->
-        <!--          <span class="font-medium">Войти как менеджер кладбища</span>-->
-        <!--        </div>-->
-        <!--        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('akimat')">-->
-        <!--          <img src="/icons/building.svg" class="w-5 h-5" />-->
-        <!--          <span class="font-medium">Кабинет Акимата</span>-->
-        <!--        </div>-->
+        <div class="text-gray-400 text-sm mt-4 mb-2">Администрация</div>
+        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('manager')">
+          <img src="/icons/home.svg" class="w-5 h-5" />
+          <span class="font-medium">Войти как менеджер кладбища</span>
+        </div>
+        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('akimat')">
+          <img src="/icons/building.svg" class="w-5 h-5" />
+          <span class="font-medium">Кабинет Акимата</span>
+        </div>
       </div>
     </div>
   </Teleport>
