@@ -11,7 +11,7 @@ import {
   pkbGetData
 } from '~/services/login/index.js'
 import Cookies from 'js-cookie';
-import {ref} from "vue";
+import {ref, defineEmits} from "vue";
 import {useLoadingStore} from "~/store/loading.js";
 const emit = defineEmits()
 const router = useRouter()
@@ -120,6 +120,8 @@ watch(bin, async (newValue) => {
     await poll();
 
   } catch (error) {
+    console.log('1111111111111')
+    loadingStore.stopLoading()
     console.error('Ошибка при получении токена:', error);
   }
 });
@@ -134,7 +136,7 @@ async function run () {
     const formData = new FormData()
     let filerRes
     formData.append('Authorization', Cookies.get('token'))
-    if (achievementPhotos.value) {
+    if (achievementPhotos.value.length) {
       if (Array.isArray(achievementPhotos.value)) {
         achievementPhotos.value.forEach(achievement => formData.append('files', achievement.file))
       } else {
@@ -155,6 +157,7 @@ async function run () {
       vatTypeId: vatTypeId.value,
       cityId: cityId.value,
       isActive: false,
+      docs: ['1111'],
       serviceDescription: serviceDescription.value
     }
     if (filerRes?.data?.success) {

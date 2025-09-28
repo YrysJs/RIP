@@ -4,7 +4,7 @@ function getSupplierInfo() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.103:8090/api/v1/supplier/current',
+        url: 'http://194.32.140.103:8081/v1/supplier/current',
     })
 }
 
