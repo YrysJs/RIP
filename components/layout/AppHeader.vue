@@ -62,24 +62,20 @@
   <Teleport to="body">
     <!-- Фон для модалок авторизации -->
     <div
-      v-if="authModalStore.activeModal && authModalStore.activeModal.value !== ''"
+      v-if="showAuthModal"
       class="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center"
       @click.self="authModalStore.closeModal"
     >
-      <!-- Отладка: показываем текущий activeModal -->
-<!--      <div style="position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.8); padding: 5px; border-radius: 4px; font-size: 12px;">-->
-<!--        activeModal: {{ authModalStore.activeModal.value }}-->
-<!--      </div>-->
-      <ClientLogin v-if="authModalStore.activeModal && authModalStore.activeModal.value === 'client'" @close="authModalStore.closeModal" />
-      <ManagerLogin v-if="authModalStore.activeModal && authModalStore.activeModal.value === 'manager'" @close="authModalStore.closeModal" />
+      <ClientLogin v-if="currentAuthModal === 'client'" @close="authModalStore.closeModal" />
+      <ManagerLogin v-if="currentAuthModal === 'manager'" @close="authModalStore.closeModal" />
       <SupplierLogin
-        v-if="authModalStore.activeModal && authModalStore.activeModal.value === 'supplier'"
+        v-if="currentAuthModal === 'supplier'"
         @close="authModalStore.closeModal"
       />
-      <AkimatLogin v-if="authModalStore.activeModal && authModalStore.activeModal.value === 'akimat'" @close="authModalStore.closeModal" />
+      <AkimatLogin v-if="currentAuthModal === 'akimat'" @close="authModalStore.closeModal" />
     </div>
     <div
-      v-if="authModalStore.showLoginMenu && authModalStore.showLoginMenu.value !== false"
+      v-if="showLoginMenu"
       class="fixed inset-0 bg-black/40 z-[80] flex items-center justify-center"
       @click.self="authModalStore.closeLoginMenu"
     >
@@ -140,6 +136,19 @@ const userStore = useUserStore();
 const authModalStore = useAuthModalStore();
 
 const userInfo = ref(null);
+
+// Computed свойства для безопасного доступа к значениям стора
+const showAuthModal = computed(() => {
+  return authModalStore.activeModal && authModalStore.activeModal.value !== '';
+});
+
+const currentAuthModal = computed(() => {
+  return authModalStore.activeModal?.value || '';
+});
+
+const showLoginMenu = computed(() => {
+  return authModalStore.showLoginMenu && authModalStore.showLoginMenu.value === true;
+});
 
 const props = defineProps({
   type: String,
