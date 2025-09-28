@@ -49,7 +49,7 @@
             </div>
           </template>
           <template v-else>
-            <button class="profile__btn" @click="toggleLoginMenu">
+            <button class="profile__btn" @click="authModalStore.toggleLoginMenu">
               <img src="/icons/person.svg" alt="Reserve icon" class="w-5 h-5" />
               Войти
             </button>
@@ -60,22 +60,22 @@
   </header>
 
   <Teleport to="body">
-    <ClientLogin v-if="activeModal === 'client'" @close="activeModal = ''" />
-    <ManagerLogin v-if="activeModal === 'manager'" @close="activeModal = ''" />
+    <ClientLogin v-if="authModalStore.activeModal === 'client'" @close="authModalStore.closeModal" />
+    <ManagerLogin v-if="authModalStore.activeModal === 'manager'" @close="authModalStore.closeModal" />
     <SupplierLogin
-      v-if="activeModal === 'supplier'"
-      @close="activeModal = ''"
+      v-if="authModalStore.activeModal === 'supplier'"
+      @close="authModalStore.closeModal"
     />
-    <AkimatLogin v-if="activeModal === 'akimat'" @close="activeModal = ''" />
+    <AkimatLogin v-if="authModalStore.activeModal === 'akimat'" @close="authModalStore.closeModal" />
     <div
-      v-if="showLoginMenu"
+      v-if="authModalStore.showLoginMenu"
       class="fixed inset-0 bg-black/40 z-40 flex items-center justify-center"
-      @click.self="closeMenu"
+      @click.self="authModalStore.closeLoginMenu"
     >
       <div class="bg-white rounded-xl w-[340px] p-6 shadow-xl">
         <div class="flex justify-between items-center mb-4">
           <span class="text-lg font-semibold">Войти</span>
-          <button @click="closeMenu">
+          <button @click="authModalStore.closeLoginMenu">
             <img src="/icons/close.svg" alt="Закрыть" class="w-6 h-6" />
           </button>
         </div>
@@ -114,6 +114,7 @@
 
 <script setup>
 import { useUserStore } from "~/store/user.js";
+import { useAuthModalStore } from "~/store/authModal.js";
 import ClientLogin from "~/components/auth/ClientLogin.vue";
 import AkimatLogin from "~/components/auth/AkimatLogin.vue";
 import ManagerLogin from "~/components/auth/ManagerLogin.vue";
@@ -124,10 +125,9 @@ import { getCurrentUser } from "~/services/login/index.js";
 
 const token = ref(Cookies.get("token"));
 const router = useRouter();
-const showLoginMenu = ref(false);
-const activeModal = ref("");
 
 const userStore = useUserStore();
+const authModalStore = useAuthModalStore();
 
 const userInfo = ref(null);
 
@@ -149,19 +149,9 @@ function toggleDropdown() {
   showDropdownMenu.value = !showDropdownMenu.value;
 }
 
-function toggleLoginMenu() {
-  showLoginMenu.value = !showLoginMenu.value;
-}
-
-function closeMenu() {
-  showLoginMenu.value = false;
-}
-
 function login(type) {
-  toggleLoginMenu();
   userStore.setAuthType(type);
-
-  activeModal.value = type;
+  authModalStore.openModal(type);
 }
 
 function profileClick() {
