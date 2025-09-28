@@ -128,6 +128,7 @@ watch(iin, async (newValue) => {
           timeoutId = setTimeout(poll, 10000);
         }
       } catch (err) {
+        loadingStore.stopLoading();
         console.error("Ошибка при запросе:", err);
         // запланировать повтор при ошибке
         timeoutId = setTimeout(poll, 10000);
