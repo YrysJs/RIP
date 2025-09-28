@@ -25,8 +25,6 @@ const aboutPerson = ref("");
 const isPublic = ref(false);
 const isSubmitting = ref(false);
 
-const deceasedId = ref(2);
-
 // Загрузка данных захоронения
 const loadBurialData = async () => {
   try {
@@ -149,7 +147,7 @@ const submitMemorial = async () => {
 
     // Подготавливаем данные для отправки
     const formData = {
-      deceased_id: +burial.value?.deceased?.id,
+      deceased_id: +burial.value.data.deceased_id,
       epitaph: epitaph.value,
       about_person: aboutPerson.value,
       is_public: isPublic.value,
@@ -196,7 +194,7 @@ const submitMemorial = async () => {
           class="w-4 h-4 mr-[10px]"
           src="/icons/arrow-left-orange.svg"
           alt=""
-        />
+        >
         Вернуться
       </button>
 
@@ -215,7 +213,7 @@ const submitMemorial = async () => {
           <button
             class="flex items-center gap-2 bg-[#00000014] py-[10px] px-4 rounded-[10px] hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition max-sm:bg-transparent"
           >
-            <img src="/icons/share.svg" alt="" class="max-sm:w-5 max-sm:h-5" />
+            <img src="/icons/share.svg" alt="" class="max-sm:w-5 max-sm:h-5" >
             <span class="max-sm:hidden">Поделиться</span>
           </button>
         </div>
@@ -232,7 +230,7 @@ const submitMemorial = async () => {
             >
               <div class="upload-content">
                 <div class="flex justify-center mb-[20px]">
-                  <img src="/icons/upload.svg" alt="" class="upload-icon" />
+                  <img src="/icons/upload.svg" alt="" class="upload-icon" >
                 </div>
                 <p class="upload-text">Загрузите фотографии</p>
                 <p class="upload-hint">
@@ -251,7 +249,7 @@ const submitMemorial = async () => {
             <div v-else class="upload-area-with-images min-h-[250px]">
               <div class="gallery-header">
                 <h4>Загруженные фото ({{ imagePreviews.length }})</h4>
-                <button @click="removeAllImages" class="remove-all-btn">
+                <button class="remove-all-btn" @click="removeAllImages">
                   Удалить все
                 </button>
               </div>
@@ -262,9 +260,9 @@ const submitMemorial = async () => {
                   :key="preview.id"
                   class="image-preview-container"
                 >
-                  <img :src="preview.url" alt="Preview" class="image-preview" />
+                  <img :src="preview.url" alt="Preview" class="image-preview" >
                   <div class="image-overlay">
-                    <button @click="removeImage(index)" class="remove-btn">
+                    <button class="remove-btn" @click="removeImage(index)">
                       ✕
                     </button>
                   </div>
@@ -273,7 +271,7 @@ const submitMemorial = async () => {
               </div>
 
               <!-- Кнопка добавления еще фото -->
-              <button @click="$refs.fileInput.click()" class="add-more-btn">
+              <button class="add-more-btn" @click="$refs.fileInput.click()">
                 + Добавить еще фото
               </button>
             </div>
@@ -284,9 +282,9 @@ const submitMemorial = async () => {
               type="file"
               accept="image/*"
               multiple
-              @change="handleImageUpload"
               class="hidden"
-            />
+              @change="handleImageUpload"
+            >
           </div>
           <div class="memorial-info h-full min-h-[250px] max-sm:min-h-fit">
             <!-- <div class="border-b border-[#EEEEEE] pb-4 font-medium text-base">
@@ -370,7 +368,7 @@ const submitMemorial = async () => {
             class="border border-[#AFB5C166] rounded-lg py-[18px] px-3 w-full focus:outline-none"
             placeholder="Введите эпитафию..."
             rows="4"
-          ></textarea>
+          />
         </div>
         <div
           class="py-4 border-b border-b-[#eee] max-sm:py-0 max-sm:border-b-0"
@@ -381,7 +379,7 @@ const submitMemorial = async () => {
             class="border border-[#AFB5C166] rounded-lg py-[18px] px-3 w-full focus:outline-none"
             placeholder="Расскажите о человеке..."
             rows="4"
-          ></textarea>
+          />
         </div>
         <div
           class="flex gap-[14px] py-4 border-b border-b-[#eee] max-sm:border-b-0"
@@ -394,7 +392,7 @@ const submitMemorial = async () => {
                 v-model="switcher"
                 type="checkbox"
                 class="sr-only peer input"
-              />
+              >
               <span
                 class="absolute inset-0 bg-gray-200 rounded-full transition-colors peer-checked:bg-[#E9B949] peer-checked:ring-2 peer-checked:ring-[#E9B949]"
               />
@@ -418,15 +416,15 @@ const submitMemorial = async () => {
 
           <!-- Кнопка загрузки фото -->
           <div
-            @click="$refs.achievementFileInput.click()"
             class="upload-area bg-[#E7E8EA] rounded-lg hover:bg-[#DDD] transition-colors py-4 flex flex-col"
+            @click="$refs.achievementFileInput.click()"
           >
             <div class="flex justify-center mb-2">
               <img
                 src="/icons/upload.svg"
                 alt=""
                 class="w-[17px] h-[18px] m-[3px] mr-1"
-              />
+              >
             </div>
             <p class="text-base text-[#3F474F]">
               <span class="font-medium text-[#E9B949]">Загрузите файлы</span>
@@ -440,9 +438,9 @@ const submitMemorial = async () => {
             type="file"
             accept="image/*"
             multiple
-            @change="handleAchievementPhotoUpload"
             class="hidden"
-          />
+            @change="handleAchievementPhotoUpload"
+          >
 
           <!-- Галерея фото достижений -->
           <div
@@ -463,11 +461,11 @@ const submitMemorial = async () => {
                   :src="photo.url"
                   alt="Achievement photo"
                   class="image-preview"
-                />
+                >
                 <div class="image-overlay">
                   <button
-                    @click="removeAchievementPhoto(index)"
                     class="remove-btn"
+                    @click="removeAchievementPhoto(index)"
                   >
                     ✕
                   </button>
@@ -483,11 +481,11 @@ const submitMemorial = async () => {
           <!-- Кнопка добавления видео -->
           <button
             v-if="!showVideoInput"
-            @click="showVideoInputField"
             class="upload-area bg-[#E7E8EA] rounded-lg hover:bg-[#DDD] transition-colors py-4 flex flex-col"
+            @click="showVideoInputField"
           >
             <div class="flex justify-center mb-2">
-              <img src="/icons/upload-video.svg" alt="" class="w-6 h-6" />
+              <img src="/icons/upload-video.svg" alt="" class="w-6 h-6" >
             </div>
             <p class="text-base text-[#3F474F]">
               <span class="font-medium text-[#E9B949]">Загрузите файлы</span>
@@ -504,16 +502,16 @@ const submitMemorial = async () => {
                 placeholder="Вставьте ссылку на YouTube видео"
                 class="flex-1 border border-[#222222] rounded-lg p-3 text-base"
                 @keyup.enter="addVideo"
-              />
+              >
               <button
-                @click="addVideo"
                 class="bg-[#224C4F] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#1a3a3c] transition-colors"
+                @click="addVideo"
               >
                 Добавить
               </button>
               <button
-                @click="cancelVideoInput"
                 class="bg-[#EF4444] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#DC2626] transition-colors"
+                @click="cancelVideoInput"
               >
                 Отмена
               </button>
@@ -539,8 +537,8 @@ const submitMemorial = async () => {
                     {{ video.title }}
                   </h5>
                   <button
-                    @click="removeVideo(index)"
                     class="text-[#EF4444] hover:text-[#DC2626] font-medium transition-colors text-sm"
+                    @click="removeVideo(index)"
                   >
                     Удалить
                   </button>
@@ -552,7 +550,7 @@ const submitMemorial = async () => {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen
                     class="video-iframe"
-                  ></iframe>
+                  />
                 </div>
               </div>
             </div>
