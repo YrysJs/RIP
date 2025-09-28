@@ -32,10 +32,11 @@ async function userCreateAppeal() {
             content: appeal_content.value,
             userPhone: '76112513629',
             statusId: '1',
-            responsiblePhone: '73330450599'
+            responsiblePhone: '73330450599',
+            akimatId: 6
         })
         console.log(response)
-        router.push('/client/goverment/requests')
+        router.push('/supplier/goverment/requests')
     } catch (error) {
         console.log(error)
     }
@@ -58,9 +59,9 @@ async function userCreateAppeal() {
                 </div>
                 <div class="flex flex-col gap-[10px]">
                     <p>Обращение</p>
-                    <textarea v-model="appeal_content" class="w-full h-[200px] p-2 border border-gray-300 rounded-md"></textarea>
+                    <textarea v-model="appeal_content" class="w-full h-[200px] p-2 border border-gray-300 rounded-md"/>
                 </div>
-                <button @click="userCreateAppeal" class="bg-[#38949B] text-white px-[16px] py-[8px] rounded-[8px]">Создать обращение</button>
+                <button class="bg-[#38949B] text-white px-[16px] py-[8px] rounded-[8px]" @click="userCreateAppeal">Создать обращение</button>
             </div>
         </div>
      </NuxtLayout>
