@@ -4,7 +4,7 @@ function getSupplierInfo() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/v1/supplier/current',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/supplier/current',
     })
 }
 

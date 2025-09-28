@@ -49,7 +49,7 @@ function getCities() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/v1/country/cities',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/country/cities',
     })
 }
 

@@ -302,8 +302,7 @@ const otpCheck = async () => {
 </script>
 
 <template>
-  <div class="modal fixed inset-0 min-w-full min-h-[100vh] flex justify-center items-center z-50">
-    <div class="bg-white rounded-md max-w-[500px] w-full p-8 relative max-sm:mx-4 max-sm:pt-6 max-sm:px-4 max-sm:pb-12">
+  <div class="bg-white rounded-md max-w-[500px] w-full p-8 relative max-sm:mx-4 max-sm:pt-6 max-sm:px-4 max-sm:pb-12">
       <button class="absolute right-[32px] top-[32px] text-[22px] leading-5 font-semibold" @click="close">&#10005;</button>
       <div v-if="step === 0" class="flex flex-col">
         <h3 class="text-2xl font-extrabold text-left text-[#222222] mb-[32px] max-lg:text-[22px] max-lg:mb-6">
@@ -448,7 +447,6 @@ const otpCheck = async () => {
           Зарегистрироваться
         </button>
       </div>
-    </div>
   </div>
 </template>
 

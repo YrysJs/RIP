@@ -60,16 +60,27 @@
   </header>
 
   <Teleport to="body">
-    <ClientLogin v-if="authModalStore.activeModal === 'client'" @close="authModalStore.closeModal" />
-    <ManagerLogin v-if="authModalStore.activeModal === 'manager'" @close="authModalStore.closeModal" />
-    <SupplierLogin
-      v-if="authModalStore.activeModal === 'supplier'"
-      @close="authModalStore.closeModal"
-    />
-    <AkimatLogin v-if="authModalStore.activeModal === 'akimat'" @close="authModalStore.closeModal" />
+    <!-- Фон для модалок авторизации -->
     <div
-      v-if="authModalStore.showLoginMenu"
-      class="fixed inset-0 bg-black/40 z-40 flex items-center justify-center"
+      v-if="authModalStore.activeModal && authModalStore.activeModal.value !== ''"
+      class="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center"
+      @click.self="authModalStore.closeModal"
+    >
+      <!-- Отладка: показываем текущий activeModal -->
+<!--      <div style="position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.8); padding: 5px; border-radius: 4px; font-size: 12px;">-->
+<!--        activeModal: {{ authModalStore.activeModal.value }}-->
+<!--      </div>-->
+      <ClientLogin v-if="authModalStore.activeModal && authModalStore.activeModal.value === 'client'" @close="authModalStore.closeModal" />
+      <ManagerLogin v-if="authModalStore.activeModal && authModalStore.activeModal.value === 'manager'" @close="authModalStore.closeModal" />
+      <SupplierLogin
+        v-if="authModalStore.activeModal && authModalStore.activeModal.value === 'supplier'"
+        @close="authModalStore.closeModal"
+      />
+      <AkimatLogin v-if="authModalStore.activeModal && authModalStore.activeModal.value === 'akimat'" @close="authModalStore.closeModal" />
+    </div>
+    <div
+      v-if="authModalStore.showLoginMenu && authModalStore.showLoginMenu.value !== false"
+      class="fixed inset-0 bg-black/40 z-[80] flex items-center justify-center"
       @click.self="authModalStore.closeLoginMenu"
     >
       <div class="bg-white rounded-xl w-[340px] p-6 shadow-xl">
@@ -79,7 +90,6 @@
             <img src="/icons/close.svg" alt="Закрыть" class="w-6 h-6" />
           </button>
         </div>
-
         <div class="text-gray-400 text-sm mb-2">Клиентам</div>
         <div
           class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]"

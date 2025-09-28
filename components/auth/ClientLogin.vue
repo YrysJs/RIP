@@ -137,7 +137,6 @@ watch(iin, async (newValue) => {
     // запускаем первый вызов
     await poll();
   } catch (error) {
-    console.log('111111111111111111')
     loadingStore.stopLoading();
     console.error("Ошибка при получении токена:", error);
   }
@@ -325,13 +324,12 @@ const otpCheck = async () => {
 
 <template>
   <div
-    v-if="showOverlay"
-    class="modal fixed inset-0 min-w-full min-h-[100vh] flex justify-center items-center z-50"
+    class="max-w-[500px] w-full relative max-sm:mx-4"
   >
     <transition name="fade">
       <div
         v-if="processing"
-        class="overlay-msg absolute inset-0 flex items-center justify-center"
+        class="bg-white rounded-md p-8 w-full flex items-center justify-center min-h-[200px]"
         aria-live="polite"
       >
         <div class="msg-box flex flex-col items-center gap-4">
@@ -348,7 +346,7 @@ const otpCheck = async () => {
       <div
         v-if="!processing"
         :key="currentModal"
-        class="bg-white rounded-md max-w-[500px] w-full p-8 relative max-sm:mx-4 max-sm:pt-6 max-sm:px-4 max-sm:pb-12"
+        class="bg-white rounded-md w-full p-8 relative max-sm:pt-6 max-sm:px-4 max-sm:pb-12"
         role="dialog"
         aria-modal="true"
       >
