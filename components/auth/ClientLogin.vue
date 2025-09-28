@@ -129,6 +129,7 @@ watch(iin, async (newValue) => {
         }
       } catch (err) {
         loadingStore.stopLoading();
+        isFcb.value = true;
         console.error("Ошибка при запросе:", err);
         // запланировать повтор при ошибке
         timeoutId = setTimeout(poll, 10000);
@@ -462,11 +463,22 @@ const otpCheck = async () => {
                 disabled
               />
               <input
-                v-model="fio"
-                :disabled="isFcb"
-                class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
-                type="text"
-                placeholder="ФИО"
+                  v-model="surname"
+                  class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
+                  type="text"
+                  placeholder="Фамилия"
+              />
+              <input
+                  v-model="name"
+                  class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
+                  type="text"
+                  placeholder="Имя"
+              />
+              <input
+                  v-model="patronymic"
+                  class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
+                  type="text"
+                  placeholder="Отчество"
               />
               <div class="flex gap-[10px] items-start mb-[32px]">
                 <input class="w-6 h-6" v-model="check" type="checkbox" />
