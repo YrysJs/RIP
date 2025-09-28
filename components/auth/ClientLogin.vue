@@ -2,6 +2,8 @@
 import {
   getOtp,
   checkOtp,
+  getWhatsappOtp,
+  checkWhatsappOtp,
   signupClient,
   getUserData,
   signupClientFcb,
@@ -29,6 +31,7 @@ const name = ref("");
 const surname = ref("");
 const patronymic = ref("");
 const fio = ref("");
+const isWhatsappLogin = ref(false);
 
 const loadingStore = useLoadingStore();
 
@@ -169,7 +172,7 @@ async function run() {
     // }
     Cookies.set("token", response.data.token);
     Cookies.set("role", "client");
-    await router.push("/client/tickets/active");
+    await router.push("/client/profile");
   } catch (error) {
     console.error("Ошибка при логине:", error);
 
@@ -207,7 +210,7 @@ async function run() {
 // }
 
 function goToTickets() {
-  router.push("/client/tickets/active");
+  router.push("/client/profile");
 }
 
 function buildFio(surname, name, patronymic) {
@@ -233,6 +236,7 @@ const login = async () => {
   try {
     const response = await getOtp({ phone: extractDigits(phone_number.value) });
     loginId.value = response.data;
+    isWhatsappLogin.value = false;
     step.value++;
     fakeTimer.value = 60;
 
@@ -253,15 +257,49 @@ const login = async () => {
   }
 };
 
+const loginWhatsapp = async () => {
+  try {
+    const response = await getWhatsappOtp({ phone: extractDigits(phone_number.value) });
+    loginId.value = response.data;
+    isWhatsappLogin.value = true;
+    step.value++;
+    fakeTimer.value = 60;
+
+    if (interval) {
+      clearInterval(interval);
+    }
+
+    interval = setInterval(() => {
+      if (fakeTimer.value > 0) {
+        fakeTimer.value -= 1;
+      } else {
+        clearInterval(interval);
+        interval = null;
+      }
+    }, 1000);
+  } catch (error) {
+    console.error("Ошибка при отправке WhatsApp кода:", error);
+  }
+};
+
 const otpCheck = async () => {
   try {
-    const response = await checkOtp({
-      id: loginId.value,
-      code: code.value,
-    });
+    let response;
+    if (isWhatsappLogin.value) {
+      response = await checkWhatsappOtp({
+        phone: extractDigits(phone_number.value),
+        code: code.value,
+      });
+    } else {
+      response = await checkOtp({
+        id: loginId.value,
+        code: code.value,
+      });
+    }
+    
     Cookies.set("token", response.data.token);
     Cookies.set("role", "client");
-    await router.push("/client/tickets/active");
+    await router.push("/client/profile");
   } catch (error) {
     console.error("Ошибка при логине:", error);
 
@@ -273,7 +311,7 @@ const otpCheck = async () => {
     }
   } finally {
     console.log("login");
-    // router.push('/client/tickets/active')
+    // router.push('/client/profile')
   }
 
   // setTimeout(() => {
@@ -335,16 +373,16 @@ const otpCheck = async () => {
               type="text"
               placeholder="Введите номер телефона"
             />
-<!--            <button-->
-<!--              class="bg-[#E9B949] py-[18px] rounded-lg text-[#000] font-medium max-lg:py-[15px]"-->
-<!--              :class="{ '!bg-[#38949B] text-white': phone_number.length >= 18 }"-->
-<!--              @click="step++"-->
-<!--            >-->
-<!--              Получить код в WhatsApp-->
-<!--            </button>-->
+            <button
+              class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#000] font-medium max-lg:py-[15px]"
+              :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }"
+              @click="loginWhatsapp"
+            >
+              Получить код в WhatsApp
+            </button>
             <button
               class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#17212A] font-medium my-4 max-lg:py-[15px] max-lg:mt-2 max-lg:mb-4"
-              :class="{ '!bg-[#38949B] text-white': phone_number.length >= 18 }"
+              :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }"
               @click="login"
             >
               Получить код по СМС
@@ -364,7 +402,7 @@ const otpCheck = async () => {
               Подтвердите номер
             </h3>
             <p class="text-sm">
-              Введите код из СМС. Мы отправили его на номер
+              Введите код из {{ isWhatsappLogin ? 'WhatsApp' : 'СМС' }}. Мы отправили его на номер
               {{ phone_number }}
             </p>
             <input

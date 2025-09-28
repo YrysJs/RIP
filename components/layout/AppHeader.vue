@@ -183,7 +183,7 @@ function profileClick() {
       router.push("/manager/booking");
       break;
     case "USER":
-      router.push("/client/tickets/active");
+      router.push("/client/profile");
       break;
     case "SUPPLIER":
       router.push("/supplier/tickets/active");

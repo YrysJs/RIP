@@ -220,7 +220,7 @@ function updatePriceRange(event) {
 </script>
 
 <template>
-    <div class="bg-[#FAFAFA] py-[20px]">
+    <div class="bg-[#faf7ee] py-[20px] my-[60px]">
       <AppHeader type="client" />
         <div class="container">
             <LayoutTop title="Заказать услуги и товары" :hide="true"/>
@@ -334,7 +334,7 @@ function updatePriceRange(event) {
                 <!-- Область с продуктами -->
                 <div class="max-w-[770px] w-full mt-[20px]">
                     <!-- Поиск -->
-                    <div class="w-full bg-white border-1 border-[#EEEEEE] h-[44px] relative">
+                    <div class="w-full bg-white border-1 border-[#EEEEEE] h-[44px] relative mb-5">
                         <img class="absolute top-[10px] left-[15px]" src="/icons/search.svg" alt=""> 
                         <input 
                             class="bg-transparent w-full h-full pl-[45px]" 
@@ -402,7 +402,7 @@ function updatePriceRange(event) {
                                 </div>
                                 <div class="flex gap-[10px] mt-[10px]">
                                     <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold" @click="fetchProduct(product.id)">Подробнее</button>
-                                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold" @click="addProductToCart(product.id)">Добавить</button>
+                                    <button class="w-[50%] text-sm rounded-lg bg-[#E9B949] text-white py-[8px] font-semibold" @click="addProductToCart(product.id)">Добавить</button>
                                 </div>
                             </div>
                         </div>

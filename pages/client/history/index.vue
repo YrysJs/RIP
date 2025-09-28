@@ -74,17 +74,17 @@ useHead({
       </h1>
 
       <!-- Tabs -->
-      <div class="mt-5 flex gap-2">
-        <button
-          v-for="t in tabs"
-          :key="t"
-          class="px-3 py-[9px] rounded-lg text-sm text-[#17212A] transition"
-          :class="activeTab === t ? 'bg-[#C6C9CC]' : 'bg-white'"
-          @click="activeTab = t"
-        >
-          {{ t }}
-        </button>
-      </div>
+<!--      <div class="mt-5 flex gap-2">-->
+<!--        <button-->
+<!--          v-for="t in tabs"-->
+<!--          :key="t"-->
+<!--          class="px-3 py-[9px] rounded-lg text-sm text-[#17212A] transition"-->
+<!--          :class="activeTab === t ? 'bg-[#C6C9CC]' : 'bg-white'"-->
+<!--          @click="activeTab = t"-->
+<!--        >-->
+<!--          {{ t }}-->
+<!--        </button>-->
+<!--      </div>-->
 
       <!-- List -->
       <div class="mt-5">

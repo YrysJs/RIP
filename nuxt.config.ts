@@ -17,13 +17,18 @@ export default defineNuxtConfig({
     "nuxt-schema-org",
     "nuxt-swiper",
     "six-dropzone",
+    'vue-yandex-maps/nuxt',
   ],
   plugins: [
     "~/plugins/v-mask.js",
     "~/plugins/axios.js",
     "~/plugins/dropzone-vue.js",
   ],
-
+  yandexMaps: {
+    apikey: '60105bd2-2780-4882-af38-068f2b3ae03f',
+    initializeOn: 'onPluginInit',
+    lang: 'ru_RU',
+  },
   css: ["~/css/main.scss", "~/assets/styles/fonts.scss"],
   i18n: {
     locales: [
@@ -35,6 +40,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       twoGisApiKey: "0b75b800-a23a-42d2-a943-3d04be6ebfc3",
+      yandexMapApiKey: "60105bd2-2780-4882-af38-068f2b3ae03f",
     },
   },
   tailwindcss: {

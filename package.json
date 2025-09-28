@@ -37,7 +37,8 @@
     "vue": "^3.5.13",
     "vue-chartjs": "^5.3.2",
     "vue-router": "^4.5.0",
-    "vue-the-mask": "^0.11.1"
+    "vue-the-mask": "^0.11.1",
+    "vue-yandex-maps": "^2.2.2"
   },
   "devDependencies": {
     "sass-embedded": "^1.86.3"

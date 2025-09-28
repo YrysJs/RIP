@@ -16,6 +16,8 @@ const graveDataModalState = ref(false);
 const graveData = ref(null);
 const cemeteryData = ref(null);
 
+const localePath = useLocalePath();
+
 const fetchGraveData = async (id) => {
   const response = await getGraveById(id);
   graveData.value = response.data.data;
@@ -26,54 +28,15 @@ const fetchCemeteryData = async (id) => {
   cemeteryData.value = response.data.data;
 };
 
-// onMounted(async () => {
-//   try {
-//     const response = await getBurialRequests({
-//       status: "paid",
-//       user_phone: userStore.user?.phone,
-//     });
-//     burialRequests.value = response.data.data.data;
-//   } catch (error) {
-//     console.error("Ошибка при получении заявок:", error);
-//   } finally {
-//     loading.value = false;
-//   }
-// });
-
 onMounted(async () => {
   try {
-    // Фейковые данные вместо API
-    burialRequests.value = [
-      {
-        id: 1,
-        request_number: "BR-001",
-        created_at: "2025-09-10T12:30:00Z",
-        reservation_expires_at: "2025-09-20T12:30:00Z",
-        cemetery_name: "Кладбище №1",
-        sector_number: "Сектор 12",
-        grave_id: "Место 45",
-        deceased: { full_name: "Иванов Иван Иванович" },
-        burial_date: "2025-09-15",
-        burial_time: "14:00",
-        status: "canceled",
-      },
-      {
-        id: 2,
-        request_number: "BR-002",
-        created_at: "2025-09-12T09:15:00Z",
-        reservation_expires_at: "2025-09-22T09:15:00Z",
-        cemetery_name: "Кладбище №3",
-        sector_number: "Сектор 5",
-        grave_id: "Место 101",
-        deceased: { full_name: "Петров Петр Петрович" },
-        burial_date: null,
-        burial_time: null,
-        status: "paid",
-      },
-    ];
+    const response = await getBurialRequests({
+      user_phone: userStore.user?.phone,
+    });
+    burialRequests.value = response.data.data.data;
+    console.log(burialRequests.value)
   } catch (error) {
-    console.error("Ошибка при подстановке тестовых данных:", error);
-    burialRequests.value = [];
+    console.error("Ошибка при получении заявок:", error);
   } finally {
     loading.value = false;
   }
@@ -110,134 +73,269 @@ const showGraveDataModal = async (id) => {
         :key="request.id"
         class="bg-white py-6 px-[18px] rounded-lg max-sm:p-0"
       >
-        <div
-          class="flex justify-between items-start pb-4 border-b-2 border-b-[#eee] max-lg:flex-col max-sm:border-none max-sm:pb-0"
-        >
-          <h3
-            class="font-foglihten text-fluid font-medium text-[#201001] leading-[48px]"
-          >
-            Заявка на захоронение:
-            <span class="text-[#B88F34]">{{ request.request_number }}</span>
-          </h3>
-          <p class="text-sm text-[#999]">
-            {{
-              new Date(request.created_at).toLocaleString("ru-RU", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            }}
-          </p>
-        </div>
-        <div
-          class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[8px] max-sm:mt-3 max-sm:pb-3 max-lg:flex-col"
-        >
+        <template v-if="request.status === 'pending'">
           <div
-            class="min-w-[580px] font-medium flex flex-col gap-[8px] max-sm:gap-0"
+              class="flex justify-between items-start pb-4 border-b-2 border-b-[#eee] max-lg:flex-col max-sm:border-none max-sm:pb-0"
           >
-            <div class="flex text-base h-[38px] items-center max-sm:h-[26px]">
-              <p class="min-w-[150px] grey-14">Кладбище:</p>
-              <p class="black-16">{{ request.cemetery_name }}</p>
-            </div>
-            <div class="flex text-base h-[38px] items-center max-sm:h-[26px]">
-              <p class="min-w-[150px] grey-14">Сектор</p>
-              <p class="black-16">{{ request.sector_number }}</p>
-            </div>
-            <div class="flex text-base h-[38px] items-center max-sm:h-[26px]">
-              <p class="min-w-[150px] grey-14">Место:</p>
-              <p class="black-16">{{ request.grave_id }}</p>
-            </div>
-          </div>
-          <!-- <button
-            class="rounded-md w-[140px] h-[30px] text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]"
-            @click="showGraveDataModal(request.grave_id)"
-          >
-            Данные участка
-          </button> -->
-        </div>
-        <div
-          class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
-        >
-          <div class="font-medium flex flex-col gap-[10px]">
-            <div class="flex text-base">
-              <p class="min-w-[150px] max-w-[150px] grey-14">ФИО покойного:</p>
-              <p class="black-16">{{ request.deceased?.full_name }}</p>
-            </div>
-          </div>
-        </div>
-        <div
-          class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
-        >
-          <div class="flex text-base">
-            <p class="min-w-[150px] max-w-[150px] grey-14">Дата похорон:</p>
-            <p v-if="request.burial_date">
-              {{ new Date(request.burial_date).toLocaleDateString("ru-RU") }},
-              {{ request.burial_time }}
+            <h3
+                class="font-foglihten text-fluid font-medium text-[#201001] leading-[48px]"
+            >
+              Бронирование:
+              <span class="text-[#B88F34]">{{ request.request_number }}</span>
+            </h3>
+            <p class="text-sm text-[#999]">
+              {{
+                new Date(request.created_at).toLocaleString("ru-RU", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              }}
             </p>
-            <p v-else class="text-[#DB1414]">Необходимо указать даты похорон</p>
           </div>
-        </div>
-        <div
-          class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]"
-        >
-          <div class="font-medium flex flex-col gap-[10px]">
-            <div class="flex text-base">
-              <p class="min-w-[150px] max-w-[150px] grey-14">Cтатус:</p>
-              <div
-                v-if="request.status === 'paid'"
-                class="flex items-center gap-[10px]"
-              >
-                <img src="/icons/paid-tick.svg" alt="" />
-                <p class="p-[4px] rounded-md text-sm text-[#17212A] mr-4">
-                  Оплачено
+          <div
+              class="border-b-2 border-[#EEEEEE] pt-4 pb-[14px] max-sm:pt-0 max-sm:pb-0"
+          >
+            <div class="h-10 flex items-center text-base font-medium">
+              <p class="min-w-[150px] black-16">Срок брони:</p>
+              <div class="flex items-center gap-[5px]">
+                <p class="grey-14">
+                  {{
+                    new Date(request.reservation_expires_at).toLocaleString(
+                        "ru-RU",
+                        {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }
+                    )
+                  }}
                 </p>
-              </div>
-              <div
-                v-if="request.status === 'canceled'"
-                class="flex items-center gap-[10px]"
-              >
-                <img src="/icons/warning.svg" alt="" />
-                <p class="p-[4px] rounded-md text-sm text-[#17212A] mr-4">
-                  Отменено
-                </p>
+                <img src="/icons/info.svg" alt="" />
               </div>
             </div>
           </div>
-        </div>
-        <div class="flex justify-between items-start mt-[16px] max-sm:mt-3">
-          <div class="flex text-base">
-            <p class="min-w-[150px] max-w-[150px] grey-14">
-              Дополнительные услуги:
-            </p>
-            <p class="p-[4px] rounded-md black-16 mr-4">Отсутствуют</p>
-          </div>
-        </div>
-        <div class="flex gap-4 mt-[16px] max-lg:flex-col">
-          <button
-            class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-sm font-medium hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
-            @click="$router.push(`/client/memorial/create?id=${request.id}`)"
+          <div
+              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
           >
-            Создать мемориал
-          </button>
-          <button
-            class="block py-[15px] px-[20px] rounded-lg bg-[#AFB5C133] text-[#17212A] text-sm font-medium hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition"
-            @click="
+            <div
+                class="min-w-[580px] font-medium flex flex-col gap-[10px] max-sm:gap-0"
+            >
+              <div class="flex text-base">
+                <p class="min-w-[150px] grey-14">Кладбище:</p>
+                <p class="black-16">{{ request.cemetery_name }}</p>
+              </div>
+              <div class="flex text-base">
+                <p class="min-w-[150px] grey-14">Сектор</p>
+                <p class="black-16">{{ request.sector_number }}</p>
+              </div>
+              <div class="flex text-base">
+                <p class="min-w-[150px] grey-14">Место:</p>
+                <p class="black-16">{{ request.grave_id }}</p>
+              </div>
+            </div>
+          </div>
+          <div
+              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+          >
+            <div class="font-medium flex flex-col gap-[10px]">
+              <div class="flex text-base">
+                <p class="min-w-[150px] max-w-[150px] grey-14">ФИО покойного:</p>
+                <p class="black-16">{{ request.deceased?.full_name }}</p>
+              </div>
+            </div>
+          </div>
+          <div
+              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+          >
+            <div class="flex text-base">
+              <p class="min-w-[150px] max-w-[150px] grey-14">Дата похорон:</p>
+              <p v-if="request.burial_date">
+                {{ new Date(request.burial_date).toLocaleDateString("ru-RU") }},
+                {{ request.burial_time }}
+              </p>
+              <p v-else class="text-base text-[#DB1414]">
+                Необходимо указать даты похорон
+              </p>
+            </div>
+          </div>
+          <div
+              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+          >
+            <div class="font-medium flex flex-col gap-[10px]">
+              <div class="flex text-base">
+                <p class="min-w-[150px] max-w-[150px] grey-14">Cтатус:</p>
+                <div
+                    class="flex items-center gap-[10px]"
+                    v-if="request.status === 'pending'"
+                >
+                  <img src="/icons/warning.svg" alt="" />
+                  <p class="text-sm text-[#17212A]">Ожидает оплаты</p>
+                </div>
+                <div
+                    class="flex items-center gap-[10px]"
+                    v-if="request.status === 'paid'"
+                >
+                  <img src="/icons/paid-tick.svg" alt="" />
+                  <p class="text-sm text-[#17212A]">Оплачено</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-between items-start mt-[16px] max-sm:mt-3">
+            <div class="flex text-base">
+              <p class="min-w-[150px] max-w-[150px] grey-14">
+                Дополнительные услуги:
+              </p>
+              <p class="p-[4px] rounded-md black-16 mr-4">Отсутствуют</p>
+            </div>
+          </div>
+          <NuxtLink
+              class="block w-fit py-[15px] px-5 rounded-lg bg-[#E9B949] text-black text-sm font-medium mt-[16px] max-sm:w-full text-center hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
+              :to="
+            localePath({
+              name: 'client-tickets-active-id',
+              params: { id: request.id },
+            })
+          "
+          >
+            Завершить оформление
+          </NuxtLink>
+        </template>
+        <template v-else>
+          <div
+              class="flex justify-between items-start pb-4 border-b-2 border-b-[#eee] max-lg:flex-col max-sm:border-none max-sm:pb-0"
+          >
+            <h3
+                class="font-foglihten text-fluid font-medium text-[#201001] leading-[48px]"
+            >
+              Заявка на захоронение:
+              <span class="text-[#B88F34]">{{ request.request_number }}</span>
+            </h3>
+            <p class="text-sm text-[#999]">
+              {{
+                new Date(request.created_at).toLocaleString("ru-RU", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              }}
+            </p>
+          </div>
+          <div
+              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[8px] max-sm:mt-3 max-sm:pb-3 max-lg:flex-col"
+          >
+            <div
+                class="min-w-[580px] font-medium flex flex-col gap-[8px] max-sm:gap-0"
+            >
+              <div class="flex text-base h-[38px] items-center max-sm:h-[26px]">
+                <p class="min-w-[150px] grey-14">Кладбище:</p>
+                <p class="black-16">{{ request.cemetery_name }}</p>
+              </div>
+              <div class="flex text-base h-[38px] items-center max-sm:h-[26px]">
+                <p class="min-w-[150px] grey-14">Сектор</p>
+                <p class="black-16">{{ request.sector_number }}</p>
+              </div>
+              <div class="flex text-base h-[38px] items-center max-sm:h-[26px]">
+                <p class="min-w-[150px] grey-14">Место:</p>
+                <p class="black-16">{{ request.grave_id }}</p>
+              </div>
+            </div>
+            <!-- <button
+              class="rounded-md w-[140px] h-[30px] text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]"
+              @click="showGraveDataModal(request.grave_id)"
+            >
+              Данные участка
+            </button> -->
+          </div>
+          <div
+              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+          >
+            <div class="font-medium flex flex-col gap-[10px]">
+              <div class="flex text-base">
+                <p class="min-w-[150px] max-w-[150px] grey-14">ФИО покойного:</p>
+                <p class="black-16">{{ request.deceased?.full_name }}</p>
+              </div>
+            </div>
+          </div>
+          <div
+              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+          >
+            <div class="flex text-base">
+              <p class="min-w-[150px] max-w-[150px] grey-14">Дата похорон:</p>
+              <p v-if="request.burial_date">
+                {{ new Date(request.burial_date).toLocaleDateString("ru-RU") }},
+                {{ request.burial_time }}
+              </p>
+              <p v-else class="text-[#DB1414]">Необходимо указать даты похорон</p>
+            </div>
+          </div>
+          <div
+              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]"
+          >
+            <div class="font-medium flex flex-col gap-[10px]">
+              <div class="flex text-base">
+                <p class="min-w-[150px] max-w-[150px] grey-14">Cтатус:</p>
+                <div
+                    v-if="request.status === 'paid'"
+                    class="flex items-center gap-[10px]"
+                >
+                  <img src="/icons/paid-tick.svg" alt="" />
+                  <p class="p-[4px] rounded-md text-sm text-[#17212A] mr-4">
+                    Оплачено
+                  </p>
+                </div>
+                <div
+                    v-if="request.status === 'canceled'"
+                    class="flex items-center gap-[10px]"
+                >
+                  <img src="/icons/warning.svg" alt="" />
+                  <p class="p-[4px] rounded-md text-sm text-[#17212A] mr-4">
+                    Отменено
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-between items-start mt-[16px] max-sm:mt-3">
+            <div class="flex text-base">
+              <p class="min-w-[150px] max-w-[150px] grey-14">
+                Дополнительные услуги:
+              </p>
+              <p class="p-[4px] rounded-md black-16 mr-4">Отсутствуют</p>
+            </div>
+          </div>
+          <div class="flex gap-4 mt-[16px] max-lg:flex-col">
+            <button
+                class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-sm font-medium hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
+                @click="$router.push(`/client/memorial/create?id=${request.id}`)"
+            >
+              Создать мемориал
+            </button>
+            <button
+                class="block py-[15px] px-[20px] rounded-lg bg-[#AFB5C133] text-[#17212A] text-sm font-medium hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition"
+                @click="
               $router.push(
                 `/client/tickets/burial/add-service?burial_id=${request.id}`
               )
             "
-          >
-            Добавить услуги и товары
-          </button>
-          <button
-            class="py-[15px] px-[20px] rounded-lg text-[#17212A] bg-white text-sm font-medium flex items-center justify-center gap-[8px] hover:bg-[#F1F1F2] active:bg-[#C6C9CC] transition"
-            @click="shareGraveData(request.grave_id)"
-          >
-            <img src="/icons/share.svg" alt="" /> Поделиться координатами
-          </button>
-        </div>
+            >
+              Добавить услуги и товары
+            </button>
+            <button
+                class="py-[15px] px-[20px] rounded-lg text-[#17212A] bg-white text-sm font-medium flex items-center justify-center gap-[8px] hover:bg-[#F1F1F2] active:bg-[#C6C9CC] transition"
+                @click="shareGraveData(request.grave_id)"
+            >
+              <img src="/icons/share.svg" alt="" /> Поделиться координатами
+            </button>
+          </div>
+        </template>
       </div>
     </template>
   </NuxtLayout>

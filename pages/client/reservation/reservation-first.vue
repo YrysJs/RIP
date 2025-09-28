@@ -84,7 +84,7 @@ const handleBooking = async () => {
       time.value--;
       if (time.value <= 0) {
         clearInterval(timerId);
-        router.push("/client/tickets/active");
+        router.push("/client/tickets/burial");
       }
     }, 1000);
   } catch (error) {

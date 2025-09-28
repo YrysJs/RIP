@@ -1,209 +1,142 @@
 <script setup>
-import { onMounted, ref, watch, computed } from 'vue'
-import { useRuntimeConfig } from '#imports'
+import { ref, computed, watch } from 'vue'
+import {
+  YandexMap,
+  YandexMapDefaultSchemeLayer,
+  YandexMapDefaultFeaturesLayer,
+  YandexMapFeature,
+  getCenterFromCoords
+} from 'vue-yandex-maps'
 
 const props = defineProps({
-  polygons: {
-    type: [Array, Object], // поддержка ref([]) и обычного []
-    required: true,
-  },
-  modelValue: {
-    type: Object,
-    default: null,
-  },
-  cemeteryBoundary: {
-    type: Object,
-    default: null,
-  },
-  centerCoords: {
-    type: Array,
-    default: null,
-  },
+  polygons: { type: [Array, Object], required: true },     // список участков
+  modelValue: { type: Object, default: null },             // выбранный участок
+  cemeteryBoundary: { type: Object, default: null },       // граница кладбища
+  centerCoords: { type: Array, default: null },            // [lat, lng]
 })
-
 const emit = defineEmits(['update:modelValue'])
 
-const mapContainerId = 'map-container'
-const mapInstance = ref(null)
-const polygonObjects = ref([])
-const cemeteryBoundaryObject = ref(null)
+const polygonsList = computed(() =>
+    Array.isArray(props.polygons) ? props.polygons : (props.polygons && props.polygons.value) || []
+)
 
-const selected = ref(null)
+// ===== центр/зум (ymaps3: [lng, lat]) =====
+const DEFAULT_CENTER = [76.889709, 43.238949]
+const center = ref(DEFAULT_CENTER)
+const zoom = ref(18)
 
-onMounted(() => {
-  const checkDG = setInterval(() => {
-    if (window.DG) {
-      clearInterval(checkDG)
-      initializeMap()
+function computeInitialCenter () {
+  if (Array.isArray(props.centerCoords) && props.centerCoords.length === 2) {
+    const [lat, lng] = props.centerCoords
+    return [lng, lat]
+  }
+  const boundary = props.cemeteryBoundary?.polygon_data?.coordinates
+  if (Array.isArray(boundary) && boundary.length) {
+    try {
+      return getCenterFromCoords(boundary) // возвращает [lng,lat]
+    } catch {
+      const sum = boundary.reduce((acc, [lng, lat]) => ({ lng: acc.lng + lng, lat: acc.lat + lat }), { lng: 0, lat: 0 })
+      return [sum.lng / boundary.length, sum.lat / boundary.length]
     }
-  }, 100)
+  }
+  const first = polygonsList.value?.[0]?.polygon_data?.coordinates?.[0]
+  if (Array.isArray(first) && first.length === 2) return [first[0], first[1]]
+  return DEFAULT_CENTER
+}
+center.value = computeInitialCenter()
+zoom.value = props.centerCoords ? 15 : (props.cemeteryBoundary ? 14 : 5)
+
+watch(() => props.centerCoords, v => {
+  if (Array.isArray(v) && v.length === 2) {
+    center.value = [v[1], v[0]]
+    zoom.value = 15
+  }
 })
 
-// Следим за изменениями границ кладбища
-watch(() => props.cemeteryBoundary, (newBoundary) => {
-  if (mapInstance.value && newBoundary) {
-    drawCemeteryBoundary()
-  }
-}, { deep: true })
-
-// Следим за изменениями полигонов могил
-watch(() => props.polygons, () => {
-  if (mapInstance.value) {
-    clearPolygons()
-    drawPolygons()
-  }
-}, { deep: true })
-
-// Следим за изменениями координат центра карты
-watch(() => props.centerCoords, (newCoords) => {
-  if (mapInstance.value && newCoords && newCoords.length === 2) {
-    mapInstance.value.setView([newCoords[0], newCoords[1]], 15)
-  }
-}, { deep: true })
-
-function getPolygons() {
-  return Array.isArray(props.polygons) ? props.polygons : props.polygons.value
+// ===== выбор полигона =====
+const selected = ref(props.modelValue || null)
+watch(() => props.modelValue, v => { selected.value = v })
+function selectPolygon (item) {
+  selected.value = item
+  emit('update:modelValue', item)
 }
 
-function initializeMap() {
-  const items = getPolygons()
-  let center = [43.238949, 76.889709] // дефолтный центр
-  
-  // Приоритет использования координат:
-  // 1. Координаты центра кладбища (centerCoords)
-  // 2. Координаты границ кладбища
-  // 3. Координаты первого полигона могилы
-  if (props.centerCoords && props.centerCoords.length === 2) {
-    center = [props.centerCoords[0], props.centerCoords[1]]
-  } else if (props.cemeteryBoundary?.polygon_data?.coordinates?.length > 0) {
-    const coords = props.cemeteryBoundary.polygon_data.coordinates[0]
-    center = [coords[1], coords[0]]
-  } else if (items.length > 0) {
-    const first = items[0]?.polygon_data?.coordinates?.[0]
-    if (first) {
-      center = [first[1], first[0]]
-    }
-  }
-
-  const config = useRuntimeConfig()
-  const apiKey = config.public.twoGisApiKey
-
-  mapInstance.value = DG.map(mapContainerId, {
-    center,
-    zoom: 18,
-    key: apiKey,
-  })
-
-  if (props.cemeteryBoundary) {
-    drawCemeteryBoundary()
-  }
-  
-  drawPolygons()
-}
-
-function drawCemeteryBoundary() {
-  // Удаляем предыдущие границы кладбища
-  if (cemeteryBoundaryObject.value) {
-    mapInstance.value.removeLayer(cemeteryBoundaryObject.value)
-  }
-
-  if (!props.cemeteryBoundary?.polygon_data?.coordinates) return
-
-  const latlngs = props.cemeteryBoundary.polygon_data.coordinates.map(([lng, lat]) => [lat, lng])
-
-  cemeteryBoundaryObject.value = DG.polygon(latlngs, {
-    color: '#FF0000', // красная обводка для границ кладбища
-    weight: 3,
-    fillColor: 'transparent',
-    fillOpacity: 0,
-  }).addTo(mapInstance.value)
-}
-
-function clearPolygons() {
-  polygonObjects.value.forEach(({ polygon }) => {
-    mapInstance.value.removeLayer(polygon)
-  })
-  polygonObjects.value = []
-}
-
-function drawPolygons() {
-  const items = getPolygons()
-
-  items.forEach((item) => {
-    if (!item.polygon_data?.coordinates) return
-    
-    const latlngs = item.polygon_data.coordinates.map(([lng, lat]) => [lat, lng])
-
-    const isSelected = selected.value?.id === item.id
-
-    let borderColor = '#006600'
-    if (isSelected) {
-      if (item.status === 'free') {
-        borderColor = '#38949B'
-      } else {
-        borderColor = 'gray' 
-      }
-    }
-
-    const polygon = DG.polygon(latlngs, {
-      color: borderColor,
-      weight: isSelected ? 3 : 1,
-      fillColor: getFillColor(item, isSelected),
-      fillOpacity: 0.7,
-    }).addTo(mapInstance.value)
-
-    polygon.on('click', () => {
-      selectPolygon(item)
-    })
-
-    polygonObjects.value.push({
-      id: item.id,
-      polygon,
-      data: item,
-    })
-  })
-}
-
-function getFillColor(item, isSelected) {
-  if (isSelected && item.status === 'free') return '#43DC49CC'
-  
+// ===== стили =====
+function getFillColor (item, isSelected) {
+  if (isSelected && item.status === 'free') return 'rgba(67,220,73,0.8)'
   if (isSelected) {
     if (item.status === 'reserved') return '#FFD700'
     if (item.status === 'occupied') return '#939393'
     return '#999999'
   }
-  
   if (item.status === 'free') return '#66FF99'
   if (item.status === 'reserved') return '#FFD700'
   if (item.status === 'occupied') return '#939393'
   return '#999999'
 }
-
-function selectPolygon(item) {
-  selected.value = item
-  emit('update:modelValue', item)
-
-  polygonObjects.value.forEach(({ id, polygon, data }) => {
-    const isSel = id === item.id
-    
-    let borderColor = null
-    if (isSel) {
-      if (data.status === 'free') {
-        borderColor = '#38949B'
-      } else {
-        borderColor = 'gray' 
-      }
-    }
-    
-    polygon.setStyle({
-      fillColor: getFillColor(data, isSel),
-      color: borderColor,
-      weight: isSel ? 4 : 1,
-    })
-  })
+function getStrokeColor (item, isSelected) {
+  if (!isSelected) return '#006600'
+  return item.status === 'free' ? '#38949B' : 'gray'
 }
+function getStrokeWidth (isSelected) {
+  return isSelected ? 4 : 1
+}
+
+// ===== helpers =====
+function toPolygonGeometry (coords) {
+  if (!Array.isArray(coords) || !coords.length) return undefined
+  return { type: 'Polygon', coordinates: [ coords ] } // [[ [lng,lat], ... ]]
+}
+
+const cemeteryFeature = computed(() => {
+  const coords = props.cemeteryBoundary?.polygon_data?.coordinates
+  const geometry = toPolygonGeometry(coords)
+  if (!geometry) return null
+  return {
+    id: 'cemetery-boundary',
+    geometry,
+    style: {
+      fill: 'rgba(0,0,0,0)',
+      stroke: [{ color: '#FF0000', width: 3 }]
+    }
+  }
+})
+
+const polygonFeatures = computed(() =>
+    polygonsList.value
+        .filter(item => Array.isArray(item?.polygon_data?.coordinates) && item.polygon_data.coordinates.length)
+        .map(item => {
+          const geometry = toPolygonGeometry(item.polygon_data.coordinates)
+          const isSel = !!(selected.value && selected.value.id === item.id)
+          return {
+            id: item.id ?? Math.random(),
+            raw: item,
+            settings: {
+              geometry,
+              style: {
+                fill: getFillColor(item, isSel),
+                stroke: [{ color: getStrokeColor(item, isSel), width: getStrokeWidth(isSel) }]
+              }
+            }
+          }
+        })
+)
 </script>
 
 <template>
-  <div :id="mapContainerId" style="width: 100%; height: 600px;"></div>
+  <ClientOnly>
+    <YandexMap :settings="{ location: { center, zoom } }" style="width:100%; height:600px;">
+      <YandexMapDefaultSchemeLayer />
+      <YandexMapDefaultFeaturesLayer />
+
+      <YandexMapFeature v-if="cemeteryFeature" :settings="cemeteryFeature" />
+
+      <YandexMapFeature
+          v-for="f in polygonFeatures"
+          :key="f.id"
+          :settings="f.settings"
+          @click="selectPolygon(f.raw)"
+      />
+    </YandexMap>
+  </ClientOnly>
 </template>

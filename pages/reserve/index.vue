@@ -730,13 +730,13 @@ function getReligionIcon(item) {
         </div>
       </div>
     </div>
+    <ShareCoordModal
+        :visible="shareCoordModalState"
+        :lat="graveLat"
+        :lng="graveLng"
+        @close="shareCoordModalState = false"
+    />
   </main>
-  <ShareCoordModal
-    :visible="shareCoordModalState"
-    :lat="graveLat"
-    :lng="graveLng"
-    @close="shareCoordModalState = false"
-  />
 </template>
 
 <style lang="scss" scoped>

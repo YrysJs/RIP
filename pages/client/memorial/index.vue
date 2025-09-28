@@ -27,8 +27,8 @@ const mockGetMemorials = async () => {
 };
 
 const getMemorialsSafe = async () => {
-  if (USE_MOCKS) return mockGetMemorials();
-  // return await getMemorials(); // твой реальный импорт
+  // if (USE_MOCKS) return mockGetMemorials();
+  return await getMemorials(); // твой реальный импорт
 };
 
 const loadMemorials = async () => {

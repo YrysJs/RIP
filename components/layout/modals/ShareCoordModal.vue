@@ -5,7 +5,7 @@ const props = defineProps(['visible', 'lat', 'lng'])
 const emit = defineEmits(['close'])
 
 const link = computed(() =>
-  `http://2gis.kz/almaty/search/${props.lat},${props.lng}/geo/${props.lng},${props.lat}?m=${props.lng},${props.lat}/17`
+  `https://yandex.ru/maps/?pt=${props.lng},${props.lat}&z=17&l=map`
 )
 
 const closeModal = () => {
@@ -43,7 +43,7 @@ const copyToClipboard = async (type) => {
             <div class="mb-6 w-full flex justify-between items-center gap-[10px]">
                 <div class="flex flex-col gap-[10px]">
                     <p class="text-base text-[#939393]">Ссылка</p>
-                    <p class="font-bold truncate-middle">{{ `http://2gis.kz/map?lat=${props.lat}&lng=${props.lng}&z=17` }}</p>
+                    <p class="font-bold truncate-middle">{{ `https://yandex.ru/maps/?pt=${props.lng},${props.lat}&z=17&l=map` }}</p>
                 </div>
                 <button class="bg-[#EEEEEE] text-[#224C4F] px-[16px] py-[8px] rounded-[8px] font-semibold" @click="copyToClipboard('link')">Скопировать</button>
             </div>

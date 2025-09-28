@@ -10,6 +10,23 @@ function getOtp(data) {
     })
 }
 
+function checkWhatsappOtp(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: `http://194.32.140.103:8081/v1/otp/whatsapp/verify`,
+        data: params,
+    })
+}
+function getWhatsappOtp(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: `http://194.32.140.103:8081/v1/otp/whatsapp/send`,
+        data,
+    })
+}
+
 function checkOtp(params) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -228,5 +245,7 @@ export {
     getPkbToken,
     getPkbRequest,
     pkbGetData,
-    pkbGetDeceasedData
+    pkbGetDeceasedData,
+    checkWhatsappOtp,
+    getWhatsappOtp
 }

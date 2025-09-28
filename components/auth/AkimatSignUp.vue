@@ -46,44 +46,65 @@ function extractDigits(phone) {
 </script>
 
 <template>
-  <div class="modal fixed min-w-full min-h-[100vh] flex justify-center items-center z-50">
-    <div class="bg-white rounded-md max-w-[500px] w-full p-[24px] relative">
-      <button class="absolute right-[24px] top-[24px]" @click="close">&#10005;</button>
+  <div class="modal fixed inset-0 min-w-full min-h-[100vh] flex justify-center items-center z-50">
+    <div class="bg-white rounded-md max-w-[500px] w-full p-8 relative max-sm:mx-4 max-sm:pt-6 max-sm:px-4 max-sm:pb-12">
+      <button class="absolute right-[32px] top-[32px] text-[22px] leading-5 font-semibold" @click="close">&#10005;</button>
       <div class="flex flex-col">
-        <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
+        <h3 class="text-2xl font-extrabold text-left text-[#222222] mb-[32px] max-lg:text-[22px] max-lg:mb-4">
           Приглашение на регистрацию
         </h3>
-        <p class="text-sm font-roboto">
-          Укажите данные сотрудника и мы отправим ссылку регистрации
-        </p>
-        <div class="mt-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">Имя</p>
-          <input v-model="name" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
-        </div>
-        <div class="mt-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">Фамилия</p>
-          <input v-model="surname" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
-        </div>
-        <div class="mt-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">Отчество</p>
-          <input v-model="patronymic" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ФИО">
-        </div>
-        <div class="mt-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">ИИН</p>
-          <input v-model="iin" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите ИИН">
-        </div>
-        <div class="mt-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">Телефон</p>
-          <input v-model="phone_number" v-mask="'+7 (###) ###-##-##'" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите номер телефона">
-        </div>
-        <div class="mt-[24px] mb-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">Роль</p>
-          <select v-model="roleId" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px] pr-[16px] select" placeholder="Роль">
+        <div class="flex flex-col gap-[10px] max-lg:gap-2">
+          <p class="text-lg max-lg:text-base">
+            Укажите данные сотрудника:
+          </p>
+          <input
+            v-model="name"
+            class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
+            type="text"
+            placeholder="Имя"
+          />
+          <input
+            v-model="surname"
+            class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
+            type="text"
+            placeholder="Фамилия"
+          />
+          <input
+            v-model="patronymic"
+            class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
+            type="text"
+            placeholder="Отчество"
+          />
+          <input
+            v-model="iin"
+            class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
+            type="text"
+            placeholder="ИИН"
+          />
+          <input
+            v-model="phone_number"
+            v-mask="'+7 (###) ###-##-##'"
+            class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
+            type="text"
+            placeholder="Номер телефона"
+          />
+          <select
+            v-model="roleId"
+            class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px] mb-[32px]"
+          >
+            <option value="0" disabled>Роль</option>
             <option :value="8">Менеджер</option>
             <option :value="7">Админ</option>
           </select>
         </div>
-        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': iin.length }" @click="run">Отправить</button>
+        <button
+          type="button"
+          class="py-[18px] bg-[#E9B949] rounded-lg text-base text-[#000] font-medium mb-4 flex justify-center"
+          :disabled="!iin.length || !name.length || !surname.length || !phone_number.length || !roleId"
+          @click="run"
+        >
+          Отправить
+        </button>
       </div>
     </div>
   </div>

@@ -10,46 +10,15 @@ const switcher = ref(false);
 const route = useRoute();
 const selectedFiles = ref([]);
 
-/** ---- МОК-ФУНКЦИЯ: имитируем ответ бэка ---- */
-const mockFetchBurialById = async (id) => {
-  // задержка, чтобы увидеть "Загрузка..."
-  await new Promise((r) => setTimeout(r, 400));
-  return {
-    id,
-    request_number: `BR-${String(id).padStart(3, "0")}`,
-    reservation_expires_at: "2025-09-22T09:15:00Z",
-    cemetery_name: "Кладбище №3",
-    sector_number: "5",
-    grave_id: "101",
-    cemetery_phone: "+7 (707) 000-00-00",
-    deceased: {
-      full_name: "Петров Пётр Петрович",
-      death_date: "2025-09-12",
-    },
-    burial_date: "2025-09-15",
-    burial_time: "14:00",
-    status: "pending", // 'approved' | 'rejected' | 'paid' и т.п.
-  };
-};
-
-const {
-  data: burialData,
-  pending: loading,
-  error,
-  refresh,
-} = await useAsyncData(
-  () => mockFetchBurialById(route.params.id) // ⬅️ тут сейчас мок
-  // getBurialRequestById(route.params.id).then((r) => r.data.data)
-);
-
 const paymentModalVisible = ref(false);
 const deathCertificateFile = ref(null);
 const showSuccessModal = ref(false);
 
-// // Реактивные данные для захоронения
+// Реактивные данные для захоронения
 const burialDate = ref(null);
-// const loading = ref(true);
-// const error = ref(null);
+const loading = ref(true);
+const error = ref(null);
+const burialData = ref(null);
 
 // Локальные реактивные переменные для дат
 const deathDate = ref("");
@@ -62,33 +31,38 @@ const formatDateForInput = (dateString) => {
 };
 
 // Функция для загрузки данных захоронения
-// const loadBurialData = async () => {
-//   try {
-//     loading.value = true;
-//     error.value = null;
-//     const response = await getBurialRequestById(route.params.id);
-//     burialData.value = response.data.data;
+const loadBurialData = async () => {
+  try {
+    loading.value = true;
+    error.value = null;
+    const response = await getBurialRequestById(route.params.id);
+    burialData.value = response.data.data;
 
-//     // Инициализируем локальные значения дат
-//     deathDate.value = formatDateForInput(
-//       burialData.value?.deceased?.death_date
-//     );
-//     burialDate.value = formatDateForInput(burialData.value?.burial_date);
+    // Инициализируем локальные значения дат
+    deathDate.value = formatDateForInput(
+      burialData?.value?.deceased?.death_date
+    );
+    burialDate.value = formatDateForInput(burialData?.value?.burial_date);
 
-//     // Устанавливаем switcher в true если есть даты
-//     if (
-//       burialData.value?.burial_date ||
-//       burialData.value?.deceased?.death_date
-//     ) {
-//       switcher.value = true;
-//     }
-//   } catch (err) {
-//     error.value = "Ошибка при загрузке данных";
-//     console.error("Error loading burial data:", err);
-//   } finally {
-//     loading.value = false;
-//   }
-// };
+    // Устанавливаем switcher в true если есть даты
+    if (
+      burialData?.value?.burial_date ||
+      burialData?.value?.deceased?.death_date
+    ) {
+      switcher.value = true;
+    }
+  } catch (err) {
+    error.value = "Ошибка при загрузке данных";
+    console.error("Error loading burial data:", err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Функция для обновления данных
+const refresh = () => {
+  loadBurialData();
+};
 
 watch(
   () => route.params.id,
@@ -97,16 +71,18 @@ watch(
 
 // Отслеживаем изменения дат и обновляем burialData
 watch(deathDate, (newDate) => {
-  if (burialData.value?.deceased) {
-    burialData.value.deceased.death_date = newDate;
+  const deceased = burialData.value && burialData.value.deceased
+  if (deceased) {
+    deceased.death_date = newDate
   }
-});
+})
 
 watch(burialDate, (newDate) => {
-  if (burialData.value) {
-    burialData.value.burial_date = newDate;
+  const bd = burialData.value
+  if (bd) {
+    bd.burial_date = newDate
   }
-});
+})
 
 // инициализация локальных дат, когда пришли данные
 watch(
@@ -159,16 +135,16 @@ const closeSuccessModal = () => {
 };
 
 // Загружаем данные при монтировании компонента
-// onMounted(() => {
-//   loadBurialData();
-// });
+onMounted(() => {
+  loadBurialData();
+});
 
 // Computed property для отображения даты похорон
 const displayBurialDate = computed(() => {
-  if (burialData.value?.burial_date) {
-    const date = new Date(burialData.value.burial_date).toLocaleDateString();
-    const time = burialData.value.burial_time
-      ? ` ${burialData.value.burial_time}`
+  if (burialData?.value?.burial_date) {
+    const date = new Date(burialData?.value.burial_date).toLocaleDateString();
+    const time = burialData?.value.burial_time
+      ? ` ${burialData?.value.burial_time}`
       : "";
     return `${date}${time}`;
   }
@@ -177,7 +153,7 @@ const displayBurialDate = computed(() => {
 
 // Computed property для класса цвета даты похорон
 const burialDateClass = computed(() => {
-  return burialData.value?.burial_date ? "text-[#222222]" : "text-[#939393]";
+  return burialData?.value?.burial_date ? "text-[#222222]" : "text-[#939393]";
 });
 </script>
 
@@ -235,7 +211,7 @@ const burialDateClass = computed(() => {
               <span class="text-sm text-[#999]">{{
                 burialData?.reservation_expires_at
                   ? new Date(
-                      burialData.reservation_expires_at
+                      burialData?.reservation_expires_at
                     ).toLocaleDateString()
                   : "Не указано"
               }}</span>
@@ -256,7 +232,7 @@ const burialDateClass = computed(() => {
                 <span class="text-sm text-[#999] ml-[15px] mr-[5px]">{{
                   burialData?.reservation_expires_at
                     ? new Date(
-                        burialData.reservation_expires_at
+                        burialData?.reservation_expires_at
                       ).toLocaleDateString()
                     : "Не указано"
                 }}</span>
@@ -501,7 +477,7 @@ const burialDateClass = computed(() => {
                 <h3
                   class="text-fluid font-medium text-[#222222] mb-[38px] max-sm:mb-0"
                 >
-                  К оплате: 57 000 ₸
+                  К оплате: {{burialData.burial_price}} ₸
                 </h3>
               </div>
               <button
