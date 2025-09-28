@@ -298,7 +298,7 @@ function updatePriceRange(event) {
                     </div>
                     
                     <!-- Фильтр по цене -->
-                    <div class="p-[20px] bg-white rounded-lg mt-[20px]">
+                    <div class="p-[20px] bg-white rounded-lg mt-[20px] pb-[40px]">
                         <h3 class="text-xl font-bold text-[#222222] mb-[20px]">Цена</h3>
                         <div class="mb-[20px]">
                             <div class="flex gap-[10px] mb-[10px]">
@@ -334,7 +334,7 @@ function updatePriceRange(event) {
                 <!-- Область с продуктами -->
                 <div class="max-w-[770px] w-full mt-[20px]">
                     <!-- Поиск -->
-                    <div class="w-full bg-white border-1 border-[#EEEEEE] h-[44px] relative mb-5">
+                    <div class="w-full bg-white rounded border-1 border-[#EEEEEE] h-[44px] relative mb-5">
                         <img class="absolute top-[10px] left-[15px]" src="/icons/search.svg" alt=""> 
                         <input 
                             class="bg-transparent w-full h-full pl-[45px]" 
@@ -401,8 +401,8 @@ function updatePriceRange(event) {
                                     </div>
                                 </div>
                                 <div class="flex gap-[10px] mt-[10px]">
-                                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold" @click="fetchProduct(product.id)">Подробнее</button>
-                                    <button class="w-[50%] text-sm rounded-lg bg-[#E9B949] text-white py-[8px] font-semibold" @click="addProductToCart(product.id)">Добавить</button>
+                                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#17212A] py-[8px] font-semibold" @click="fetchProduct(product.id)">Подробнее</button>
+                                    <button class="w-[50%] text-sm rounded-lg bg-[#E9B949] text-[#17212A] py-[8px] font-semibold" @click="addProductToCart(product.id)">Добавить</button>
                                 </div>
                             </div>
                         </div>

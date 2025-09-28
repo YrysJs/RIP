@@ -32,7 +32,9 @@ const loadBurialData = async () => {
   try {
     if (route.query.id) {
       const response = await getBurialRequestById(route.query.id);
-      burial.value = response.data;
+      burial.value = response.data.data;
+      console.log(response)
+      console.log(burial.value )
     }
   } catch (error) {
     console.error("Ошибка при загрузке данных захоронения:", error);

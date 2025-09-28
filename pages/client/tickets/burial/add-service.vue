@@ -143,7 +143,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-[#FAFAFA] min-h-[100vh] py-[70px]">
+  <div class="bg-[#faf7ee] min-h-[100vh] py-[70px]">
     <div class="container flex gap-[24px]">
       <div class="max-w-[777px] w-full">
         <div class="w-full h-[61px] p-[20px] flex items-center bg-[#fff] rounded-[16px] gap-[16px]">
@@ -210,9 +210,9 @@ onMounted(async () => {
                     <span>Срок выполнения: {{ product.service_time || '1 день' }}</span>
                 </div>
                 <div class="flex gap-[10px] mt-[10px]">
-                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#224C4F] py-[8px] font-semibold">Подробнее</button>
+                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#17212A] py-[8px] font-semibold">Подробнее</button>
                     <button 
-                      class="w-[50%] text-sm rounded-lg bg-[#224C4F] text-white py-[8px] font-semibold"
+                      class="w-[50%] text-sm rounded-lg bg-[#E9B949] text-[#17212A] py-[8px] font-semibold"
                       @click="addProductToCart(product.id)"
                       :disabled="addingToCart"
                     >

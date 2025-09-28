@@ -98,7 +98,7 @@ async function userCreateAppeal() {
 
     loading.value = true;
     errors.value = [];
-
+    let payload;
     const hasFiles = grave_doc.value.length > 0;
 
     if (hasFiles) {
@@ -108,7 +108,7 @@ async function userCreateAppeal() {
       form.append("content", appeal_content.value);
       form.append("akimatId", String(6));
       for (const f of grave_doc.value) form.append("graveDocuments", f, f.name);
-      payload = form;
+       payload = form;
     } else {
       payload = {
         userPhone: userInfo.value.phone,

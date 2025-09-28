@@ -7,10 +7,12 @@
         <!-- Детали заказа -->
         <div class="order-summary">
           <h3 class="summary-title">Детали заказа</h3>
-          <div v-if="orderData.cartTotal && orderData.cartTotal > 0" class="summary-item">
-            <span>Дополнительные услуги</span>
-            <span>{{ orderData.cartTotal?.toLocaleString() }} ₸</span>
-          </div>
+          <template v-if="orderData.cartItems">
+            <div v-for="item in orderData.cartItems" :key="item.id" class="summary-item">
+              <span>{{item.product.name}}</span>
+              <span>{{ item.quantity }} x {{item.product.price}} ₸</span>
+            </div>
+          </template>
           <div class="summary-total">
             <span>Итого к оплате</span>
             <span>{{ orderData.cartTotal?.toLocaleString() || '0' }} ₸</span>

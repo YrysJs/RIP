@@ -100,19 +100,15 @@ const mockCreateMemorial = async (payload) => {
 
 // Обертки, чтобы легко переключаться на реальный API
 const getBurialRequestByIdSafe = async (id) => {
-  if (USE_MOCKS) return mockGetBurialRequestById(String(id));
   return getBurialRequestById(id);
 };
 const getDeceasedByIdSafe = async (id) => {
-  if (USE_MOCKS) return mockGetDeceasedById(Number(id));
   return getDeceasedById(id);
 };
 const getMemorialByIdSafe = async (id) => {
-  if (USE_MOCKS) return mockGetMemorialById(String(id));
   return getMemorialById(id);
 };
 const createMemorialSafe = async (payload) => {
-  if (USE_MOCKS) return mockCreateMemorial(payload);
   return createMemorial(payload);
 };
 
@@ -148,6 +144,7 @@ const loadBurialData = async () => {
       //   const response = await getBurialRequestById(route.query.id);
       const response = await getBurialRequestByIdSafe(route.query.id);
       burial.value = response.data;
+      console.log('sadas',  burial.value)
     }
   } catch (error) {
     console.error("Ошибка при загрузке данных захоронения:", error);
@@ -415,7 +412,7 @@ const submitMemorial = async () => {
     // Подготавливаем данные для отправки
     const formData = {
       deceased_id: isEditMode.value
-        ? deceasedId.value
+        ? ''
         : +burial.value?.deceased?.id,
       epitaph: epitaph.value,
       about_person: aboutPerson.value,

@@ -137,6 +137,7 @@ watch(iin, async (newValue) => {
     // запускаем первый вызов
     await poll();
   } catch (error) {
+    loadingStore.stopLoading();
     console.error("Ошибка при получении токена:", error);
   }
 });
