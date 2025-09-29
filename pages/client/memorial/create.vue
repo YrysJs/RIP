@@ -144,7 +144,7 @@ const removeAchievementPhoto = (index) => {
 const submitMemorial = async () => {
   try {
     isSubmitting.value = true;
-
+    console.log('submitMemorial', burial.value)
     // Подготавливаем данные для отправки
     const formData = {
       deceased_id: +burial.value.data.deceased_id,
@@ -321,16 +321,16 @@ const submitMemorial = async () => {
                 <div
                   class="mt-2 h-[30px] flex items-center text-base font-medium gap-[11px]"
                 >
-                  <div class="w-[100px] text-base text-[#050202]">
+                  <div class="flex-1 w-[100px] text-base text-[#050202]">
                     Кладбище:
                   </div>
-                  <div class="text-sm text-[#999]">
+                  <div class="flex-1 text-sm text-[#999]">
                     {{ burial?.cemetery_name }}
                   </div>
                 </div>
                 <div class="flex">
                   <div
-                    class="h-[30px] flex items-center text-base font-medium gap-[11px]"
+                    class="flex-1 h-[30px] flex items-center text-base font-medium gap-[11px]"
                   >
                     <div class="w-[100px] text-base text-[#050202]">Сектор</div>
                     <div class="text-sm text-[#999]">
@@ -338,7 +338,7 @@ const submitMemorial = async () => {
                     </div>
                   </div>
                   <div
-                    class="h-[30px] flex items-center text-base font-medium gap-[11px]"
+                    class="flex-1 h-[30px] flex items-center text-base font-medium gap-[11px]"
                   >
                     <div class="w-[100px] text-base text-[#050202]">Место:</div>
                     <div class="text-sm text-[#999]">
@@ -346,16 +346,16 @@ const submitMemorial = async () => {
                     </div>
                   </div>
                 </div>
-                <div
-                  class="h-11 flex items-center text-base font-medium gap-[11px]"
-                >
-                  <div class="w-[100px] text-base text-[#050202]">
-                    Координаты:
-                  </div>
-                  <div class="text-sm text-[#999]">
-                    56.35107309557659, 62.01158847670595
-                  </div>
-                </div>
+<!--                <div-->
+<!--                  class="h-11 flex items-center text-base font-medium gap-[11px]"-->
+<!--                >-->
+<!--                  <div class="flex-1 text-base text-[#050202]">-->
+<!--                    Координаты:-->
+<!--                  </div>-->
+<!--                  <div class="flex-1 text-sm text-[#999]">-->
+<!--                    56.35107309557659, 62.01158847670595-->
+<!--                  </div>-->
+<!--                </div>-->
               </div>
             </div>
           </div>
