@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from "vue";
 import AddReviewModal from "~/components/layout/modals/AddReviewModal.vue";
+import {getOrders} from "~/services/client/index.js";
 
 const tabs = ["Активные", "Завершенные"];
 const activeTab = ref("Активные");
@@ -50,11 +51,32 @@ const statusView = {
   },
 };
 
+async function fetchOrders(page = 1, limit = 10) {
+  try {
+    loading.value = true;
+    const response = await getOrders({ page, limit });
+    console.log(response)
+    // orders.value = response.data;
+    // Инициализируем массив для отслеживания открытых элементов
+    // openItems.value = response?.items?.map(() => false) || [];
+    // console.log("Данные заказов загружены:", response);
+  } catch (error) {
+    console.error("Ошибка загрузки заказов:", error);
+    // openItems.value = [];
+  } finally {
+    loading.value = false;
+  }
+}
+
 const filtered = computed(() =>
   activeTab.value === "Активные"
     ? orders.value.filter((o) => o.status !== "done")
     : orders.value.filter((o) => o.status === "done")
 );
+
+onMounted(() => {
+  fetchOrders()
+})
 
 // когда модалка открыта — добавим классы на body
 useHead({
