@@ -175,7 +175,10 @@ export default {
       } catch (error) {
         console.log(error)
         console.error("Payment process failed:", error);
-        alert("Ошибка при обработке платежа. Пожалуйста, попробуйте снова.");
+        alert(
+            "Ошибка при создании мемориала: " +
+            (error.response?.data?.error || error.message)
+        );
       } finally {
         this.isProcessing = false;
       }
