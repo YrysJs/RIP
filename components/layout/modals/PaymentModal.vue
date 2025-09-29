@@ -146,6 +146,9 @@ export default {
         const paymentResponse = await processCardPayment(paymentData);
         console.log(paymentResponse)
 
+        if (paymentResponse.data.data.secure3DURL) {
+          window.open(paymentResponse.data.data.secure3DURL, '_blank')
+        }
         const burialId = this.$route.params.id;
         await confirmBurialPayment(
           burialId,
