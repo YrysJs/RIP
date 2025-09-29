@@ -147,7 +147,7 @@ const submitMemorial = async () => {
     console.log('submitMemorial', burial.value)
     // Подготавливаем данные для отправки
     const formData = {
-      deceased_id: +burial.value.data.deceased_id,
+      deceased_id: +burial.value.deceased_id,
       epitaph: epitaph.value,
       about_person: aboutPerson.value,
       is_public: isPublic.value,
