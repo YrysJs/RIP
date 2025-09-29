@@ -100,7 +100,7 @@ function createDeceased(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/deceased',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v9/deceased',
         data,
     })
 }
@@ -109,7 +109,7 @@ function getDeceasedById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/deceased/${id}`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v9/deceased/${id}`,
     })
 }
 
@@ -211,7 +211,7 @@ function uploadDeceasedDeathCertificate(deceasedId, certificate) {
     
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/deceased/${deceasedId}/death-certificate`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v9/deceased/${deceasedId}/death-certificate`,
         data: formData,
     })
 }
