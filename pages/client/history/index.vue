@@ -185,7 +185,7 @@ useHead({
           class="bg-[#0000000A] rounded-2xl flex gap-3 md:gap-4 items-stretch max-xl:flex-col max-xl:max-w-[457px] max-sm:max-w-full"
         >
           <!-- image -->
-          <div class="shrink-0">
+          <div class="min-h-[400px] max-h-[400px] shrink-0">
             <img
               :src="o.items[0]?.product?.image_urls[0]"
               alt=""
