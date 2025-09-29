@@ -168,7 +168,7 @@ function getBurialRequestById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/burial-requests/${id}`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${id}`,
     })
 }
 
@@ -176,7 +176,7 @@ function updateBurialRequestStatus(requestId, data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PATCH',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/burial-requests/${requestId}/status`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${requestId}/status`,
         data,
     })
 }
@@ -185,7 +185,7 @@ function updateBurialRequestData(requestId, data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/burial-requests/${requestId}`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${requestId}`,
         data,
     })
 }
@@ -198,7 +198,7 @@ function uploadBurialRequestDocument(requestId, document) {
     
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/burial-requests/${requestId}/document`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${requestId}/document`,
         data: formData,
     })
 }
@@ -220,7 +220,7 @@ function createBurialRequest(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/burial-requests',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v8/burial-requests',
         data,
     })
 }

@@ -38,7 +38,7 @@ function confirmBurialPayment(burialRequestId, transactionId) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/burial-requests/${burialRequestId}/confirm-payment`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${burialRequestId}/confirm-payment`,
         headers: {
             'accept': 'application/json',
             'Content-Type': 'application/json'
