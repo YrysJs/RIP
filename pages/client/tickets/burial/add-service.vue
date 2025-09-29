@@ -225,40 +225,6 @@ onMounted(async () => {
         </div>
       </div>
       <div class="p-[20px] bg-white rounded-lg max-w-[376px] h-fit">
-        <h3 class="text-2xl text-[#222222] font-medium my-[16px]">
-          Северное кладбище
-        </h3>
-        <div class="border-b border-[#EEEEEE] pb-[16px] flex items-center">
-          <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
-            Срок брони:
-          </h4>
-          <span class="text-base font-bold font-roboto text-[#222222]">3 дня</span>
-          <img class="ml-[16px]" src="/icons/info.svg" alt="">
-        </div>
-        <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
-          <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
-            Сектор:
-          </h4>
-          <span class="text-base font-bold font-roboto text-[#222222]">11</span>
-        </div>
-        <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
-          <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
-            Место:
-          </h4>
-          <span class="text-base font-bold font-roboto text-[#222222]">233 222</span>
-        </div>
-        <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
-          <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
-            ФИО покойного:
-          </h4>
-          <span class="text-base font-bold font-roboto text-[#222222]">Беляков Макар Максимович</span>
-        </div>
-        <div class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center">
-          <h4 class="text-base font-medium font-roboto text-[#222222] w-[105px]">
-            Дата похорон:
-          </h4>
-          <span class="text-base font-light font-roboto text-[#939393]">Не указано</span>
-        </div>
 
         <!-- Корзина с товарами -->
         <div v-if="hasCartItems" class="border-b border-[#EEEEEE] pb-[16px] pt-[16px]">
@@ -270,7 +236,7 @@ onMounted(async () => {
                 <p class="text-xs font-roboto text-[#5C5C5C]">{{ item.quantity }} шт. × {{ item.product.price.toLocaleString() }} ₸</p>
               </div>
               <button 
-                @click="removeProductFromCart(item.product.id)"
+                @click="removeProductFromCart(item.id)"
                 :disabled="removingFromCart"
                 class="ml-[8px] text-red-500 hover:text-red-700 text-sm"
               >
