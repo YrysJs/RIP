@@ -126,6 +126,29 @@ export default {
         this.expiryDate = value;
       }
     },
+    async waitForPaymentConfirmation(burialId, paymentId) {
+      return new Promise((resolve, reject) => {
+        const checkPayment = async () => {
+          try {
+            await confirmBurialPayment(burialId, paymentId);
+            clearInterval(intervalId);
+            resolve();
+          } catch (error) {
+            // Если ошибка - продолжаем попытки
+            console.log('Ожидание подтверждения оплаты...');
+          }
+        };
+
+        // Проверяем каждые 5 секунд
+        const intervalId = setInterval(checkPayment, 5000);
+        
+        // Таймаут через 5 минут
+        setTimeout(() => {
+          clearInterval(intervalId);
+          reject(new Error('Таймаут ожидания подтверждения оплаты'));
+        }, 300000);
+      });
+    },
     async processPayment() {
       if (this.isProcessing) return;
 
@@ -146,14 +169,18 @@ export default {
         const paymentResponse = await processCardPayment(paymentData);
         console.log(paymentResponse)
 
-        if (paymentResponse.data.data.secure3DURL) {
-          window.open(paymentResponse.data.data.secure3DURL, '_blank')
-        }
         const burialId = this.$route.params.id;
-        await confirmBurialPayment(
-          burialId,
-          paymentResponse.data.data.paymentInfo.id
-        );
+        const paymentId = paymentResponse.data.data.paymentInfo.id;
+
+        if (paymentResponse.data.data.secure3DURL) {
+          window.open(paymentResponse.data.data.secure3DURL, '_blank');
+          
+          // Ждем подтверждения оплаты через интервал
+          await this.waitForPaymentConfirmation(burialId, paymentId);
+        } else {
+          // Если нет 3D Secure, подтверждаем платеж сразу
+          await confirmBurialPayment(burialId, paymentId);
+        }
 
         // 2. Обновляем данные захоронения (дата и время)
         if (this.burialData?.burial_date || this.burialData?.burial_time) {

@@ -173,7 +173,7 @@ onMounted(async () => {
           
           <!-- Отображение услуг -->
           <div v-else class="grid grid-cols-2 gap-[12px] mt-[24px]">
-            <div v-for="product in products" :key="product.id" class="p-[9px] rounded-lg max-w-[376px] w-full bg-white">
+            <div v-for="product in products" :key="product.id" class="p-[9px] rounded-lg min-w-[376px] max-w-[376px] w-full bg-white">
               <div>
                 <img class="rounded-lg overflow-hidden w-full h-[189px] object-cover" 
                      :src="product.image_urls && product.image_urls.length > 0 ? product.image_urls[0] : '/images/client/banner.jpg'" 

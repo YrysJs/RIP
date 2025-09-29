@@ -2,36 +2,26 @@
 import { ref, computed } from "vue";
 import AddReviewModal from "~/components/layout/modals/AddReviewModal.vue";
 import {getOrders} from "~/services/client/index.js";
+import {getPaymentReceipt} from "~/services/payments/index.js";
+import ReceiptModal from "~/components/layout/modals/ReceiptModal.vue";
+import AddComment from "~/components/layout/modals/AddComment.vue";
 
 const tabs = ["Активные", "Завершенные"];
 const activeTab = ref("Активные");
 const showReview = ref(false);
 
+const showReceiptModal = ref(false);
+const receiptData = ref(null);
+const receiptLoading = ref(false);
+
+
+// Состояние модалки отзыва
+const showCommentModal = ref(false);
+const selectedOrder = ref(null);
+
+
 // Моки
-const orders = ref([
-  {
-    id: 16,
-    number: 16,
-    title: "Организация перевозки",
-    phone: "+7 777 777 77 77",
-    address: "г. Алматы, ул. Тимирязева 131",
-    eta: "13.05.2025, 10:00",
-    receipt: true,
-    status: "in_progress", // in_progress | done | cancelled
-    image: "/images/client/history-img.jpg",
-  },
-  {
-    id: 12,
-    number: 12,
-    title: "Организация перевозки",
-    phone: "+7 700 123 45 67",
-    address: "г. Алматы, пр. Абая 10",
-    eta: "02.04.2025, 12:30",
-    receipt: true,
-    status: "done",
-    image: "/images/client/history-img.jpg",
-  },
-]);
+const orders = ref([]);
 
 const statusView = {
   in_progress: {
@@ -55,7 +45,7 @@ async function fetchOrders(page = 1, limit = 10) {
   try {
     const response = await getOrders({ page, limit });
     console.log(response)
-    // orders.value = response.data;
+    orders.value = response.data.items;
     // Инициализируем массив для отслеживания открытых элементов
     // openItems.value = response?.items?.map(() => false) || [];
     // console.log("Данные заказов загружены:", response);
@@ -65,15 +55,82 @@ async function fetchOrders(page = 1, limit = 10) {
   }
 }
 
+function formatPhoneNumber(phone) {
+  if (!/^\d{11}$/.test(phone)) return 'Неверный формат номера';
+
+  return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(4, 7)} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
+}
+
 const filtered = computed(() =>
   activeTab.value === "Активные"
     ? orders.value.filter((o) => o.status !== "done")
     : orders.value.filter((o) => o.status === "done")
 );
 
+function formatToDDMMYYYY(iso) {
+  const d = new Date(iso)
+  return d.toLocaleDateString('ru-RU') // например "17.05.2025"
+}
+
 onMounted(() => {
   fetchOrders()
 })
+
+async function openReceiptModal(order) {
+  try {
+    showReceiptModal.value = true;
+    receiptLoading.value = true;
+    receiptData.value = null;
+
+    const transactionId =
+        order.transaction_id ||
+        order.payment_transaction_id ||
+        order.payment_id ||
+        order.transaction ||
+        order.id;
+
+    if (!transactionId) {
+      alert("Ошибка: Transaction ID не найден.");
+      showReceiptModal.value = false;
+      return;
+    }
+
+    const response = await getPaymentReceipt(transactionId);
+    if (response.data?.success && response.data?.data) {
+      receiptData.value = response.data.data;
+    } else {
+      alert("Ошибка получения чека");
+      showReceiptModal.value = false;
+    }
+  } catch (e) {
+    console.error(e);
+    alert("Ошибка при получении чека");
+    showReceiptModal.value = false;
+  } finally {
+    receiptLoading.value = false;
+  }
+}
+
+// Методы для работы с модалкой отзыва
+function openCommentModal(order) {
+  selectedOrder.value = order;
+  console.log("Выбранный заказ:", order);
+  console.log("Product ID:", order?.items?.[0]?.product?.id);
+  console.log("Supplier Phone:", order?.items?.[0]?.product?.supplier_phone);
+  showCommentModal.value = true;
+}
+
+function closeCommentModal() {
+  showCommentModal.value = false;
+  selectedOrder.value = null;
+}
+
+function handleCommentSuccess(message) {
+  console.log("Отзыв успешно отправлен:", message);
+  // Можно добавить уведомление пользователю
+  // Например, показать toast или обновить список заказов
+  fetchOrders(currentPage.value, pageSize.value);
+}
 
 // когда модалка открыта — добавим классы на body
 useHead({
@@ -108,14 +165,14 @@ useHead({
       <!-- List -->
       <div class="mt-5">
         <article
-          v-for="o in filtered"
+          v-for="o in orders"
           :key="o.id"
           class="bg-[#0000000A] rounded-2xl flex gap-3 md:gap-4 items-stretch max-xl:flex-col max-xl:max-w-[457px] max-sm:max-w-full"
         >
           <!-- image -->
           <div class="shrink-0">
             <img
-              :src="o.image"
+              :src="o.items[0]?.product?.image_urls[0]"
               alt=""
               class="w-full h-full object-cover rounded-xl"
             />
@@ -127,7 +184,7 @@ useHead({
               class="flex items-start justify-between flex-wrap-reverse gap-2"
             >
               <div class="text-[22px] font-semibold w-[250px]">
-                Заказ №{{ o.number }}
+                Заказ №{{ o.order_id }}
               </div>
 
               <!-- status -->
@@ -143,21 +200,21 @@ useHead({
               </div>
             </div>
             <div class="text-sm text-[#5C6771E6] flex flex-wrap">
-              {{ o.title }}, <span>телефон: {{ o.phone }}</span>
+              {{ o.items[0]?.product?.name }}, <span>телефон: {{ formatPhoneNumber(o.items[0]?.product?.supplier_phone) }}</span>
             </div>
             <div class="flex items-center gap-2">
               <span><img src="/icons/pin.svg" alt="" /></span>
-              <div class="text-[#201001]">Адрес прибытия: {{ o.address }}</div>
+              <div class="text-[#201001]">Адрес прибытия: {{ o.items[0]?.delivery_destination_address }}</div>
             </div>
 
             <div class="flex items-start gap-2">
               <span><img src="/icons/time.svg" alt="" /></span>
-              <div class="text-[#201001]">Время прибытия: {{ o.eta }}</div>
+              <div class="text-[#201001]">Время прибытия: {{ formatToDDMMYYYY(o.items[0]?.delivery_arrival_time) }}</div>
             </div>
 
             <div class="flex items-start gap-2">
               <span><img src="/icons/check.svg" alt="" /></span>
-              <div class="text-[#201001]">
+              <div class="text-[#201001]" @click="openReceiptModal(o)">
                 Чек об оплате
                 <!-- {{ o.receipt ? "Доступен" : "—" }} -->
               </div>
@@ -172,7 +229,7 @@ useHead({
                     : 'bg-[#E9B949] text-black opacity-50 cursor-not-allowed'
                 "
                 :disabled="o.status !== 'done'"
-                @click="showReview = true"
+                @click="openCommentModal(o)"
               >
                 Оставить отзыв
               </button>
@@ -189,6 +246,25 @@ useHead({
       </div>
     </section>
     <AddReviewModal v-model="showReview" />
+    <Teleport to="body">
+      <AddComment
+          :visible="showCommentModal"
+          :productId="selectedOrder?.items?.[0]?.product_id"
+          :supplierPhone="selectedOrder?.items?.[0]?.product?.supplier_phone"
+          @close="closeCommentModal"
+          @success="handleCommentSuccess"
+      />
+    </Teleport>
+
+    <!-- Модалка для отображения чека -->
+    <Teleport to="body">
+      <ReceiptModal
+          :visible="showReceiptModal"
+          :receiptData="receiptData"
+          :loading="receiptLoading"
+          @close="closeReceiptModal"
+      />
+    </Teleport>
   </NuxtLayout>
 </template>
 

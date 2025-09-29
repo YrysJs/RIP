@@ -222,23 +222,6 @@ async function openReceiptModal(order) {
     receiptLoading.value = true;
     receiptData.value = null;
 
-    if (USE_MOCK) {
-      await new Promise((r) => setTimeout(r, 300));
-      receiptData.value = {
-        receipt_number: `RC-${order.id}`,
-        amount: 14990,
-        currency: "KZT",
-        paid_at: new Date().toISOString(),
-        method: "Kaspi",
-        items: order.items.map((p) => ({
-          name: p.product?.name ?? "Услуга",
-          qty: 1,
-          price: 14990,
-        })),
-      };
-      return;
-    }
-
     const transactionId =
       order.transaction_id ||
       order.payment_transaction_id ||
