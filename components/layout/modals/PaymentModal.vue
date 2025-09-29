@@ -144,6 +144,7 @@ export default {
 
         // 1. Выполняем платеж
         const paymentResponse = await processCardPayment(paymentData);
+        console.log(paymentResponse)
 
         const burialId = this.$route.params.id;
         await confirmBurialPayment(
@@ -172,6 +173,7 @@ export default {
         this.$emit("close");
         this.$emit("success");
       } catch (error) {
+        console.log(error)
         console.error("Payment process failed:", error);
         alert("Ошибка при обработке платежа. Пожалуйста, попробуйте снова.");
       } finally {
