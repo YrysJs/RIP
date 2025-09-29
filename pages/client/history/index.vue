@@ -53,7 +53,6 @@ const statusView = {
 
 async function fetchOrders(page = 1, limit = 10) {
   try {
-    loading.value = true;
     const response = await getOrders({ page, limit });
     console.log(response)
     // orders.value = response.data;
@@ -63,8 +62,6 @@ async function fetchOrders(page = 1, limit = 10) {
   } catch (error) {
     console.error("Ошибка загрузки заказов:", error);
     // openItems.value = [];
-  } finally {
-    loading.value = false;
   }
 }
 
