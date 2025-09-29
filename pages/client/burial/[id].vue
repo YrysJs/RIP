@@ -106,9 +106,6 @@ function fileTitle(url) {
   }
 }
 
-function goCreateNew() {
-  router.push("/client/government/burial/create");
-}
 </script>
 
 <template>
@@ -186,12 +183,6 @@ function goCreateNew() {
               <span v-else>—</span>
             </div>
           </div>
-        </div>
-
-        <div class="actions">
-          <button class="btn-yellow" @click="goCreateNew">
-            Создать новый запрос
-          </button>
         </div>
       </div>
     </div>

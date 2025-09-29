@@ -227,13 +227,13 @@ useHead({
               <div class="text-[#201001]">Время прибытия: {{ formatToDDMMYYYY(o.items[0]?.delivery_arrival_time) }}</div>
             </div>
 
-            <div class="flex items-start gap-2">
-              <span><img src="/icons/check.svg" alt="" /></span>
-              <div class="text-[#201001]" @click="openReceiptModal(o)">
-                Чек об оплате
-                <!-- {{ o.receipt ? "Доступен" : "—" }} -->
-              </div>
-            </div>
+<!--            <div class="flex items-start gap-2">-->
+<!--              <span><img src="/icons/check.svg" alt="" /></span>-->
+<!--              <div class="text-[#201001]" @click="openReceiptModal(o)">-->
+<!--                Чек об оплате-->
+<!--                &lt;!&ndash; {{ o.receipt ? "Доступен" : "—" }} &ndash;&gt;-->
+<!--              </div>-->
+<!--            </div>-->
 
             <div class="mt-3 flex justify-end">
               <button

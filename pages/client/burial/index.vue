@@ -76,28 +76,36 @@ const formatPhoneNumber = (phone) => {
           </button>
         </div>
       </div>
+      <template v-else>
+        <div class="w-full flex justify-end">
+          <button
+              class="btn btn--yellow empty__btn"
+              @click="router.push('/client/burial/create')"
+          >
+            Создать заявку
+          </button>
+        </div>
 
-      <!-- список (если появятся данные) -->
-      <div v-else class="list">
-        <div v-for="req in appeals" :key="req.id" class="card">
-          <div class="card__row">
-            <div class="head-left">
-              <span class="title">ЗАЯВКА:</span>
-              <span class="num-badge">{{
-                String(req.id).padStart(3, "0")
-              }}</span>
-            </div>
-            <div class="dates">
-              <div class="date-line">
-                Дата создания: {{ fmtDate(req.createdAt || req.created_at) }}
+        <div class="list">
+          <div v-for="req in appeals" :key="req.id" class="card">
+            <div class="card__row">
+              <div class="head-left">
+                <span class="title">ЗАЯВКА:</span>
+                <span class="num-badge">{{
+                    String(req.id).padStart(3, "0")
+                  }}</span>
+              </div>
+              <div class="dates">
+                <div class="date-line">
+                  Дата создания: {{ fmtDate(req.createdAt || req.created_at) }}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="info">
-            <div class="info-line">
-              <span class="label">Заявитель:</span>
-              <span class="value value--bold">
+            <div class="info">
+              <div class="info-line">
+                <span class="label">Заявитель:</span>
+                <span class="value value--bold">
                 <template v-if="req.user">
                   {{ req.user.surname }} {{ req.user.name }}
                   {{ req.user.patronymic }}
@@ -106,26 +114,29 @@ const formatPhoneNumber = (phone) => {
                   {{ formatPhoneNumber(req.userPhone || req.phone) }}
                 </template>
               </span>
+              </div>
+
+              <div class="info-line">
+                <span class="label">Причина:</span>
+                <span class="value">{{ req.reason || "—" }}</span>
+              </div>
             </div>
 
-            <div class="info-line">
-              <span class="label">Причина:</span>
-              <span class="value">{{ req.reason || "—" }}</span>
-            </div>
-          </div>
-
-          <div class="card__row card__row--bottom">
-            <div class="actions">
-              <button
-                class="btn btn--ghost"
-                @click="router.push(`/client/burial/${req.id}`)"
-              >
-                Подробнее
-              </button>
+            <div class="card__row card__row--bottom">
+              <div class="actions">
+                <button
+                    class="btn btn--ghost"
+                    @click="router.push(`/client/burial/${req.id}`)"
+                >
+                  Подробнее
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </template>
+      <!-- список (если появятся данные) -->
+
     </div>
   </NuxtLayout>
 </template>
