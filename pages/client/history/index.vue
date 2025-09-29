@@ -24,13 +24,28 @@ const selectedOrder = ref(null);
 const orders = ref([]);
 
 const statusView = {
+  pending_payment: {
+    label: "Ожидает оплаты",
+    dot: "bg-[#F19024]",
+    wrap: "bg-[#E37E141F] text-[#E37E14]",
+  },
+  new: {
+    label: "Новый",
+    dot: "bg-[#3498DB]",
+    wrap: "bg-[#3498DB1F] text-[#3498DB]",
+  },
+  processing: {
+    label: "В обработке",
+    dot: "bg-[#F39C12]",
+    wrap: "bg-[#F39C121F] text-[#F39C12]",
+  },
   in_progress: {
     label: "Выполняется",
     dot: "bg-[#F19024]",
     wrap: "bg-[#E37E141F] text-[#E37E14]",
   },
-  done: {
-    label: "Выполнен",
+  completed: {
+    label: "Завершён",
     dot: "bg-[#59A12D]",
     wrap: "bg-[#4E93211F] text-[#4E9321]",
   },
