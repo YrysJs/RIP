@@ -73,21 +73,21 @@ function toggle(index) {
   openItems.value[index] = !openItems.value[index];
 }
 
-async function fetchOrders(page = 1, limit = 10) {
-  try {
-    loading.value = true;
-    const response = await getOrders({ page, limit });
-    orders.value = response.data;
-    // Инициализируем массив для отслеживания открытых элементов
-    openItems.value = response?.items?.map(() => false) || [];
-    console.log("Данные заказов загружены:", response);
-  } catch (error) {
-    console.error("Ошибка загрузки заказов:", error);
-    openItems.value = [];
-  } finally {
-    loading.value = false;
-  }
-}
+// async function fetchOrders(page = 1, limit = 10) {
+//   try {
+//     loading.value = true;
+//     const response = await getOrders({ page, limit });
+//     orders.value = response.data;
+//     // Инициализируем массив для отслеживания открытых элементов
+//     openItems.value = response?.items?.map(() => false) || [];
+//     console.log("Данные заказов загружены:", response);
+//   } catch (error) {
+//     console.error("Ошибка загрузки заказов:", error);
+//     openItems.value = [];
+//   } finally {
+//     loading.value = false;
+//   }
+// }
 
 async function fetchOrders(page = 1, limit = 10) {
   try {
