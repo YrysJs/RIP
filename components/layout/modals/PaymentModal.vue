@@ -86,7 +86,6 @@ export default {
       type: File,
       default: null,
     },
-    useMock: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -133,12 +132,6 @@ export default {
       this.isProcessing = true;
 
       try {
-        if (this.useMock) {
-          await new Promise((r) => setTimeout(r, 600));
-          this.$emit("close");
-          this.$emit("success", { paymentId: "MOCK-PAY-123", receiptUrl: "#" });
-          return;
-        }
         // Подготавливаем данные для оплаты
         const paymentData = {
           amount: 100, // Госпошлина

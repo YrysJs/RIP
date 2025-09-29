@@ -499,7 +499,6 @@ const burialDateClass = computed(() => {
             :visible="paymentModalVisible"
             :burial-data="burialData"
             :death-certificate-file="deathCertificateFile"
-            :use-mock="true"
             @close="paymentModalVisible = false"
             @success="handlePaymentSuccess"
           />
