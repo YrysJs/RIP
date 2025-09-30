@@ -379,7 +379,7 @@ function updateMemorial(data) {
 
     return $axios({
         method: 'PUT',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/memorials',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/memorials/' + data.id,
         data: formData,
     })
 }

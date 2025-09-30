@@ -411,7 +411,10 @@ const submitMemorial = async () => {
 
     // Подготавливаем данные для отправки
     const formData = {
-      deceased_id: +burial.value?.deceased?.id,
+      id: route.query.id,
+      deceased_id: isEditMode.value
+        ? ''
+        : +burial.value?.deceased?.id,
       epitaph: epitaph.value,
       about_person: aboutPerson.value,
       is_public: isPublic.value,
