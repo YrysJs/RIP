@@ -333,7 +333,7 @@ const whatsAppLink = computed(() => {
           </div>
           <div
               class="flex items-center gap-[10px]"
-              v-if="orderData?.status === 'completed'"
+              v-if="orderData?.status === 'confirmed'"
           >
             <img src="/icons/paid-tick.svg" alt="" />
             <p class="text-sm text-[#17212A]">Завершено</p>

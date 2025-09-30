@@ -285,7 +285,7 @@ const burialDateClass = computed(() => {
                 <span
                   class="text-base font-bold"
                   :class="{
-                    'text-green-600': burialData?.status === 'new' || burialData?.status === 'in_progress' || burialData?.status === 'completed' || burialData?.status === 'paid',
+                    'text-green-600': burialData?.status === 'new' || burialData?.status === 'in_progress' || burialData?.status === 'confirmed' || burialData?.status === 'paid',
                     'text-yellow-600': burialData?.status === 'processing' || burialData?.status === 'pending_payment',
                     'text-red-600': burialData?.status === 'rejected',
                     'text-[#222222]': !burialData?.status,
