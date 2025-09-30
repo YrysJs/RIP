@@ -1,5 +1,5 @@
 <script setup>
-import { getSupplierProductReviews, addReviewResponse, createReviewAppeal } from '~/services/supplier'
+import {getSupplierProductReviews, addReviewResponse, createReviewAppeal, getSupplierInfo} from '~/services/supplier'
 import Cookies from "js-cookie";
 import {parseJwt} from "~/utils/parseJwt.js";
 
@@ -35,7 +35,9 @@ const { data: reviews, refresh } = await useLazyAsyncData('supplier-reviews', as
   const rawToken = Cookies.get('token');
   const token = parseJwt(rawToken);
     try {
-        const response = await getSupplierProductReviews(token.phone, currentPage.value)
+      const profile = await getSupplierInfo();
+
+        const response = await getSupplierProductReviews(profile.data.phone, currentPage.value)
         return response.data || { items: [], total_pages: 0, total_count: 0, page: 1, limit: 10 }
     } catch (error) {
         console.error('Ошибка загрузки отзывов:', error)

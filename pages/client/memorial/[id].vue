@@ -773,7 +773,7 @@ const submitMemorial = async () => {
               class="relative inline-block w-10 h-6 cursor-pointer select-none align-middle"
             >
               <input
-                v-model="switcher"
+                v-model="isPublic"
                 type="checkbox"
                 class="sr-only peer input"
               />
