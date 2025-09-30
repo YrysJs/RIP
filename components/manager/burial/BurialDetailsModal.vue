@@ -67,16 +67,16 @@ const closeModal = () => {
         </div>
 
         <!-- Заключение о смерти -->
-        <div class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-4">
-          <p class="min-w-[150px] max-w-[150px] font-medium">Заключение о смерти:</p>
-          <a
-              href="/"
-              target="_blank"
-              class="text-[#007AFF] font-medium hover:underline"
-          >
-            Открыть
-          </a>
-        </div>
+<!--        <div class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-4">-->
+<!--          <p class="min-w-[150px] max-w-[150px] font-medium">Заключение о смерти:</p>-->
+<!--          <a-->
+<!--              href="/"-->
+<!--              target="_blank"-->
+<!--              class="text-[#007AFF] font-medium hover:underline"-->
+<!--          >-->
+<!--            Открыть-->
+<!--          </a>-->
+<!--        </div>-->
 
         <!-- Дата похорон -->
         <div class="flex text-base mt-2">

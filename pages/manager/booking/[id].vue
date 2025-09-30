@@ -70,7 +70,7 @@ const fetchGraveDetails = async (id) => {
 
     <Teleport to="body">
       <GraveDetailModal :visible="graveDetailModalVisible" :grave="grave" :images="graveImages" :booking="booking" @close="graveDetailModalVisible = false" />
-      <CancelModal :visible="isCancelModalVisible" @cancel="cancelRequest" />
+      <CancelModal :visible="isCancelModalVisible" @cancel="cancelRequest" @close="isCancelModalVisible = false" />
     </Teleport>
   </NuxtLayout>
 </template>

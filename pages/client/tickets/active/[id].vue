@@ -4,6 +4,7 @@ import { getBurialRequestById } from "~/services/manager";
 import PaymentModal from "~/components/layout/modals/PaymentModal.vue";
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
+import browserDevtoolsTimingClient from "#app/plugins/browser-devtools-timing.client.js";
 
 const cemeteryStore = useCemeteryStore();
 const switcher = ref(false);
@@ -284,20 +285,22 @@ const burialDateClass = computed(() => {
                 <span
                   class="text-base font-bold"
                   :class="{
-                    'text-green-600': burialData?.status === 'approved',
-                    'text-yellow-600': burialData?.status === 'pending',
+                    'text-green-600': burialData?.status === 'new' || burialData?.status === 'in_progress' || burialData?.status === 'completed' || burialData?.status === 'paid',
+                    'text-yellow-600': burialData?.status === 'processing' || burialData?.status === 'pending_payment',
                     'text-red-600': burialData?.status === 'rejected',
                     'text-[#222222]': !burialData?.status,
                   }"
                 >
                   {{
-                    burialData?.status === "pending"
-                      ? "В ожидании"
-                      : burialData?.status === "approved"
-                      ? "Одобрено"
-                      : burialData?.status === "rejected"
-                      ? "Отклонено"
-                      : "Не указано"
+                    burialData?.status === "processing" || burialData?.status === 'pending_payment'
+                      ? "В ожидании оплаты"
+                      : burialData?.status === "new"
+                      ? "Новая"
+                      : burialData?.status === "in_progress"
+                      ? "В работе"
+                      : burialData?.status === "paid"
+                                    ? "Оплачено"
+                                    : "Не указано"
                   }}
                 </span>
               </div>
