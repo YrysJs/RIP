@@ -1,6 +1,7 @@
 <script setup>
 import { getOtp, checkOtp, getWhatsappOtp, checkWhatsappOtp } from '~/services/login/index.js'
 import Cookies from 'js-cookie';
+import {useAuthModalStore} from "~/store/authModal.js";
 const emit = defineEmits()
 const router = useRouter()
 
@@ -89,12 +90,12 @@ const otpCheck = async () => {
     }
     Cookies.set('token', response.data.token);
     Cookies.set('role', 'user');
-    router.push('/user/tickets')
+    emit('close');
+    await router.push('/user/tickets')
   } catch (error) {
     console.error('Ошибка при логине:', error)
   } finally {
     console.log('login')
-
   }
 
 }

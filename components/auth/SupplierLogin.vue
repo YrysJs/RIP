@@ -32,6 +32,7 @@ const vatTypeId = ref(0)
 const isFcb = ref(false)
 const isWhatsappLogin = ref(false)
 
+
 function close() {
   emit('close')
 }
@@ -167,6 +168,7 @@ async function run () {
     Cookies.set('token', response.data.token);
     Cookies.set('role', 'supplier');
     await router.push('/supplier/tickets/active')
+    emit('close');
   } catch (error) {
     console.error('Ошибка при логине:', error)
 
@@ -278,8 +280,9 @@ const otpCheck = async () => {
       })
     }
     Cookies.set('token', response.data.token);
-    router.push('/supplier/tickets/active')
     Cookies.set('role', 'supplier');
+    emit('close');
+    await router.push('/supplier/tickets/active')
   } catch (error) {
     if (
         error?.response?.status === 500 &&
@@ -290,7 +293,6 @@ const otpCheck = async () => {
     console.error('Ошибка при логине:', error)
   } finally {
     console.log('login')
-
   }
 
   // setTimeout(() => {

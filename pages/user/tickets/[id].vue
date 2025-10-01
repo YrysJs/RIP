@@ -78,39 +78,39 @@
       <div class="divider"></div>
 
       <!-- Данные покойного -->
-      <section class="block">
-        <h3 class="block__title">Данные покойного</h3>
+<!--      <section class="block">-->
+<!--        <h3 class="block__title">Данные покойного</h3>-->
 
-        <div class="grid-2col">
-          <div class="kv">
-            <div class="k">ФИО покойного:</div>
-            <div class="v" :class="{ 'is-empty': !request?.deceasedFio }">
-              {{ request?.deceasedFio || '—' }}
-            </div>
-          </div>
+<!--        <div class="grid-2col">-->
+<!--          <div class="kv">-->
+<!--            <div class="k">ФИО покойного:</div>-->
+<!--            <div class="v" :class="{ 'is-empty': !request?.deceasedFio }">-->
+<!--              {{ request?.deceasedFio || '—' }}-->
+<!--            </div>-->
+<!--          </div>-->
 
-          <div class="kv">
-            <div class="k">Место захоронения:</div>
-            <div class="v" :class="{ 'is-empty': !request?.burialPlaceName }">
-              {{ request?.burialPlaceName || '—' }}
-            </div>
-          </div>
+<!--          <div class="kv">-->
+<!--            <div class="k">Место захоронения:</div>-->
+<!--            <div class="v" :class="{ 'is-empty': !request?.burialPlaceName }">-->
+<!--              {{ request?.burialPlaceName || '—' }}-->
+<!--            </div>-->
+<!--          </div>-->
 
-          <div class="kv">
-            <div class="k">Дата рождения:</div>
-            <div class="v" :class="{ 'is-empty': !request?.deceasedBirthDate }">
-              {{ formatDate(request?.deceasedBirthDate) || '—' }}
-            </div>
-          </div>
+<!--          <div class="kv">-->
+<!--            <div class="k">Дата рождения:</div>-->
+<!--            <div class="v" :class="{ 'is-empty': !request?.deceasedBirthDate }">-->
+<!--              {{ formatDate(request?.deceasedBirthDate) || '—' }}-->
+<!--            </div>-->
+<!--          </div>-->
 
-          <div class="kv">
-            <div class="k">Дата смерти:</div>
-            <div class="v" :class="{ 'is-empty': !request?.deceasedDeathDate }">
-              {{ formatDate(request?.deceasedDeathDate) || '—' }}
-            </div>
-          </div>
-        </div>
-      </section>
+<!--          <div class="kv">-->
+<!--            <div class="k">Дата смерти:</div>-->
+<!--            <div class="v" :class="{ 'is-empty': !request?.deceasedDeathDate }">-->
+<!--              {{ formatDate(request?.deceasedDeathDate) || '—' }}-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </section>-->
 
       <div class="divider"></div>
 
@@ -126,19 +126,6 @@
             </div>
           </div>
 
-          <div class="kv">
-            <div class="k">Сектор:</div>
-            <div class="v" :class="{ 'is-empty': !request?.fromSector }">
-              {{ request?.fromSector || '—' }}
-            </div>
-          </div>
-
-          <div class="kv">
-            <div class="k">Место:</div>
-            <div class="v" :class="{ 'is-empty': !request?.fromPlace }">
-              {{ request?.fromPlace || '—' }}
-            </div>
-          </div>
         </div>
       </section>
 
@@ -156,19 +143,6 @@
             </div>
           </div>
 
-          <div class="kv">
-            <div class="k">Сектор:</div>
-            <div class="v" :class="{ 'is-empty': !request?.toSector }">
-              {{ request?.toSector || '—' }}
-            </div>
-          </div>
-
-          <div class="kv">
-            <div class="k">Место:</div>
-            <div class="v" :class="{ 'is-empty': !request?.toPlace }">
-              {{ request?.toPlace || '—' }}
-            </div>
-          </div>
         </div>
       </section>
 
@@ -189,8 +163,8 @@
       <!-- Документы -->
       <section class="block">
         <div class="docs-row">
-          <div class="doc-col" v-for="doc in documents" :key="doc.name">
-            <div class="doc-label">{{ doc.name }}</div>
+          <div class="doc-col">
+            <div class="doc-label">Свидетельство о смерти</div>
 
             <div class="doc-card">
               <div class="doc-card__left">
@@ -201,14 +175,56 @@
                   </svg>
                 </div>
 
-                <div>
-                  <div class="doc-filename">{{ doc.display || 'Document.pdf' }}</div>
-                  <div class="doc-size">{{ doc.size || '5 МБ' }}</div>
-                </div>
               </div>
 
               <div class="doc-card__right">
-                <button class="doc-btn" @click="download(doc)" title="Скачать">
+                <button class="doc-btn" @click="download(request?.death_certificate)" title="Скачать">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 21h14" stroke="#111827" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="doc-col">
+            <div class="doc-label">Подтверждение родства заявителя</div>
+
+            <div class="doc-card">
+              <div class="doc-card__left">
+                <div class="doc-fileicon" aria-hidden>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14 2v6h6" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+
+              </div>
+
+              <div class="doc-card__right">
+                <button class="doc-btn" @click="download(request?.proof_of_relation)" title="Скачать">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 21h14" stroke="#111827" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="doc-col">
+            <div class="doc-label">Документ на могилу</div>
+
+            <div class="doc-card">
+              <div class="doc-card__left">
+                <div class="doc-fileicon" aria-hidden>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14 2v6h6" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+
+              </div>
+
+              <div class="doc-card__right">
+                <button class="doc-btn" @click="download(request?.grave_doc)" title="Скачать">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 21h14" stroke="#111827" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -284,7 +300,7 @@ async function fetchRequestsLocal() {
 
 onMounted(async () => {
   const response = await getCemeteries()
-  cemeteries.value = response.data
+  cemeteries.value = response.data.data
   await fetchRequestsLocal()
 })
 
@@ -323,7 +339,11 @@ function statusClass(v) {
 }
 
 function download(doc) {
-  console.log('download:', doc)
+  if (doc && doc.url) {
+    window.open(doc.url, '_blank')
+  } else {
+    console.error('Документ не содержит URL:', doc)
+  }
 }
 </script>
 
