@@ -112,7 +112,6 @@ watch(iin, async (newValue) => {
             response.data.data.person_data.patronymic
           );
           loadingStore.stopLoading();
-          console.log("Ответ от pkbGetData:", response);
 
           // остановить дальнейшие попытки
           if (timeoutId) {

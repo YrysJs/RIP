@@ -59,7 +59,6 @@ const statusView = {
 async function fetchOrders(page = 1, limit = 10) {
   try {
     const response = await getOrders({ page, limit });
-    console.log(response)
     orders.value = response.data.items;
     // Инициализируем массив для отслеживания открытых элементов
     // openItems.value = response?.items?.map(() => false) || [];
@@ -129,9 +128,6 @@ async function openReceiptModal(order) {
 // Методы для работы с модалкой отзыва
 function openCommentModal(order) {
   selectedOrder.value = order;
-  console.log("Выбранный заказ:", order);
-  console.log("Product ID:", order?.items?.[0]?.product?.id);
-  console.log("Supplier Phone:", order?.items?.[0]?.product?.supplier_phone);
   showCommentModal.value = true;
 }
 
@@ -243,7 +239,7 @@ useHead({
                     ? 'bg-[#E9B949] text-black hover:bg-[#D1A53F] cursor-pointer active:bg-[#B88F34]'
                     : 'bg-[#E9B949] text-black opacity-50 cursor-not-allowed'
                 "
-                :disabled="o.status !== 'done'"
+                :disabled="o.status !== 'completed'"
                 @click="openCommentModal(o)"
               >
                 Оставить отзыв

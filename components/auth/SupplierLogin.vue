@@ -96,7 +96,6 @@ watch(bin, async (newValue) => {
           surname.value = capitalize(response.data.data.person_data.surname)
           patronymic.value = capitalize(response.data.data.person_data.patronymic)
           loadingStore.stopLoading()
-          console.log('Ответ от pkbGetData:', response);
 
           // остановить дальнейшие попытки
           if (timeoutId) {
@@ -111,6 +110,7 @@ watch(bin, async (newValue) => {
         }
       } catch (err) {
         console.error('Ошибка при запросе:', err);
+        loadingStore.stopLoading()
         // запланировать повтор при ошибке
         timeoutId = setTimeout(poll, 10000);
       }
@@ -120,7 +120,6 @@ watch(bin, async (newValue) => {
     await poll();
 
   } catch (error) {
-    console.log('1111111111111')
     loadingStore.stopLoading()
     console.error('Ошибка при получении токена:', error);
   }

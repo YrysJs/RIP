@@ -34,7 +34,6 @@ onMounted(async () => {
       user_phone: userStore.user?.phone,
     });
     burialRequests.value = response.data.data.data;
-    console.log(burialRequests.value)
   } catch (error) {
     console.error("Ошибка при получении заявок:", error);
   } finally {

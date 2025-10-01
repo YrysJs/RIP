@@ -51,7 +51,6 @@ const fetchOrderData = async () => {
       await getCemetryInfoById(response.data.items[0].product.id);
     }
 
-    console.log("Order data:", orderData.value);
   } catch (err) {
     error.value = err.message || "Ошибка при загрузке данных заказа";
     console.error("Error fetching order:", err);
@@ -67,7 +66,6 @@ const getCemetryInfoById = async (id) => {
   try {
     const response = await getCemeteryById(id);
     cemeteryData.value = response.data;
-    console.log("Order data:", orderData.value);
   } catch (err) {
     error.value = err.message || "Ошибка при загрузке данных заказа";
     console.error("Error fetching order:", err);
@@ -308,8 +306,20 @@ const whatsAppLink = computed(() => {
         <div class="h-[48px] flex items-center text-base">
           <p class="min-w-[150px] max-w-[150px] grey-14">Cтатус:</p>
           <div
+              class="flex items-center gap-[10px]"
+              v-if="orderData?.status === 'new'"
+          >
+            <p class="text-sm text-[#17212A]">Новая</p>
+          </div>
+          <div
+              class="flex items-center gap-[10px]"
+              v-if="orderData?.status === 'in_progress'"
+          >
+            <p class="text-sm text-[#17212A]">В работе</p>
+          </div>
+          <div
             class="flex items-center gap-[10px]"
-            v-if="orderData?.status === 'processing'"
+            v-if="orderData?.status === 'processing' || orderData?.status === 'pending_payment'"
           >
             <img src="/icons/warning.svg" alt="" />
             <p class="text-sm text-[#17212A]">В ожидании оплаты</p>
@@ -320,6 +330,13 @@ const whatsAppLink = computed(() => {
           >
             <img src="/icons/paid-tick.svg" alt="" />
             <p class="text-sm text-[#17212A]">Оплачено</p>
+          </div>
+          <div
+              class="flex items-center gap-[10px]"
+              v-if="orderData?.status === 'confirmed'"
+          >
+            <img src="/icons/paid-tick.svg" alt="" />
+            <p class="text-sm text-[#17212A]">Завершено</p>
           </div>
         </div>
       </div>

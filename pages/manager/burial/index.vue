@@ -200,7 +200,7 @@ watch([dateFrom, dateTo, cemeteryId], () => {
         @confirm="approveRequest"
         @close="burialDetailModalVisible = false"
       />
-      <CancelModal :visible="isCancelModalVisible" @cancel="cancelRequest" />
+      <CancelModal :visible="isCancelModalVisible" @cancel="cancelRequest"  @close="isCancelModalVisible = false" />
     </Teleport>
   </NuxtLayout>
 </template>

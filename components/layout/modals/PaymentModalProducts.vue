@@ -146,9 +146,7 @@ export default {
         }
 
         // 1. Выполняем платеж (закомментировано для тестирования)
-        console.log('Processing payment...', paymentData)
         const paymentResponse = await processCardPayment(paymentData)
-        console.log('Payment successful:', paymentResponse)
 
         // 2. Создаем заказ через API с правильной структурой
         const orderRequestData = {
@@ -167,7 +165,6 @@ export default {
         }
         
         const orderResponse = await createOrder(orderRequestData)
-        console.log(orderResponse)
 
         // Получаем transaction_id из ответа платежа
         const transactionId = paymentResponse.data.data.paymentInfo.id

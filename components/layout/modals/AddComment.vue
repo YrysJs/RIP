@@ -107,10 +107,7 @@ const submitForm = async () => {
       supplier_phone: props.supplierPhone,
       product_id: props.productId
     }
-    
-    console.log('Данные для отправки:', submitData)
-    console.log('Props:', { supplierPhone: props.supplierPhone, productId: props.productId })
-    
+
     // Проверяем наличие обязательных полей
     if (!submitData.product_id) {
       errors.value.submit = 'ID продукта не указан'
@@ -135,7 +132,6 @@ const submitForm = async () => {
 // Установка рейтинга
 const setRating = (rating) => {
   formData.value.rating = Number(rating)
-  console.log('Установлен рейтинг:', rating) // Для отладки
 }
 
 // Безопасное создание preview URL только на клиентской стороне

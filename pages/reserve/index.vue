@@ -497,7 +497,10 @@ function getReligionIcon(item) {
                     {{ selectedCemetery?.description }}
                   </p>
 
-                  <button class="reserve__btn w-full" @click="reserve">
+                  <button
+                      class="reserve__btn w-full"
+                      :disabled="selectedGrave.status !== 'free'"
+                      @click="reserve">
                     <img
                       src="/icons/pencil.svg"
                       alt="Reserve icon"
@@ -603,6 +606,7 @@ function getReligionIcon(item) {
               <button
                 v-if="showGraveDetails"
                 class="reserve__btn"
+                :disabled="selectedGrave.status !== 'free'"
                 @click="reserve"
               >
                 <img

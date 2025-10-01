@@ -19,14 +19,12 @@ const cartTotal = computed(() => {
   const cartSum = cartItems.value.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
   const stateSum = 0 // Госпошлина
   const total = cartSum + stateSum
-  console.log('Cart total calculated:', { cartSum, stateSum, total, cartItems: cartItems.value })
   return total
 })
 
 // Вычисляемое свойство для проверки наличия товаров в корзине
 const hasCartItems = computed(() => {
   const hasItems = cartItems.value.length > 0
-  console.log('Has cart items:', hasItems, 'Cart length:', cartItems.value.length)
   return hasItems
 })
 
@@ -46,7 +44,6 @@ const loadCart = async () => {
   try {
     const response = await getCart()
     cartItems.value = response.data || []
-    console.log('Cart loaded:', cartItems.value)
   } catch (err) {
     console.error('Ошибка при загрузке корзины:', err)
   }
@@ -132,7 +129,6 @@ onMounted(async () => {
       loadCart()
     ])
     products.value = productsResponse.data.items || productsResponse.data || []
-    console.log('Products loaded:', products.value)
   } catch (err) {
     error.value = 'Ошибка при загрузке услуг'
     console.error(err)

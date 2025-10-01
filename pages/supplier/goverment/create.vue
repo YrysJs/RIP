@@ -35,7 +35,6 @@ async function userCreateAppeal() {
             responsiblePhone: '73330450599',
             akimatId: 6
         })
-        console.log(response)
         router.push('/supplier/goverment/requests')
     } catch (error) {
         console.log(error)

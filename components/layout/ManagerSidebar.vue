@@ -16,7 +16,6 @@ type MenuItem = {
 const menu: MenuItem[] = [
   { title: 'Бронирование мест', path: '/manager/booking' },
   { title: 'Заявки на захоронение', path: '/manager/burial' },
-  { title: 'Уведомления', path: '/manager/notifications' },
   { title: 'Управление кладбищами', path: '/manager/cemetery' }
 ];
 
