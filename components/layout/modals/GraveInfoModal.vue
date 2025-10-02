@@ -5,15 +5,7 @@ const props = defineProps({
   modelValue: { type: Boolean, default: false },
   data: {
     type: Object,
-    default: () => ({
-      image: "/images/main_service/f1.jpg",
-      title: "Северное кладбище",
-      sector: "11",
-      place: "3",
-      description:
-        "Участок расположен на ровной местности, что обеспечивает устойчивость и простоту в обустройстве памятника и территории. Размер участка составляет 2,5 x 1,5 метра, для индивидуального захоронения. Территория находится в солнечной части кладбища с легким уклоном, обеспечивающим естественный дренаж. Участок доступен для посещения, имеется удобный подъезд.",
-      note: "Участок расположен в небольшой низине, защищенной от ветров.",
-    }),
+    default: () => ({}),
   },
   closeOnBackdrop: { type: Boolean, default: true },
 });
@@ -35,6 +27,16 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
 function onBackdrop(e) {
   if (props.closeOnBackdrop && e.target === e.currentTarget) close();
 }
+
+// безопасные отображаемые значения
+const view = computed(() => ({
+  image: props.data?.image ?? "/images/main_service/f1.jpg",
+  title: props.data?.title ?? "—",
+  sector: props.data?.sector ?? "—",
+  place: props.data?.place ?? "—",
+  description: props.data?.description ?? "",
+  note: props.data?.note ?? "",
+}));
 </script>
 
 <template>
@@ -49,7 +51,7 @@ function onBackdrop(e) {
           <!-- Картинка -->
           <div class="relative h-[260px] w-full">
             <img
-              :src="data.image"
+              :src="view.image"
               alt=""
               class="absolute inset-0 w-full h-full object-cover"
             />
@@ -66,7 +68,7 @@ function onBackdrop(e) {
           <!-- Контент -->
           <div class="h-[324px] overflow-auto px-6 pb-6 pt-5">
             <h3 class="text-xl font-semibold text-[#17212A]">
-              {{ data.title }}
+              {{ view.title }}
             </h3>
 
             <!-- Теги -->
@@ -74,24 +76,24 @@ function onBackdrop(e) {
               <span
                 class="rounded-full bg-[#F0F1F2] px-3 py-1 text-xs font-medium text-[#5C6771]"
               >
-                Сектор: {{ data.sector }}
+                Сектор: {{ view.sector }}
               </span>
               <span
                 class="rounded-full bg-[#F0F1F2] px-3 py-1 text-xs font-medium text-[#5C6771]"
               >
-                Место: {{ data.place }}
+                Место: {{ view.place }}
               </span>
             </div>
 
             <!-- Описание -->
             <p class="mt-4 text-sm leading-6 text-[#222]">
-              {{ data.description }}
+              {{ view.description }}
             </p>
 
             <!-- Примечание -->
             <p class="mt-4 text-sm leading-6">
               <span class="font-semibold">Примечание:</span>
-              <span class="text-[#222]">{{ data.note }}</span>
+              <span class="text-[#222]">{{ view.note }}</span>
             </p>
           </div>
         </div>

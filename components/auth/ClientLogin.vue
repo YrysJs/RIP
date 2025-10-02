@@ -5,18 +5,19 @@ import {
   getWhatsappOtp,
   checkWhatsappOtp,
   signupClient,
-  getUserData,
-  signupClientFcb,
+  // getUserData,
+  // signupClientFcb,
   getPkbToken,
   getPkbRequest,
   pkbGetData,
 } from "~/services/login/index.js";
 import Cookies from "js-cookie";
-import AppLoader from "~/components/loader/AppLoader.vue";
+// import AppLoader from "~/components/loader/AppLoader.vue";
 import { useLoadingStore } from "~/store/loading.js";
 import { NuxtLink } from "#components";
 import { ref, watch, onBeforeUnmount } from "vue";
-const emit = defineEmits();
+
+const emit = defineEmits(["close"]);
 const router = useRouter();
 
 const phone_number = ref("");
@@ -25,24 +26,24 @@ const code = ref("");
 const iin = ref("");
 const check = ref(false);
 const step = ref(0);
-const user = ref({});
+// const user = ref({});
 const isFcb = ref(false);
 const name = ref("");
 const surname = ref("");
 const patronymic = ref("");
-const fio = ref("");
+// const fio = ref("");
 const isWhatsappLogin = ref(false);
 
 const loadingStore = useLoadingStore();
 
 const currentModal = ref("form");
-const showOverlay = ref(true); // фон-оверлей со спиннером (по желанию)
+// const showOverlay = ref(true); // фон-оверлей со спиннером (по желанию)
 const processing = ref(false); // состояние загрузки в оверлее
 const overlayMessage = ref(""); // текст в оверлее
 const isSubmitting = ref(false);
-let pollTimeoutId = null;
-let fakeTimeoutId1 = null;
-let fakeTimeoutId2 = null;
+const pollTimeoutId = null;
+const fakeTimeoutId1 = null;
+const fakeTimeoutId2 = null;
 
 onBeforeUnmount(() => {
   if (interval) clearInterval(interval);
@@ -150,7 +151,6 @@ watch(iin, async (newValue) => {
 
 async function run() {
   try {
-    let response;
     // if (isFcb.value) {
     //   response = await signupClientFcb({
     //     otpRequest: {
@@ -161,7 +161,7 @@ async function run() {
     //   })
     // }
     // else {
-    response = await signupClient({
+    const response = await signupClient({
       otpRequest: {
         id: loginId.value,
         code: code.value,
@@ -215,17 +215,17 @@ function goToTickets() {
   router.push("/client/profile");
 }
 
-function buildFio(surname, name, patronymic) {
-  return [surname, name, patronymic]
-    .filter(Boolean)
-    .map(toTitleCase)
-    .join(" ")
-    .trim();
-}
+// function buildFio(surname, name, patronymic) {
+//   return [surname, name, patronymic]
+//     .filter(Boolean)
+//     .map(toTitleCase)
+//     .join(" ")
+//     .trim();
+// }
 
-function toTitleCase(s = "") {
-  return s.toLowerCase().replace(/(^|\s|-)\S/g, (m) => m.toUpperCase());
-}
+// function toTitleCase(s = "") {
+//   return s.toLowerCase().replace(/(^|\s|-)\S/g, (m) => m.toUpperCase());
+// }
 
 const fakeTimer = ref(10);
 let interval = null;
@@ -261,7 +261,9 @@ const login = async () => {
 
 const loginWhatsapp = async () => {
   try {
-    const response = await getWhatsappOtp({ phone: extractDigits(phone_number.value) });
+    const response = await getWhatsappOtp({
+      phone: extractDigits(phone_number.value),
+    });
     loginId.value = response.data;
     isWhatsappLogin.value = true;
     step.value++;
@@ -298,7 +300,7 @@ const otpCheck = async () => {
         code: code.value,
       });
     }
-    
+
     Cookies.set("token", response.data.token);
     Cookies.set("role", "client");
     await router.push("/client/profile");
@@ -324,9 +326,7 @@ const otpCheck = async () => {
 </script>
 
 <template>
-  <div
-    class="max-w-[500px] w-full relative max-sm:mx-4"
-  >
+  <div class="max-w-[500px] w-full relative max-sm:mx-4">
     <transition name="fade">
       <div
         v-if="processing"
@@ -392,7 +392,7 @@ const otpCheck = async () => {
               Еще нет аккаунта ?
               <NuxtLink
                 to=""
-                class="text-black font-semibold"
+                class="text-black font-semibold cursor-pointer"
                 @click.prevent="step = 2"
                 >Зарегистрироваться</NuxtLink
               >
@@ -403,7 +403,8 @@ const otpCheck = async () => {
               Подтвердите номер
             </h3>
             <p class="text-sm">
-              Введите код из {{ isWhatsappLogin ? 'WhatsApp' : 'СМС' }}. Мы отправили его на номер
+              Введите код из {{ isWhatsappLogin ? "WhatsApp" : "СМС" }}. Мы
+              отправили его на номер
               {{ phone_number }}
             </p>
             <input
@@ -445,11 +446,11 @@ const otpCheck = async () => {
                   id="iin"
                   type="text"
                   placeholder=" "
-                  class="peer w-full px-3 pt-[28px] pb-2 placeholder-transparent opacity-0 focus:outline-none focus:opacity-100"
+                  class="peer w-full px-3 pt-[28px] pb-2 placeholder-transparent focus:outline-none"
                 />
                 <label
                   for="iin"
-                  class="absolute left-3 top-1/2 -translate-y-1/2 text-[#AFB5C1] text-base transition-all duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-[#AFB5C1] peer-focus:top-[15px] peer-focus:text-sm peer-focus:text-[#5C6771E6]"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 text-[#AFB5C1] text-base transition-all duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-[#AFB5C1] peer-focus:top-[15px] peer-focus:text-sm peer-focus:text-[#5C6771E6] peer-[&:not(:placeholder-shown)]:top-[15px] peer-[&:not(:placeholder-shown)]:text-sm peer-[&:not(:placeholder-shown)]:text-[#5C6771E6]"
                 >
                   ИИН
                 </label>
@@ -462,22 +463,22 @@ const otpCheck = async () => {
                 disabled
               />
               <input
-                  v-model="surname"
-                  class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
-                  type="text"
-                  placeholder="Фамилия"
+                v-model="surname"
+                class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
+                type="text"
+                placeholder="Фамилия"
               />
               <input
-                  v-model="name"
-                  class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
-                  type="text"
-                  placeholder="Имя"
+                v-model="name"
+                class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
+                type="text"
+                placeholder="Имя"
               />
               <input
-                  v-model="patronymic"
-                  class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
-                  type="text"
-                  placeholder="Отчество"
+                v-model="patronymic"
+                class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
+                type="text"
+                placeholder="Отчество"
               />
               <div class="flex gap-[10px] items-start mb-[32px]">
                 <input class="w-6 h-6" v-model="check" type="checkbox" />

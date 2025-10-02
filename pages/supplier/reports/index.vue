@@ -1,30 +1,41 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { getSalesStats } from '~/services/supplier'
+import { ref, onMounted } from "vue";
+import { getSalesStats } from "~/services/supplier";
 
 const stats = ref({
   seven_days: 0,
   one_month: 0,
   three_months: 0,
   all_time: 0,
-})
-const isLoading = ref(true)
+});
+const isLoading = ref(true);
+
+function toNum(v) {
+  if (v == null) return 0;
+  if (typeof v === "number") return Number.isFinite(v) ? v : 0;
+  const s = String(v)
+    .replace(/\u00A0/g, "")
+    .replace(/\s/g, "")
+    .replace(",", ".");
+  const n = Number(s);
+  return Number.isFinite(n) ? n : 0;
+}
 
 onMounted(async () => {
   try {
-    const { data } = await getSalesStats()
+    const { data } = await getSalesStats();
     stats.value = {
-      seven_days: Number(data?.seven_days ?? 0),
-      one_month: Number(data?.one_month ?? 0),
-      three_months: Number(data?.three_months ?? 0),
-      all_time: Number(data?.all_time ?? 0),
-    }
+      seven_days: toNum(data?.["7_days"] ?? data?.seven_days),
+      one_month: toNum(data?.["1_month"] ?? data?.one_month),
+      three_months: toNum(data?.["3_months"] ?? data?.three_months),
+      all_time: toNum(data?.["all_time"] ?? data?.all_time),
+    };
   } catch (e) {
-    console.error('Ошибка при загрузке статистики:', e)
+    console.error("Ошибка при загрузке статистики:", e);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-})
+});
 </script>
 
 <template>
@@ -57,7 +68,9 @@ onMounted(async () => {
           <div class="td td--num">{{ stats.seven_days }}</div>
           <div class="td td--num">{{ stats.one_month }}</div>
           <div class="td td--num">{{ stats.three_months }}</div>
-          <div class="td td--num">{{ stats.all_time }}</div>
+          <div class="td td--num">
+            {{ Number.isFinite(stats.all_time) ? stats.all_time : 0 }}
+          </div>
         </div>
 
         <!-- выгрузка -->
@@ -72,76 +85,122 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 /* заголовок */
-.page-head{
-  display:flex; align-items:center;
-  background:#fff; border-radius:16px;
-  padding:14px 16px; margin-bottom:12px;
+.page-head {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
 }
-.page-title{
-  font-family:"FoglihtenNo06", serif;
-  font-weight:700; letter-spacing:.02em;
-  font-size:22px; line-height:1.15; margin:0; color:#1C140E;
+.page-title {
+  font-family: "FoglihtenNo06", serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-size: 22px;
+  line-height: 1.15;
+  margin: 0;
+  color: #1c140e;
 }
 
 /* карточка */
-.card{
-  background:#fff; border-radius:16px;
-  padding:16px; margin-top:16px;
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 16px;
 }
 
 /* состояние загрузки */
-.state{ text-align:center; padding:28px 8px; }
-.muted{ color:#6B7280; }
-.spinner{
-  width:34px; height:34px; border-radius:50%;
-  border:3px solid #e7e9ec; border-top-color:#224C4F;
-  animation:spin .9s linear infinite; margin:0 auto;
+.state {
+  text-align: center;
+  padding: 28px 8px;
 }
-@keyframes spin{ to { transform: rotate(360deg) } }
+.muted {
+  color: #6b7280;
+}
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid #e7e9ec;
+  border-top-color: #224c4f;
+  animation: spin 0.9s linear infinite;
+  margin: 0 auto;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* таблица (как на макете) */
 .reports__head,
-.reports__row{
-  display:grid;
+.reports__row {
+  display: grid;
   grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
-  column-gap:16px; align-items:center;
+  column-gap: 16px;
+  align-items: center;
 }
-.reports__head{
-  background:#F7F8FA;
-  border:1px solid #EEF1F4;
-  border-radius:12px;
-  padding:12px 16px;
-  color:#565656; font-size:13px;
+.reports__head {
+  background: #f7f8fa;
+  border: 1px solid #eef1f4;
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #565656;
+  font-size: 13px;
 }
-.th{ white-space:nowrap; }
-.th--name{ padding-left:2px; }
+.th {
+  white-space: nowrap;
+}
+.th--name {
+  padding-left: 2px;
+}
 
-.reports__row{
-  margin-top:8px;
-  padding:14px 16px;
-  border:1px solid #EEF1F4;
-  border-radius:12px;
-  background:#fff;
+.reports__row {
+  margin-top: 8px;
+  padding: 14px 16px;
+  border: 1px solid #eef1f4;
+  border-radius: 12px;
+  background: #fff;
 }
-.td{ font-size:16px; color:#0F172A; }
-.td--name{ font-weight:600; }
-.td--num{ text-align:right; font-weight:600; }
+.td {
+  font-size: 16px;
+  color: #0f172a;
+}
+.td--name {
+  font-weight: 600;
+}
+.td--num {
+  text-align: right;
+  font-weight: 600;
+}
 
 /* блок ссылок выгрузки */
-.downloads{
-  display:flex; gap:16px; justify-content:flex-end;
-  margin-top:12px;
+.downloads {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 12px;
 }
-.dl{
-  font-size:14px; color:#2680EB; text-decoration:none;
+.dl {
+  font-size: 14px;
+  color: #2680eb;
+  text-decoration: none;
 }
-.dl:hover{ text-decoration:underline; }
+.dl:hover {
+  text-decoration: underline;
+}
 
 /* адаптив */
-@media (max-width: 760px){
-  .reports__head, .reports__row{
-    grid-template-columns: 1.2fr repeat(4, .8fr);
+@media (max-width: 760px) {
+  .reports__head,
+  .reports__row {
+    grid-template-columns: 1.2fr repeat(4, 0.8fr);
   }
-  .td, .th{ font-size:14px; }
+  .td,
+  .th {
+    font-size: 14px;
+  }
 }
 </style>

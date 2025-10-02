@@ -1,10 +1,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { getBurialRequests } from "~/services/client";
+import { getBurialRequests, getGraveById } from "~/services/client";
 import ShareCoordModal from "~/components/layout/modals/ShareCoordModal.vue";
 import GraveDataModal from "~/components/layout/modals/GraveDetailModal.vue";
-import { getGraveById } from "~/services/client";
-import { getCemeteryById } from "~/services/cemetery";
+// import { getCemeteryById } from "~/services/cemetery";
 import { useUserStore } from "~/store/user";
 
 const userStore = useUserStore();
@@ -20,13 +19,15 @@ const localePath = useLocalePath();
 
 const fetchGraveData = async (id) => {
   const response = await getGraveById(id);
-  graveData.value = response.data.data;
+  const grave = response.data; // <-- тут уже весь объект
+  graveData.value = grave;
+  return grave; // возвращаем наружу
 };
 
-const fetchCemeteryData = async (id) => {
-  const response = await getCemeteryById(id);
-  cemeteryData.value = response.data.data;
-};
+// const fetchCemeteryData = async (id) => {
+//   const response = await getCemeteryById(id);
+//   cemeteryData.value = response.data.data;
+// };
 
 onMounted(async () => {
   try {
@@ -45,17 +46,27 @@ const graveLat = ref(null);
 const graveLng = ref(null);
 
 const shareGraveData = async (grave_id) => {
-  await fetchGraveData(grave_id);
+  const grave = await fetchGraveData(grave_id);
+
+  const poly = grave?.polygon_data;
+  if (!poly || !Array.isArray(poly.coordinates)) {
+    console.error("Нет координат у polygon_data", poly);
+    return;
+  }
+
+  // первая пара — [lng, lat]
+  const [lng, lat] = poly.coordinates[0];
+
+  graveLat.value = lat;
+  graveLng.value = lng;
+
   shareCoordModalState.value = true;
-
-  graveLat.value = graveData.value.polygon_data.coordinates[0][1];
-  graveLng.value = graveData.value.polygon_data.coordinates[0][0];
 };
 
-const showGraveDataModal = async (id) => {
-  await fetchGraveData(id);
-  graveDataModalState.value = true;
-};
+// const showGraveDataModal = async (id) => {
+//   await fetchGraveData(id);
+//   graveDataModalState.value = true;
+// };
 </script>
 
 <template>
@@ -74,10 +85,10 @@ const showGraveDataModal = async (id) => {
       >
         <template v-if="request.status === 'pending'">
           <div
-              class="flex justify-between items-start pb-4 border-b-2 border-b-[#eee] max-lg:flex-col max-sm:border-none max-sm:pb-0"
+            class="flex justify-between items-start pb-4 border-b-2 border-b-[#eee] max-lg:flex-col max-sm:border-none max-sm:pb-0"
           >
             <h3
-                class="font-foglihten text-fluid font-medium text-[#201001] leading-[48px]"
+              class="font-foglihten text-fluid font-medium text-[#201001] leading-[48px]"
             >
               Бронирование:
               <span class="text-[#B88F34]">{{ request.request_number }}</span>
@@ -95,7 +106,7 @@ const showGraveDataModal = async (id) => {
             </p>
           </div>
           <div
-              class="border-b-2 border-[#EEEEEE] pt-4 pb-[14px] max-sm:pt-0 max-sm:pb-0"
+            class="border-b-2 border-[#EEEEEE] pt-4 pb-[14px] max-sm:pt-0 max-sm:pb-0"
           >
             <div class="h-10 flex items-center text-base font-medium">
               <p class="min-w-[150px] black-16">Срок брони:</p>
@@ -103,14 +114,14 @@ const showGraveDataModal = async (id) => {
                 <p class="grey-14">
                   {{
                     new Date(request.reservation_expires_at).toLocaleString(
-                        "ru-RU",
-                        {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }
+                      "ru-RU",
+                      {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
                     )
                   }}
                 </p>
@@ -119,10 +130,10 @@ const showGraveDataModal = async (id) => {
             </div>
           </div>
           <div
-              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+            class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
           >
             <div
-                class="min-w-[580px] font-medium flex flex-col gap-[10px] max-sm:gap-0"
+              class="min-w-[580px] font-medium flex flex-col gap-[10px] max-sm:gap-0"
             >
               <div class="flex text-base">
                 <p class="min-w-[150px] grey-14">Кладбище:</p>
@@ -139,17 +150,19 @@ const showGraveDataModal = async (id) => {
             </div>
           </div>
           <div
-              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+            class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
           >
             <div class="font-medium flex flex-col gap-[10px]">
               <div class="flex text-base">
-                <p class="min-w-[150px] max-w-[150px] grey-14">ФИО покойного:</p>
+                <p class="min-w-[150px] max-w-[150px] grey-14">
+                  ФИО покойного:
+                </p>
                 <p class="black-16">{{ request.deceased?.full_name }}</p>
               </div>
             </div>
           </div>
           <div
-              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+            class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
           >
             <div class="flex text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">Дата похорон:</p>
@@ -163,21 +176,21 @@ const showGraveDataModal = async (id) => {
             </div>
           </div>
           <div
-              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+            class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
           >
             <div class="font-medium flex flex-col gap-[10px]">
               <div class="flex text-base">
                 <p class="min-w-[150px] max-w-[150px] grey-14">Cтатус:</p>
                 <div
-                    class="flex items-center gap-[10px]"
-                    v-if="request.status === 'pending'"
+                  v-if="request.status === 'pending'"
+                  class="flex items-center gap-[10px]"
                 >
                   <img src="/icons/warning.svg" alt="" />
                   <p class="text-sm text-[#17212A]">Ожидает оплаты</p>
                 </div>
                 <div
-                    class="flex items-center gap-[10px]"
-                    v-if="request.status === 'paid'"
+                  v-if="request.status === 'paid'"
+                  class="flex items-center gap-[10px]"
                 >
                   <img src="/icons/paid-tick.svg" alt="" />
                   <p class="text-sm text-[#17212A]">Оплачено</p>
@@ -194,25 +207,25 @@ const showGraveDataModal = async (id) => {
             </div>
           </div>
           <NuxtLink
-              class="block w-fit py-[15px] px-5 rounded-lg bg-[#E9B949] text-black text-sm font-medium mt-[16px] max-sm:w-full text-center hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
-              :to="
-            localePath({
-              name: 'client-tickets-active-id',
-              params: { id: request.id },
-            })
-          "
+            class="block w-fit py-[15px] px-5 rounded-lg bg-[#E9B949] text-black text-sm font-medium mt-[16px] max-sm:w-full text-center hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
+            :to="
+              localePath({
+                name: 'client-tickets-active-id',
+                params: { id: request.id },
+              })
+            "
           >
             Завершить оформление
           </NuxtLink>
         </template>
         <template v-else>
           <div
-              class="flex justify-between items-start pb-4 border-b-2 border-b-[#eee] max-lg:flex-col max-sm:border-none max-sm:pb-0"
+            class="flex justify-between items-start pb-4 border-b-2 border-b-[#eee] max-lg:flex-col max-sm:border-none max-sm:pb-0"
           >
             <h3
-                class="font-foglihten text-fluid font-medium text-[#201001] leading-[48px]"
+              class="flex flex-wrap font-foglihten text-fluid font-medium text-[#201001]"
             >
-              Заявка на захоронение:
+              <span class="mr-2">Заявка на захоронение:</span>
               <span class="text-[#B88F34]">{{ request.request_number }}</span>
             </h3>
             <p class="text-sm text-[#999]">
@@ -228,10 +241,10 @@ const showGraveDataModal = async (id) => {
             </p>
           </div>
           <div
-              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[8px] max-sm:mt-3 max-sm:pb-3 max-lg:flex-col"
+            class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[8px] max-sm:mt-3 max-sm:pb-3 max-lg:flex-col"
           >
             <div
-                class="min-w-[580px] font-medium flex flex-col gap-[8px] max-sm:gap-0"
+              class="min-w-[580px] font-medium flex flex-col gap-[8px] max-sm:gap-0"
             >
               <div class="flex text-base h-[38px] items-center max-sm:h-[26px]">
                 <p class="min-w-[150px] grey-14">Кладбище:</p>
@@ -254,17 +267,19 @@ const showGraveDataModal = async (id) => {
             </button> -->
           </div>
           <div
-              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+            class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
           >
             <div class="font-medium flex flex-col gap-[10px]">
               <div class="flex text-base">
-                <p class="min-w-[150px] max-w-[150px] grey-14">ФИО покойного:</p>
+                <p class="min-w-[150px] max-w-[150px] grey-14">
+                  ФИО покойного:
+                </p>
                 <p class="black-16">{{ request.deceased?.full_name }}</p>
               </div>
             </div>
           </div>
           <div
-              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+            class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
           >
             <div class="flex text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">Дата похорон:</p>
@@ -272,18 +287,20 @@ const showGraveDataModal = async (id) => {
                 {{ new Date(request.burial_date).toLocaleDateString("ru-RU") }},
                 {{ request.burial_time }}
               </p>
-              <p v-else class="text-[#DB1414]">Необходимо указать даты похорон</p>
+              <p v-else class="text-[#DB1414]">
+                Необходимо указать даты похорон
+              </p>
             </div>
           </div>
           <div
-              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]"
+            class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]"
           >
             <div class="font-medium flex flex-col gap-[10px]">
               <div class="flex text-base">
                 <p class="min-w-[150px] max-w-[150px] grey-14">Cтатус:</p>
                 <div
-                    v-if="request.status === 'paid'"
-                    class="flex items-center gap-[10px]"
+                  v-if="request.status === 'paid'"
+                  class="flex items-center gap-[10px]"
                 >
                   <img src="/icons/paid-tick.svg" alt="" />
                   <p class="p-[4px] rounded-md text-sm text-[#17212A] mr-4">
@@ -291,8 +308,8 @@ const showGraveDataModal = async (id) => {
                   </p>
                 </div>
                 <div
-                    v-if="request.status === 'canceled'"
-                    class="flex items-center gap-[10px]"
+                  v-if="request.status === 'canceled'"
+                  class="flex items-center gap-[10px]"
                 >
                   <img src="/icons/warning.svg" alt="" />
                   <p class="p-[4px] rounded-md text-sm text-[#17212A] mr-4">
@@ -312,24 +329,24 @@ const showGraveDataModal = async (id) => {
           </div>
           <div class="flex gap-4 mt-[16px] max-lg:flex-col">
             <button
-                class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-sm font-medium hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
-                @click="$router.push(`/client/memorial/create?id=${request.id}`)"
+              class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-sm font-medium hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
+              @click="$router.push(`/client/memorial/create?id=${request.id}`)"
             >
               Создать мемориал
             </button>
             <button
-                class="block py-[15px] px-[20px] rounded-lg bg-[#AFB5C133] text-[#17212A] text-sm font-medium hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition"
-                @click="
-              $router.push(
-                `/client/tickets/burial/add-service?burial_id=${request.id}`
-              )
-            "
+              class="block py-[15px] px-[20px] rounded-lg bg-[#AFB5C133] text-[#17212A] text-sm font-medium hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition"
+              @click="
+                $router.push(
+                  `/client/tickets/burial/add-service?burial_id=${request.id}`
+                )
+              "
             >
               Добавить услуги и товары
             </button>
             <button
-                class="py-[15px] px-[20px] rounded-lg text-[#17212A] bg-white text-sm font-medium flex items-center justify-center gap-[8px] hover:bg-[#F1F1F2] active:bg-[#C6C9CC] transition"
-                @click="shareGraveData(request.grave_id)"
+              class="py-[15px] px-[20px] rounded-lg text-[#17212A] bg-white text-sm font-medium flex items-center justify-center gap-[8px] hover:bg-[#F1F1F2] active:bg-[#C6C9CC] transition"
+              @click="shareGraveData(request.grave_id)"
             >
               <img src="/icons/share.svg" alt="" /> Поделиться координатами
             </button>
@@ -340,8 +357,8 @@ const showGraveDataModal = async (id) => {
   </NuxtLayout>
   <ShareCoordModal
     :visible="shareCoordModalState"
-    :lat="graveLat"
-    :lng="graveLng"
+    :lat="Number.isFinite(Number(graveLat)) ? Number(graveLat) : null"
+    :lng="Number.isFinite(Number(graveLng)) ? Number(graveLng) : null"
     @close="shareCoordModalState = false"
   />
   <GraveDataModal

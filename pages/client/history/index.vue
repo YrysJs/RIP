@@ -1,8 +1,8 @@
 <script setup>
 import { ref, computed } from "vue";
 import AddReviewModal from "~/components/layout/modals/AddReviewModal.vue";
-import {getOrders} from "~/services/client/index.js";
-import {getPaymentReceipt} from "~/services/payments/index.js";
+import { getOrders } from "~/services/client/index.js";
+import { getPaymentReceipt } from "~/services/payments/index.js";
 import ReceiptModal from "~/components/layout/modals/ReceiptModal.vue";
 import AddComment from "~/components/layout/modals/AddComment.vue";
 
@@ -14,11 +14,9 @@ const showReceiptModal = ref(false);
 const receiptData = ref(null);
 const receiptLoading = ref(false);
 
-
 // Состояние модалки отзыва
 const showCommentModal = ref(false);
 const selectedOrder = ref(null);
-
 
 // Моки
 const orders = ref([]);
@@ -70,9 +68,12 @@ async function fetchOrders(page = 1, limit = 10) {
 }
 
 function formatPhoneNumber(phone) {
-  if (!/^\d{11}$/.test(phone)) return 'Неверный формат номера';
+  if (!/^\d{11}$/.test(phone)) return "Неверный формат номера";
 
-  return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(4, 7)} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
+  return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(
+    4,
+    7
+  )} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
 }
 
 const filtered = computed(() =>
@@ -82,13 +83,13 @@ const filtered = computed(() =>
 );
 
 function formatToDDMMYYYY(iso) {
-  const d = new Date(iso)
-  return d.toLocaleDateString('ru-RU') // например "17.05.2025"
+  const d = new Date(iso);
+  return d.toLocaleDateString("ru-RU"); // например "17.05.2025"
 }
 
 onMounted(() => {
-  fetchOrders()
-})
+  fetchOrders();
+});
 
 async function openReceiptModal(order) {
   try {
@@ -97,11 +98,11 @@ async function openReceiptModal(order) {
     receiptData.value = null;
 
     const transactionId =
-        order.transaction_id ||
-        order.payment_transaction_id ||
-        order.payment_id ||
-        order.transaction ||
-        order.id;
+      order.transaction_id ||
+      order.payment_transaction_id ||
+      order.payment_id ||
+      order.transaction ||
+      order.id;
 
     if (!transactionId) {
       alert("Ошибка: Transaction ID не найден.");
@@ -161,17 +162,17 @@ useHead({
       </h1>
 
       <!-- Tabs -->
-<!--      <div class="mt-5 flex gap-2">-->
-<!--        <button-->
-<!--          v-for="t in tabs"-->
-<!--          :key="t"-->
-<!--          class="px-3 py-[9px] rounded-lg text-sm text-[#17212A] transition"-->
-<!--          :class="activeTab === t ? 'bg-[#C6C9CC]' : 'bg-white'"-->
-<!--          @click="activeTab = t"-->
-<!--        >-->
-<!--          {{ t }}-->
-<!--        </button>-->
-<!--      </div>-->
+      <!--      <div class="mt-5 flex gap-2">-->
+      <!--        <button-->
+      <!--          v-for="t in tabs"-->
+      <!--          :key="t"-->
+      <!--          class="px-3 py-[9px] rounded-lg text-sm text-[#17212A] transition"-->
+      <!--          :class="activeTab === t ? 'bg-[#C6C9CC]' : 'bg-white'"-->
+      <!--          @click="activeTab = t"-->
+      <!--        >-->
+      <!--          {{ t }}-->
+      <!--        </button>-->
+      <!--      </div>-->
 
       <!-- List -->
       <div class="mt-5">
@@ -195,7 +196,7 @@ useHead({
               class="flex items-start justify-between flex-wrap-reverse gap-2"
             >
               <div class="text-[22px] font-semibold w-[250px]">
-                Заказ №{{ o.order_id }}
+                Заказ №{{ o.items[0]?.order_id }}
               </div>
 
               <!-- status -->
@@ -211,31 +212,42 @@ useHead({
               </div>
             </div>
             <div class="text-sm text-[#5C6771E6] flex flex-wrap">
-              {{ o.items[0]?.product?.name }}, <span>телефон: {{ formatPhoneNumber(o.items[0]?.product?.supplier_phone) }}</span>
+              {{ o.items[0]?.product?.name }},
+              <span
+                >телефон:
+                {{
+                  formatPhoneNumber(o.items[0]?.product?.supplier_phone)
+                }}</span
+              >
             </div>
             <div class="flex items-center gap-2">
               <span><img src="/icons/pin.svg" alt="" /></span>
-              <div class="text-[#201001]">Адрес прибытия: {{ o.items[0]?.delivery_destination_address }}</div>
+              <div class="text-[#201001]">
+                Адрес прибытия: {{ o.items[0]?.delivery_destination_address }}
+              </div>
             </div>
 
             <div class="flex items-start gap-2">
               <span><img src="/icons/time.svg" alt="" /></span>
-              <div class="text-[#201001]">Время прибытия: {{ formatToDDMMYYYY(o.items[0]?.delivery_arrival_time) }}</div>
+              <div class="text-[#201001]">
+                Время прибытия:
+                {{ formatToDDMMYYYY(o.items[0]?.delivery_arrival_time) }}
+              </div>
             </div>
 
-<!--            <div class="flex items-start gap-2">-->
-<!--              <span><img src="/icons/check.svg" alt="" /></span>-->
-<!--              <div class="text-[#201001]" @click="openReceiptModal(o)">-->
-<!--                Чек об оплате-->
-<!--                &lt;!&ndash; {{ o.receipt ? "Доступен" : "—" }} &ndash;&gt;-->
-<!--              </div>-->
-<!--            </div>-->
+            <!--            <div class="flex items-start gap-2">-->
+            <!--              <span><img src="/icons/check.svg" alt="" /></span>-->
+            <!--              <div class="text-[#201001]" @click="openReceiptModal(o)">-->
+            <!--                Чек об оплате-->
+            <!--                &lt;!&ndash; {{ o.receipt ? "Доступен" : "—" }} &ndash;&gt;-->
+            <!--              </div>-->
+            <!--            </div>-->
 
             <div class="mt-3 flex justify-end">
               <button
                 class="rounded-lg py-[9px] px-[37px] text-sm font-medium transition"
                 :class="
-                  o.status === 'done'
+                  o.status === 'completed'
                     ? 'bg-[#E9B949] text-black hover:bg-[#D1A53F] cursor-pointer active:bg-[#B88F34]'
                     : 'bg-[#E9B949] text-black opacity-50 cursor-not-allowed'
                 "
@@ -259,21 +271,21 @@ useHead({
     <AddReviewModal v-model="showReview" />
     <Teleport to="body">
       <AddComment
-          :visible="showCommentModal"
-          :productId="selectedOrder?.items?.[0]?.product_id"
-          :supplierPhone="selectedOrder?.items?.[0]?.product?.supplier_phone"
-          @close="closeCommentModal"
-          @success="handleCommentSuccess"
+        :visible="showCommentModal"
+        :productId="selectedOrder?.items?.[0]?.product_id"
+        :supplierPhone="selectedOrder?.items?.[0]?.product?.supplier_phone"
+        @close="closeCommentModal"
+        @success="handleCommentSuccess"
       />
     </Teleport>
 
     <!-- Модалка для отображения чека -->
     <Teleport to="body">
       <ReceiptModal
-          :visible="showReceiptModal"
-          :receiptData="receiptData"
-          :loading="receiptLoading"
-          @close="closeReceiptModal"
+        :visible="showReceiptModal"
+        :receiptData="receiptData"
+        :loading="receiptLoading"
+        @close="closeReceiptModal"
       />
     </Teleport>
   </NuxtLayout>
