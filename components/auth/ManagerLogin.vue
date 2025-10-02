@@ -96,11 +96,12 @@ const otpCheck = async () => {
     Cookies.set('token', response.data.token);
     Cookies.set('role', 'manager');
     emit('close');
-    await router.push('/manager/burial')
   } catch (error) {
     console.error('Ошибка при логине:', error)
   } finally {
     console.log('login')
+    router.push('/manager/burial')
+    close()
   }
 
 }

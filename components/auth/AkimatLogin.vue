@@ -90,12 +90,13 @@ const otpCheck = async () => {
     }
     Cookies.set('token', response.data.token);
     Cookies.set('role', 'user');
+    router.push('/user/tickets')
     emit('close');
-    await router.push('/user/tickets')
   } catch (error) {
     console.error('Ошибка при логине:', error)
   } finally {
     console.log('login')
+
   }
 
 }
