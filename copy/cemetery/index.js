@@ -7,6 +7,15 @@ function getGraves(params) {
     })
 }
 
+function getManagerCemeteries(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/manager/cemeteries',
+        params,
+    })
+}
+
 
 function getCemeteries(params) {
     const { $axios } = useNuxtApp()
@@ -29,5 +38,6 @@ function getCemeteryById(id) {
 export {
     getGraves,
     getCemeteries,
-    getCemeteryById
+    getCemeteryById,
+    getManagerCemeteries
 }
