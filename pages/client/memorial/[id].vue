@@ -441,40 +441,25 @@ const submitMemorial = async () => {
     isSubmitting.value = true;
 
     const video_urls = uniqueUrls(videos.value.map((v) => v.url));
+    console.log(memorial.value?.id, route.params.id)
     const memorialId = memorial.value?.id || route.params.id; // ← всегда есть id
     if (!memorialId) throw new Error("Memorial ID is missing");
 
-    const hasFiles =
-      selectedImages.value.length ||
-      achievementPhotos.value.some((p) => !p.isExisting);
-
-    let payload;
-
-    if (hasFiles) {
-      const fd = new FormData();
-      // id НУЖЕН, если ваш сервис читает его из body
-      fd.append("id", String(memorialId)); // ← добавили
-      fd.append("epitaph", epitaph.value || "");
-      fd.append("about_person", aboutPerson.value || "");
-      fd.append("is_public", String(!!isPublic.value));
-      video_urls.forEach((u) => fd.append("video_urls[]", u));
-      selectedImages.value.forEach((f) => fd.append("photos", f));
-      achievementPhotos.value
+    // Собираем все данные в один объект, сервис сам решит создавать FormData или нет
+    const payload = {
+      id: memorialId,
+      deceased_id: isEditMode.value
+        ? undefined
+        : +burial.value?.deceased?.id || undefined,
+      epitaph: epitaph.value,
+      about_person: aboutPerson.value,
+      is_public: isPublic.value,
+      video_urls,
+      photos: selectedImages.value,
+      achievements: achievementPhotos.value
         .filter((p) => !p.isExisting)
-        .forEach((p) => fd.append("achievements", p.file));
-      payload = fd;
-    } else {
-      payload = {
-        id: memorialId, // ← есть и в JSON-ветке
-        deceased_id: isEditMode.value
-          ? undefined
-          : +burial.value?.deceased?.id || undefined,
-        epitaph: epitaph.value,
-        about_person: aboutPerson.value,
-        is_public: isPublic.value,
-        video_urls,
-      };
-    }
+        .map((p) => p.file)
+    };
 
     // ВАЖНО: передай id отдельным аргументом
     await updateMemorial(memorialId, payload); // ← см. сервис ниже

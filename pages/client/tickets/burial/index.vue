@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { getBurialRequests, getGraveById } from "~/services/client";
 import ShareCoordModal from "~/components/layout/modals/ShareCoordModal.vue";
 import GraveDataModal from "~/components/layout/modals/GraveDetailModal.vue";
@@ -7,6 +7,55 @@ import GraveDataModal from "~/components/layout/modals/GraveDetailModal.vue";
 import { useUserStore } from "~/store/user";
 
 const userStore = useUserStore();
+
+// Функция для получения конфигурации статуса
+const getStatusConfig = (status) => {
+  switch (status) {
+    case 'new':
+      return {
+        text: 'Новая заявка',
+        icon: '/icons/new-icon.svg',
+        color: 'text-[#3730A3]'
+      };
+    case 'processing':
+    case 'pending':
+      return {
+        text: 'Ожидает оплаты',
+        icon: '/icons/warning.svg',
+        color: 'text-[#D97706]'
+      };
+    case 'in_progress':
+      return {
+        text: 'В процессе',
+        icon: '/icons/in-progress.svg',
+        color: 'text-[#E39827]'
+      };
+    case 'confirmed':
+      return {
+        text: 'Подтверждено',
+        icon: '/icons/paid-tick.svg',
+        color: 'text-[#059669]'
+      };
+    case 'completed':
+      return {
+        text: 'Завершено',
+        icon: '/icons/paid-tick.svg',
+        color: 'text-[#1EB676]'
+      };
+    case 'cancelled':
+      return {
+        text: 'Отменено',
+        icon: '/icons/warning.svg',
+        color: 'text-[#DC2626]'
+      };
+    default:
+      return {
+        text: 'Неизвестный статус',
+        icon: '/icons/warning.svg',
+        color: 'text-[#6B7280]'
+      };
+  }
+};
 
 const burialRequests = ref([]);
 const loading = ref(true);
@@ -181,19 +230,11 @@ const shareGraveData = async (grave_id) => {
             <div class="font-medium flex flex-col gap-[10px]">
               <div class="flex text-base">
                 <p class="min-w-[150px] max-w-[150px] grey-14">Cтатус:</p>
-                <div
-                  v-if="request.status === 'pending'"
-                  class="flex items-center gap-[10px]"
-                >
-                  <img src="/icons/warning.svg" alt="" />
-                  <p class="text-sm text-[#17212A]">Ожидает оплаты</p>
-                </div>
-                <div
-                  v-if="request.status === 'paid'"
-                  class="flex items-center gap-[10px]"
-                >
-                  <img src="/icons/paid-tick.svg" alt="" />
-                  <p class="text-sm text-[#17212A]">Оплачено</p>
+                <div class="flex items-center gap-[10px]">
+                  <img :src="getStatusConfig(request.status).icon" alt="" />
+                  <p class="text-sm" :class="getStatusConfig(request.status).color">
+                    {{ getStatusConfig(request.status).text }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -203,7 +244,10 @@ const shareGraveData = async (grave_id) => {
               <p class="min-w-[150px] max-w-[150px] grey-14">
                 Дополнительные услуги:
               </p>
-              <p class="p-[4px] rounded-md black-16 mr-4">Отсутствуют</p>
+              <div v-if="request.products && request.products.length > 0">
+                <p v-for="product in request.products" :key="product.id" class="p-[4px] block rounded-md black-16 mr-4">{{ product.items[0]?.name }}</p>
+              </div>
+              <p v-else class="p-[4px] block rounded-md black-16 mr-4">Отсутствуют</p>
             </div>
           </div>
           <NuxtLink
@@ -298,22 +342,10 @@ const shareGraveData = async (grave_id) => {
             <div class="font-medium flex flex-col gap-[10px]">
               <div class="flex text-base">
                 <p class="min-w-[150px] max-w-[150px] grey-14">Cтатус:</p>
-                <div
-                  v-if="request.status === 'paid'"
-                  class="flex items-center gap-[10px]"
-                >
-                  <img src="/icons/paid-tick.svg" alt="" />
-                  <p class="p-[4px] rounded-md text-sm text-[#17212A] mr-4">
-                    Оплачено
-                  </p>
-                </div>
-                <div
-                  v-if="request.status === 'canceled'"
-                  class="flex items-center gap-[10px]"
-                >
-                  <img src="/icons/warning.svg" alt="" />
-                  <p class="p-[4px] rounded-md text-sm text-[#17212A] mr-4">
-                    Отменено
+                <div class="flex items-center gap-[10px]">
+                  <img :src="getStatusConfig(request.status).icon" alt="" />
+                  <p class="p-[4px] rounded-md text-sm mr-4" :class="getStatusConfig(request.status).color">
+                    {{ getStatusConfig(request.status).text }}
                   </p>
                 </div>
               </div>
@@ -324,7 +356,10 @@ const shareGraveData = async (grave_id) => {
               <p class="min-w-[150px] max-w-[150px] grey-14">
                 Дополнительные услуги:
               </p>
-              <p class="p-[4px] rounded-md black-16 mr-4">Отсутствуют</p>
+              <div v-if="request.products && request.products.length > 0">
+                <p v-for="product in request.products" :key="product.id" class="p-[4px] block rounded-md black-16 mr-4">{{ product.items[0]?.name }}</p>
+              </div>
+              <p v-else class="p-[4px] block rounded-md black-16 mr-4">Отсутствуют</p>
             </div>
           </div>
           <div class="flex gap-4 mt-[16px] max-lg:flex-col">

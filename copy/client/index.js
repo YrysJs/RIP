@@ -211,7 +211,7 @@ function uploadDeceasedDeathCertificate(deceasedId, certificate) {
     
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v9/deceased/${deceasedId}/death-certificate`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v9/deceased/death-certificate/${deceasedId}`,
         data: formData,
     })
 }
@@ -343,9 +343,10 @@ function createMemorial(data) {
     })
 }
 
-function updateMemorial(data) {
+function updateMemorial(id, data) {
     const { $axios } = useNuxtApp()
 
+    // Всегда используем FormData
     const formData = new FormData()
 
     if (data.deceased_id) formData.append('deceased_id', data.deceased_id)
@@ -383,6 +384,7 @@ function updateMemorial(data) {
         data: formData,
     })
 }
+
 
 function getMemorialById(id) {
     const { $axios } = useNuxtApp()

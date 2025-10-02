@@ -211,7 +211,7 @@ function uploadDeceasedDeathCertificate(deceasedId, certificate) {
 
     return $axios({
         method: 'POST',
-        url: `http://194.32.140.103:8095/api/v1/deceased/${deceasedId}/death-certificate`,
+        url: `http://194.32.140.103:8095/api/v1/deceased/death-certificate/${deceasedId}`,
         data: formData,
     })
 }
@@ -343,9 +343,10 @@ function createMemorial(data) {
     })
 }
 
-function updateMemorial(data) {
+function updateMemorial(id, data) {
     const { $axios } = useNuxtApp()
 
+    // Всегда используем FormData
     const formData = new FormData()
 
     if (data.deceased_id) formData.append('deceased_id', data.deceased_id)
@@ -379,7 +380,7 @@ function updateMemorial(data) {
 
     return $axios({
         method: 'PUT',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/memorials/' + data.id,
+        url: 'http://194.32.140.103:8090/api/v1/memorials/' + id,
         data: formData,
     })
 }

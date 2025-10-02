@@ -5,6 +5,7 @@ import {
   getWhatsappOtp,
   checkWhatsappOtp,
   signupClient,
+    signupClientWhatsapp,
   // getUserData,
   // signupClientFcb,
   getPkbToken,
@@ -125,15 +126,13 @@ watch(iin, async (newValue) => {
             "Ожидаем VALID, текущий статус:",
             res?.data?.data?.status_code
           );
-          // запланировать следующий вызов через 10 секунд
-          timeoutId = setTimeout(poll, 10000);
+          loadingStore.stopLoading();
+          isFcb.value = true;
         }
       } catch (err) {
         loadingStore.stopLoading();
         isFcb.value = true;
         console.error("Ошибка при запросе:", err);
-        // запланировать повтор при ошибке
-        timeoutId = setTimeout(poll, 10000);
       }
     };
 
@@ -152,27 +151,33 @@ watch(iin, async (newValue) => {
 
 async function run() {
   try {
-    // if (isFcb.value) {
-    //   response = await signupClientFcb({
-    //     otpRequest: {
-    //       id: loginId.value,
-    //       code: code.value
-    //     },
-    //     iin: iin.value,
-    //   })
-    // }
-    // else {
-    const response = await signupClient({
-      otpRequest: {
-        id: loginId.value,
-        code: code.value,
-      },
-      iin: iin.value,
-      name: name.value,
-      surname: surname.value,
-      patronymic: patronymic.value,
-    });
-    // }
+    let response;
+    
+    if (isWhatsappLogin.value) {
+      // Если код получен через WhatsApp
+      response = await signupClientWhatsapp({
+        whatsappOTP: {
+          phone: extractDigits(phone_number.value),
+          code: code.value,
+        },
+        iin: iin.value,
+        name: name.value,
+        surname: surname.value,
+        patronymic: patronymic.value,
+      });
+    } else {
+      // Если код получен через SMS
+      response = await signupClient({
+        otpRequest: {
+          id: loginId.value,
+          code: code.value,
+        },
+        iin: iin.value,
+        name: name.value,
+        surname: surname.value,
+        patronymic: patronymic.value,
+      });
+    }
     Cookies.set("token", response.data.token);
     Cookies.set("role", "client");
     emit('close');
@@ -449,6 +454,7 @@ const otpCheck = async () => {
                   id="iin"
                   type="text"
                   placeholder=" "
+                  maxlength="12"
                   class="peer w-full px-3 pt-[28px] pb-2 placeholder-transparent focus:outline-none"
                 />
                 <label

@@ -106,14 +106,13 @@ watch(bin, async (newValue) => {
 
         } else {
           console.log('Ожидаем VALID, текущий статус:', res?.data?.data?.status_code);
-          // запланировать следующий вызов через 10 секунд
-          timeoutId = setTimeout(poll, 10000);
+          loadingStore.stopLoading();
+          isFcb.value = true;
         }
       } catch (err) {
         console.error('Ошибка при запросе:', err);
-        loadingStore.stopLoading()
-        // запланировать повтор при ошибке
-        timeoutId = setTimeout(poll, 10000);
+        loadingStore.stopLoading();
+        isFcb.value = true;
       }
     };
 
@@ -351,6 +350,7 @@ const otpCheck = async () => {
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
             placeholder="БИН"
+            maxlength="12"
           />
           <input
             v-model="name"

@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps } from 'vue';
+import { defineProps, computed } from 'vue';
 const props = defineProps(['grave', 'visible', 'booking', 'images'])
 
 const emit = defineEmits(['close', 'confirm', 'cancel'])
@@ -17,6 +17,50 @@ function formatPhoneNumber(phone) {
 const closeModal = () => {
   emit('close')
 }
+
+// Обработчик статусов
+const statusConfig = computed(() => {
+  const status = props.booking?.status;
+  
+  switch (status) {
+    case 'processing':
+      return {
+        text: 'Обрабатывается',
+        bgColor: 'bg-[#FEF3C7]',
+        textColor: 'text-[#D97706]'
+      };
+    case 'pending_payment':
+      return {
+        text: 'Ожидает оплаты',
+        bgColor: 'bg-[#FEE2E2]',
+        textColor: 'text-[#DC2626]'
+      };
+    case 'new':
+      return {
+        text: 'Новый',
+        bgColor: 'bg-[#E0E7FF]',
+        textColor: 'text-[#3730A3]'
+      };
+    case 'in_progress':
+      return {
+        text: 'В процессе',
+        bgColor: 'bg-[#FDEBC8]',
+        textColor: 'text-[#E39827]'
+      };
+    case 'paid':
+      return {
+        text: 'Оплачено',
+        bgColor: 'bg-[#E5F8EC]',
+        textColor: 'text-[#1EB676]'
+      };
+    default:
+      return {
+        text: 'Неизвестный статус',
+        bgColor: 'bg-[#F3F4F6]',
+        textColor: 'text-[#6B7280]'
+      };
+  }
+})
 </script>
 
 <template>
@@ -66,17 +110,18 @@ const closeModal = () => {
 
         </div>
 
-        <!-- Заключение о смерти -->
-<!--        <div class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-4">-->
-<!--          <p class="min-w-[150px] max-w-[150px] font-medium">Заключение о смерти:</p>-->
-<!--          <a-->
-<!--              href="/"-->
-<!--              target="_blank"-->
-<!--              class="text-[#007AFF] font-medium hover:underline"-->
-<!--          >-->
-<!--            Открыть-->
-<!--          </a>-->
-<!--        </div>-->
+<!--         Заключение о смерти-->
+
+        <div v-if="booking.death_cert_url" class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-4">
+          <p class="min-w-[150px] max-w-[150px] font-medium">Заключение о смерти:</p>
+          <a
+              :href="booking.death_cert_url"
+              target="_blank"
+              class="text-[#007AFF] font-medium hover:underline"
+          >
+            Открыть
+          </a>
+        </div>
 
         <!-- Дата похорон -->
         <div class="flex text-base mt-2">
@@ -84,11 +129,6 @@ const closeModal = () => {
           <p v-if="booking?.burial_date" class="font-bold">{{ new Date(booking.burial_date).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) }} {{booking.burial_time}}</p>
         </div>
 
-        <!-- Заказчик -->
-        <div class="flex text-base mt-2">
-          <p class="min-w-[150px] max-w-[150px] font-medium">Заказчик:</p>
-          <p class="font-bold">Бақадыр Нұрбике Бекзатқызыg</p>
-        </div>
 
         <!-- Контакты заказчика -->
         <div class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-2">
@@ -100,8 +140,12 @@ const closeModal = () => {
         <div class="flex text-base mt-4 items-center  border-b border-[#EEEEEE] pb-[16px]">
           <p class="min-w-[150px] max-w-[150px] font-medium">Статус:</p>
           <div class="flex gap-2 items-center">
-            <span class="bg-[#E5F8EC] text-[#1EB676] px-3 py-1 rounded-md text-sm font-medium">Оплачено</span>
-            <span class="bg-[#FDEBC8] text-[#E39827] px-3 py-1 rounded-md text-sm font-medium">Ожидает подтверждения</span>
+            <span 
+              :class="[statusConfig.bgColor, statusConfig.textColor]" 
+              class="px-3 py-1 rounded-md text-sm font-medium"
+            >
+              {{ statusConfig.text }}
+            </span>
           </div>
         </div>
 
