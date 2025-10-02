@@ -1,63 +1,65 @@
-export const useAuthModalStore = () => {
-  // Используем useState с уникальными ключами
-  const showLoginMenu = useState('auth-showLoginMenu-v2', () => false)
-  const activeModal = useState('auth-activeModal-v2', () => '')
-  
-  // Принудительно сбрасываем состояние только на клиенте
-  if (process.client && typeof window !== 'undefined') {
-    // Сбрасываем только при первой загрузке страницы
-    if (!window.__authStoreInitialized) {
-      showLoginMenu.value = false
-      activeModal.value = ''
-      window.__authStoreInitialized = true
+import { defineStore } from 'pinia'
+
+export const useAuthModalStore = defineStore('authModal', {
+    state: () => ({
+        showLoginMenu: false,
+        showAdminMenu: false,
+        activeModal: ''
+    }),
+
+    actions: {
+        // Методы для управления главным меню входа
+        toggleLoginMenu() {
+            this.showLoginMenu = !this.showLoginMenu
+        },
+
+        closeLoginMenu() {
+            this.showLoginMenu = false
+        },
+
+        openLoginMenu() {
+            this.showLoginMenu = true
+        },
+
+        // Методы для управления административным меню
+        toggleAdminMenu() {
+            this.showAdminMenu = !this.showAdminMenu
+        },
+
+        closeAdminMenu() {
+            this.showAdminMenu = false
+        },
+
+        openAdminMenu() {
+            this.showAdminMenu = true
+        },
+
+        // Методы для управления конкретными модалками
+        openModal(type) {
+            this.closeLoginMenu()
+            this.closeAdminMenu()
+            this.activeModal = type
+        },
+
+        closeModal() {
+            this.activeModal = ''
+        },
+
+        // Конкретные методы для каждого типа модалки
+        openClientModal() {
+            this.openModal('client')
+        },
+
+        openManagerModal() {
+            this.openModal('manager')
+        },
+
+        openSupplierModal() {
+            this.openModal('supplier')
+        },
+
+        openAkimatModal() {
+            this.openModal('akimat')
+        }
     }
-  }
-  
-  // Методы для управления главным меню входа
-  const toggleLoginMenu = () => {
-    showLoginMenu.value = !showLoginMenu.value
-  }
-  
-  const closeLoginMenu = () => {
-    showLoginMenu.value = false
-  }
-  
-  const openLoginMenu = () => {
-    showLoginMenu.value = true
-  }
-  
-  // Методы для управления конкретными модалками
-  const openModal = (type) => {
-    closeLoginMenu()
-    activeModal.value = type
-  }
-  
-  const closeModal = () => {
-    activeModal.value = ''
-  }
-  
-  // Конкретные методы для каждого типа модалки
-  const openClientModal = () => openModal('client')
-  const openManagerModal = () => openModal('manager')
-  const openSupplierModal = () => openModal('supplier')
-  const openAkimatModal = () => openModal('akimat')
-  
-  return {
-    // Состояние
-    showLoginMenu: readonly(showLoginMenu),
-    activeModal: readonly(activeModal),
-    
-    // Методы для главного меню
-    toggleLoginMenu,
-    closeLoginMenu,
-    openLoginMenu,
-    
-    // Методы для модалок
-    openModal,
-    closeModal,
-    openClientModal,
-    openManagerModal,
-    openSupplierModal,
-    openAkimatModal
-  }
-}
+})

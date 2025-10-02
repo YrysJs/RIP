@@ -1,5 +1,6 @@
 <script setup>
 import { signupGov } from '~/services/login/index.js'
+
 const emit = defineEmits(['close', 'finish'])
 
 const phone_number = ref('')

@@ -16,6 +16,7 @@ import Cookies from "js-cookie";
 import { useLoadingStore } from "~/store/loading.js";
 import { NuxtLink } from "#components";
 import { ref, watch, onBeforeUnmount } from "vue";
+import {useAuthModalStore} from "~/store/authModal.js";
 
 const emit = defineEmits(["close"]);
 const router = useRouter();
@@ -174,6 +175,7 @@ async function run() {
     // }
     Cookies.set("token", response.data.token);
     Cookies.set("role", "client");
+    emit('close');
     await router.push("/client/profile");
   } catch (error) {
     console.error("Ошибка при логине:", error);
@@ -303,6 +305,7 @@ const otpCheck = async () => {
 
     Cookies.set("token", response.data.token);
     Cookies.set("role", "client");
+    emit('close');
     await router.push("/client/profile");
   } catch (error) {
     console.error("Ошибка при логине:", error);

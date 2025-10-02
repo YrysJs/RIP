@@ -34,7 +34,6 @@ async function run () {
 
   } finally {
     console.log('login')
-
   }
 }
 
