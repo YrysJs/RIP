@@ -1,408 +1,395 @@
-import { useNuxtApp } from "#app";
+import { useNuxtApp } from '#app'
 
 function getAppeals(params) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: "http://194.32.140.103:8081/rip-government/v1/appeal",
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-government/v1/appeal',
     params,
-  });
+  })
 }
 
 function createAppeal(data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "PUT",
-    url: "http://194.32.140.103:8081/rip-government/v1/appeal",
+    method: 'PUT',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-government/v1/appeal',
     data,
-  });
+  })
 }
 
 function createRequest(data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "PUT",
-    url: "http://194.32.140.103:8081/rip-government/v1/request",
+    method: 'PUT',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-government/v1/request',
     data,
-  });
+  })
 }
 
 function processCardPayment(data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "POST",
-    url: "http://194.32.140.103:8091/card",
-    data,
-  });
+    method: 'POST',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/payments/card',
+    data
+  })
 }
 
 function getProducts(params) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: "http://194.32.140.103:8090/api/v1/products",
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/products',
     params,
-  });
+  })
 }
 
 function getProductById(id) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: `http://194.32.140.103:8090/api/v1/products/${id}`,
-  });
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/products/${id}`,
+  })
 }
 
 function getProductReviews(productId, params) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: `http://194.32.140.103:8090/api/v1/reviews/products/${productId}`,
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/reviews/products/${productId}`,
     params,
-  });
+  })
 }
 
 function getProviderReviews(providerId, params) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: `http://194.32.140.103:8090/api/v1/reviews/providers/${providerId}`,
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/reviews/providers/${providerId}`,
     params,
-  });
+  })
 }
 
 function getGraves(params) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: "http://194.32.140.103:8092/api/v1/graves",
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/graves',
     params,
-  });
+  })
 }
 
 function getGraveById(id) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: `http://194.32.140.103:8092/api/v1/graves/${id}`,
-  });
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/graves/${id}`,
+  })
 }
 
 function getGraveImages(id) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: `http://194.32.140.103:8092/api/v1/graves/${id}/photos`,
-  });
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/graves/${id}/photos`,
+  })
 }
 
 function createDeceased(data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "POST",
-    url: "http://194.32.140.103:8095/api/v1/deceased",
+    method: 'POST',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v9/deceased',
     data,
-  });
+  })
 }
 
 function getDeceasedById(id) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: `http://194.32.140.103:8095/api/v1/deceased/${id}`,
-  });
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v9/deceased/${id}`,
+  })
 }
 
 function getCart() {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: "http://194.32.140.103:8090/api/v1/cart",
-  });
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/cart',
+  })
 }
 
 function addToCart(data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "POST",
-    url: "http://194.32.140.103:8090/api/v1/cart",
+    method: 'POST',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/cart',
     data,
-  });
+  })
 }
 
 function removeFromCart(productId) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "DELETE",
-    url: `http://194.32.140.103:8090/api/v1/cart/${productId}`,
-  });
+    method: 'DELETE',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/cart/${productId}`,
+  })
 }
 
 function clearCart() {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "DELETE",
-    url: "http://194.32.140.103:8090/api/v1/cart",
-  });
+    method: 'DELETE',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/cart',
+  })
 }
 
 function getOrders(params) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: "http://194.32.140.103:8090/api/v1/orders",
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/orders',
     params,
-  });
+  })
 }
 
 function getBurialRequests(params) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: "http://194.32.140.103:8094/api/v1/burial-requests/my",
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v8/burial-requests/my',
     params,
-  });
+  })
 }
 
 function getBurialRequestById(id) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: `http://194.32.140.103:8094/api/v1/burial-requests/${id}`,
-  });
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${id}`,
+  })
 }
 
 function updateBurialRequestStatus(requestId, data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "PATCH",
-    url: `http://194.32.140.103:8094/api/v1/burial-requests/${requestId}/status`,
+    method: 'PATCH',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${requestId}/status`,
     data,
-  });
+  })
 }
 
 function updateBurialRequestData(requestId, data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "PUT",
-    url: `http://194.32.140.103:8094/api/v1/burial-requests/${requestId}`,
+    method: 'PUT',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${requestId}`,
     data,
-  });
+  })
 }
 
 function uploadBurialRequestDocument(requestId, document) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
 
-  const formData = new FormData();
-  formData.append("document", document);
+  const formData = new FormData()
+  formData.append('document', document)
 
   return $axios({
-    method: "POST",
-    url: `http://194.32.140.103:8094/api/v1/burial-requests/${requestId}/document`,
+    method: 'POST',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${requestId}/document`,
     data: formData,
-  });
+  })
 }
 
 function uploadDeceasedDeathCertificate(deceasedId, certificate) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
 
-  const formData = new FormData();
-  formData.append("certificate", certificate);
+  const formData = new FormData()
+  formData.append('certificate', certificate)
 
   return $axios({
-    method: "POST",
-    url: `http://194.32.140.103:8095/api/v1/deceased/${deceasedId}/death-certificate`,
+    method: 'POST',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v9/deceased/${deceasedId}/death-certificate`,
     data: formData,
-  });
+  })
 }
 
 function createBurialRequest(data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "POST",
-    url: "http://194.32.140.103:8094/api/v1/burial-requests",
+    method: 'POST',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v8/burial-requests',
     data,
-  });
+  })
 }
 
 function createOrder(data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "POST",
-    url: "http://194.32.140.103:8090/api/v1/orders",
+    method: 'POST',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/orders',
     data,
-  });
+  })
 }
 
 function postReview(data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
 
-  const formData = new FormData();
+  const formData = new FormData()
 
-  if (data.provider_id) formData.append("provider_id", data.provider_id);
-  if (data.product_id) formData.append("product_id", data.product_id);
-  if (data.rating) formData.append("rating", data.rating);
-  if (data.comment) formData.append("comment", data.comment);
+  if (data.provider_id) formData.append('provider_id', data.provider_id)
+  if (data.product_id) formData.append('product_id', data.product_id)
+  if (data.rating) formData.append('rating', data.rating)
+  if (data.comment) formData.append('comment', data.comment)
 
   if (data.images) {
     if (Array.isArray(data.images)) {
-      data.images.forEach((image) => formData.append("images", image));
+      data.images.forEach(image => formData.append('images', image))
     } else {
-      formData.append("images", data.images);
+      formData.append('images', data.images)
     }
   }
 
   return $axios({
-    method: "POST",
-    url: "http://194.32.140.103:8090/api/v1/reviews",
+    method: 'POST',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/reviews',
     data: formData,
-  });
+  })
 }
 
 function createProductReview(data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
 
-  const formData = new FormData();
+  const formData = new FormData()
 
-  if (data.supplier_phone)
-    formData.append("supplier_phone", data.supplier_phone);
-  if (data.product_id) formData.append("product_id", data.product_id);
-  if (data.rating) formData.append("rating", data.rating);
-  if (data.comment) formData.append("comment", data.comment);
+  if (data.supplier_phone) formData.append('supplier_phone', data.supplier_phone)
+  if (data.product_id) formData.append('product_id', data.product_id)
+  if (data.rating) formData.append('rating', data.rating)
+  if (data.comment) formData.append('comment', data.comment)
 
   if (data.images) {
     if (Array.isArray(data.images)) {
-      data.images.forEach((image) => formData.append("images", image));
+      data.images.forEach(image => formData.append('images', image))
     } else {
-      formData.append("images", data.images);
+      formData.append('images', data.images)
     }
   }
 
   return $axios({
-    method: "POST",
-    url: "http://194.32.140.103:8090/api/v1/reviews/products",
+    method: 'POST',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/reviews/products',
     data: formData,
-  });
+  })
 }
 
 function getMemorials(params) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: "http://194.32.140.103:8090/api/v1/memorials",
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/memorials',
     params,
-  });
+  })
 }
 
 function searchDeceased(data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "POST",
-    url: "http://194.32.140.103:8095/api/v1/search-requests",
+    method: 'POST',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/search-requests',
     data,
-  });
+  })
 }
 
 function createMemorial(data) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
 
-  const formData = new FormData();
+  const formData = new FormData()
 
-  if (data.deceased_id) formData.append("deceased_id", data.deceased_id);
-  if (data.epitaph) formData.append("epitaph", data.epitaph);
-  if (data.about_person) formData.append("about_person", data.about_person);
-  if (data.is_public !== undefined)
-    formData.append("is_public", data.is_public);
+  if (data.deceased_id) formData.append('deceased_id', data.deceased_id)
+  if (data.epitaph) formData.append('epitaph', data.epitaph)
+  if (data.about_person) formData.append('about_person', data.about_person)
+  if (data.is_public !== undefined) formData.append('is_public', data.is_public)
 
   if (data.photos) {
     if (Array.isArray(data.photos)) {
-      data.photos.forEach((photo) => formData.append("photos", photo));
+      data.photos.forEach(photo => formData.append('photos', photo))
     } else {
-      formData.append("photos", data.photos);
+      formData.append('photos', data.photos)
     }
   }
 
   if (data.achievements) {
     if (Array.isArray(data.achievements)) {
-      data.achievements.forEach((achievement) =>
-        formData.append("achievements", achievement)
-      );
+      data.achievements.forEach(achievement => formData.append('achievements', achievement))
     } else {
-      formData.append("achievements", data.achievements);
+      formData.append('achievements', data.achievements)
     }
   }
 
   if (data.video_urls) {
     if (Array.isArray(data.video_urls)) {
-      data.video_urls.forEach((url) => formData.append("video_urls", url));
+      data.video_urls.forEach(url => formData.append('video_urls', url))
     } else {
-      formData.append("video_urls", data.video_urls);
+      formData.append('video_urls', data.video_urls)
     }
   }
 
   return $axios({
-    method: "POST",
-    url: "http://194.32.140.103:8090/api/v1/memorials",
+    method: 'POST',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/memorials',
     data: formData,
-  });
+  })
 }
 
-function updateMemorial(id, data) {
-  const { $axios } = useNuxtApp();
-  //   const base = useRuntimeConfig().public.apiBaseUrl;
+function updateMemorial(data) {
+  const { $axios } = useNuxtApp()
 
-  // Соберём FormData из plain-объекта
-  const fd =
-    data instanceof FormData
-      ? data
-      : (() => {
-          const f = new FormData();
-          if (data.deceased_id != null)
-            f.append("deceased_id", String(data.deceased_id));
-          if (data.epitaph != null) f.append("epitaph", data.epitaph);
-          if (data.about_person != null)
-            f.append("about_person", data.about_person);
-          if (data.is_public != null)
-            f.append("is_public", String(!!data.is_public));
+  const formData = new FormData()
 
-          const appendFiles = (name, value) => {
-            if (!value) return;
-            const arr = Array.isArray(value) ? value : [value];
-            arr.forEach((file) => f.append(name, file));
-          };
-          appendFiles("photos", data.photos);
-          appendFiles("achievements", data.achievements);
+  if (data.deceased_id) formData.append('deceased_id', data.deceased_id)
+  if (data.epitaph) formData.append('epitaph', data.epitaph)
+  if (data.about_person) formData.append('about_person', data.about_person)
+  if (data.is_public !== undefined) formData.append('is_public', data.is_public)
 
-          if (data.video_urls != null) {
-            const list = Array.isArray(data.video_urls)
-              ? data.video_urls
-              : [data.video_urls];
-            // если бэкенд ждёт именно массив-параметры:
-            list.forEach((u) => f.append("video_urls[]", u));
-            // если ждёт просто "video_urls": раскомментируй вместо строки выше
-            // list.forEach(u => f.append("video_urls", u));
-          }
-          return f;
-        })();
+  if (data.photos) {
+    if (Array.isArray(data.photos)) {
+      data.photos.forEach(photo => formData.append('photos', photo))
+    } else {
+      formData.append('photos', data.photos)
+    }
+  }
 
-  // (опционально) если бэкенд любит видеть id и в теле
-  if (fd instanceof FormData && !fd.has("id")) {
-    fd.set("id", String(id));
+  if (data.achievements) {
+    if (Array.isArray(data.achievements)) {
+      data.achievements.forEach(achievement => formData.append('achievements', achievement))
+    } else {
+      formData.append('achievements', data.achievements)
+    }
+  }
+
+  if (data.video_urls) {
+    if (Array.isArray(data.video_urls)) {
+      data.video_urls.forEach(url => formData.append('video_urls', url))
+    } else {
+      formData.append('video_urls', data.video_urls)
+    }
   }
 
   return $axios({
-    method: "PUT",
-    url: `http://194.32.140.103:8090/api/v1/memorials/${id}`, // ← id только из аргумента
-    data: fd,
-  });
+    method: 'PUT',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/memorials/' + data.id,
+    data: formData,
+  })
 }
 
 function getMemorialById(id) {
-  const { $axios } = useNuxtApp();
+  const { $axios } = useNuxtApp()
   return $axios({
-    method: "GET",
-    url: `http://194.32.140.103:8090/api/v1/memorials/${id}`,
-  });
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/memorials/${id}`,
+  })
 }
 
 export {
@@ -438,5 +425,5 @@ export {
   createAppeal,
   createProductReview,
   createRequest,
-  updateMemorial,
-};
+  updateMemorial
+}
