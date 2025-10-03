@@ -2,7 +2,6 @@
 import { ref, onMounted, computed } from 'vue'
 import { getProducts, addToCart, getCart, removeFromCart } from '~/services/client'
 import PaymentModalProducts from '~/components/layout/modals/PaymentModalProducts.vue'
-import DeliveryModal from '~/components/layout/modals/DeliveryModal.vue'
 
 const products = ref([])
 const cartItems = ref([])
@@ -14,10 +13,6 @@ const addingToCart = ref(false)
 const cartMessage = ref('')
 const showPaymentModal = ref(false)
 const removingFromCart = ref(false)
-
-// Модалка доставки
-const showDeliveryModal = ref(false)
-const selectedProductId = ref(null)
 
 // Вычисляемое свойство для общей суммы корзины
 const cartTotal = computed(() => {
@@ -54,43 +49,22 @@ const loadCart = async () => {
   }
 }
 
-// Функция для открытия модалки доставки
-const openDeliveryModal = (productId) => {
-  selectedProductId.value = productId
-  showDeliveryModal.value = true
-}
-
-// Функция для закрытия модалки доставки
-const closeDeliveryModal = () => {
-  showDeliveryModal.value = false
-  selectedProductId.value = null
-}
-
-// Функция для добавления товара в корзину с данными из модалки
-const addProductToCart = async (deliveryData) => {
-  if (!selectedProductId.value) {
-    cartMessage.value = 'Ошибка: товар не выбран'
-    return
-  }
-
+// Функция для добавления товара в корзину
+const addProductToCart = async (productId) => {
   addingToCart.value = true
   cartMessage.value = ''
   
   try {
-    // Формируем дату и время в нужном формате
-    const deliveryDateTime = `${deliveryData.date}T${deliveryData.time}:00Z`
-    
     const cartData = {
-      delivery_arrival_time: deliveryDateTime,
-      delivery_destination_address: deliveryData.address,
-      product_id: selectedProductId.value,
+      delivery_arrival_time: "2025-05-17T09:00:00Z",
+      delivery_destination_address: "Алматы, ул. Еревагская 157",
+      product_id: productId,
       quantity: 1
     }
     
     await addToCart(cartData)
     cartMessage.value = 'Товар добавлен в корзину'
     await loadCart() // Перезагружаем корзину
-    closeDeliveryModal() // Закрываем модалку
     setTimeout(() => {
       cartMessage.value = ''
     }, 3000)
@@ -235,10 +209,10 @@ onMounted(async () => {
                     <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#17212A] py-[8px] font-semibold">Подробнее</button>
                     <button 
                       class="w-[50%] text-sm rounded-lg bg-[#E9B949] text-[#17212A] py-[8px] font-semibold"
-                      @click="openDeliveryModal(product.id)"
+                      @click="addProductToCart(product.id)"
                       :disabled="addingToCart"
                     >
-                      Добавить
+                      {{ addingToCart ? 'Добавление...' : 'Добавить' }}
                     </button>
                 </div>
               </div>
@@ -299,14 +273,6 @@ onMounted(async () => {
       }"
       @close="closePaymentModal"
       @success="handlePaymentSuccess"
-    />
-
-    <!-- Модалка для ввода данных доставки -->
-    <DeliveryModal 
-      :visible="showDeliveryModal"
-      :loading="addingToCart"
-      @close="closeDeliveryModal"
-      @confirm="addProductToCart"
     />
   </div>
 </template>

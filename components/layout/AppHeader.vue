@@ -176,7 +176,7 @@ function profileClick() {
       router.push("/user/tickets");
       break;
     case "CEMETERY_MANAGER":
-      router.push("/manager/booking");
+      router.push("/manager/burial");
       break;
     case "USER":
       router.push("/client/profile");

@@ -11,7 +11,7 @@ import {
   pkbGetData
 } from '~/services/login/index.js'
 import Cookies from 'js-cookie';
-import {ref, defineEmits} from "vue";
+import {ref, defineEmits, watch, onBeforeUnmount} from "vue";
 import {useLoadingStore} from "~/store/loading.js";
 const emit = defineEmits()
 const router = useRouter()
@@ -31,7 +31,12 @@ const achievementPhotos = ref([])
 const vatTypeId = ref(0)
 const isFcb = ref(false)
 const isWhatsappLogin = ref(false)
+const personDataTimeoutId = ref(null)
 
+onBeforeUnmount(() => {
+  if (interval) clearInterval(interval);
+  if (personDataTimeoutId.value) clearTimeout(personDataTimeoutId.value);
+});
 
 function close() {
   emit('close')
@@ -79,24 +84,74 @@ watch(bin, async (newValue) => {
 
         if (
             res?.data?.code === 'OK' &&
-            res.data?.data?.status_code === 'VALID'
+            (res.data?.data?.status_code === "VALID" || res.data?.data?.status_code === "PENDING")
         ) {
           console.log('VALID получен, делаем pkbGetData');
 
-          // вызываем pkbGetData
-          const response = await pkbGetData({
-            id: res.data.data.request_id,
-            params: {
-              iin: newValue,
-              requestId: res.data.data.request_id,
-            },
-            data: pkbToken.data.access.hash,
-          });
-          isFcb.value = true
-          name.value = capitalize(response.data.data.person_data.name)
-          surname.value = capitalize(response.data.data.person_data.surname)
-          patronymic.value = capitalize(response.data.data.person_data.patronymic)
-          loadingStore.stopLoading()
+          // вызываем pkbGetData с ожиданием person_data
+          const waitForPersonData = async () => {
+            const maxAttempts = 30; // максимум 30 попыток (30 секунд)
+            let attempts = 0;
+            
+            const checkData = async () => {
+              try {
+                const response = await pkbGetData({
+                  id: res.data.data.request_id,
+                  params: {
+                    iin: newValue,
+                    requestId: res.data.data.request_id,
+                  },
+                  data: pkbToken.data.access.hash,
+                });
+                
+                // Проверяем наличие person_data
+                if (response?.data?.data?.person_data) {
+                  isFcb.value = true;
+                  name.value = capitalize(response.data.data.person_data.name);
+                  surname.value = capitalize(response.data.data.person_data.surname);
+                  patronymic.value = capitalize(response.data.data.person_data.patronymic);
+                  loadingStore.stopLoading();
+                  return true; // данные получены
+                }
+                
+                return false; // данные еще не готовы
+              } catch (error) {
+                console.error("Ошибка при получении person_data:", error);
+                return false;
+              }
+            };
+            
+            const pollData = async () => {
+              const dataReceived = await checkData();
+              
+              if (dataReceived) {
+                if (personDataTimeoutId.value) {
+                  clearTimeout(personDataTimeoutId.value);
+                  personDataTimeoutId.value = null;
+                }
+                return; // данные получены, выходим
+              }
+              
+              attempts++;
+              if (attempts < maxAttempts) {
+                // Ждем 1 секунду и повторяем попытку
+                personDataTimeoutId.value = setTimeout(pollData, 1000);
+              } else {
+                console.log("Превышено максимальное количество попыток получения person_data");
+                isFcb.value = true;
+                loadingStore.stopLoading();
+                if (personDataTimeoutId.value) {
+                  clearTimeout(personDataTimeoutId.value);
+                  personDataTimeoutId.value = null;
+                }
+              }
+            };
+            
+            // Начинаем опрос
+            await pollData();
+          };
+          
+          await waitForPersonData();
 
           // остановить дальнейшие попытки
           if (timeoutId) {
@@ -347,6 +402,7 @@ const otpCheck = async () => {
           />
           <input
             v-model="bin"
+            v-mask="'############'"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
             placeholder="БИН"

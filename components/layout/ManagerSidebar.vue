@@ -15,7 +15,8 @@ type MenuItem = {
 
 const menu: MenuItem[] = [
   { title: 'Заявки на захоронение', path: '/manager/burial' },
-  { title: 'Управление кладбищами', path: '/manager/cemetery' }
+  { title: 'Управление кладбищами', path: '/manager/cemetery' },
+  { title: 'Уведомления', path: '/manager/notifications' },
 ];
 
 const route = useRoute();

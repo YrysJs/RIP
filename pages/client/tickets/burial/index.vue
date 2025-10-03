@@ -11,34 +11,15 @@ const userStore = useUserStore();
 // Функция для получения конфигурации статуса
 const getStatusConfig = (status) => {
   switch (status) {
-    case 'new':
-      return {
-        text: 'Новая заявка',
-        icon: '/icons/new-icon.svg',
-        color: 'text-[#3730A3]'
-      };
-    case 'processing':
     case 'pending':
       return {
         text: 'Ожидает оплаты',
         icon: '/icons/warning.svg',
         color: 'text-[#D97706]'
       };
-    case 'in_progress':
+    case 'paid':
       return {
-        text: 'В процессе',
-        icon: '/icons/in-progress.svg',
-        color: 'text-[#E39827]'
-      };
-    case 'confirmed':
-      return {
-        text: 'Подтверждено',
-        icon: '/icons/paid-tick.svg',
-        color: 'text-[#059669]'
-      };
-    case 'completed':
-      return {
-        text: 'Завершено',
+        text: 'Оплачено',
         icon: '/icons/paid-tick.svg',
         color: 'text-[#1EB676]'
       };
@@ -47,6 +28,12 @@ const getStatusConfig = (status) => {
         text: 'Отменено',
         icon: '/icons/warning.svg',
         color: 'text-[#DC2626]'
+      };
+    case 'confirmed':
+      return {
+        text: 'Подтверждено',
+        icon: '/icons/paid-tick.svg',
+        color: 'text-[#059669]'
       };
     default:
       return {
@@ -357,7 +344,7 @@ const shareGraveData = async (grave_id) => {
                 Дополнительные услуги:
               </p>
               <div v-if="request.products && request.products.length > 0">
-                <p v-for="product in request.products" :key="product.id" class="p-[4px] block rounded-md black-16 mr-4">{{ product.items[0]?.name }}</p>
+                <p v-for="product in request.products" :key="product.id" class="p-[4px] block rounded-md black-16 mr-4">{{ product.items[0]?.product.name }}</p>
               </div>
               <p v-else class="p-[4px] block rounded-md black-16 mr-4">Отсутствуют</p>
             </div>

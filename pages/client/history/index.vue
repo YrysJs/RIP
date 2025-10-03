@@ -126,6 +126,10 @@ async function openReceiptModal(order) {
   }
 }
 
+const closeReceiptModal = () => {
+  showReceiptModal.value = false;
+}
+
 // Методы для работы с модалкой отзыва
 function openCommentModal(order) {
   selectedOrder.value = order;
@@ -179,7 +183,7 @@ useHead({
         <article
           v-for="o in orders"
           :key="o.id"
-          class="bg-[#0000000A] rounded-2xl flex gap-3 md:gap-4 items-stretch max-xl:flex-col max-xl:max-w-[457px] max-sm:max-w-full"
+          class="bg-[#0000000A] rounded-2xl flex gap-3 md:gap-4 items-stretch max-xl:flex-col max-xl:max-w-[457px] max-sm:max-w-full mb-4"
         >
           <!-- image -->
           <div class="min-w-[400px] max-w-[400px] shrink-0">
@@ -235,13 +239,13 @@ useHead({
               </div>
             </div>
 
-            <!--            <div class="flex items-start gap-2">-->
-            <!--              <span><img src="/icons/check.svg" alt="" /></span>-->
-            <!--              <div class="text-[#201001]" @click="openReceiptModal(o)">-->
-            <!--                Чек об оплате-->
-            <!--                &lt;!&ndash; {{ o.receipt ? "Доступен" : "—" }} &ndash;&gt;-->
-            <!--              </div>-->
-            <!--            </div>-->
+            <div class="flex items-start gap-2">
+              <span><img src="/icons/check.svg" alt="" /></span>
+              <div class="text-[#201001]" @click="openReceiptModal(o)">
+                Чек об оплате
+                <!-- {{ o.receipt ? "Доступен" : "—" }} -->
+              </div>
+            </div>
 
             <div class="mt-3 flex justify-end">
               <button

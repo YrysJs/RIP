@@ -5,12 +5,15 @@ import { useRouter } from "vue-router";
 import { useCemeteryStore } from "~/store/cemetery";
 import { pkbGetDeceasedData } from "~/services/login/index.js";
 import { useLoadingStore } from "~/store/loading.js";
+import { useAuthModalStore } from "~/store/authModal.js";
 import ClientLogin from "~/components/auth/ClientLogin.vue";
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
+import Cookies from "js-cookie";
 
 const router = useRouter();
 const cemeteryStore = useCemeteryStore();
+const authModalStore = useAuthModalStore();
 const selectedFiles = ref([]);
 
 const showSuccessModal = ref(false);
@@ -66,6 +69,14 @@ function capitalizeFullName(str) {
 // Функция для бронирования
 const handleBooking = async () => {
   if (!validateRequired()) return;
+
+  // Проверяем наличие токена в куки
+  const token = Cookies.get('token');
+  if (!token) {
+    // Если токена нет, открываем модалку авторизации
+    authModalStore.toggleLoginMenu();
+    return;
+  }
 
   try {
     const dataBurial = {
@@ -229,6 +240,7 @@ function formatFileSize(size) {
                 <input
                   v-model="inn"
                   type="text"
+                  v-mask="'############'"
                   class="py-[18px] px-3 w-[100%] border !border-[#AFB5C166] rounded-lg text-base input focus:outline-none"
                   :class="errors.inn ? '!border-red-500' : ''"
                   placeholder="ИИН"
