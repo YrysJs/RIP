@@ -83,6 +83,14 @@ const statusMeta = (s) => {
 
       <!-- Список -->
       <div v-else class="details-list">
+        <div class="w-full flex justify-end">
+          <button
+              class="btn btn--yellow !m-0"
+              @click="router.push('/client/government/create')"
+          >
+            Создать обращение
+          </button>
+        </div>
         <div v-for="a in appeals" :key="a.id" class="details-card">
           <div class="details-head">
             <div class="right-note">

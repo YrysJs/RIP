@@ -99,8 +99,10 @@ const fmtDate = (iso) => {
   return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' })
 }
 const statusChip = (status) => {
-  if (status === 'paid')      return { text:'Ожидает',      class:'chip chip--orange' }
-  if (status === 'confirmed') return { text:'Подтвержден', class:'chip chip--green'  }
+  if (status === 'pending')   return { text:'Ожидает оплаты', class:'chip chip--orange' }
+  if (status === 'paid')      return { text:'Оплачено',       class:'chip chip--blue' }
+  if (status === 'cancelled') return { text:'Отменено',       class:'chip chip--red' }
+  if (status === 'confirmed') return { text:'Подтверждено',   class:'chip chip--green' }
   return { text: status ?? '—', class:'chip chip--gray' }
 }
 

@@ -67,12 +67,10 @@
       @click.self="authModalStore.closeModal"
     >
       <ClientLogin v-if="currentAuthModal === 'client'" @close="authModalStore.closeModal" />
-      <ManagerLogin v-if="currentAuthModal === 'manager'" @close="authModalStore.closeModal" />
       <SupplierLogin
         v-if="currentAuthModal === 'supplier'"
         @close="authModalStore.closeModal"
       />
-      <AkimatLogin v-if="currentAuthModal === 'akimat'" @close="authModalStore.closeModal" />
     </div>
     <div
       v-if="showLoginMenu"
@@ -103,16 +101,6 @@
           <img src="/icons/shop.svg" class="w-5 h-5" />
           <span class="font-medium">Войти как поставщик услуг</span>
         </div>
-
-        <div class="text-gray-400 text-sm mt-4 mb-2">Администрация</div>
-        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('manager')">
-          <img src="/icons/home.svg" class="w-5 h-5" />
-          <span class="font-medium">Войти как менеджер кладбища</span>
-        </div>
-        <div class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]" @click="login('akimat')">
-          <img src="/icons/building.svg" class="w-5 h-5" />
-          <span class="font-medium">Кабинет Акимата</span>
-        </div>
       </div>
     </div>
   </Teleport>
@@ -122,8 +110,6 @@
 import { useUserStore } from "~/store/user.js";
 import { useAuthModalStore } from "~/store/authModal.js";
 import ClientLogin from "~/components/auth/ClientLogin.vue";
-import AkimatLogin from "~/components/auth/AkimatLogin.vue";
-import ManagerLogin from "~/components/auth/ManagerLogin.vue";
 import SupplierLogin from "~/components/auth/SupplierLogin.vue";
 import Cookies from "js-cookie";
 import { parseJwt } from "~/utils/parseJwt";
@@ -139,16 +125,17 @@ const userInfo = ref(null);
 
 // Computed свойства для безопасного доступа к значениям стора
 const showAuthModal = computed(() => {
-  return authModalStore.activeModal && authModalStore.activeModal.value !== '';
+  return authModalStore.activeModal && authModalStore.activeModal !== '';
 });
 
 const currentAuthModal = computed(() => {
-  return authModalStore.activeModal?.value || '';
+  return authModalStore.activeModal || '';
 });
 
 const showLoginMenu = computed(() => {
-  return authModalStore.showLoginMenu && authModalStore.showLoginMenu.value === true;
+  return authModalStore.showLoginMenu === true;
 });
+
 
 const props = defineProps({
   type: String,
@@ -189,7 +176,7 @@ function profileClick() {
       router.push("/user/tickets");
       break;
     case "CEMETERY_MANAGER":
-      router.push("/manager/booking");
+      router.push("/manager/burial");
       break;
     case "USER":
       router.push("/client/profile");
@@ -365,4 +352,5 @@ onUnmounted(() => {
 .profile__btn:active {
   filter: brightness(0.5);
 }
+
 </style>

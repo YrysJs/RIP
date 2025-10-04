@@ -220,7 +220,7 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-      <div class="p-[20px] bg-white rounded-lg max-w-[376px] h-fit">
+      <div class="p-[20px] bg-white rounded-lg min-w-[376px] max-w-[376px] h-fit">
 
         <!-- Корзина с товарами -->
         <div v-if="hasCartItems" class="border-b border-[#EEEEEE] pb-[16px] pt-[16px]">

@@ -1,8 +1,15 @@
 <script setup>
-import { defineProps } from 'vue';
+import { defineProps, computed, ref } from 'vue';
+import { getPaymentReceipt } from "~/services/payments/index.js";
+import ReceiptModal from "~/components/layout/modals/ReceiptModal.vue";
 const props = defineProps(['grave', 'visible', 'booking', 'images'])
 
 const emit = defineEmits(['close', 'confirm', 'cancel'])
+
+// Состояние для модалки чека
+const showReceiptModal = ref(false);
+const receiptData = ref(null);
+const receiptLoading = ref(false);
 
 function removeEscapedQuotes(str) {
   return str.replace(/\\"/g, '');
@@ -17,6 +24,84 @@ function formatPhoneNumber(phone) {
 const closeModal = () => {
   emit('close')
 }
+
+// Функции для работы с чеком
+async function openReceiptModal(order) {
+  try {
+    showReceiptModal.value = true;
+    receiptLoading.value = true;
+    receiptData.value = null;
+
+    const transactionId =
+      order.transaction_id ||
+      order.payment_transaction_id ||
+      order.payment_id ||
+      order.transaction ||
+      order.id;
+
+    if (!transactionId) {
+      alert("Ошибка: Transaction ID не найден.");
+      showReceiptModal.value = false;
+      return;
+    }
+
+    const response = await getPaymentReceipt(transactionId);
+    if (response.data?.success && response.data?.data) {
+      receiptData.value = response.data.data;
+    } else {
+      alert("Ошибка получения чека");
+      showReceiptModal.value = false;
+    }
+  } catch (e) {
+    console.error(e);
+    alert("Ошибка при получении чека");
+    showReceiptModal.value = false;
+  } finally {
+    receiptLoading.value = false;
+  }
+}
+
+const closeReceiptModal = () => {
+  showReceiptModal.value = false;
+}
+
+// Обработчик статусов
+const statusConfig = computed(() => {
+  const status = props.booking?.status;
+  
+  switch (status) {
+    case 'pending':
+      return {
+        text: 'Ожидает оплаты',
+        bgColor: 'bg-[#FEF3C7]',
+        textColor: 'text-[#D97706]'
+      };
+    case 'paid':
+      return {
+        text: 'Оплачено',
+        bgColor: 'bg-[#E5F8EC]',
+        textColor: 'text-[#1EB676]'
+      };
+    case 'cancelled':
+      return {
+        text: 'Отменено',
+        bgColor: 'bg-[#FEE2E2]',
+        textColor: 'text-[#DC2626]'
+      };
+    case 'confirmed':
+      return {
+        text: 'Подтверждено',
+        bgColor: 'bg-[#D1FAE5]',
+        textColor: 'text-[#059669]'
+      };
+    default:
+      return {
+        text: 'Неизвестный статус',
+        bgColor: 'bg-[#F3F4F6]',
+        textColor: 'text-[#6B7280]'
+      };
+  }
+})
 </script>
 
 <template>
@@ -66,17 +151,18 @@ const closeModal = () => {
 
         </div>
 
-        <!-- Заключение о смерти -->
-<!--        <div class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-4">-->
-<!--          <p class="min-w-[150px] max-w-[150px] font-medium">Заключение о смерти:</p>-->
-<!--          <a-->
-<!--              href="/"-->
-<!--              target="_blank"-->
-<!--              class="text-[#007AFF] font-medium hover:underline"-->
-<!--          >-->
-<!--            Открыть-->
-<!--          </a>-->
-<!--        </div>-->
+<!--         Заключение о смерти-->
+
+        <div v-if="booking.death_cert_url" class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-4">
+          <p class="min-w-[150px] max-w-[150px] font-medium">Заключение о смерти:</p>
+          <a
+              :href="booking.death_cert_url"
+              target="_blank"
+              class="text-[#007AFF] font-medium hover:underline"
+          >
+            Открыть
+          </a>
+        </div>
 
         <!-- Дата похорон -->
         <div class="flex text-base mt-2">
@@ -84,11 +170,6 @@ const closeModal = () => {
           <p v-if="booking?.burial_date" class="font-bold">{{ new Date(booking.burial_date).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) }} {{booking.burial_time}}</p>
         </div>
 
-        <!-- Заказчик -->
-        <div class="flex text-base mt-2">
-          <p class="min-w-[150px] max-w-[150px] font-medium">Заказчик:</p>
-          <p class="font-bold">Бақадыр Нұрбике Бекзатқызыg</p>
-        </div>
 
         <!-- Контакты заказчика -->
         <div class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-2">
@@ -100,14 +181,21 @@ const closeModal = () => {
         <div class="flex text-base mt-4 items-center  border-b border-[#EEEEEE] pb-[16px]">
           <p class="min-w-[150px] max-w-[150px] font-medium">Статус:</p>
           <div class="flex gap-2 items-center">
-            <span class="bg-[#E5F8EC] text-[#1EB676] px-3 py-1 rounded-md text-sm font-medium">Оплачено</span>
-            <span class="bg-[#FDEBC8] text-[#E39827] px-3 py-1 rounded-md text-sm font-medium">Ожидает подтверждения</span>
+            <span 
+              :class="[statusConfig.bgColor, statusConfig.textColor]" 
+              class="px-3 py-1 rounded-md text-sm font-medium"
+            >
+              {{ statusConfig.text }}
+            </span>
           </div>
         </div>
 
         <!-- Кнопки -->
         <div class="flex justify-between mt-6">
-          <button class="flex items-center gap-2 px-4 py-2 border rounded-md border-gray-300 hover:bg-gray-100 text-sm">
+          <button 
+            class="flex items-center gap-2 px-4 py-2 border rounded-md border-gray-300 hover:bg-gray-100 text-sm"
+            @click="openReceiptModal(booking)"
+          >
             <img src="/icons/file-text.svg" alt="чек" class="w-4 h-4" />
             Чек об оплате
           </button>
@@ -124,6 +212,16 @@ const closeModal = () => {
       </div>
     </div>
   </div>
+
+  <!-- Модалка для отображения чека -->
+  <Teleport to="body">
+    <ReceiptModal
+      :visible="showReceiptModal"
+      :receiptData="receiptData"
+      :loading="receiptLoading"
+      @close="closeReceiptModal"
+    />
+  </Teleport>
 </template>
 
 <style lang="scss" scoped>

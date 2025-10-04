@@ -1,117 +1,138 @@
 <script setup>
 import { ref } from "vue";
 import {
-  createMemorial,
+  // createMemorial,
   getBurialRequestById,
   getMemorialById,
   getDeceasedById,
-  updateMemorial
+  updateMemorial,
 } from "~/services/client";
 
 const route = useRoute();
 const router = useRouter();
 
-const USE_MOCKS = true;
+const normalizeYouTubeUrl = (raw) => {
+  if (!raw) return "";
+  const s = raw.trim();
+  // вытащим ID
+  const id = extractYouTubeId(s);
+  return id ? `https://www.youtube.com/watch?v=${id}` : s;
+};
+
+const uniqueUrls = (arr) => {
+  const set = new Set();
+  const res = [];
+  for (const u of arr) {
+    const n = normalizeYouTubeUrl(u);
+    if (n && !set.has(n)) {
+      set.add(n);
+      res.push(n);
+    }
+  }
+  return res;
+};
+
+// const USE_MOCKS = true;
 
 // ===== МОК-ДАННЫЕ =====
-const mockBurialsById = {
-  1: {
-    id: 1,
-    cemetery_name: "Кладбище №1",
-    sector_number: "Сектор 12",
-    grave_id: "Место 45",
-    deceased: {
-      id: 2,
-      full_name: "Иванов Иван Иванович",
-      death_date: "2024-03-18T10:00:00Z",
-    },
-  },
-};
+// const mockBurialsById = {
+//   1: {
+//     id: 1,
+//     cemetery_name: "Кладбище №1",
+//     sector_number: "Сектор 12",
+//     grave_id: "Место 45",
+//     deceased: {
+//       id: 2,
+//       full_name: "Иванов Иван Иванович",
+//       death_date: "2024-03-18T10:00:00Z",
+//     },
+//   },
+// };
 
-const mockDeceasedById = {
-  2: {
-    id: 2,
-    full_name: "Иванов Иван Иванович",
-    death_date: "2024-03-18T10:00:00Z",
-  },
-};
+// const mockDeceasedById = {
+//   2: {
+//     id: 2,
+//     full_name: "Иванов Иван Иванович",
+//     death_date: "2024-03-18T10:00:00Z",
+//   },
+// };
 
-const mockMemorialsById = {
-  101: {
-    id: 101,
-    deceased_id: 2,
-    creator_phone: "+7 777 000 11 22",
-    is_public: true,
-    epitaph: "Светлая память...",
-    about_person:
-      "Учитель, наставник, отец. Любил походы и книги. Всегда помогал окружающим.",
-    created_at: "2025-08-20T09:30:00Z",
-    updated_at: "2025-09-10T12:05:00Z",
-    photo_urls: [
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800",
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800",
-    ],
-    achievement_urls: [
-      "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?q=80&w=800",
-    ],
-    // Можно строкой с запятой или массивом — обе формы поддержаны твоим кодом
-    video_urls: [
-      "https://www.youtube.com/watch?v=dQw4w9WgXcQ, https://youtu.be/aqz-KE-bpKQ",
-    ],
-  },
-};
+// const mockMemorialsById = {
+//   101: {
+//     id: 101,
+//     deceased_id: 2,
+//     creator_phone: "+7 777 000 11 22",
+//     is_public: true,
+//     epitaph: "Светлая память...",
+//     about_person:
+//       "Учитель, наставник, отец. Любил походы и книги. Всегда помогал окружающим.",
+//     created_at: "2025-08-20T09:30:00Z",
+//     updated_at: "2025-09-10T12:05:00Z",
+//     photo_urls: [
+//       "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800",
+//       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800",
+//     ],
+//     achievement_urls: [
+//       "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?q=80&w=800",
+//     ],
+//     // Можно строкой с запятой или массивом — обе формы поддержаны твоим кодом
+//     video_urls: [
+//       "https://www.youtube.com/watch?v=dQw4w9WgXcQ, https://youtu.be/aqz-KE-bpKQ",
+//     ],
+//   },
+// };
 
 // ===== МОК-ФУНКЦИИ (эмулируют API) =====
-const mockDelay = (ms = 400) => new Promise((r) => setTimeout(r, ms));
+// const mockDelay = (ms = 400) => new Promise((r) => setTimeout(r, ms));
 
-const mockGetBurialRequestById = async (id) => {
-  await mockDelay();
-  const data = mockBurialsById[id] || null;
-  if (!data) throw new Error("Mock burial not found");
-  return { data };
-};
+// const mockGetBurialRequestById = async (id) => {
+//   await mockDelay();
+//   const data = mockBurialsById[id] || null;
+//   if (!data) throw new Error("Mock burial not found");
+//   return { data };
+// };
 
-const mockGetDeceasedById = async (id) => {
-  await mockDelay();
-  const data = mockDeceasedById[id] || null;
-  if (!data) throw new Error("Mock deceased not found");
-  return { data };
-};
+// const mockGetDeceasedById = async (id) => {
+//   await mockDelay();
+//   const data = mockDeceasedById[id] || null;
+//   if (!data) throw new Error("Mock deceased not found");
+//   return { data };
+// };
 
-const mockGetMemorialById = async (id) => {
-  await mockDelay();
-  const data = mockMemorialsById[id] || null;
-  if (!data) throw new Error("Mock memorial not found");
-  return { data };
-};
+// const mockGetMemorialById = async (id) => {
+//   await mockDelay();
+//   const data = mockMemorialsById[id] || null;
+//   if (!data) throw new Error("Mock memorial not found");
+//   return { data };
+// };
 
-const mockCreateMemorial = async (payload) => {
-  await mockDelay(600);
-  console.log("MOCK createMemorial payload:", payload);
-  // Вернем «созданный/обновлённый» объект
-  return {
-    data: {
-      id: Math.floor(1000 + Math.random() * 9000),
-      ...payload,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-  };
-};
+// const mockCreateMemorial = async (payload) => {
+//   await mockDelay(600);
+//   console.log("MOCK createMemorial payload:", payload);
+//   // Вернем «созданный/обновлённый» объект
+//   return {
+//     data: {
+//       id: Math.floor(1000 + Math.random() * 9000),
+//       ...payload,
+//       created_at: new Date().toISOString(),
+//       updated_at: new Date().toISOString(),
+//     },
+//   };
+// };
 
 // Обертки, чтобы легко переключаться на реальный API
-const getBurialRequestByIdSafe = async (id) => {
-  return getBurialRequestById(id);
-};
-const getDeceasedByIdSafe = async (id) => {
-  return getDeceasedById(id);
-};
-const getMemorialByIdSafe = async (id) => {
-  return getMemorialById(id);
-};
-const createMemorialSafe = async (payload) => {
-  return createMemorial(payload);
-};
+// const getBurialRequestByIdSafe = async (id) => {
+//   return getBurialRequestById(id);
+// };
+// const getDeceasedByIdSafe = async (id) => {
+//   return getDeceasedById(id);
+// };
+// const getMemorialByIdSafe = async (id) => {
+//   return getMemorialById(id);
+// };
+// const createMemorialSafe = async (payload) => {
+//   return createMemorial(payload);
+// };
 
 // Данные захоронения и мемориала
 const burial = ref(null);
@@ -142,8 +163,8 @@ const deceasedId = ref(2);
 const loadBurialData = async () => {
   try {
     if (route.query.id) {
-      //   const response = await getBurialRequestById(route.query.id);
-      const response = await getBurialRequestByIdSafe(route.query.id);
+      const response = await getBurialRequestById(route.query.id);
+      // const response = await getBurialRequestByIdSafe(route.query.id);
       burial.value = response.data;
     }
   } catch (error) {
@@ -155,8 +176,8 @@ const loadBurialData = async () => {
 const loadMemorialData = async () => {
   try {
     if (route.params.id && route.params.id !== "create") {
-      //   const response = await getMemorialById(route.params.id);
-      const response = await getMemorialByIdSafe(route.params.id);
+      const response = await getMemorialById(route.params.id);
+      // const response = await getMemorialByIdSafe(route.params.id);
       memorial.value = response.data;
       isEditMode.value = true;
 
@@ -176,8 +197,8 @@ const loadMemorialData = async () => {
 // Загрузка данных покойного
 const loadDeceasedData = async (deceasedId) => {
   try {
-    // const response = await getDeceasedById(deceasedId);
-    const response = await getDeceasedByIdSafe(deceasedId);
+    const response = await getDeceasedById(deceasedId);
+    // const response = await getDeceasedByIdSafe(deceasedId);
     deceased.value = response.data;
   } catch (error) {
     console.error("Ошибка при загрузке данных покойного:", error);
@@ -266,22 +287,24 @@ const fillFormWithMemorialData = () => {
   );
 
   // видео (поддержка строк с запятыми)
-  (memorial.value.video_urls || []).forEach((urlString, idx) => {
-    const urls = urlString.includes(",") ? urlString.split(",") : [urlString];
-    urls.forEach((u, j) => {
-      const trimmed = u.trim();
-      if (!trimmed) return;
-      const vid = extractYouTubeId(trimmed);
-      if (vid) {
-        videos.value.push({
-          id: Date.now() + idx + j + 2000,
-          url: trimmed,
-          embedUrl: `https://www.youtube.com/embed/${vid}`,
-          title: `Видео ${videos.value.length + 1}`,
-          isExisting: true,
-        });
-      }
-    });
+  const rawList = [];
+  (memorial.value.video_urls || []).forEach((v) => {
+    const parts = typeof v === "string" ? v.split(",") : [v];
+    parts.forEach((p) => rawList.push(p));
+  });
+  const clean = uniqueUrls(rawList);
+
+  clean.forEach((u, idx) => {
+    const vid = extractYouTubeId(u);
+    if (vid) {
+      videos.value.push({
+        id: Date.now() + idx + 2000,
+        url: u, // хранить нормализованный url
+        embedUrl: `https://www.youtube.com/embed/${vid}`,
+        title: `Видео ${idx + 1}`,
+        isExisting: true,
+      });
+    }
   });
 };
 
@@ -351,21 +374,29 @@ const extractYouTubeId = (url) => {
 };
 
 const addVideo = () => {
-  if (videoUrl.value.trim()) {
-    const videoId = extractYouTubeId(videoUrl.value);
-    if (!videoId) return;
-    if (videoId) {
-      const newVideo = {
-        id: Date.now() + Math.random(),
-        url: videoUrl.value,
-        embedUrl: `http://www.youtube.com/embed/${videoId}`,
-        title: `Видео ${videos.value.length + 1}`,
-      };
-      videos.value.push(newVideo);
-      videoUrl.value = "";
-      showVideoInput.value = false;
-    }
+  const raw = videoUrl.value.trim();
+  const vid = extractYouTubeId(raw);
+  if (!vid) return;
+
+  const watchUrl = normalizeYouTubeUrl(raw); // нормализуем и храним watch?v=
+  // если такой уже есть — выходим
+  if (
+    uniqueUrls(videos.value.map((v) => v.url).concat([watchUrl])).length ===
+    videos.value.length
+  ) {
+    videoUrl.value = "";
+    showVideoInput.value = false;
+    return;
   }
+
+  videos.value.push({
+    id: Date.now() + Math.random(),
+    url: watchUrl,
+    embedUrl: `https://www.youtube.com/embed/${vid}`, // https!
+    title: `Видео ${videos.value.length + 1}`,
+  });
+  videoUrl.value = "";
+  showVideoInput.value = false;
 };
 
 const removeVideo = (index) => {
@@ -409,71 +440,55 @@ const submitMemorial = async () => {
   try {
     isSubmitting.value = true;
 
-    // Подготавливаем данные для отправки
-    const formData = {
-      id: route.params.id,
-      deceased_id: isEditMode.value
-        ? ''
-        : +burial.value?.deceased?.id,
-      epitaph: epitaph.value,
-      about_person: aboutPerson.value,
-      is_public: isPublic.value,
-      photos: selectedImages.value, // только новые фото мемориала
-      achievements: achievementPhotos.value
-        .filter((photo) => !photo.isExisting) // только новые достижения
-        .map((photo) => photo.file),
-      video_urls: [
-        ...(videos.value.filter((v) => !v.isExisting).map((v) => v.url) || []),
-        ...(isEditMode.value
-          ? videos.value.filter((v) => v.isExisting).map((v) => v.url)
-          : []),
-      ],
-    };
+    const video_urls = uniqueUrls(videos.value.map((v) => v.url));
+    console.log(memorial.value?.id, route.params.id)
+    const memorialId = memorial.value?.id || route.params.id; // ← всегда есть id
+    if (!memorialId) throw new Error("Memorial ID is missing");
 
-    // В режиме редактирования добавляем существующие URL-ы
-    if (isEditMode.value) {
-      // Добавляем существующие фото URL-ы (пока нет API для обновления)
-      const existingPhotoUrls = imagePreviews.value
-        .filter((preview) => preview.isExisting)
-        .map((preview) => preview.url);
+    const hasFiles =
+      selectedImages.value.length ||
+      achievementPhotos.value.some((p) => !p.isExisting);
 
-      const existingAchievementUrls = achievementPhotos.value
-        .filter((photo) => photo.isExisting)
-        .map((photo) => photo.url);
+    let payload;
 
-      const existingVideoUrls = videos.value
-        .filter((video) => video.isExisting)
-        .map((video) => video.url);
-
-      // Объединяем существующие и новые URL-ы
-      const allVideoUrls = [...existingVideoUrls, ...formData.video_urls];
-      formData.video_urls = allVideoUrls;
-    }
-
-    // const response = await createMemorial(formData);
-    if (isEditMode.value) {
-      await updateMemorial(formData)
+    if (hasFiles) {
+      const fd = new FormData();
+      // id НУЖЕН, если ваш сервис читает его из body
+      fd.append("id", String(memorialId)); // ← добавили
+      fd.append("epitaph", epitaph.value || "");
+      fd.append("about_person", aboutPerson.value || "");
+      fd.append("is_public", String(!!isPublic.value));
+      video_urls.forEach((u) => fd.append("video_urls[]", u));
+      selectedImages.value.forEach((f) => fd.append("photos", f));
+      achievementPhotos.value
+        .filter((p) => !p.isExisting)
+        .forEach((p) => fd.append("achievements", p.file));
+      payload = fd;
     } else {
-      const response = await createMemorialSafe(formData);
+      payload = {
+        id: memorialId, // ← есть и в JSON-ветке
+        deceased_id: isEditMode.value
+          ? undefined
+          : +burial.value?.deceased?.id || undefined,
+        epitaph: epitaph.value,
+        about_person: aboutPerson.value,
+        is_public: isPublic.value,
+        video_urls,
+      };
     }
 
-    // Успешно создано/обновлено
-    useState("burial").value = burial.value;
-    useState("imagePreviews").value = imagePreviews.value;
-    useState("epitaph").value = epitaph.value;
-    useState("aboutPerson").value = aboutPerson.value;
-    useState("videos").value = videos.value;
+    // ВАЖНО: передай id отдельным аргументом
+    await updateMemorial(memorialId, payload); // ← см. сервис ниже
 
-    router.push("/client/memorial/created");
-
-    // Можно перенаправить пользователя
-    // await navigateTo('/client/memorials')
-  } catch (error) {
-    console.error("Error processing memorial:", error);
-    const action = isEditMode.value ? "обновлении" : "создании";
+    router.push({
+      path: "/client/memorial/created",
+      query: { id: String(memorialId) },
+    });
+  } catch (e) {
+    console.error(e);
     alert(
-      `Ошибка при ${action} мемориала: ` +
-        (error.response?.data?.message || error.message)
+      `Ошибка при ${isEditMode.value ? "обновлении" : "создании"} мемориала: ` +
+        (e.response?.data?.message || e.message)
     );
   } finally {
     isSubmitting.value = false;

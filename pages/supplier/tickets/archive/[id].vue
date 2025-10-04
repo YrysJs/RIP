@@ -2,13 +2,14 @@
 import SupplierDetail from "~/components/supplier/supplier-details/SupplierDetail.vue";
 
 const route = useRoute();
+const router = useRouter();
 </script>
 
 <template>
   <NuxtLayout name="supplier" :transparent-content="true">
     <button
       class="btn-back mb-[10px] mr-4 ml-[2px] text-base font-medium flex items-center text-[#B88F34]"
-      @click="router.push('/client/memorial')"
+      @click="router.go(-1)"
     >
       <img
         class="w-4 h-4 mr-[10px]"

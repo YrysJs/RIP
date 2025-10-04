@@ -2,31 +2,7 @@
 import { ref, onMounted, computed } from "vue";
 import { getOrders } from "~/services/supplier";
 
-const ARCHIVE_STATUSES = ["completed", "cancelled", "rejected"];
-
-const placeholderRows = [
-  {
-    id: 101,
-    product: "Организация перевозки",
-    customer: "Бакадыр Нұрбике Бекзатқызы",
-    date: "2025-12-12",
-    status: "completed",
-  },
-  {
-    id: 102,
-    product: "Организация перевозки",
-    customer: "Сергей Иванович",
-    date: "2025-12-02",
-    status: "cancelled",
-  },
-  {
-    id: 103,
-    product: "Организация перевозки",
-    customer: "Анна Петровна",
-    date: "2025-02-18",
-    status: "rejected",
-  },
-];
+const ARCHIVE_STATUSES = ["completed", "cancelled"];
 
 const orders = ref([]);
 const loading = ref(true);
@@ -35,10 +11,9 @@ const error = ref(null);
 function statusChip(status) {
   const map = {
     cancelled: { text: "Отменен", kind: "red" },
-    rejected: { text: "Отменен", kind: "red" },
     completed: { text: "Завершен", kind: "green" },
   };
-  const m = map[status] || { text: status || "—", kind: "orange" };
+  const m = map[status] || { text: status || "—", kind: "red" };
   return { text: m.text, class: `chip chip--${m.kind}` };
 }
 
@@ -101,7 +76,7 @@ onMounted(fetchOrders);
       </div>
 
       <template v-else>
-        <div class="orders-table">
+        <div v-if="displayRows.length" class="orders-table">
           <div class="orders-row orders-head">
             <div>Товар/услуга</div>
             <div>Заказчик</div>
@@ -129,6 +104,8 @@ onMounted(fetchOrders);
             </div>
           </NuxtLink>
         </div>
+
+        <div v-else class="orders-empty">В архиве пока пусто</div>
       </template>
     </div>
   </NuxtLayout>

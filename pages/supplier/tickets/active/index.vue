@@ -2,66 +2,28 @@
 import { getOrders } from "~/services/supplier";
 import { ref, onMounted, computed } from "vue";
 
-const placeholderRows = [
-  {
-    id: 101,
-    product: "Организация перевозки",
-    customer: "Бакадыр Нұрбике Бекзатқызы",
-    date: "2025-12-12",
-    status: "in_progress",
-  },
-  {
-    id: 102,
-    product: "Организация перевозки",
-    customer: "Сергей Иванович",
-    date: "2025-12-02",
-    status: "cancelled",
-  },
-  {
-    id: 103,
-    product: "Организация перевозки",
-    customer: "Анна Петровна",
-    date: "2025-02-18",
-    status: "in_progress",
-  },
-  {
-    id: 104,
-    product: "Доставка цветов",
-    customer: "Бакадыр Нұрбике Бекзатқызы",
-    date: "2025-08-14",
-    status: "accepted",
-  },
-];
-
-// Когда будут реальные заказы — показываем их, иначе плейсхолдеры
-const displayRows = computed(() => {
-  if (orders.value?.length) {
-    return orders.value.map((o) => ({
-      id: o.id ?? o.burial_order_id,
-      product: getProductName(o),
-      customer: o.customer?.fullName || o.user_name || o.user_phone || "—",
-      date: o.burial_date || o.created_at,
-      status: o.status || "in_progress",
-    }));
-  }
-  return placeholderRows;
-});
+const displayRows = computed(() =>
+  (orders.value ?? []).map((o) => ({
+    id: o.id ?? o.burial_order_id,
+    product: getProductName(o),
+    customer: o.customer?.fullName || o.user_name || o.user_phone || "—",
+    date: o.burial_date || o.created_at,
+    status: o.status || "in_progress",
+  }))
+);
 
 // Чип статуса (текст + класс под цвет бейджа)
 function statusChip(status) {
   const map = {
-    in_progress: { text: "Выполняется", kind: "orange" },
-    processing: { text: "Выполняется", kind: "orange" },
-    new: { text: "Выполняется", kind: "orange" },
-    cancelled: { text: "Отменен", kind: "red" },
-    rejected: { text: "Отменен", kind: "red" },
-    accepted: { text: "Принят", kind: "green" },
-    approved: { text: "Принят", kind: "green" },
+    new: { text: "Новый", kind: "orange" },
+    processing: { text: "В обработке", kind: "orange" },
+    in_progress: { text: "В процессе", kind: "orange" },
     completed: { text: "Завершен", kind: "green" },
-  };
-  const m = map[status] || { text: status || "—", kind: "orange" };
-  return { text: m.text, class: `chip chip--${m.kind}` };
+    cancelled: { text: "Отменен", kind: "red" },
+  }[status] ?? { text: "—", kind: "orange" };
+  return { text: map.text, class: `chip chip--${map.kind}` };
 }
+
 // Реактивные переменные
 const orders = ref([]);
 const loading = ref(true);
@@ -155,17 +117,17 @@ const toggleFilters = () => {
 };
 
 // Функция для получения статуса в нужном формате
-const getStatusInfo = (status) => {
-  const statusMap = {
-    new: { text: "Ожидает", class: "status-danger" },
-    pending: { text: "Ожидает", class: "status-danger" },
-    approved: { text: "Одобрено", class: "status-close" },
-    rejected: { text: "Отклонено", class: "status-cancel" },
-    completed: { text: "Завершено", class: "status-close" },
-    pending_payment: { text: "Ожидает оплаты", class: "status-danger" },
-  };
-  return statusMap[status] || { text: status, class: "status-danger" };
-};
+// const getStatusInfo = (status) => {
+//   const statusMap = {
+//     new: { text: "Ожидает", class: "status-danger" },
+//     pending: { text: "Ожидает", class: "status-danger" },
+//     approved: { text: "Одобрено", class: "status-close" },
+//     rejected: { text: "Отклонено", class: "status-cancel" },
+//     completed: { text: "Завершено", class: "status-close" },
+//     pending_payment: { text: "Ожидает оплаты", class: "status-danger" },
+//   };
+//   return statusMap[status] || { text: status, class: "status-danger" };
+// };
 
 // Функция для форматирования даты
 const formatDate = (dateString) => {
@@ -183,12 +145,12 @@ const getProductName = (order) => {
 };
 
 // Функция для получения времени доставки из первого элемента заказа
-const getDeliveryTime = (order) => {
-  if (order.items && order.items.length > 0) {
-    return order.items[0].delivery_arrival_time;
-  }
-  return null;
-};
+// const getDeliveryTime = (order) => {
+//   if (order.items && order.items.length > 0) {
+//     return order.items[0].delivery_arrival_time;
+//   }
+//   return null;
+// };
 
 // Загрузка данных при монтировании компонента
 onMounted(() => {
@@ -288,14 +250,14 @@ onMounted(() => {
       <!-- Кнопки действий -->
       <div class="flex gap-4 mt-4">
         <button
-          @click="applyFilters"
           class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+          @click="applyFilters"
         >
           Применить
         </button>
         <button
-          @click="resetFilters"
           class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+          @click="resetFilters"
         >
           Сбросить
         </button>
@@ -312,9 +274,9 @@ onMounted(() => {
         <button class="retry-btn" @click="fetchOrders">Повторить</button>
       </div>
 
-      <!-- данные (реальные или плейсхолдеры) -->
+      <!-- данные -->
       <template v-else>
-        <div class="orders-table">
+        <div v-if="displayRows.length" class="orders-table">
           <div class="orders-row orders-head">
             <div>Товар/услуга</div>
             <div>Заказчик</div>
@@ -342,11 +304,9 @@ onMounted(() => {
               </span>
             </div>
           </NuxtLink>
-
-          <!-- <div v-if="orders.length === 0" class="orders-empty">
-            Нет активных заявок
-          </div> -->
         </div>
+
+        <div v-else class="orders-empty">Нет активных заявок</div>
       </template>
     </div>
   </NuxtLayout>
