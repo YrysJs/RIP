@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="user">
+  <NuxtLayout name="user" class="users-page">
     <div class="page">
       <!-- Шапка -->
       <div class="page-head">
@@ -23,7 +23,7 @@
         </div>
 
         <div class="tbody">
-          <template v-for="role in roles" :key="role.role">
+          <template v-for="role in roles">
             <div
               v-for="user in role.users"
               :key="user.id"
@@ -361,5 +361,155 @@ watch(isConfirmModal, (open) => {
   .row{ grid-template-columns: 1fr; row-gap:8px; }
   .status-cell{ justify-self: start; }  /* на мобилках статус под ФИО */
   .actions{ justify-content:flex-start; }
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+  /* Белый фон для страницы пользователей */
+  :global(.users-page) {
+    background: #ffffff !important;
+  }
+  
+  :global(.users-page .user) {
+    background: #ffffff !important;
+  }
+
+  /* Добавляем top padding */
+  .page {
+    padding-top: 20px;
+  }
+
+  /* Адаптируем заголовок */
+  .page-title {
+    font-size: 24px;
+    line-height: 28px;
+    margin-bottom: 16px;
+    font-family: "FoglihtenNo06", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  /* Адаптируем кнопку добавления */
+  .add-btn {
+    font-size: 16px;
+    padding: 12px 16px;
+    align-self: flex-start;
+  }
+
+  /* Выравниваем заголовок и кнопку */
+  .page-head {
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  /* Преобразуем таблицу в карточки */
+  .table {
+    margin-top: 0;
+  }
+
+  .row {
+    flex-direction: column;
+    background: #F4F0E7 !important;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    position: relative;
+  }
+
+  /* Мобильная версия: используем CSS Grid для правильного расположения */
+  .row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas: 
+      "role status actions"
+      "fio fio fio";
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* Скрываем заголовок таблицы на мобильных */
+  .thead {
+    display: none;
+  }
+
+  /* Адаптируем карточки пользователей */
+  .cell {
+    margin-bottom: 0;
+  }
+
+  .cell:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Роль - крупно и жирно */
+  .role {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0;
+    grid-area: role;
+  }
+
+  /* ФИО - под ролью */
+  .fio {
+    font-size: 16px;
+    color: #6B7280;
+    margin-bottom: 0;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    grid-area: fio;
+  }
+
+  .fio-label {
+    font-size: 14px;
+    color: #9CA3AF;
+    margin-right: 4px;
+  }
+
+  /* Статус - справа от роли */
+  .status-cell {
+    grid-area: status;
+    justify-self: end;
+  }
+
+  .status {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  /* Действия - справа */
+  .actions {
+    grid-area: actions;
+    justify-self: end;
+  }
+
+  /* Адаптируем модальные окна */
+  .dlg {
+    width: calc(100% - 32px);
+    padding: 24px 20px 20px;
+  }
+
+  .dlg__title {
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .dlg__hint {
+    font-size: 14px;
+  }
+
+  .dlg__actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-ghost,
+  .btn-primary {
+    width: 100%;
+    min-width: auto;
+  }
 }
 </style>

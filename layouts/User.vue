@@ -31,6 +31,40 @@ import AppHeader from "~/components/layout/AppHeader.vue";
   display: flex;
   flex-direction: column;
 
+  @media (max-width: 768px) {
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 80px; /* Отступ для нижней навигации */
+    background: #ffffff; /* Белый фон по умолчанию */
+  }
+
+  /* Бежевый фон только для страницы заявок (список) */
+  :global(.tickets-page) {
+    background: #faf7ef !important;
+  }
+  
+  :global(.tickets-page .user) {
+    background: #faf7ef !important;
+  }
+
+  /* Белый фон для детальной страницы заявки */
+  :global(.ticket-detail-page) {
+    background: #ffffff !important;
+  }
+  
+  :global(.ticket-detail-page .user) {
+    background: #ffffff !important;
+  }
+
+  /* Принудительно устанавливаем бежевый фон для списка заявок */
+  :global(.tickets-page) {
+    background: #faf7ef !important;
+  }
+  
+  :global(.tickets-page .user) {
+    background: #faf7ef !important;
+  }
+
   &__wrap {
     width: 100%;
     max-width: 1160px;
@@ -41,6 +75,11 @@ import AppHeader from "~/components/layout/AppHeader.vue";
 
     @media (max-width: 1100px) {
       grid-template-columns: 1fr;
+    }
+
+    @media (max-width: 768px) {
+      margin: 0;
+      padding: 16px;
     }
   }
 
@@ -65,6 +104,14 @@ import AppHeader from "~/components/layout/AppHeader.vue";
     padding: 20px;
     color: #1c1c1c;
     min-height: 640px;
+
+    @media (max-width: 768px) {
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      min-height: auto;
+    }
   }
 }
 </style>

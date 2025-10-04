@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="user">
+  <NuxtLayout name="user" class="news-page">
     <div class="page">
 
       <!-- Заголовок + кнопка -->
@@ -230,7 +230,7 @@ async function hide(news) {
   border: 1px solid #E6E8EC;     
   border-radius: 5px;            
   padding: 12px 40px 12px 44px;
-  font-size: 16px; line-height: 20px; color: #5C6771E5; weight: 400;
+  font-size: 16px; line-height: 20px; color: #5C6771E5; font-weight: 400;
   -webkit-appearance:none; -moz-appearance:none; appearance:none;
 }
 .field__control:focus{ outline: none; border-color:#D1D5DB; }
@@ -255,7 +255,7 @@ async function hide(news) {
 /* карточка */
 .card{
   display:grid; grid-template-columns: 230px 1fr; gap:16px;
-  border:1px solid #EEEEEE; border-radius:12px; overflow:hidden; background:#fff;
+  border:1px solid #E5E7EB; border-radius:12px; overflow:hidden; background:#ffffff !important;
 }
 .card__img{ width:230px; height:176px; object-fit:cover; }
 .card__body{ display:flex; flex-direction:column; padding:16px; gap:8px; }
@@ -296,5 +296,170 @@ async function hide(news) {
   .card{ grid-template-columns: 1fr; }
   .card__img{ width:100%; height:200px; }
   .card__bottom{ flex-direction:column; align-items:flex-start; }
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+  /* Устанавливаем белый фон только для страницы новостей */
+  :global(.news-page) {
+    background: #ffffff !important;
+  }
+  
+  :global(.news-page .user) {
+    background: #ffffff !important;
+  }
+  
+  /* Добавляем top padding */
+  .page {
+    padding-top: 20px;
+  }
+  
+  /* Адаптируем заголовок */
+  .page-title {
+    font-size: 24px;
+    line-height: 28px;
+    margin-bottom: 0;
+    font-family: "FoglihtenNo06", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  /* Адаптируем кнопку добавления */
+  .add-btn {
+    font-size: 16px;
+    padding: 12px 16px;
+    align-self: flex-start;
+  }
+
+  /* Выравниваем заголовок и кнопку */
+  .page-head {
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  /* Адаптируем фильтры */
+  .filters {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .field__control {
+    background: #f9f9f9;
+    border: 1px solid #E5E7EB;
+    color: #6B7280;
+    padding: 14px 40px 14px 44px;
+    font-size: 16px;
+  }
+
+  .field__control:focus {
+    border-color: #F7B500;
+    box-shadow: 0 0 0 2px rgba(247, 181, 0, 0.1);
+  }
+
+  /* Адаптируем карточки */
+  .card {
+    grid-template-columns: 1fr;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    margin-bottom: 16px;
+    background: #ffffff !important;
+    border: 1px solid #E5E7EB !important;
+  }
+
+  .card__img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .card__body {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  /* Адаптируем верхнюю строку */
+  .card__top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .badge {
+    font-size: 12px;
+    padding: 6px 12px;
+    background: #F3F4F6;
+    color: #374151;
+    border-radius: 8px;
+  }
+
+  .status {
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 12px;
+  }
+
+  .status--active {
+    background: #E8F6EC;
+    color: #2F9B3C;
+  }
+
+  .status--draft {
+    background:#ECEFF1; color:#9CA3AF;
+  }
+
+  /* Адаптируем контент */
+  .card__title {
+    font-size: 18px;
+    line-height: 24px;
+    margin-bottom: 8px;
+  }
+
+  .card__excerpt {
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 12px;
+  }
+
+  /* Адаптируем нижнюю часть */
+  .card__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .card__date {
+    font-size: 12px;
+    color: #6B7280;
+  }
+
+  .card__actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Адаптируем кнопки */
+  .btn {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .btn--ghost {
+    background: #F3F4F6;
+    color: #6B7280;
+    order: 2;
+  }
+
+  .btn--yellow {
+    background: #F7B500;
+    color: #1F2937;
+    order: 1;
+  }
 }
 </style>

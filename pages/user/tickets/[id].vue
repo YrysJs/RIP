@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="user">
+  <NuxtLayout name="user" class="ticket-detail-page">
     <!-- back -->
     <button class="backlink" @click="router.push('/user/tickets')">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="mr-2">
@@ -189,7 +189,7 @@
       <!-- Документы -->
       <section class="block">
         <div class="docs-row">
-          <div class="doc-col" v-for="doc in documents" :key="doc.name">
+          <div v-for="doc in documents" :key="doc.name" class="doc-col">
             <div class="doc-label">{{ doc.name }}</div>
 
             <div class="doc-card">
@@ -208,7 +208,7 @@
               </div>
 
               <div class="doc-card__right">
-                <button class="doc-btn" @click="download(doc)" title="Скачать">
+                <button class="doc-btn" title="Скачать" @click="download(doc)">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 21h14" stroke="#111827" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -253,7 +253,6 @@ function fio(u) {
   return `${u.surname || ''} ${u.name || ''} ${u.patronymic || ''}`.trim()
 }
 
-const responsibleFio = computed(() => fio(request.value?.responsibleUser))
 
 // === Плейсхолдерные тексты для шапки ===
 const dateText = computed(() => {
@@ -515,5 +514,143 @@ function download(doc) {
   .kv        { grid-template-columns: 1fr; row-gap: 4px; }
   .kv--reason{ grid-template-columns: 1fr; }
   .head      { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+  /* Устанавливаем белый фон только для страницы деталей заявки */
+  :global(.ticket-detail-page) {
+    background: #ffffff !important;
+  }
+  
+  :global(.ticket-detail-page .user) {
+    background: #ffffff !important;
+  }
+  
+  /* Убираем глобальное переопределение фона */
+  :global(.user) {
+    background: #ffffff !important;
+  }
+  
+  /* Убираем отступы и фон для мобильных */
+  .card {
+    background: transparent;
+    padding: 0;
+    margin-top: 0;
+  }
+
+  /* Адаптируем кнопку "Вернуться" */
+  .backlink {
+    color: #B0892E;
+    font-size: 16px;
+    padding: 12px 0;
+    margin-bottom: 8px;
+  }
+
+  /* Адаптируем заголовок */
+  .case-title {
+    font-size: 24px;
+    line-height: 28px;
+    margin-bottom: 12px;
+  }
+
+  /* Адаптируем метаданные */
+  .meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-top: 8px;
+  }
+
+  .meta__item + .meta__item {
+    margin-left: 0;
+  }
+
+  /* Скрываем статус на мобильных */
+  .status {
+    display: none;
+  }
+
+  /* Адаптируем блоки */
+  .block {
+    padding: 16px 0;
+  }
+
+  .block__title {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  /* Адаптируем сетки */
+  .grid-2col {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .grid-2kv {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  /* Адаптируем kv строки */
+  .kv {
+    grid-template-columns: 1fr;
+    row-gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .k {
+    font-size: 14px;
+    color: #6B7280;
+    margin-bottom: 2px;
+  }
+
+  .v {
+    font-size: 16px;
+    color: #1c1c1c;
+  }
+
+  /* Адаптируем документы */
+  .docs-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .doc-card {
+    padding: 16px;
+  }
+
+  /* Адаптируем кнопки действий */
+  .actions {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  /* Специальные стили для кнопок */
+  .btn--yellow {
+    background: #F7B500;
+    color: #1F2937;
+    order: 1;
+  }
+
+  .btn--ghost-gray {
+    background: #F3F4F6;
+    color: #6B7280;
+    order: 2;
+  }
+
+  .btn--ghost-red {
+    background: #FDECEC;
+    color: #D33030;
+    order: 3;
+  }
 }
 </style>

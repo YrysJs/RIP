@@ -14,6 +14,18 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  buttonText: {
+    type: String,
+    default: "В личный кабинет",
+  },
+  buttonLink: {
+    type: String,
+    default: "/client/tickets/burial",
+  },
+  showButton: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const emit = defineEmits(["close"]);
@@ -34,17 +46,25 @@ const handleClose = () => {
       <h3 class="mt-[32px] font-medium text-xl max-sm:mt-4">
         {{ props.title }}
       </h3>
-      <p class="mt-4 mb-6 text-base text-[#17212A] max-sm:mt-2 max-sm:mb-4">
+      <p v-if="props.text && showButton" class="mt-4 mb-6 text-base text-[#17212A] max-sm:mt-2 max-sm:mb-4">
         {{ props.text }}
       </p>
       <p v-if="props.subtext" class="text-sm text-[#939393] mb-[13px] max-sm:mb-2">
         {{props.subtext}}
       </p>
-      <NuxtLink
-        to="/client/tickets/burial"
+      <button
+        v-if="!showButton"
+        @click="handleClose"
         class="block rounded-lg text-black text-sm font-medium bg-[#E9B949] py-[15px] w-full"
       >
-        В личный кабинет
+        {{ props.text }}
+      </button>
+      <NuxtLink
+        v-else
+        :to="buttonLink"
+        class="block rounded-lg text-black text-sm font-medium bg-[#E9B949] py-[15px] w-full"
+      >
+        {{ props.buttonText }}
       </NuxtLink>
     </div>
   </div>

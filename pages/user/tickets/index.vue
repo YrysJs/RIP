@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="user">
+  <NuxtLayout name="user" class="tickets-page">
     <div class="w-full rounded-[16px]">
       <!-- Заголовок -->
       <h2 class="page-title">Новые заявки</h2>
@@ -197,9 +197,17 @@
             v-for="request in requests"
             :key="request.id"
             class="card"
+            @click="handleCardClick(request.id)"
           >
 <div class="card__left">
-  <h3 class="card__title">Заявка № {{ request.id }}</h3>
+  <div class="card__header">
+    <h3 class="card__title">Заявка № {{ request.id }}</h3>
+    <div class="card__status">
+      <span class="status" :class="statusClass(request.status?.value)">
+        {{ request.status?.nameRu || '—' }}
+      </span>
+    </div>
+  </div>
 
   <!-- 1) Заявитель -->
   <div class="card__row">
@@ -238,12 +246,7 @@
     </template> 
   </div>
 
-  <!-- 3) Статус -->
-  <div class="card__status">
-    <span class="status" :class="statusClass(request.status?.value)">
-      {{ request.status?.nameRu || '—' }}
-    </span>
-  </div>
+
 </div>
 
 
@@ -257,6 +260,13 @@
               <button class="details-btn" @click="router.push('/user/tickets/' + request.id)">
                 Подробнее
               </button>
+
+              <!-- Стрелочка для мобильной версии -->
+              <div class="card__arrow">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 18l6-6-6-6" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
             </div>
           </div>
         </div>
@@ -394,6 +404,17 @@ import SetResponsibleModal from '~/components/user/modals/SetResponsibleModal.vu
 import SuccessModal from '~/components/layout/modals/SuccessModal.vue';
 
 const router = useRouter();
+
+const goToDetails = (id) => {
+  router.push(`/user/tickets/${id}`);
+};
+
+const handleCardClick = (id) => {
+  // Проверяем, что это мобильное устройство
+  if (window.innerWidth <= 768) {
+    goToDetails(id);
+  }
+};
 
 const activeTab = ref('relocation');
 
@@ -840,4 +861,183 @@ option[disabled][hidden] { display: none; }
   .card__right { width: 100%; justify-items: stretch; }
   .details-btn { justify-self: end; }
 }
+
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+  /* Упрощаем фильтры на мобильных */
+  .filters-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .field {
+    min-width: 100%;
+  }
+  
+  /* Скрываем фильтр "Заявитель" на мобильных */
+  .field:nth-child(3) {
+    display: none;
+  }
+  
+  /* Адаптируем карточки для мобильных */
+  .card {
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    background: #FEFEFE;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+  }
+  
+  .card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card__title {
+    font-size: 20px;
+    line-height: 26px;
+    margin-bottom: 0;
+    font-weight: 700;
+    color: #1c1c1c;
+    font-family: "FoglihtenNo06", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    flex: 1;
+  }
+
+  .card__status {
+    margin-left: 12px;
+  }
+
+  /* Улучшаем строки в карточках */
+  .card__row {
+    margin-bottom: 8px;
+  }
+
+  .card__label {
+    font-size: 14px;
+    color: #6B7280;
+    font-weight: 500;
+  }
+
+  .card__value {
+    font-size: 14px;
+    color: #1c1c1c;
+    font-weight: 400;
+  }
+  
+  /* Скрываем кнопку "Подробнее" на мобильных */
+  .details-btn {
+    display: none;
+  }
+  
+  /* Стили для стрелочки */
+  .card__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 1;
+  }
+
+  .card__arrow svg {
+    transition: transform 0.2s ease;
+  }
+
+  .card:hover .card__arrow svg {
+    transform: translateX(2px);
+  }
+}
+
+/* Скрываем стрелочку на десктопе */
+@media (min-width: 769px) {
+  .card__arrow {
+    display: none;
+  }
+  
+  /* Убираем курсор pointer с карточек на десктопе */
+  .card {
+    cursor: default;
+  }
+}
+
+/* Адаптируем статусы */
+.status {
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 12px;
+}
+
+/* Адаптируем дату */
+.card__date {
+  font-size: 12px;
+  margin-bottom: 8px;
+  color: #6B7280;
+}
+
+  /* Улучшаем общий фон страницы на мобильных */
+  .page-title {
+    color: #1c1c1c;
+    margin-top: 20px;
+    padding-top: 20px;
+  }
+
+  /* Улучшаем табы */
+  .tab {
+    color: #1c1c1c;
+  }
+
+  .tab--active {
+    color: #1c1c1c;
+  }
+
+  /* Улучшаем поля фильтров */
+  .field__control {
+    background: #f9f9f9;
+    border: 1px solid #E5E7EB;
+    color: #1c1c1c;
+  }
+
+  .field__control:focus {
+    border-color: #F7B500;
+    box-shadow: 0 0 0 2px rgba(247, 181, 0, 0.1);
+  }
+
+  /* Исправляем стили сортировки */
+  .field__control {
+    background: #f9f9f9 !important;
+    border: 1px solid #E5E7EB !important;
+    color: #6B7280 !important;
+  }
+
+  .field__control:focus {
+    border-color: #F7B500 !important;
+    box-shadow: 0 0 0 2px rgba(247, 181, 0, 0.1) !important;
+  }
+
+  /* Принудительно устанавливаем бежевый фон для страницы заявок */
+  :global(.tickets-page) {
+    background: #faf7ef !important;
+  }
+  
+  :global(.tickets-page .user) {
+    background: #faf7ef !important;
+  }
 </style>
