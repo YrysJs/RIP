@@ -25,8 +25,8 @@ const showDetail = (id) => {
 const slides = ref([
   {
     id: 1,
-    title: "Общедоступная база захоронений",
-    subtitle: "Социальный проект по поиску захоронений и уходу за ними",
+    title: "Электронная база захоронений города Алматы",
+    subtitle: "",
     background: "/images/client/intro-desk.jpg",
     backgroundMobile: "/images/client/intro-mob.jpg",
     buttons: [
