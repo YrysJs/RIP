@@ -47,6 +47,8 @@ const fetchBurials = async (params = { show_confirmed_and_paid: true }) => {
     burials.value = response.data?.data?.data ?? []
   } catch (e) {
     console.error('Ошибка при получении заявок:', e)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     loading.value = false
   }
@@ -63,16 +65,32 @@ const fetchBurialDetails = async (id) => {
     burialDetailModalVisible.value = true
   } catch (e) {
     console.error('Ошибка при услуги:', e)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   }
 }
 
-const cancelRequest = (comment) => {
-  getBurialRequestStatus({ id: burial.value?.id, status: 'cancelled', comment })
-    .then(() => { isCancelModalVisible.value = false; fetchBurials() })
+const cancelRequest = async (comment) => {
+  try {
+    await getBurialRequestStatus({ id: burial.value?.id, status: 'cancelled', comment })
+    isCancelModalVisible.value = false
+    fetchBurials()
+  } catch (error) {
+    console.error('Ошибка при отмене заявки:', error)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
+  }
 }
-const approveRequest = () => {
-  getBurialRequestStatus({ id: burial.value?.id, status: 'confirmed', comment: '' })
-    .then(() => { burialDetailModalVisible.value = false; fetchBurials() })
+const approveRequest = async () => {
+  try {
+    await getBurialRequestStatus({ id: burial.value?.id, status: 'confirmed', comment: '' })
+    burialDetailModalVisible.value = false
+    fetchBurials()
+  } catch (error) {
+    console.error('Ошибка при подтверждении заявки:', error)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
+  }
 }
 const selectRequest = () => { isCancelModalVisible.value = true }
 
@@ -89,6 +107,8 @@ const fetchCemeteries = async () => {
     cemeteries.value = response.data
   } catch (e) {
     console.error('Ошибка при получении кладбищ:', e)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   }
 }
 

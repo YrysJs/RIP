@@ -495,6 +495,13 @@ const burialDateClass = computed(() => {
                 Оплатить сбор
               </button>
             </div>
+            <a href="https://pay.kaspi.kz/pay/6uegojfm" target="_blank">
+              <button
+                  class="text-base py-[18px] px-[28px] rounded-lg bg-[#E9B949] text-black max-sm:w-full hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
+              >
+                Оплатить услуги СКРУ
+              </button>
+            </a>
           </div>
         </div>
         <Teleport to="body">

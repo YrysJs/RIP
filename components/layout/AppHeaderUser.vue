@@ -12,8 +12,8 @@
       
       <button 
         class="menu-toggle"
-        @click="toggleMenu"
         :class="{ active: isMenuOpen }"
+        @click="toggleMenu"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -24,120 +24,47 @@
     <!-- Dropdown Menu -->
     <div v-if="isMenuOpen" class="dropdown-menu">
       <div class="menu-content">
-        <!-- Мои заявки -->
-        <div class="menu-section">
-          <h3 class="section-title">Мои заявки</h3>
-          <ul class="menu-list">
-            <li>
-              <NuxtLink 
-                to="/supplier/tickets/active" 
-                class="menu-item"
-                :class="{ active: $route.path === '/supplier/tickets/active' }"
-                @click="closeMenu"
-              >
-                Активные
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink 
-                to="/supplier/tickets/archive" 
-                class="menu-item"
-                :class="{ active: $route.path === '/supplier/tickets/archive' }"
-                @click="closeMenu"
-              >
-                Архив
-              </NuxtLink>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Мои товары и услуги -->
-        <div class="menu-section">
-          <h3 class="section-title">Мои товары и услуги</h3>
-          <ul class="menu-list">
-            <li>
-              <NuxtLink 
-                to="/supplier/services/active" 
-                class="menu-item"
-                :class="{ active: $route.path === '/supplier/services/active' }"
-                @click="closeMenu"
-              >
-                Активные
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink 
-                to="/supplier/services/consideration" 
-                class="menu-item"
-                :class="{ active: $route.path === '/supplier/services/consideration' }"
-                @click="closeMenu"
-              >
-                На рассмотрении
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink 
-                to="/supplier/services/improvement" 
-                class="menu-item"
-                :class="{ active: $route.path === '/supplier/services/improvement' }"
-                @click="closeMenu"
-              >
-                Требует доработки
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink 
-                to="/supplier/services/inactive" 
-                class="menu-item"
-                :class="{ active: $route.path === '/supplier/services/inactive' }"
-                @click="closeMenu"
-              >
-                Не активные
-              </NuxtLink>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Дополнительные разделы -->
+        <!-- Основные разделы -->
         <div class="menu-section">
           <ul class="menu-list">
             <li>
               <NuxtLink 
-                to="/supplier/services/add-service" 
-                class="menu-link-add"
+                to="/user/tickets" 
+                class="menu-item"
+                :class="{ active: $route.path.startsWith('/user/tickets') }"
                 @click="closeMenu"
               >
-                Добавить товар или услугу
+                Запросы в Акимат
               </NuxtLink>
             </li>
             <li>
               <NuxtLink 
-                to="/supplier/reviews" 
+                to="/user/reports" 
                 class="menu-item"
-                :class="{ active: $route.path === '/supplier/reviews' }"
+                :class="{ active: $route.path.startsWith('/user/reports') }"
                 @click="closeMenu"
               >
-                Отзывы
+                Отчеты, статистика
               </NuxtLink>
             </li>
             <li>
               <NuxtLink 
-                to="/supplier/reports" 
+                to="/user/news" 
                 class="menu-item"
-                :class="{ active: $route.path === '/supplier/reports' }"
+                :class="{ active: $route.path.startsWith('/user/news') }"
                 @click="closeMenu"
               >
-                Отчеты
+                Новости
               </NuxtLink>
             </li>
             <li>
               <NuxtLink 
-                to="/supplier/goverment/requests" 
+                to="/user/users" 
                 class="menu-item"
-                :class="{ active: $route.path === '/supplier/goverment/requests' }"
+                :class="{ active: $route.path.startsWith('/user/users') }"
                 @click="closeMenu"
               >
-                Обращение в Акимат
+                Пользователи и роли
               </NuxtLink>
             </li>
           </ul>
@@ -172,13 +99,12 @@ const closeMenu = () => {
 }
 
 // Загружаем данные пользователя как в AppHeader
-onMounted(async () => {
-  try {
-    const response = await getCurrentUser({ id: localStorage.getItem("user_id") })
-    userInfo.value = response.data
-  } catch (error) {
-    console.error('Ошибка при получении данных пользователя:', error)
-  }
+onMounted(() => {
+  getCurrentUser({ id: localStorage.getItem("user_id") })
+    .then((response) => {
+      userInfo.value = response.data
+    })
+    .catch(() => {})
 })
 
 // Обработка клика вне меню
@@ -318,27 +244,6 @@ onMounted(() => {
   }
 }
 
-.section-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #4B5563;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin: 0 0 16px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #f3f4f6;
-
-  &::after {
-    content: '›';
-    font-size: 14px;
-    color: #9CA3AF;
-    font-weight: 400;
-  }
-}
-
 .menu-list {
   list-style: none;
   padding: 0;
@@ -372,52 +277,8 @@ onMounted(() => {
   }
 }
 
-.menu-link-add {
-  display: block;
-  padding: 14px 12px;
-  color: #059669;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 15px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  margin-bottom: 4px;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-
-  &:hover {
-    background: #dcfce7;
-    color: #047857;
-    transform: translateX(4px);
-    border-color: #86efac;
-  }
-}
-
-/* Адаптивность */
+/* Мобильные стили */
 @media (max-width: 768px) {
-  .mobile-header {
-    padding: 14px 16px;
-  }
-
-  .user-name {
-    font-size: 15px;
-  }
-
-  .menu-content {
-    padding: 20px 16px;
-  }
-
-  .menu-item, .menu-link-add {
-    font-size: 14px;
-    padding: 12px 10px;
-  }
-
-  .section-title {
-    font-size: 12px;
-    margin-bottom: 14px;
-  }
-
-  /* Дополнительные мобильные стили для хэдера */
   .mobile-header {
     padding: 12px 16px;
   }
@@ -449,6 +310,22 @@ onMounted(() => {
   .menu-toggle svg {
     width: 20px;
     height: 20px;
+  }
+
+  .menu-content {
+    padding: 20px 16px;
+  }
+
+  .menu-item {
+    font-size: 14px;
+    padding: 12px 10px;
+  }
+}
+
+/* Скрыть на десктопе */
+@media (min-width: 769px) {
+  .mobile-header {
+    display: none;
   }
 }
 </style>

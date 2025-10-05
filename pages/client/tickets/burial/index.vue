@@ -73,6 +73,8 @@ onMounted(async () => {
     burialRequests.value = response.data.data.data;
   } catch (error) {
     console.error("Ошибка при получении заявок:", error);
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     loading.value = false;
   }
@@ -376,18 +378,21 @@ const shareGraveData = async (grave_id) => {
         </template>
       </div>
     </template>
-    <ShareCoordModal
-        :visible="shareCoordModalState"
-        :lat="Number.isFinite(Number(graveLat)) ? Number(graveLat) : null"
-        :lng="Number.isFinite(Number(graveLng)) ? Number(graveLng) : null"
-        @close="shareCoordModalState = false"
-    />
-    <GraveDataModal
-        :visible="graveDataModalState"
-        :grave="graveData"
-        :cemeteryData="cemeteryData"
-        @close="graveDataModalState = false"
-    />
+    <Teleport to="body">
+      <ShareCoordModal
+          :visible="shareCoordModalState"
+          :lat="Number.isFinite(Number(graveLat)) ? Number(graveLat) : null"
+          :lng="Number.isFinite(Number(graveLng)) ? Number(graveLng) : null"
+          @close="shareCoordModalState = false"
+      />
+      <GraveDataModal
+          :visible="graveDataModalState"
+          :grave="graveData"
+          :cemeteryData="cemeteryData"
+          @close="graveDataModalState = false"
+      />
+    </Teleport>
+
   </NuxtLayout>
 </template>
 

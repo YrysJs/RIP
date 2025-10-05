@@ -1,8 +1,16 @@
 <script setup>
-import { defineProps, computed } from 'vue';
+import { defineProps, computed, ref } from 'vue';
+import { getPaymentReceipt } from "~/services/payments";
+import ReceiptModal from "~/components/layout/modals/ReceiptModal.vue";
+
 const props = defineProps(['grave', 'visible', 'booking', 'images'])
 
 const emit = defineEmits(['close', 'confirm', 'cancel'])
+
+// Состояние модалки чека
+const showReceiptModal = ref(false);
+const receiptData = ref(null);
+const receiptLoading = ref(false);
 
 function removeEscapedQuotes(str) {
   return str.replace(/\\"/g, '');
@@ -16,6 +24,48 @@ function formatPhoneNumber(phone) {
 
 const closeModal = () => {
   emit('close')
+}
+
+// Методы для работы с модалкой чека
+async function openReceiptModal() {
+  try {
+    showReceiptModal.value = true;
+    receiptLoading.value = true;
+    receiptData.value = null;
+
+    const transactionId =
+      props.booking?.transaction_id ||
+      props.booking?.payment_transaction_id ||
+      props.booking?.payment_id ||
+      props.booking?.transaction ||
+      props.booking?.id;
+
+    if (!transactionId) {
+      alert("Ошибка: Transaction ID не найден.");
+      showReceiptModal.value = false;
+      return;
+    }
+
+    const response = await getPaymentReceipt(transactionId);
+    if (response.data?.success && response.data?.data) {
+      receiptData.value = response.data.data;
+    } else {
+      alert("Ошибка получения чека");
+      showReceiptModal.value = false;
+    }
+  } catch (e) {
+    console.error(e);
+    alert("Ошибка при получении чека");
+    showReceiptModal.value = false;
+  } finally {
+    receiptLoading.value = false;
+  }
+}
+
+function closeReceiptModal() {
+  showReceiptModal.value = false;
+  receiptData.value = null;
+  receiptLoading.value = false;
 }
 
 // Обработчик статусов
@@ -151,7 +201,7 @@ const statusConfig = computed(() => {
 
         <!-- Кнопки -->
         <div class="flex justify-between mt-6">
-          <button class="flex items-center gap-2 px-4 py-2 border rounded-md border-gray-300 hover:bg-gray-100 text-sm">
+          <button @click="openReceiptModal" class="flex items-center gap-2 px-4 py-2 border rounded-md border-gray-300 hover:bg-gray-100 text-sm">
             <img src="/icons/file-text.svg" alt="чек" class="w-4 h-4" />
             Чек об оплате
           </button>
@@ -168,6 +218,16 @@ const statusConfig = computed(() => {
       </div>
     </div>
   </div>
+
+  <!-- Модалка для отображения чека -->
+  <Teleport to="body">
+    <ReceiptModal
+      :visible="showReceiptModal"
+      :receiptData="receiptData"
+      :loading="receiptLoading"
+      @close="closeReceiptModal"
+    />
+  </Teleport>
 </template>
 
 <style lang="scss" scoped>

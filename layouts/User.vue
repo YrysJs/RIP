@@ -1,6 +1,8 @@
 <script setup>
 import UserSidebar from '~/components/layout/UserSidebar.vue'
 import AppHeader from "~/components/layout/AppHeader.vue";
+import AppHeaderUser from "~/components/layout/AppHeaderUser.vue";
+import UserBottomNav from "~/components/layout/UserBottomNav.vue";
 
 </script>
 
@@ -8,6 +10,9 @@ import AppHeader from "~/components/layout/AppHeader.vue";
 <template>
   <section class="user">
     <AppHeader type="akimat" />
+    
+    <!-- Адаптивный хедер для мобильных -->
+    <AppHeaderUser />
 
     <div class="user__wrap">
       <aside class="user__sidebar">
@@ -18,6 +23,9 @@ import AppHeader from "~/components/layout/AppHeader.vue";
         <slot />
       </main>
     </div>
+
+    <!-- Bottom Navigation для мобильных устройств -->
+    <UserBottomNav />
   </section>
 </template>
 
@@ -33,7 +41,7 @@ import AppHeader from "~/components/layout/AppHeader.vue";
 
   @media (max-width: 768px) {
     margin-top: 0;
-    padding-top: 0;
+    padding-top: 40px; /* Уменьшили отступ сверху с 80px до 60px */
     padding-bottom: 80px; /* Отступ для нижней навигации */
     background: #ffffff; /* Белый фон по умолчанию */
   }
@@ -73,7 +81,8 @@ import AppHeader from "~/components/layout/AppHeader.vue";
 
     @media (max-width: 768px) {
       margin: 0;
-      padding: 16px;
+      padding: 16px; /* Уменьшили отступы с 16px до 8px */
+      grid-template-columns: 1fr; /* Полная ширина на мобильных */
     }
   }
 
@@ -88,6 +97,10 @@ import AppHeader from "~/components/layout/AppHeader.vue";
 
     @media (max-width: 1100px) {
       position: static;
+    }
+
+    @media (max-width: 768px) {
+      display: none; /* Скрыть sidebar на мобильных */
     }
   }
 
@@ -106,6 +119,13 @@ import AppHeader from "~/components/layout/AppHeader.vue";
       padding: 0;
       min-height: auto;
     }
+  }
+}
+
+/* Скрыть веб-хедер на мобильных устройствах */
+@media (max-width: 768px) {
+  :deep(.app-header) {
+    display: none !important;
   }
 }
 </style>
