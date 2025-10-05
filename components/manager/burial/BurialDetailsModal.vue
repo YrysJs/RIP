@@ -1,15 +1,8 @@
 <script setup>
-import { defineProps, computed, ref } from 'vue';
-import { getPaymentReceipt } from "~/services/payments/index.js";
-import ReceiptModal from "~/components/layout/modals/ReceiptModal.vue";
+import { defineProps, computed } from 'vue';
 const props = defineProps(['grave', 'visible', 'booking', 'images'])
 
 const emit = defineEmits(['close', 'confirm', 'cancel'])
-
-// Состояние для модалки чека
-const showReceiptModal = ref(false);
-const receiptData = ref(null);
-const receiptLoading = ref(false);
 
 function removeEscapedQuotes(str) {
   return str.replace(/\\"/g, '');
@@ -25,74 +18,40 @@ const closeModal = () => {
   emit('close')
 }
 
-// Функции для работы с чеком
-async function openReceiptModal(order) {
-  try {
-    showReceiptModal.value = true;
-    receiptLoading.value = true;
-    receiptData.value = null;
-
-    const transactionId =
-      order.transaction_id ||
-      order.payment_transaction_id ||
-      order.payment_id ||
-      order.transaction ||
-      order.id;
-
-    if (!transactionId) {
-      alert("Ошибка: Transaction ID не найден.");
-      showReceiptModal.value = false;
-      return;
-    }
-
-    const response = await getPaymentReceipt(transactionId);
-    if (response.data?.success && response.data?.data) {
-      receiptData.value = response.data.data;
-    } else {
-      alert("Ошибка получения чека");
-      showReceiptModal.value = false;
-    }
-  } catch (e) {
-    console.error(e);
-    alert("Ошибка при получении чека");
-    showReceiptModal.value = false;
-  } finally {
-    receiptLoading.value = false;
-  }
-}
-
-const closeReceiptModal = () => {
-  showReceiptModal.value = false;
-}
-
 // Обработчик статусов
 const statusConfig = computed(() => {
   const status = props.booking?.status;
   
   switch (status) {
-    case 'pending':
+    case 'processing':
       return {
-        text: 'Ожидает оплаты',
+        text: 'Обрабатывается',
         bgColor: 'bg-[#FEF3C7]',
         textColor: 'text-[#D97706]'
+      };
+    case 'pending_payment':
+      return {
+        text: 'Ожидает оплаты',
+        bgColor: 'bg-[#FEE2E2]',
+        textColor: 'text-[#DC2626]'
+      };
+    case 'new':
+      return {
+        text: 'Новый',
+        bgColor: 'bg-[#E0E7FF]',
+        textColor: 'text-[#3730A3]'
+      };
+    case 'in_progress':
+      return {
+        text: 'В процессе',
+        bgColor: 'bg-[#FDEBC8]',
+        textColor: 'text-[#E39827]'
       };
     case 'paid':
       return {
         text: 'Оплачено',
         bgColor: 'bg-[#E5F8EC]',
         textColor: 'text-[#1EB676]'
-      };
-    case 'cancelled':
-      return {
-        text: 'Отменено',
-        bgColor: 'bg-[#FEE2E2]',
-        textColor: 'text-[#DC2626]'
-      };
-    case 'confirmed':
-      return {
-        text: 'Подтверждено',
-        bgColor: 'bg-[#D1FAE5]',
-        textColor: 'text-[#059669]'
       };
     default:
       return {
@@ -192,10 +151,7 @@ const statusConfig = computed(() => {
 
         <!-- Кнопки -->
         <div class="flex justify-between mt-6">
-          <button 
-            class="flex items-center gap-2 px-4 py-2 border rounded-md border-gray-300 hover:bg-gray-100 text-sm"
-            @click="openReceiptModal(booking)"
-          >
+          <button class="flex items-center gap-2 px-4 py-2 border rounded-md border-gray-300 hover:bg-gray-100 text-sm">
             <img src="/icons/file-text.svg" alt="чек" class="w-4 h-4" />
             Чек об оплате
           </button>
@@ -212,16 +168,6 @@ const statusConfig = computed(() => {
       </div>
     </div>
   </div>
-
-  <!-- Модалка для отображения чека -->
-  <Teleport to="body">
-    <ReceiptModal
-      :visible="showReceiptModal"
-      :receiptData="receiptData"
-      :loading="receiptLoading"
-      @close="closeReceiptModal"
-    />
-  </Teleport>
 </template>
 
 <style lang="scss" scoped>

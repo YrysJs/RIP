@@ -5,7 +5,7 @@ function getOtp(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/otp',
+        url: 'http://194.32.140.103:8081/v1/otp',
         data,
     })
 }
@@ -14,7 +14,7 @@ function checkWhatsappOtp(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v2/otp/whatsapp/verify`,
+        url: `http://194.32.140.103:8081/v1/otp/whatsapp/verify`,
         data: params,
     })
 }
@@ -22,7 +22,7 @@ function getWhatsappOtp(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v2/otp/whatsapp/send`,
+        url: `http://194.32.140.103:8081/v1/otp/whatsapp/send`,
         data,
     })
 }
@@ -31,7 +31,7 @@ function checkOtp(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/otp/check',
+        url: 'http://194.32.140.103:8081/v1/otp/check',
         data: params,
     })
 }
@@ -40,7 +40,7 @@ function signupGov(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/gov/signup',
+        url: 'http://194.32.140.103:8081/v1/gov/signup',
         data: data.data,
         params: data.params
     })
@@ -50,7 +50,7 @@ function signupAkimat(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-government/v1/akimat/user',
+        url: 'http://194.32.140.103:8081/rip-government/v1/akimat/user',
         data: data.data,
     })
 }
@@ -59,7 +59,7 @@ function deleteAkimatUser(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'DELETE',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-government/v1/akimat/user',
+        url: 'http://194.32.140.103:8081/rip-government/v1/akimat/user',
         data: data.data,
     })
 }
@@ -68,7 +68,7 @@ function deleteUser(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'DELETE',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v2/user/${data}`,
+        url: `http://194.32.140.103:8081/v1/user/${data}`,
     })
 }
 
@@ -77,7 +77,7 @@ function updateUser(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PATCH',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/user',
+        url: 'http://194.32.140.103:8081/v1/user',
         data: data.data,
     })
 }
@@ -86,7 +86,7 @@ function signupClient(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/user/signup',
+        url: 'http://194.32.140.103:8081/v1/user/signup',
         data
     })
 }
@@ -95,16 +95,15 @@ function signupClientWhatsapp(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/user/signup/whatsapp',
+        url: 'http://194.32.140.103:8081/v1/user/signup/whatsapp',
         data
     })
 }
-
 function signupClientFcb(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/user/signup/fcb',
+        url: 'http://194.32.140.103:8081/v1/user/signup/fcb',
         data
     })
 }
@@ -113,7 +112,7 @@ function getUserData(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-fcb/v1/individual',
+        url: 'http://194.32.140.103:8081/rip-fcb/v1/individual',
         params,
     })
 }
@@ -122,7 +121,7 @@ function getUsersByRole(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/user/list-by-role',
+        url: 'http://194.32.140.103:8081/v1/user/list-by-role',
         params,
     })
 }
@@ -131,7 +130,7 @@ function signupSupplier(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/supplier/signup',
+        url: 'http://194.32.140.103:8081/v1/supplier/signup',
         data
     })
 }
@@ -140,7 +139,7 @@ function getUser(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/user',
+        url: 'http://194.32.140.103:8081/v1/user',
         params,
     })
 }
@@ -149,7 +148,7 @@ function getSupplier(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/supplier',
+        url: 'http://194.32.140.103:8081/v1/supplier',
         params,
     })
 }
@@ -158,7 +157,7 @@ function getCurrentUser() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/user/current',
+        url: 'http://194.32.140.103:8081/v1/user/current',
     })
 }
 
@@ -166,7 +165,7 @@ function setSupplierFiles(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v7/suppliers/docs',
+        url: 'http://194.32.140.103:8093/api/v1/suppliers/docs',
         data
     })
 }
@@ -175,7 +174,7 @@ function getSuppliers(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/supplier/list',
+        url: 'http://194.32.140.103:8081/v1/supplier/list',
         params,
     })
 }
@@ -184,7 +183,7 @@ function activateSupplier(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PATCH',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/supplier/activate',
+        url: 'http://194.32.140.103:8081/v1/supplier/activate',
         data
     })
 }
@@ -193,7 +192,7 @@ function getPkbToken() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v5/token'
+        url: 'http://194.32.140.103:8083/v1/token'
     })
 }
 
@@ -201,7 +200,7 @@ function getPkbRequest(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v5/individual/send/request',
+        url: 'http://194.32.140.103:8083/v1/individual/send/request',
         params: data.params,
         data: data.data,
         headers: {
@@ -214,7 +213,7 @@ function pkbGetData(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v5/individual/request/${data.id}`,
+        url: `http://194.32.140.103:8083/v1/individual/request/${data.id}`,
         params: data.params,
         data: data.data,
         headers: {
@@ -227,7 +226,7 @@ function pkbGetDeceasedData(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/v5/deceased`,
+        url: `http://194.32.140.103:8083/v1/deceased`,
         params: data.params,
     })
 }
