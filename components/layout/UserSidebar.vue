@@ -50,7 +50,7 @@ const getShortLabel = (label: string) => {
               :alt="it.label"
               width="18"
               height="18"
-          />
+          >
           <span class="sidebar__text">{{ it.label }}</span>
         </RouterLink>
       </nav>
@@ -89,7 +89,7 @@ const getShortLabel = (label: string) => {
           </svg>
         </div>
         <span class="nav-text">{{ getShortLabel(it.label) }}</span>
-        <div v-if="isActive(it.to).value" class="nav-indicator"></div>
+        <div v-if="isActive(it.to).value" class="nav-indicator"/>
       </RouterLink>
     </div>
   </div>

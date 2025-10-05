@@ -11,6 +11,7 @@ const offset = ref(0)
 const hasMore = ref(true)
 const scrollContainer = ref(null)
 const markingAllAsRead = ref(false)
+const serviceType = ref('')
 
 const fetchNotifications = async (reset = false) => {
   try {
@@ -26,6 +27,10 @@ const fetchNotifications = async (reset = false) => {
     const params = {
       limit: limit.value,
       offset: offset.value
+    }
+    
+    if (serviceType.value) {
+      params.service_name = serviceType.value
     }
 
     const response = await getNotifications(params)
@@ -57,6 +62,10 @@ const loadMore = async () => {
 }
 
 const onLimitChange = () => {
+  fetchNotifications(true)
+}
+
+const onServiceTypeChange = () => {
   fetchNotifications(true)
 }
 
@@ -136,7 +145,7 @@ const handleNotificationClick = async (notification) => {
 </script>
 
 <template>
-    <NuxtLayout name="manager">
+    <NuxtLayout name="client">
         <div class="w-full flex items-center flex-wrap justify-between bg-white rounded-[16px] text-lg font-semibold px-4 gap-4">
             <span>Уведомления</span>
             
@@ -149,6 +158,19 @@ const handleNotificationClick = async (notification) => {
                     <div v-if="markingAllAsRead" class="animate-spin rounded-full border-b-2 border-white text-xs"/>
                     {{ markingAllAsRead ? 'Обновление...' : 'Пометить все как прочитанные' }}
                 </button>
+                
+                <div class="flex items-center gap-2">
+                    <label class="text-sm text-gray-600">Тип сервиса:</label>
+                    <select 
+                        v-model="serviceType" 
+                        @change="onServiceTypeChange"
+                        class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#38949B]"
+                    >
+                        <option value="">Все</option>
+                        <option value="burial-request-service">Заявки захоронений</option>
+                        <option value="supplier-service">Заявки услуг</option>
+                    </select>
+                </div>
                 
                 <div class="flex items-center gap-2">
                     <label class="text-sm text-gray-600">Показать по:</label>
