@@ -12,18 +12,18 @@
           </svg>
           <h3 class="cem-card__title">{{ cemetery.name }}</h3>
         </div>
-        <p class="cem-card__type" v-if="typeName">{{ typeName }}</p>
+        <p v-if="typeName" class="cem-card__type">{{ typeName }}</p>
       </div>
 
       <div class="cem-card__legend">
-        <span class="legend" v-if="freeDisp !== null">
-          <i class="legend__dot legend__dot--free"></i> Свободные места: {{ freeDisp }}
+        <span v-if="freeDisp !== null" class="legend">
+          <i class="legend__dot legend__dot--free" /> Свободные места: {{ freeDisp }}
         </span>
-        <span class="legend" v-if="reservedDisp !== null">
-          <i class="legend__dot legend__dot--reserved"></i> Зарезервировано: {{ reservedDisp }}
+        <span v-if="reservedDisp !== null" class="legend">
+          <i class="legend__dot legend__dot--reserved" /> Зарезервировано: {{ reservedDisp }}
         </span>
-        <span class="legend" v-if="occupiedDisp !== null">
-          <i class="legend__dot legend__dot--occupied"></i> Занято: {{ occupiedDisp }}
+        <span v-if="occupiedDisp !== null" class="legend">
+          <i class="legend__dot legend__dot--occupied" /> Занято: {{ occupiedDisp }}
         </span>
       </div>
     </div>
@@ -42,7 +42,7 @@
         </span>
       </div>
 
-      <div class="cem-card__info-item" v-if="cemetery.phone">
+      <div v-if="cemetery.phone" class="cem-card__info-item">
         <svg class="cem-card__icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6.6 3.8c.5-.5 1.3-.5 1.8 0l2.1 2.1c.5.5.5 1.3 0 1.8L9.5 8.7a1 1 0 0 0-.2 1c.6 1.7 2.1 3.2 3.8 3.8.3.1.7 0 1-.2l1-.9c.5-.5 1.3-.5 1.8 0l2.1 2.1c.5.5.5 1.3 0 1.8l-.6.6c-1.2 1.2-3.1 1.6-4.7 1.1-5-1.6-9-5.6-10.6-10.6-.5-1.6-.1-3.5 1.1-4.7l.6-.6Z"/>
         </svg>
@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <div class="cem-card__divider"></div>
+    <div class="cem-card__divider" />
 
     <!-- Описание -->
     <p v-if="cemetery.description" class="cem-card__desc">
@@ -118,6 +118,7 @@ const distanceText = computed(() => {
   border-radius:16px;
   padding:16px 18px;
   display:flex; flex-direction:column; gap:12px;
+  margin-bottom: 16px;
 }
 
 /* Верхняя полоса */
@@ -142,9 +143,9 @@ const distanceText = computed(() => {
 .cem-card__type{ color:#9CA3AF; font-size:13px; margin:0; }
 
 /* Легенда мест */
-.cem-card__legend{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.cem-card__legend{ display:flex;  gap:16px; flex-wrap:wrap; }
 .legend{ color:#374151; font-size:14px; display:inline-flex; align-items:center; gap:8px; }
-.legend__dot{ width:32px; height:12px; border-radius:4px; display:inline-block; border:2px solid transparent; }
+.legend__dot{ width:36px; height:16px; border-radius:2px; border:2px solid transparent; display:inline-block; }
 .legend__dot--free{      background:#7BE98D; border-color:#21B14E; }
 .legend__dot--reserved{  background:#EACB78; border-color:#C9A84F; }
 .legend__dot--occupied{  background:#CFCFCF; border-color:#AFAFAF; }
@@ -173,13 +174,156 @@ const distanceText = computed(() => {
 }
 .cem-card__btn:hover{ filter:brightness(.98); }
 
-/* Чуть ужмёмся на узких экранах */
-@media (max-width: 720px){
-  .cem-card{ padding:14px; border-radius:14px; }
-  .cem-card__title{ font-size:22px; }
-  .legend{ font-size:13px; }
-  .legend__dot{ width:28px; height:10px; }
-  .cem-card__text{ font-size:14px; }
-  .cem-card__desc{ font-size:14px; }
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+  .cem-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .cem-card__top {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .cem-card__heading {
+    width: 100%;
+  }
+
+  .cem-card__name-row {
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+
+  .cem-card__brand {
+    width: 24px;
+    height: 24px;
+    fill: #1F2937;
+  }
+
+  .cem-card__title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1C140E;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .cem-card__type {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0;
+  }
+
+  .cem-card__legend {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .legend {
+    font-size: 14px;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legend__dot {
+    width: 36px;
+    height: 16px;
+    border-radius: 2px;
+    border: 2px solid transparent;
+    display: inline-block;
+  }
+
+  .legend__dot--free {
+    background: #7BE98D;
+    border-color: #21B14E;
+  }
+
+  .legend__dot--reserved {
+    background: #EACB78;
+    border-color: #C9A84F;
+  }
+
+  .legend__dot--occupied {
+    background: #CFCFCF;
+    border-color: #AFAFAF;
+  }
+
+  .cem-card__info {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .cem-card__info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .cem-card__icon {
+    width: 16px;
+    height: 16px;
+    fill: #6B7280;
+  }
+
+  .cem-card__text {
+    font-size: 14px;
+    color: #1F2937;
+    line-height: 1.4;
+  }
+
+  .cem-card__muted {
+    color: #6B7280;
+    font-size: 13px;
+  }
+
+  .cem-card__divider {
+    margin: 8px 0;
+  }
+
+  .cem-card__desc {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #374151;
+    margin: 0;
+  }
+
+  .cem-card__footer {
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+
+  .cem-card__btn {
+    background: #F7B500;
+    color: #1F2937;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+  }
+}
+
+/* Десктопная версия */
+@media (min-width: 769px) {
+  .cem-card {
+    background: #fff;
+    border: 1px solid #ECEFF1;
+    border-radius: 16px;
+    padding: 16px 18px;
+  }
 }
 </style>

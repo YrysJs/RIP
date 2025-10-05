@@ -1,14 +1,14 @@
 <template>
-  <NuxtLayout name="user">
+  <NuxtLayout name="user" class="reports-page">
     <div class="dash">
 
       <!-- ===== СЕКЦИЯ: Количество заявок ===== -->
-      <section class="section">
+      <section class="section kpi-section">
         <div class="section__head">
           <h2 class="h-title">Количество заявок всего: {{ totalRequests }}</h2>
 
           <!-- период: неделя / месяц / всё время -->
-          <select class="period" v-model="reqPeriod" @change="onPeriodChange('requests')">
+          <select v-model="reqPeriod" class="period" @change="onPeriodChange('requests')">
             <option value="week">За неделю</option>
             <option value="month">За месяц</option>
             <option value="all">За всё время</option>
@@ -43,7 +43,7 @@
       <!-- ===== ДВА БЛОКА В РЯД ===== -->
       <section class="grid-2">
         <!-- Сейчас в работе -->
-        <div class="card">
+        <div class="card work-section">
           <div class="card__head">
             <h3 class="card__title card__title--muted">Сейчас в работе</h3>
           </div>
@@ -61,10 +61,10 @@
         </div>
 
         <!-- Типы обращения -->
-        <div class="card">
+        <div class="card types-section">
           <div class="card__head">
             <h3 class="card__title">Типы обращения</h3>
-            <select class="period period--sm" v-model="typesPeriod" @change="onPeriodChange('types')">
+            <select v-model="typesPeriod" class="period period--sm" @change="onPeriodChange('types')">
               <option value="week">За неделю</option>
               <option value="month">За месяц</option>
               <option value="all">За всё время</option>
@@ -80,8 +80,8 @@
       </section>
 
       <!-- ===== Захоронения ===== -->
-      <template v-for="(value, key) in burialStats" :key="key">
-        <section v-if="key !== 'total'" class="section">
+      <template v-for="(value, key) in burialStats">
+        <section v-if="key !== 'total'" :key="key" class="section">
           <div class="card flat">
             <div class="card__head">
               <h3 class="card__title card__title--muted">{{ burialStatsTitles[key] }}</h3>
@@ -96,10 +96,10 @@
       </template>
 
       <!-- ===== Новостей всего ===== -->
-      <section class="section">
+      <section class="section news-section">
         <div class="section__head">
           <h2 class="h-title">Новостей всего: {{ newsStats?.count ?? 0 }}</h2>
-          <select class="period" v-model="newsPeriod" @change="onPeriodChange('news')">
+          <select v-model="newsPeriod" class="period" @change="onPeriodChange('news')">
             <option value="week">За неделю</option>
             <option value="month">За месяц</option>
             <option value="all">За всё время</option>
@@ -121,7 +121,7 @@
       </section>
 
       <!-- ===== Топ-5 просматриваемых новостей (без селекта) ===== -->
-      <section class="section">
+      <section class="section topnews-section">
         <div class="card">
           <div class="card__head">
             <h3 class="card__title">Топ-5 просматриваемых новостей</h3>
@@ -174,7 +174,7 @@ const reqPeriod   = ref('month') // week | month | all
 const typesPeriod = ref('month')
 const newsPeriod  = ref('all')
 
-function onPeriodChange(which){
+function onPeriodChange(_which){
   // плейсхолдер: можно будет пробросить параметры на бэк
   // например: getRequestsStats({ period: reqPeriod.value })
   loadDashboard()
@@ -283,8 +283,8 @@ async function loadDashboard(){
 }
 
 let timer = null
-function startAutoRefresh(){ stopAutoRefresh(); timer = setInterval(() => { loadDashboard(); loadTopNews() }, 30000) }
-function stopAutoRefresh(){ if (timer) clearInterval(timer), (timer = null) }
+function startAutoRefresh(){ stopAutoRefresh(); timer = setInterval(() => { loadDashboard(); loadTopNews(); }, 30000) }
+function stopAutoRefresh(){ if (timer) { clearInterval(timer); timer = null; } }
 function onVis(){ if (document.visibilityState === 'visible') { loadDashboard(); loadTopNews() } }
 
 onMounted(() => {
@@ -379,4 +379,224 @@ onBeforeUnmount(() => {
 .topnews__views{ display:inline-flex; align-items:center; gap:6px; color:#6B7280; font-weight:600; }
 .topnews__chev{ color:#9CA3AF; }
 .topnews__empty{ color:#939393; font-size:14px; }
+
+/* ===== МОБИЛЬНЫЕ СТИЛИ ===== */
+@media (max-width: 768px) {
+  /* Белый фон для страницы отчетов */
+  :global(.reports-page) {
+    background: #ffffff !important;
+  }
+  
+  :global(.reports-page .user) {
+    background: #ffffff !important;
+  }
+
+  /* Общие стили */
+  .dash {
+    padding: 20px 16px;
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Заголовки секций */
+  .h-title {
+    font-size: 20px;
+    line-height: 24px;
+    margin-bottom: 16px;
+  }
+
+  /* Секции */
+  .section {
+    gap: 12px;
+  }
+
+  .section__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  /* Селекты */
+  .period {
+    width: 100%;
+    height: 40px;
+    font-size: 16px;
+    padding: 0 16px;
+  }
+
+  /* KPI сетка */
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .kpi {
+    padding: 12px;
+    min-height: 70px;
+  }
+
+  .kpi__label {
+    font-size: 12px;
+  }
+
+  .kpi__value {
+    font-size: 24px;
+  }
+
+  /* Порядок секций на мобильных */
+  .kpi-section {
+    order: 1; /* KPI секция - первая */
+  }
+
+  .grid-2 {
+    order: 2; /* Секция с двумя блоками - вторая */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .work-section {
+    order: 2; /* "Сейчас в работе" - вторая в grid-2 */
+  }
+
+  .types-section {
+    order: 1; /* "Типы обращения" - первая в grid-2 */
+  }
+
+  /* Секции новостей - последние */
+  .news-section {
+    order: 3; /* "НОВОСТЕЙ ВСЕГО" - третья */
+  }
+
+  .topnews-section {
+    order: 4; /* "Топ-5 просматриваемых новостей" - четвертая */
+  }
+
+  /* Карточки */
+  .card {
+    padding: 16px;
+    border-radius: 12px;
+    background: #FAF7EF;
+    border: 1px solid #E5E7EB;
+  }
+
+  .card.flat {
+    background: #FAF7EF;
+    border: 1px solid #E5E7EB;
+  }
+
+  .card__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .card__title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  /* Специальные стили для карточки "Типы обращения" */
+  .card:has(.types-wrap) {
+    overflow: hidden;
+  }
+
+  /* Убираем карточку у "Типы обращения" на мобильных */
+  .types-section {
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Сейчас в работе */
+  .worklist {
+    max-height: 200px;
+  }
+
+  .worklist__row {
+    padding: 12px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid #E5E7EB;
+    margin-bottom: 8px;
+  }
+
+  .worklist__text {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* Типы обращения - оставляем график как есть */
+  .types-wrap {
+    height: 200px; /* Уменьшаем высоту для мобильных */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  /* Стили для Chart.js на мобильных */
+  .types-wrap canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+
+  /* Чипы */
+  .chips {
+    gap: 8px;
+  }
+
+  .chip {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  /* Новости */
+  .news-stats {
+    gap: 8px;
+  }
+
+  .news-stats__item {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  /* Top-5 news */
+  .topnews__row {
+    padding: 12px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid #E5E7EB;
+    margin-bottom: 8px;
+  }
+
+  .topnews__title {
+    font-size: 14px;
+    max-width: calc(100% - 80px);
+  }
+
+  .topnews__views {
+    font-size: 12px;
+  }
+
+  /* Кнопки */
+  .section__actions {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+
+  .btn {
+    width: 100%;
+    height: 44px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+}
 </style>

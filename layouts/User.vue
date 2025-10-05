@@ -38,31 +38,25 @@ import AppHeader from "~/components/layout/AppHeader.vue";
     background: #ffffff; /* Белый фон по умолчанию */
   }
 
-  /* Бежевый фон только для страницы заявок (список) */
-  :global(.tickets-page) {
-    background: #faf7ef !important;
-  }
-  
-  :global(.tickets-page .user) {
-    background: #faf7ef !important;
-  }
+  /* Мобильные стили фона */
+  @media (max-width: 768px) {
+    /* Бежевый фон только для страницы заявок (список) на мобильных */
+    :global(.tickets-page) {
+      background: #faf7ef !important;
+    }
+    
+    :global(.tickets-page .user) {
+      background: #faf7ef !important;
+    }
 
-  /* Белый фон для детальной страницы заявки */
-  :global(.ticket-detail-page) {
-    background: #ffffff !important;
-  }
-  
-  :global(.ticket-detail-page .user) {
-    background: #ffffff !important;
-  }
-
-  /* Принудительно устанавливаем бежевый фон для списка заявок */
-  :global(.tickets-page) {
-    background: #faf7ef !important;
-  }
-  
-  :global(.tickets-page .user) {
-    background: #faf7ef !important;
+    /* Белый фон для детальной страницы заявки на мобильных */
+    :global(.ticket-detail-page) {
+      background: #ffffff !important;
+    }
+    
+    :global(.ticket-detail-page .user) {
+      background: #ffffff !important;
+    }
   }
 
   &__wrap {
