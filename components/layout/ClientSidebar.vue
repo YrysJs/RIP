@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
-import { computed } from "vue";
-import { RouterLink } from "vue-router";
+import { useRoute, RouterLink  } from "vue-router";
+import { computed, onMounted, ref } from "vue";
+import { getUnreadNotifications } from "~/services/notifications";
 
 const props = withDefaults(defineProps<{ title?: string }>(), {
   title: "ЛИЧНЫЙ КАБИНЕТ",
@@ -10,20 +10,36 @@ const props = withDefaults(defineProps<{ title?: string }>(), {
 type MenuItem = {
   title: string;
   path: string;
-  count?: number;
+  count?: number | any;
 };
+
+const unreadCount = ref(0);
 
 const menu: MenuItem[] = [
   { title: "Личные данные", path: "/client/profile" },
-  { title: "Заявка на захоронение", path: "/client/tickets/burial" }, //, count: 1
+  { title: "Заявка на захоронение", path: "/client/tickets/burial" },
   { title: "История услуг", path: "/client/history" },
   { title: "Цифровой мемориал", path: "/client/memorial" },
   { title: "Запрос на перезахоронение", path: "/client/burial" },
   { title: "Обращение в акимат", path: "/client/government" },
+  { title: 'Уведомления', path: '/client/notifications', count: computed(() => unreadCount.value > 0 ? unreadCount.value : null) },
 ];
 
 const route = useRoute();
 const isActive = (path: string) => computed(() => route.path.startsWith(path));
+
+const fetchUnreadCount = async () => {
+  try {
+    const response = await getUnreadNotifications();
+    unreadCount.value = response.data?.total || 0;
+  } catch (error) {
+    console.error('Ошибка загрузки непрочитанных уведомлений:', error);
+  }
+};
+
+onMounted(() => {
+  fetchUnreadCount();
+});
 </script>
 
 <template>
@@ -39,7 +55,9 @@ const isActive = (path: string) => computed(() => route.path.startsWith(path));
         :class="{ 'is-active': isActive(item.path).value }"
       >
         <span class="sidebar__link-text">{{ item.title }}</span>
-        <span v-if="item.count" class="sidebar__badge">{{ item.count }}</span>
+        <span v-if="typeof item.count === 'number' ? item.count : item.count?.value" class="sidebar__badge">
+          {{ typeof item.count === 'number' ? item.count : item.count?.value }}
+        </span>
       </RouterLink>
     </nav>
   </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import { computed, ref } from 'vue';
-import { RouterLink } from 'vue-router';
+import { useRoute, RouterLink  } from 'vue-router';
+import { computed, ref, onMounted } from 'vue';
+import { getUnreadNotifications } from "~/services/notifications";
 
 const props = withDefaults(defineProps<{ title?: string }>(), {
   title: 'Кабинет поставщика услуг'
@@ -10,8 +10,9 @@ const props = withDefaults(defineProps<{ title?: string }>(), {
 const route = useRoute();
 const isActive = (p: string) => computed(() => route.path.startsWith(p));
 
-const openA = ref(true);  // Мои заявки
-const openB = ref(true);  // Мои товары и услуги
+const openA = ref(true);
+const openB = ref(true);
+const unreadCount = ref(0);
 
 const sectionA = [
   { title: 'Активные', path: '/supplier/tickets/active', count: 0 },
@@ -25,12 +26,26 @@ const sectionB = [
   { title: 'Не активные',       path: '/supplier/services/inactive' }
 ];
 
-const singles = [
+const singles = computed(() => [
   { title: 'Добавить товар или услугу', path: '/supplier/services/add-service', kind: 'add' },
   { title: 'Отзывы',                     path: '/supplier/reviews' },
   { title: 'Отчеты',                     path: '/supplier/reports' },
-  { title: 'Обращение в Акимат',         path: '/supplier/goverment/requests' }
-];
+  { title: 'Обращение в Акимат',         path: '/supplier/goverment/requests' },
+  { title: 'Уведомления', path: '/supplier/notifications', count: unreadCount.value > 0 ? unreadCount.value : null },
+]);
+
+const fetchUnreadCount = async () => {
+  try {
+    const response = await getUnreadNotifications();
+    unreadCount.value = response.data?.total || 0;
+  } catch (error) {
+    console.error('Ошибка загрузки непрочитанных уведомлений:', error);
+  }
+};
+
+onMounted(() => {
+  fetchUnreadCount();
+});
 </script>
 
 <template>
@@ -40,9 +55,9 @@ const singles = [
     <div class="sidebar__block">
       <button class="sidebar__head" @click="openA = !openA">
         <span>Мои заявки</span>
-        <i class="sidebar__chev" :class="{ 'is-open': openA }"></i>
+        <i class="sidebar__chev" :class="{ 'is-open': openA }"/>
       </button>
-      <div class="sidebar__list" v-show="openA">
+      <div v-show="openA" class="sidebar__list">
         <RouterLink
             v-for="(it, i) in sectionA"
             :key="i" :to="it.path"
@@ -58,9 +73,9 @@ const singles = [
     <div class="sidebar__block">
       <button class="sidebar__head" @click="openB = !openB">
         <span>Мои товары и услуги</span>
-        <i class="sidebar__chev" :class="{ 'is-open': openB }"></i>
+        <i class="sidebar__chev" :class="{ 'is-open': openB }"/>
       </button>
-      <div class="sidebar__list" v-show="openB">
+      <div v-show="openB" class="sidebar__list">
         <RouterLink
             v-for="(it, i) in sectionB"
             :key="i" :to="it.path"
@@ -79,9 +94,10 @@ const singles = [
           :key="i" :to="it.path"
           class="sidebar__link"
           :class="{ 'is-active': isActive(it.path).value, 'is-add': it.kind === 'add' }"
-      >
-        <span class="sidebar__text">{{ it.title }}</span>
-      </RouterLink>
+        >
+          <span class="sidebar__text">{{ it.title }}</span>
+          <span v-if="it.count" class="sidebar__badge">{{ it.count }}</span>
+        </RouterLink>
     </nav>
   </div>
 </template>
