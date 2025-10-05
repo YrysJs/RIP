@@ -34,6 +34,10 @@ import ManagerBottomNav from "~/components/layout/ManagerBottomNav.vue";
   margin-top: 110px;
   flex-direction: column;
 
+  @media (max-width: 768px) {
+    background: #fff;
+  }
+
   &__wrap {
     width: 100%;
     max-width: 1160px;
@@ -76,6 +80,7 @@ import ManagerBottomNav from "~/components/layout/ManagerBottomNav.vue";
     /* Отступ снизу для bottom navigation на мобильных */
     @media (max-width: 768px) {
       padding-bottom: 80px;
+      border: none;
     }
   }
 }

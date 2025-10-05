@@ -403,6 +403,7 @@ watch([dateFrom, dateTo, cemeteryId], () => {
     display: flex;
     align-items: baseline;
     gap: 8px;
+    flex-direction: column;
   }
 
   .title {

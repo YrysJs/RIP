@@ -199,7 +199,7 @@ const statusConfig = computed(() => {
             <img src="/icons/file-text.svg" alt="чек" class="w-4 h-4" />
             Чек об оплате
           </button>
-          <div class="flex gap-[16px]">
+          <div class="flex gap-[16px]" v-if="booking?.status !== 'confirmed' && booking?.status !== 'cancelled'">
             <button class="px-6 py-2 bg-[#FEE2E2] text-[#B91C1C] rounded-md text-sm hover:bg-[#fcbaba]" @click="emit('cancel')">
               Отменить
             </button>
