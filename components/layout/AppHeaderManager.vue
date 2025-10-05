@@ -89,12 +89,13 @@ const closeMenu = () => {
 }
 
 // Загружаем данные пользователя как в AppHeader
-onMounted(() => {
-  getCurrentUser({ id: localStorage.getItem("user_id") })
-    .then((response) => {
-      userInfo.value = response.data
-    })
-    .catch(() => {})
+onMounted(async () => {
+  try {
+    const response = await getCurrentUser({ id: localStorage.getItem("user_id") })
+    userInfo.value = response.data
+  } catch (error) {
+    console.error('Ошибка при получении данных пользователя:', error)
+  }
 })
 
 // Обработка клика вне меню

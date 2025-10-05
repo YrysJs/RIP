@@ -201,18 +201,19 @@ const handleScroll = () => {
   isTop.value = (window.scrollY || window.pageYOffset) <= 8;
 };
 
-onMounted(() => {
+onMounted(async () => {
   // навешиваем слушатель сразу
   handleScroll();
   window.addEventListener("scroll", handleScroll, { passive: true });
 
   // дальше можно грузить пользователя параллельно
-  getCurrentUser({ id: localStorage.getItem("user_id") })
-    .then((response) => {
-      userInfo.value = response.data;
-      userStore.setUser(userInfo.value);
-    })
-    .catch(() => {});
+  try {
+    const response = await getCurrentUser({ id: localStorage.getItem("user_id") })
+    userInfo.value = response.data;
+    userStore.setUser(userInfo.value);
+  } catch (error) {
+    console.error('Ошибка при получении данных пользователя:', error)
+  }
 });
 
 onUnmounted(() => {

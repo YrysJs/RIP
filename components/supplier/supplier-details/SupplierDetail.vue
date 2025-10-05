@@ -33,6 +33,8 @@ const fetchOrderData = async () => {
   } catch (err) {
     error.value = err.message || "Ошибка при загрузке данных заказа";
     console.error("Error fetching order:", err);
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     loading.value = false;
   }
@@ -48,6 +50,8 @@ const getCemetryInfoById = async (id) => {
   } catch (err) {
     error.value = err.message || "Ошибка при загрузке данных заказа";
     console.error("Error fetching order:", err);
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     loading.value = false;
   }
@@ -65,6 +69,8 @@ const handleStatusUpdate = async (orderId, newStatus) => {
     await fetchOrderData();
   } catch (error) {
     console.error("Ошибка при обновлении статуса:", error);
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   }
 };
 
@@ -146,9 +152,9 @@ const fullName = computed(() => {
   const u = orderData.value?.user_info;
   return [u?.surname, u?.name, u?.patronymic].filter(Boolean).join(" ") || "—";
 });
-const cemeteryName = computed(() => orderData.value?.cemetery_name || "—");
-const sectorNumber = computed(() => orderData.value?.sector_number ?? "—");
-const graveId = computed(() => orderData.value?.grave_id ?? "—");
+const cemeteryName = computed(() => orderData.value?.grave_info?.cemetery_name || "—");
+const sectorNumber = computed(() => orderData.value?.grave_info?.sector_number ?? "—");
+const graveId = computed(() => orderData.value?.grave_info?.grave_number ?? "—");
 
 // const whatsAppLink = computed(() => {
 //   const phone = orderData.value?.user_phone?.replace(/\D/g, "") || "";
@@ -168,6 +174,11 @@ const graveModalData = computed(() => ({
   description: orderData.value?.grave_description || "",
   note: orderData.value?.grave_note || "",
 }));
+
+function formatToDDMMYYYY(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("ru-RU"); // например "17.05.2025"
+}
 </script>
 
 <template>
@@ -232,7 +243,7 @@ const graveModalData = computed(() => ({
             <div class="h-[38px] flex items-center text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">ФИО покойного:</p>
               <p class="black-16">
-                {{ orderData?.deceased?.full_name || "—" }}
+                {{ orderData?.burial_info?.deceased?.full_name || "—" }}
               </p>
             </div>
           </div>
@@ -284,7 +295,7 @@ const graveModalData = computed(() => ({
             <div class="h-[38px] flex items-center text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">Время прибытия:</p>
               <p class="black-16">
-                {{ it?.delivery_destination_time || "—" }}
+                {{ formatToDDMMYYYY(it?.delivery_arrival_time) || "—" }}
               </p>
             </div>
           </div>

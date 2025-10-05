@@ -112,6 +112,8 @@ const fetchNews = async () => {
     newsList.value = response.data;
   } catch (error) {
     console.error("Ошибка при получении новостей:", error);
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   }
 };
 

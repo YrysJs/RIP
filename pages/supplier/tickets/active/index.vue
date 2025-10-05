@@ -3,13 +3,18 @@ import { getOrders } from "~/services/supplier";
 import { ref, onMounted, computed } from "vue";
 
 const displayRows = computed(() =>
-  (orders.value ?? []).map((o) => ({
-    id: o.id ?? o.burial_order_id,
-    product: getProductName(o),
-    customer: o.customer?.fullName || o.user_name || o.user_phone || "—",
-    date: o.burial_date || o.created_at,
-    status: o.status || "in_progress",
-  }))
+  (orders.value ?? [])
+    .filter((o) => {
+      const status = o.status || "in_progress";
+      return status !== "completed" && status !== "cancelled";
+    })
+    .map((o) => ({
+      id: o.id ?? o.burial_order_id,
+      product: getProductName(o),
+      customer: o.customer?.fullName || o.user_name || o.user_phone || "—",
+      date: o.burial_date || o.created_at,
+      status: o.status || "in_progress",
+    }))
 )
 
 // Чип статуса (текст + класс под цвет бейджа)
@@ -19,6 +24,7 @@ function statusChip(status) {
     processing: { text: "В обработке", kind: "orange" },
     in_progress: { text: "В процессе", kind: "orange" },
     completed: { text: "Завершен", kind: "green" },
+    pending_payment: { text: "Ожидает оплаты", kind: "green" },
     cancelled: { text: "Отменен", kind: "red" },
   }[status] ?? { text: "—", kind: "orange" };
   return { text: map.text, class: `chip chip--${map.kind}` };
@@ -89,6 +95,8 @@ const fetchOrders = async () => {
   } catch (err) {
     console.error("Ошибка при получении заказов:", err);
     error.value = "Ошибка при загрузке заказов";
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     loading.value = false;
   }
@@ -133,7 +141,7 @@ const toggleFilters = () => {
 const formatDate = (dateString) => {
   if (!dateString) return "";
   const date = new Date(dateString);
-  return date.toLocaleDateString("ru-RU");
+  return date.toLocaleDateString("ru-RU") + " " + date.toLocaleTimeString("ru-RU", { hour: '2-digit', minute: '2-digit' });
 };
 
 // Функция для получения названия продукта/услуги из первого элемента заказа

@@ -1,8 +1,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { getProducts, addToCart, getCart, removeFromCart } from '~/services/client'
+import { getProducts, addToCart, getCart, removeFromCart, getProductById, getProductReviews } from '~/services/client'
+import { getSupplier } from '~/services/login'
 import PaymentModalProducts from '~/components/layout/modals/PaymentModalProducts.vue'
 import DeliveryModal from '~/components/layout/modals/DeliveryModal.vue'
+import ServiceDetailModal from '~/components/layout/modals/ServiceDetailModal.vue'
 
 const products = ref([])
 const cartItems = ref([])
@@ -16,6 +18,10 @@ const showPaymentModal = ref(false)
 const removingFromCart = ref(false)
 const deliveryModalVisible = ref(false)
 const selectedProductId = ref(null)
+const serviceDetailModalVisible = ref(false)
+const serviceDelivery = ref({})
+const serviceReviews = ref([])
+const serviceSupplier = ref({})
 
 // Вычисляемое свойство для общей суммы корзины
 const cartTotal = computed(() => {
@@ -49,6 +55,8 @@ const loadCart = async () => {
     cartItems.value = response.data || []
   } catch (err) {
     console.error('Ошибка при загрузке корзины:', err)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   }
 }
 
@@ -84,6 +92,8 @@ const handleDeliveryConfirm = async (deliveryData) => {
   } catch (err) {
     cartMessage.value = 'Ошибка при добавлении товара'
     console.error('Ошибка при добавлении в корзину:', err)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     addingToCart.value = false
     selectedProductId.value = null
@@ -110,6 +120,8 @@ const removeProductFromCart = async (productId) => {
   } catch (err) {
     cartMessage.value = 'Ошибка при удалении товара'
     console.error('Ошибка при удалении из корзины:', err)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     removingFromCart.value = false
   }
@@ -139,6 +151,28 @@ const handlePaymentSuccess = async () => {
   } catch (err) {
     cartMessage.value = 'Ошибка при обновлении данных'
     console.error('Ошибка при обновлении корзины:', err)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
+  }
+}
+
+// Функция для получения детальной информации о продукте
+const fetchProduct = async (id) => {
+  try {
+    const response = await getProductById(id)
+    serviceDelivery.value = response.data
+    const reviews = await getProductReviews(id)
+    serviceReviews.value = reviews.data
+    const supplierRes = await getSupplier({
+      phone: serviceDelivery.value.supplier_phone
+    })
+    serviceSupplier.value = supplierRes.value
+  } catch (error) {
+    console.error('Ошибка при загрузке услуги:', error)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
+  } finally {
+    serviceDetailModalVisible.value = true
   }
 }
 
@@ -153,6 +187,8 @@ onMounted(async () => {
   } catch (err) {
     error.value = 'Ошибка при загрузке услуг'
     console.error(err)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     loading.value = false
   }
@@ -227,7 +263,7 @@ onMounted(async () => {
                     <span>Срок выполнения: {{ product.service_time || '1 день' }}</span>
                 </div>
                 <div class="flex gap-[10px] mt-[10px]">
-                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#17212A] py-[8px] font-semibold">Подробнее</button>
+                    <button class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#17212A] py-[8px] font-semibold" @click="fetchProduct(product.id)">Подробнее</button>
                     <button 
                       class="w-[50%] text-sm rounded-lg bg-[#E9B949] text-[#17212A] py-[8px] font-semibold"
                       @click="addProductToCart(product.id)"
@@ -302,6 +338,16 @@ onMounted(async () => {
       :loading="addingToCart"
       @close="closeDeliveryModal" 
       @confirm="handleDeliveryConfirm" 
+    />
+    
+    <!-- Модальное окно с детальной информацией о услуге -->
+    <ServiceDetailModal 
+      :visible="serviceDetailModalVisible" 
+      :service="serviceDelivery" 
+      :reviews="serviceReviews" 
+      :supplier="serviceSupplier" 
+      @close="serviceDetailModalVisible = false" 
+      @order="addProductToCart" 
     />
   </div>
 </template>

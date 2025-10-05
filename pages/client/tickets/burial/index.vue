@@ -73,6 +73,8 @@ onMounted(async () => {
     burialRequests.value = response.data.data.data;
   } catch (error) {
     console.error("Ошибка при получении заявок:", error);
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     loading.value = false;
   }

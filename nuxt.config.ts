@@ -23,6 +23,7 @@ export default defineNuxtConfig({
     "~/plugins/v-mask.js",
     "~/plugins/axios.js",
     "~/plugins/dropzone-vue.js",
+    "~/plugins/toast.client.js",
   ],
   yandexMaps: {
     apikey: 'c8be6d3f-5040-4607-8cb1-082ea246eb81',

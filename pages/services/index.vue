@@ -69,6 +69,8 @@ const fetchProduct = async (id) => {
     serviceSupplier.value = supplierRes.value
   } catch (error) {
     console.error('Ошибка при услуги:', error)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     serviceDetailModalVisible.value = true
   }
@@ -114,6 +116,8 @@ async function fetchProducts() {
         console.log('Загружено продуктов:', products.value.length);
     } catch (error) {
         console.error('Ошибка при загрузке продуктов:', error);
+        const { $toast } = useNuxtApp()
+        $toast.error('Сервер не доступен')
         products.value = [];
     } finally {
         loading.value = false;
@@ -131,6 +135,8 @@ async function fetchCategories() {
         console.log('Загружено категорий:', categories.value.length);
     } catch (error) {
         console.error('Ошибка при загрузке категорий:', error);
+        const { $toast } = useNuxtApp()
+        $toast.error('Сервер не доступен')
         categories.value = [];
     }
 }
@@ -142,6 +148,8 @@ const loadCart = async () => {
     console.log('Cart loaded:', cartItems.value)
   } catch (err) {
     console.error('Ошибка при загрузке корзины:', err)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   }
 }
 
@@ -181,6 +189,8 @@ const handleDeliveryConfirm = async (deliveryData) => {
   } catch (err) {
     cartMessage.value = 'Ошибка при добавлении товара'
     console.error('Ошибка при добавлении в корзину:', err)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     addingToCart.value = false
     selectedProductId.value = null
