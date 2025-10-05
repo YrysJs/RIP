@@ -50,7 +50,7 @@ const getShortLabel = (label: string) => {
               :alt="it.label"
               width="18"
               height="18"
-          />
+          >
           <span class="sidebar__text">{{ it.label }}</span>
         </RouterLink>
       </nav>
@@ -89,7 +89,7 @@ const getShortLabel = (label: string) => {
           </svg>
         </div>
         <span class="nav-text">{{ getShortLabel(it.label) }}</span>
-        <div v-if="isActive(it.to).value" class="nav-indicator"></div>
+        <div v-if="isActive(it.to).value" class="nav-indicator" />
       </RouterLink>
     </div>
   </div>
@@ -146,17 +146,24 @@ const getShortLabel = (label: string) => {
 
 /* Мобильная нижняя навигация */
 .mobile-bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #FFFFFF;
-  display: flex;
-  justify-content: space-around;
-  padding: 8px 0 12px 0;
-  z-index: 1000;
-  border-top: 1px solid #E5E7EB;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  display: none; /* Скрыто по умолчанию */
+}
+
+/* Показать только на мобильных устройствах */
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    justify-content: space-around;
+    padding: 8px 0 12px 0;
+    z-index: 1000;
+    border-top: 1px solid #E5E7EB;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .nav-item {
@@ -202,14 +209,6 @@ const getShortLabel = (label: string) => {
   background: #F7B500;
   border-radius: 50%;
 }
-
-/* Скрываем навигацию на десктопе */
-@media (min-width: 769px) {
-  .mobile-bottom-nav {
-    display: none;
-  }
-}
-
 
 /* Скрываем боковую панель на мобильных */
 @media (max-width: 768px) {
