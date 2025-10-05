@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { getProducts, addToCart, getCart, removeFromCart } from '~/services/client'
 import PaymentModalProducts from '~/components/layout/modals/PaymentModalProducts.vue'
+import DeliveryModal from '~/components/layout/modals/DeliveryModal.vue'
 
 const products = ref([])
 const cartItems = ref([])
@@ -13,6 +14,8 @@ const addingToCart = ref(false)
 const cartMessage = ref('')
 const showPaymentModal = ref(false)
 const removingFromCart = ref(false)
+const deliveryModalVisible = ref(false)
+const selectedProductId = ref(null)
 
 // Вычисляемое свойство для общей суммы корзины
 const cartTotal = computed(() => {
@@ -51,14 +54,24 @@ const loadCart = async () => {
 
 // Функция для добавления товара в корзину
 const addProductToCart = async (productId) => {
+  selectedProductId.value = productId
+  deliveryModalVisible.value = true
+}
+
+// Функция для обработки подтверждения данных доставки
+const handleDeliveryConfirm = async (deliveryData) => {
   addingToCart.value = true
   cartMessage.value = ''
+  deliveryModalVisible.value = false
   
   try {
+    // Формируем дату и время доставки в нужном формате
+    const deliveryDateTime = `${deliveryData.date}T${deliveryData.time}:00Z`
+    
     const cartData = {
-      delivery_arrival_time: "2025-05-17T09:00:00Z",
-      delivery_destination_address: "Алматы, ул. Еревагская 157",
-      product_id: productId,
+      delivery_arrival_time: deliveryDateTime,
+      delivery_destination_address: deliveryData.address,
+      product_id: selectedProductId.value,
       quantity: 1
     }
     
@@ -73,7 +86,15 @@ const addProductToCart = async (productId) => {
     console.error('Ошибка при добавлении в корзину:', err)
   } finally {
     addingToCart.value = false
+    selectedProductId.value = null
   }
+}
+
+// Функция для закрытия модалки доставки
+const closeDeliveryModal = () => {
+  deliveryModalVisible.value = false
+  selectedProductId.value = null
+  addingToCart.value = false
 }
 
 // Функция для удаления товара из корзины
@@ -220,7 +241,7 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-      <div class="p-[20px] bg-white rounded-lg max-w-[376px] h-fit">
+      <div class="p-[20px] bg-white rounded-lg min-w-[376px] max-w-[376px] h-fit">
 
         <!-- Корзина с товарами -->
         <div v-if="hasCartItems" class="border-b border-[#EEEEEE] pb-[16px] pt-[16px]">
@@ -273,6 +294,14 @@ onMounted(async () => {
       }"
       @close="closePaymentModal"
       @success="handlePaymentSuccess"
+    />
+    
+    <!-- Модальное окно доставки -->
+    <DeliveryModal 
+      :visible="deliveryModalVisible" 
+      :loading="addingToCart"
+      @close="closeDeliveryModal" 
+      @confirm="handleDeliveryConfirm" 
     />
   </div>
 </template>

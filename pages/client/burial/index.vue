@@ -79,7 +79,7 @@ const formatPhoneNumber = (phone) => {
       <template v-else>
         <div class="w-full flex justify-end">
           <button
-              class="btn btn--yellow empty__btn"
+              class="btn btn--yellow"
               @click="router.push('/client/burial/create')"
           >
             Создать заявку

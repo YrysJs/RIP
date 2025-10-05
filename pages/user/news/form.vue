@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="user">
+  <NuxtLayout name="user" class="news-form-page">
     <!-- back -->
     <button class="btn-back mb-[16px]" @click="router.push('/user/news')">
       <img src="/icons/arrow-left-primary.svg" class="w-4 h-4 mr-[10px]" />
@@ -132,6 +132,8 @@
       <SuccessModal
         v-if="showSuccessModal"
         :title="isEdit ? 'Изменения сохранены!' : 'Новость опубликована!'"
+        :text="'Закрыть'"
+        :show-button="false"
         @close="closeSuccessModal"
       />
     </Teleport>
@@ -162,7 +164,6 @@ const coverPreview = ref('')   // URL существующей обложки (�
 const file         = ref(null) // новый файл с дропзоны
 
 const achievementPhotos = ref([])
-const base64File = ref('')
 const showSuccessModal = ref(false)
 
 const CHAR_LIMIT = 3500
@@ -182,8 +183,9 @@ onMounted(async () => {
     try {
       // если у тебя есть общий baseURL — можешь заменить на $fetch(`${baseURL}/news/${editId.value}`)
       n = await $fetch(`/news/${editId.value}`)
-    } catch (e) {
+    } catch (error) {
       // ок, без деталей тоже проживём
+      console.log('Failed to fetch news:', error)
     }
   }
 
@@ -226,7 +228,11 @@ const closeSuccessModal = () => {
   router.push('/user/news')
 }
 async function copyLink() {
-  try { await navigator.clipboard.writeText(window.location.href) } catch {}
+  try { 
+    await navigator.clipboard.writeText(window.location.href) 
+  } catch (error) {
+    console.log('Copy failed:', error)
+  }
 }
 
 // ------- сохранить
@@ -381,4 +387,218 @@ const saveNews = async () => {
   height:48px; background:#F7B500; color:#1F2937; padding:0 18px; border-radius:12px; font-weight:700;
 }
 .btn-submit:hover{ filter:brightness(.98); }
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+  /* Белый фон для страницы создания новостей */
+  :global(.news-form-page) {
+    background: #ffffff !important;
+  }
+  
+  :global(.news-form-page .user) {
+    background: #ffffff !important;
+  }
+
+  /* Добавляем top padding */
+  .news-create {
+    padding-top: 20px;
+  }
+
+  /* Адаптируем кнопку назад */
+  .btn-back {
+    font-size: 16px;
+    padding: 8px 0;
+    margin-bottom: 20px;
+  }
+
+  /* Адаптируем заголовок */
+  .page-title {
+    font-size: 24px;
+    line-height: 28px;
+    margin-bottom: 20px;
+    font-family: "FoglihtenNo06", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  /* Адаптируем поля формы */
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .label {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .label--dark {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  /* Адаптируем селект */
+  .form-select {
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid #E5E7EB;
+    background: #f9f9f9;
+    color: #6B7280;
+  }
+
+  .form-select--narrow {
+    max-width: 100%;
+    padding: 12px 16px;
+  }
+
+  /* Адаптируем инпут */
+  .form-input {
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid #E5E7EB;
+    background: #f9f9f9;
+    color: #6B7280;
+  }
+
+  .form-input::placeholder {
+    color: #9CA3AF;
+  }
+
+  /* Адаптируем область загрузки */
+  .upload-area {
+    min-height: 200px;
+    border: 2px dashed #D1D5DB;
+    border-radius: 12px;
+    background: #F9FAFB;
+  }
+
+  .upload-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .upload-hint {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .upload-btn {
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  /* Адаптируем текстовую область */
+  .form-textarea {
+    min-height: 200px;
+    padding: 16px;
+    font-size: 16px;
+    border: 1px solid #E5E7EB;
+    background: #f9f9f9;
+    color: #6B7280;
+  }
+
+  .char-counter {
+    font-size: 14px;
+    color: #9CA3AF;
+  }
+
+  /* Адаптируем раздел прикрепления файлов */
+  .attach-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #111827;
+  }
+
+  .attach-add {
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    background: #F9FAFB;
+    color: #6B7280;
+    border: 1px solid #E5E7EB;
+    width: auto;
+    display: inline-block;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .attach-add:hover {
+    background: #F3F4F6;
+    border-color: #D1D5DB;
+  }
+
+  /* Адаптируем галерею файлов */
+  .gallery-grid {
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .image-preview-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+  }
+
+  .image-preview {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+  }
+
+  .image-overlay {
+    border-radius: 8px;
+  }
+
+  .remove-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+  }
+
+  .image-number {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+
+  /* Адаптируем нижнюю панель */
+  .footer-bar {
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #E5E7EB;
+    margin-bottom: 80px;
+  }
+
+  .copy-link {
+    width: 100%;
+    justify-content: center;
+    padding: 16px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  .btn-submit {
+    width: 100%;
+    height: 56px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 12px;
+    background: #F7B500;
+    color: #1F2937;
+  }
+
+  /* Скрываем панель редактора на мобильных */
+  .editor-toolbar {
+    display: none;
+  }
+
+  /* Дополнительные стили */
+  .text-black {
+    margin-top: 20px;
+  }
+}
 </style>

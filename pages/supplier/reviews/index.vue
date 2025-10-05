@@ -459,5 +459,270 @@ const submitAppeal = async (reviewId) => {
 </template>
 
 <style lang=scss scoped>
+/* Мобильные стили */
+@media (max-width: 768px) {
+  :global(.supplier-reviews-page) {
+    background: #F8F5F0 !important;
+  }
 
+  :global(.supplier-reviews-page .supplier) {
+    background: #F8F5F0 !important;
+  }
+
+  /* Исправляем смещение контента */
+  :global(.supplier-reviews-page .supplier .container) {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  :global(.supplier-reviews-page .supplier .main-content) {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Заголовок */
+  .w-full.h-\[61px\] {
+    margin: 0 16px 16px;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: "FoglihtenNo06", serif;
+    color: #2E1E17;
+    background: #FDFCF9;
+    box-shadow: 0 2px 8px rgba(46, 30, 23, 0.08);
+    border: 1px solid #E0DED9;
+  }
+
+  /* Карточки отзывов */
+  .w-full.bg-white.rounded-\[16px\] {
+    margin: 0 16px 16px;
+    padding: 20px;
+    border-radius: 12px;
+    background: #FDFCF9 !important;
+    box-shadow: 0 2px 8px rgba(46, 30, 23, 0.08);
+    border: 1px solid #E0DED9;
+  }
+
+  /* Заголовок отзыва */
+  .flex.justify-between.items-center {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .font-medium.text-lg {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2E1E17;
+    font-family: "FoglihtenNo06", serif;
+  }
+
+  .flex.items-center.gap-\[20px\] {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .text-sm {
+    font-size: 12px;
+  }
+
+  /* Информация о клиенте */
+  .my-\[32px\] {
+    margin: 16px 0;
+  }
+
+  .flex.text-sm {
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .flex.text-sm:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #E0DED9;
+  }
+
+  .min-w-\[150px\] {
+    min-width: auto;
+    font-weight: 500;
+    color: #A09B95;
+    font-size: 13px;
+  }
+
+  /* Звезды рейтинга */
+  .flex.space-x-1 {
+    gap: 2px;
+  }
+
+  .relative.text-2xl {
+    font-size: 20px;
+  }
+
+  .ml-2.text-sm {
+    margin-left: 8px;
+    font-size: 12px;
+  }
+
+  /* Отзыв и дата */
+  .mt-\[20px\] {
+    margin-top: 16px;
+  }
+
+  .flex.justify-between.items-center {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .font-medium.text-normal {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2E1E17;
+    line-height: 1.4;
+  }
+
+  .text-sm {
+    font-size: 12px;
+    color: #6B7280;
+  }
+
+  /* Фотографии */
+  .mt-4 {
+    margin-top: 12px;
+  }
+
+  .flex.gap-2.flex-wrap {
+    gap: 8px;
+  }
+
+  .w-20.h-20 {
+    width: 60px;
+    height: 60px;
+  }
+
+  /* Блок ответов */
+  .mt-6.border-t.pt-4 {
+    margin-top: 16px;
+    padding-top: 16px;
+  }
+
+  .mb-4.p-4 {
+    margin-bottom: 12px;
+    padding: 12px;
+  }
+
+  .flex.justify-between.items-center.mb-2 {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .font-medium.text-sm {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .text-xs {
+    font-size: 11px;
+  }
+
+  /* Кнопки действий */
+  .flex.justify-end.gap-2 {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .px-4.py-2 {
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    width: 100%;
+  }
+
+  /* Формы */
+  .mt-4 {
+    margin-top: 12px;
+  }
+
+  .space-y-3 {
+    gap: 12px;
+  }
+
+  .block.text-sm.font-medium {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .w-full.px-3.py-2 {
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  .flex.justify-end.gap-2 {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Пагинация */
+  .flex.justify-between.items-center {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .text-sm.text-gray-600 {
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .flex.items-center.gap-2 {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .flex.items-center.gap-1 {
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .px-3.py-2 {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  /* Пустое состояние */
+  .text-gray-500 {
+    padding: 20px;
+  }
+
+  .text-lg.font-medium {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .text-sm {
+    font-size: 13px;
+  }
+}
+
+/* Веб-версия заголовка */
+.w-full.h-\[61px\] {
+  font-family: "FoglihtenNo06", serif;
+  color: #2E1E17;
+}
 </style>

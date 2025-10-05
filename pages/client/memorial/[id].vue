@@ -441,6 +441,7 @@ const submitMemorial = async () => {
     isSubmitting.value = true;
 
     const video_urls = uniqueUrls(videos.value.map((v) => v.url));
+    console.log(memorial.value?.id, route.params.id)
     const memorialId = memorial.value?.id || route.params.id; // ← всегда есть id
     if (!memorialId) throw new Error("Memorial ID is missing");
 

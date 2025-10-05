@@ -53,7 +53,7 @@ function getPaymentReceipt(receiptId) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://194.32.140.103:8091/receipt/${receiptId}`,
+        url: `http://194.32.140.103:8091/api/v1/payments/receipt/${receiptId}`,
         headers: {
             'accept': 'application/json',
         }

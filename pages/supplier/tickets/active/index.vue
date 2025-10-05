@@ -10,7 +10,7 @@ const displayRows = computed(() =>
     date: o.burial_date || o.created_at,
     status: o.status || "in_progress",
   }))
-);
+)
 
 // Чип статуса (текст + класс под цвет бейджа)
 function statusChip(status) {
@@ -159,7 +159,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <NuxtLayout name="supplier">
+  <NuxtLayout name="supplier" class="supplier-tickets-page">
     <div class="page-head">
       <h2 class="page-title">Активные заявки</h2>
 
@@ -302,6 +302,13 @@ onMounted(() => {
                 <i class="chip__dot"></i>
                 {{ statusChip(row.status).text }}
               </span>
+            </div>
+            
+            <!-- Стрелка для мобильных -->
+            <div class="orders-arrow">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M9 18l6-6-6-6" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </div>
           </NuxtLink>
         </div>
@@ -480,7 +487,272 @@ onMounted(() => {
   }
 
   .orders-head {
+    display: none !important;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ СТИЛИ ===== */
+@media (max-width: 768px) {
+  /* Белый фон для страницы заявок поставщиков */
+  :global(.supplier-tickets-page) {
+    background: #ffffff !important;
+  }
+  
+  :global(.supplier-tickets-page .supplier) {
+    background: #ffffff !important;
+  }
+
+  :global(.supplier-tickets-page .supplier__content) {
+    background: #ffffff !important;
+  }
+  /* Общие стили */
+  .page-head {
+    padding: 20px 16px 16px;
+    margin-bottom: 16px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  .page-title {
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .fbtn {
+    height: 40px;
+    padding: 0 16px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+  /* Панель фильтров */
+  .filters-panel {
+    margin: 16px;
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .filters-panel .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .filters-panel label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .filters-panel input,
+  .filters-panel select {
+    height: 44px;
+    font-size: 16px;
+    border-radius: 8px;
+    padding: 0 16px;
+  }
+
+  .filters-panel .flex {
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .filters-panel button {
+    flex: 1;
+    height: 44px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+  /* Таблица заказов */
+  .orders-table-wrap {
+    margin: 16px;
+    border-radius: 12px;
+    padding: 0;
+  }
+
+  .orders-table {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .orders-row {
+    display: flex;
+    flex-direction: column;
+    background: #FAF7EF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 16px;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .orders-row:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .orders-row--alt {
+    background: #FAF7EF;
+  }
+
+  .orders-head {
+    display: none !important;
+  }
+
+  .orders-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .orders-cell:before {
+    content: attr(data-label);
+    font-size: 12px;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .orders-cell:nth-child(1):before { content: "Товар/услуга"; }
+  .orders-cell:nth-child(2):before { content: "Заказчик"; }
+  .orders-cell:nth-child(3):before { content: "Дата похорон"; }
+  .orders-cell:nth-child(4):before { content: "Статус"; }
+
+  .orders-cell {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  /* Специальные стили для карточек заявок */
+  .orders-row {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-bottom: 40px; /* Место для стрелки */
+  }
+
+  .orders-cell:nth-child(1) {
+    font-weight: 700;
+    font-size: 16px;
+    color: #1C140E;
+    margin-bottom: 8px;
+  }
+
+  .orders-cell:nth-child(1):before {
     display: none;
+  }
+
+  .orders-cell:nth-child(2) {
+    font-size: 14px;
+    color: #6B7280;
+    margin-bottom: 4px;
+  }
+
+  .orders-cell:nth-child(2):before {
+    content: "Заказчик: ";
+    font-size: 12px;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  .orders-cell:nth-child(3) {
+    font-size: 14px;
+    color: #6B7280;
+    margin-bottom: 8px;
+  }
+
+  .orders-cell:nth-child(3):before {
+    content: "Дата похорон: ";
+    font-size: 12px;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  .orders-cell:nth-child(4) {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+
+  .orders-cell:nth-child(4):before {
+    display: none;
+  }
+}
+
+/* Стрелка для навигации - скрыта по умолчанию */
+.orders-arrow {
+  display: none;
+}
+
+/* Показываем стрелку только на мобильных */
+@media (max-width: 768px) {
+  .orders-arrow {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  .orders-empty {
+    padding: 40px 16px;
+    font-size: 16px;
+  }
+
+  .retry-btn {
+    margin-left: 0;
+    margin-top: 12px;
+    width: 100%;
+    height: 44px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+  /* Чипы статуса */
+  .chip {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .chip__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .chip--orange {
+    background: #FFF1DC;
+    color: #C77700;
+  }
+
+  .chip--red {
+    background: #FDE7E7;
+    color: #D33030;
+  }
+
+  .chip--green {
+    background: #E8F6EC;
+    color: #2F9B3C;
   }
 }
 </style>

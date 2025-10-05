@@ -187,16 +187,15 @@ export default {
             burial_date: `${this.burialData.burial_date}T${this.burialData.burial_time}:00Z`,
             burial_time: this.burialData.burial_time,
           };
+          if (this.deathCertificateFile && this.burialData?.deceased?.id) {
+            const response = await uploadDeceasedDeathCertificate(
+                this.burialData.deceased.id,
+                this.deathCertificateFile
+            );
+            burialUpdateData.death_cert_url = response?.data?.files?.[0]?.fileUrl || ""
+          }
           await updateBurialRequestData(this.burialData.id, burialUpdateData);
         }
-
-        // 4. Загружаем сертификат о смерти, если он есть
-        // if (this.deathCertificateFile && this.burialData?.deceased?.id) {
-        //   await uploadDeceasedDeathCertificate(
-        //     this.burialData.deceased.id,
-        //     this.deathCertificateFile
-        //   );
-        // }
 
         // 5. Закрываем модалку и сообщаем о успешной оплате
         this.$emit("close");

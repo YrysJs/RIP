@@ -119,7 +119,7 @@ async function userCreateAppeal() {
     }
 
     await createAppeal(payload);
-    router.push("/client/government/requests");
+    router.push("/client/government");
   } catch (e) {
     console.error(e);
     errors.value = ["Не удалось создать обращение. Попробуйте позже."];
@@ -173,66 +173,66 @@ const cnt = computed(() => `${appeal_content.value.length}/${maxLen}`);
             </div>
           </div>
 
-          <div class="field">
-            <div class="field__label">Документ:</div>
+<!--          <div class="field">-->
+<!--            <div class="field__label">Документ:</div>-->
 
-            <div
-              v-if="!grave_doc.length"
-              class="dropzone"
-              @click="$refs.gdInput.click()"
-              @dragover.prevent
-              @drop="onDrop"
-            >
-              <input
-                ref="gdInput"
-                type="file"
-                multiple
-                accept=".pdf,image/jpeg,image/png"
-                class="hidden"
-                @change="handleUpload"
-              />
-              <div class="dz-in">
-                <img class="dz-ico" src="/icons/upload.svg" alt="" />
-                <p class="dz-accent">
-                  Загрузите файлы <span class="dz-sub">или перетащите их</span>
-                </p>
-              </div>
-            </div>
+<!--            <div-->
+<!--              v-if="!grave_doc.length"-->
+<!--              class="dropzone"-->
+<!--              @click="$refs.gdInput.click()"-->
+<!--              @dragover.prevent-->
+<!--              @drop="onDrop"-->
+<!--            >-->
+<!--              <input-->
+<!--                ref="gdInput"-->
+<!--                type="file"-->
+<!--                multiple-->
+<!--                accept=".pdf,image/jpeg,image/png"-->
+<!--                class="hidden"-->
+<!--                @change="handleUpload"-->
+<!--              />-->
+<!--              <div class="dz-in">-->
+<!--                <img class="dz-ico" src="/icons/upload.svg" alt="" />-->
+<!--                <p class="dz-accent">-->
+<!--                  Загрузите файлы <span class="dz-sub">или перетащите их</span>-->
+<!--                </p>-->
+<!--              </div>-->
+<!--            </div>-->
 
-            <div v-else class="gallery-center">
-              <div class="gallery-grid">
-                <div
-                  v-for="(file, index) in grave_doc"
-                  :key="index"
-                  class="file-card"
-                >
-                  <div class="image-preview-container">
-                    <img
-                      src="/images/doc.png"
-                      alt="Документ"
-                      class="image-preview"
-                    />
-                    <div class="image-overlay">
-                      <button
-                        class="remove-btn"
-                        @click="removeFile(index, $event)"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                    <div class="image-number">{{ index + 1 }}</div>
-                  </div>
-                  <p class="gallery-in">
-                    {{ file.name }}
-                  </p>
-                </div>
-              </div>
-            </div>
+<!--            <div v-else class="gallery-center">-->
+<!--              <div class="gallery-grid">-->
+<!--                <div-->
+<!--                  v-for="(file, index) in grave_doc"-->
+<!--                  :key="index"-->
+<!--                  class="file-card"-->
+<!--                >-->
+<!--                  <div class="image-preview-container">-->
+<!--                    <img-->
+<!--                      src="/images/doc.png"-->
+<!--                      alt="Документ"-->
+<!--                      class="image-preview"-->
+<!--                    />-->
+<!--                    <div class="image-overlay">-->
+<!--                      <button-->
+<!--                        class="remove-btn"-->
+<!--                        @click="removeFile(index, $event)"-->
+<!--                      >-->
+<!--                        ✕-->
+<!--                      </button>-->
+<!--                    </div>-->
+<!--                    <div class="image-number">{{ index + 1 }}</div>-->
+<!--                  </div>-->
+<!--                  <p class="gallery-in">-->
+<!--                    {{ file.name }}-->
+<!--                  </p>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
 
-            <p v-if="errors.length" class="text-sm text-[#D63C3C] mt-2">
-              <span v-for="(m, i) in errors" :key="i">{{ m }}<br /></span>
-            </p>
-          </div>
+<!--            <p v-if="errors.length" class="text-sm text-[#D63C3C] mt-2">-->
+<!--              <span v-for="(m, i) in errors" :key="i">{{ m }}<br /></span>-->
+<!--            </p>-->
+<!--          </div>-->
         </div>
 
         <!-- Кнопка -->

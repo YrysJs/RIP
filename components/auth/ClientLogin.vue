@@ -5,6 +5,7 @@ import {
   getWhatsappOtp,
   checkWhatsappOtp,
   signupClient,
+    signupClientWhatsapp,
   // getUserData,
   // signupClientFcb,
   getPkbToken,
@@ -42,15 +43,17 @@ const currentModal = ref("form");
 const processing = ref(false); // состояние загрузки в оверлее
 const overlayMessage = ref(""); // текст в оверлее
 const isSubmitting = ref(false);
-const pollTimeoutId = null;
-const fakeTimeoutId1 = null;
-const fakeTimeoutId2 = null;
+const pollTimeoutId = ref(null);
+const fakeTimeoutId1 = ref(null);
+const fakeTimeoutId2 = ref(null);
+const personDataTimeoutId = ref(null);
 
 onBeforeUnmount(() => {
   if (interval) clearInterval(interval);
-  if (pollTimeoutId) clearTimeout(pollTimeoutId);
-  if (fakeTimeoutId1) clearTimeout(fakeTimeoutId1);
-  if (fakeTimeoutId2) clearTimeout(fakeTimeoutId2);
+  if (pollTimeoutId.value) clearTimeout(pollTimeoutId.value);
+  if (fakeTimeoutId1.value) clearTimeout(fakeTimeoutId1.value);
+  if (fakeTimeoutId2.value) clearTimeout(fakeTimeoutId2.value);
+  if (personDataTimeoutId.value) clearTimeout(personDataTimeoutId.value);
 });
 
 function close() {
@@ -94,26 +97,76 @@ watch(iin, async (newValue) => {
 
         if (
           res?.data?.code === "OK" &&
-          res.data?.data?.status_code === "VALID"
+            (res.data?.data?.status_code === "VALID" || res.data?.data?.status_code === "PENDING")
         ) {
           console.log("VALID получен, делаем pkbGetData");
 
-          // вызываем pkbGetData
-          const response = await pkbGetData({
-            id: res.data.data.request_id,
-            params: {
-              iin: newValue,
-              requestId: res.data.data.request_id,
-            },
-            data: pkbToken.data.access.hash,
-          });
-          isFcb.value = true;
-          name.value = capitalize(response.data.data.person_data.name);
-          surname.value = capitalize(response.data.data.person_data.surname);
-          patronymic.value = capitalize(
-            response.data.data.person_data.patronymic
-          );
-          loadingStore.stopLoading();
+          // вызываем pkbGetData с ожиданием person_data
+          const waitForPersonData = async () => {
+            const maxAttempts = 30; // максимум 30 попыток (30 секунд)
+            let attempts = 0;
+            
+            const checkData = async () => {
+              try {
+                const response = await pkbGetData({
+                  id: res.data.data.request_id,
+                  params: {
+                    iin: newValue,
+                    requestId: res.data.data.request_id,
+                  },
+                  data: pkbToken.data.access.hash,
+                });
+                
+                // Проверяем наличие person_data
+                if (response?.data?.data?.person_data) {
+                  isFcb.value = true;
+                  name.value = capitalize(response.data.data.person_data.name);
+                  surname.value = capitalize(response.data.data.person_data.surname);
+                  patronymic.value = capitalize(
+                    response.data.data.person_data.patronymic
+                  );
+                  loadingStore.stopLoading();
+                  return true; // данные получены
+                }
+                
+                return false; // данные еще не готовы
+              } catch (error) {
+                console.error("Ошибка при получении person_data:", error);
+                return false;
+              }
+            };
+            
+            const pollData = async () => {
+              const dataReceived = await checkData();
+              
+              if (dataReceived) {
+                if (personDataTimeoutId.value) {
+                  clearTimeout(personDataTimeoutId.value);
+                  personDataTimeoutId.value = null;
+                }
+                return; // данные получены, выходим
+              }
+              
+              attempts++;
+              if (attempts < maxAttempts) {
+                // Ждем 1 секунду и повторяем попытку
+                personDataTimeoutId.value = setTimeout(pollData, 1000);
+              } else {
+                console.log("Превышено максимальное количество попыток получения person_data");
+                isFcb.value = true;
+                loadingStore.stopLoading();
+                if (personDataTimeoutId.value) {
+                  clearTimeout(personDataTimeoutId.value);
+                  personDataTimeoutId.value = null;
+                }
+              }
+            };
+            
+            // Начинаем опрос
+            await pollData();
+          };
+          
+          await waitForPersonData();
 
           // остановить дальнейшие попытки
           if (timeoutId) {
@@ -125,15 +178,13 @@ watch(iin, async (newValue) => {
             "Ожидаем VALID, текущий статус:",
             res?.data?.data?.status_code
           );
-          // запланировать следующий вызов через 10 секунд
-          timeoutId = setTimeout(poll, 10000);
+          loadingStore.stopLoading();
+          isFcb.value = true;
         }
       } catch (err) {
         loadingStore.stopLoading();
         isFcb.value = true;
         console.error("Ошибка при запросе:", err);
-        // запланировать повтор при ошибке
-        timeoutId = setTimeout(poll, 10000);
       }
     };
 
@@ -145,34 +196,40 @@ watch(iin, async (newValue) => {
   }
 });
 
-// function capitalize(str) {
-//   if (!str) return "";
-//   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-// }
+function capitalize(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
 
 async function run() {
   try {
-    // if (isFcb.value) {
-    //   response = await signupClientFcb({
-    //     otpRequest: {
-    //       id: loginId.value,
-    //       code: code.value
-    //     },
-    //     iin: iin.value,
-    //   })
-    // }
-    // else {
-    const response = await signupClient({
-      otpRequest: {
-        id: loginId.value,
-        code: code.value,
-      },
-      iin: iin.value,
-      name: name.value,
-      surname: surname.value,
-      patronymic: patronymic.value,
-    });
-    // }
+    let response;
+    
+    if (isWhatsappLogin.value) {
+      // Если код получен через WhatsApp
+      response = await signupClientWhatsapp({
+        whatsappOTP: {
+          phone: extractDigits(phone_number.value),
+          code: code.value,
+        },
+        iin: iin.value,
+        name: name.value,
+        surname: surname.value,
+        patronymic: patronymic.value,
+      });
+    } else {
+      // Если код получен через SMS
+      response = await signupClient({
+        otpRequest: {
+          id: loginId.value,
+          code: code.value,
+        },
+        iin: iin.value,
+        name: name.value,
+        surname: surname.value,
+        patronymic: patronymic.value,
+      });
+    }
     Cookies.set("token", response.data.token);
     Cookies.set("role", "client");
     emit('close');
@@ -444,11 +501,14 @@ const otpCheck = async () => {
               <div
                 class="relative w-full border-2 border-[#AFB5C133] rounded-lg"
               >
+
                 <input
                   v-model="iin"
                   id="iin"
+                  v-mask="'############'"
                   type="text"
                   placeholder=" "
+                  maxlength="12"
                   class="peer w-full px-3 pt-[28px] pb-2 placeholder-transparent focus:outline-none"
                 />
                 <label

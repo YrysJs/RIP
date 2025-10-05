@@ -91,6 +91,14 @@ function signupClient(data) {
     })
 }
 
+function signupClientWhatsapp(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PUT',
+        url: 'http://194.32.140.103:8081/v1/user/signup/whatsapp',
+        data
+    })
+}
 function signupClientFcb(data) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -247,5 +255,6 @@ export {
     pkbGetData,
     pkbGetDeceasedData,
     checkWhatsappOtp,
-    getWhatsappOtp
+    getWhatsappOtp,
+    signupClientWhatsapp
 }

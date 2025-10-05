@@ -1,12 +1,12 @@
 <script setup>
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 import { getBurialRequestById, getBurialRequests, getBurialRequestStatus } from '~/services/manager'
 import BurialDetailsModal from '~/components/manager/burial/BurialDetailsModal.vue'
 import { getGraveById, getGraveImages } from '~/services/client'
 import { getCemeteries } from '~/services/cemetery'
 import CancelModal from '~/components/manager/booking/CancelModal.vue'
 
-const router = useRouter()
+// const router = useRouter()
 
 const burials = ref([])
 const cemeteries = ref([])
@@ -14,7 +14,7 @@ const burial = ref({})
 const search = ref('')
 const burialDetailModalVisible = ref(false)
 const isCancelModalVisible = ref(false)
-const selectedId = ref(null)
+const _selectedId = ref(null)
 const grave = ref({})
 const graveImages = ref([])
 const loading = ref(false)
@@ -76,6 +76,13 @@ const approveRequest = () => {
 }
 const selectRequest = () => { isCancelModalVisible.value = true }
 
+const handleCardClick = (id) => {
+  // На мобильных устройствах карточка кликабельна
+  if (window.innerWidth <= 768 && id) {
+    fetchBurialDetails(id)
+  }
+}
+
 const fetchCemeteries = async () => {
   try {
     const response = await getCemeteries()
@@ -99,8 +106,10 @@ const fmtDate = (iso) => {
   return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' })
 }
 const statusChip = (status) => {
-  if (status === 'paid')      return { text:'Ожидает',      class:'chip chip--orange' }
-  if (status === 'confirmed') return { text:'Подтвержден', class:'chip chip--green'  }
+  if (status === 'pending')   return { text:'Ожидает оплаты', class:'chip chip--orange' }
+  if (status === 'paid')      return { text:'Оплачено',       class:'chip chip--blue' }
+  if (status === 'cancelled') return { text:'Отменено',       class:'chip chip--red' }
+  if (status === 'confirmed') return { text:'Подтверждено',   class:'chip chip--green' }
   return { text: status ?? '—', class:'chip chip--gray' }
 }
 
@@ -137,7 +146,7 @@ watch([dateFrom, dateTo, cemeteryId], () => {
       <!-- Поиск -->
       <div class="mgr__search">
         <div class="search">
-          <input v-model="search" class="search__input" type="text" placeholder="Поиск по бронированиям" />
+          <input v-model="search" class="search__input" type="text" placeholder="Поиск по бронированиям">
           <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none"/>
             <path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -150,31 +159,35 @@ watch([dateFrom, dateTo, cemeteryId], () => {
         v-for="b in displayBurials"
         :key="b.id || 'ph-' + b.request_number"
         class="card"
-        :class="{ 'card--placeholder': isPlaceholderMode }"
+        :class="{ 'card--placeholder': isPlaceholderMode, 'card--clickable': true }"
+        :style="{ cursor: b.id ? 'pointer' : 'default' }"
+        @click="handleCardClick(b.id)"
       >
-        <!-- Заголовок + даты -->
-        <div class="card__row">
+        <!-- Заголовок + номер + статус + стрелка -->
+        <div class="card__row card__row--header">
           <div class="head-left">
             <span class="title">ЗАХОРОНЕНИЕ:</span>
             <span class="num-badge">{{ String(b.request_number).padStart(3,'0') }}</span>
           </div>
-          <div class="card__dates">
-            <div class="date-line">Дата брони: {{ fmtDateTime(b.created_at) }}</div>
-            <div class="date-line">Дата похорон: {{ fmtDate(b.burial_date) }}<span v-if="b.burial_time">&nbsp;{{ b.burial_time }}</span></div>
+          <div class="header-right">
+            <span :class="statusChip(b.status).class">{{ statusChip(b.status).text }}</span>
+            <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
         </div>
 
-        <!-- Блок информации: ФИО и Статус выровнены по одной линии -->
+        <!-- Даты -->
+        <div class="card__dates">
+          <div class="date-line">Дата брони: <strong>{{ fmtDateTime(b.created_at) }}</strong></div>
+          <div class="date-line">Дата похорон: <strong>{{ fmtDate(b.burial_date) }}<span v-if="b.burial_time">&nbsp;{{ b.burial_time }}</span></strong></div>
+        </div>
+
+        <!-- Блок информации: ФИО -->
         <div class="info">
           <div class="info-line">
             <span class="label">ФИО покойного:</span>
             <span class="value value--bold">{{ b.deceased?.full_name || '—' }}</span>
-          </div>
-          <div class="info-line">
-            <span class="label">Статус:</span>
-            <span class="value">
-              <span :class="statusChip(b.status).class">{{ statusChip(b.status).text }}</span>
-            </span>
           </div>
         </div>
 
@@ -185,7 +198,7 @@ watch([dateFrom, dateTo, cemeteryId], () => {
             <span v-if="b.sector" class="chip chip--gray">Сектор: {{ b.sector }}</span>
             <span class="chip chip--gray">Место: {{ b.grave_id }}</span>
           </div>
-          <button class="btn-more" @click="fetchBurialDetails(b.id)" :disabled="!b.id">Подробнее</button>
+          <button class="btn-more" :disabled="!b.id" @click="fetchBurialDetails(b.id)">Подробнее</button>
         </div>
       </div>
     </div>
@@ -227,23 +240,24 @@ watch([dateFrom, dateTo, cemeteryId], () => {
 }
 .card--placeholder{ opacity:.96; }
 
-.card__row{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+.card__row{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:nowrap; }
 .card__row--bottom{ align-items:center; }
 
 /* Заголовок */
-.head-left{ display:flex; align-items:baseline; gap:10px; }
+.head-left{ display:flex; align-items:baseline; gap:10px; flex-shrink: 1; min-width: 0; }
 .title{
   font-family:"FoglihtenNo06", serif;
-  font-weight:700; letter-spacing:.02em; color:#1C140E; font-size:30px;
+  font-weight:700; letter-spacing:.02em; color:#1C140E; font-size:24px;
+  white-space: nowrap;
 }
 /* Жёлтый бейдж с номером (не «пилюля») */
 .num-badge{
   color:#F7B500; font-weight:700; font-family:"FoglihtenNo06", serif;
- display:inline-block; font-size: 32px;
+ display:inline-block; font-size: 24px;
 }
 
 /* Даты — серые */
-.card__dates{ text-align:right; color:#8C8C8C; font-size:12px; }
+.card__dates{ text-align:left; color:#8C8C8C; font-size:12px; }
 .card__dates .date-line{ line-height:1.2; }
 
 /* Инфо-блок: выравнивание лейблов */
@@ -266,7 +280,19 @@ watch([dateFrom, dateTo, cemeteryId], () => {
 .chip--gray  { background:#E9EDED; color:#111827; }
 .chip--green { background:#E6F6EA; color:#1B8A36; }
 .chip--orange{ background:#FEF1DE; color:#C66A00; }
+.chip--blue  { background:#E6F2FF; color:#1B73E8; }
+.chip--red   { background:#FFEBEE; color:#D32F2F; }
 
+/* Правая часть заголовка */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.arrow-icon{
+  display: none;
+}
 /* Кнопка справа */
 .btn-more{
   background:#F7B500; color:#1F2937; border:none;
@@ -275,4 +301,187 @@ watch([dateFrom, dateTo, cemeteryId], () => {
 }
 .btn-more:disabled{ opacity:.6; cursor:default; }
 .btn-more:not(:disabled):hover{ filter:brightness(.98); }
+
+/* Мобильные стили */
+@media (max-width: 768px) {
+  .mgr {
+    margin: 0 16px 16px;
+    gap: 12px;
+  }
+
+  .mgr__search {
+    margin: 0 0 16px 0;
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .search__input {
+    height: 48px;
+    font-size: 16px;
+    padding: 0 40px 0 16px;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+  }
+
+  .search__icon {
+    right: 12px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .card {
+    background: #F4F0E7;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 30px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .card__row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .card__row--header {
+    align-items: center;
+    margin-bottom: 8px;
+    justify-content: space-between;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .arrow-icon {
+    color: #6B7280;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .btn-more {
+    display: block;
+  }
+
+  /* На мобильных устройствах - показываем стрелку, скрываем кнопку */
+  @media (max-width: 768px) {
+    .arrow-icon {
+      display: block;
+    }
+    
+    .btn-more {
+      display: none;
+    }
+    
+    .card--clickable {
+      cursor: pointer;
+    }
+  }
+
+  /* На десктопе - скрываем стрелку, показываем кнопку */
+  @media (min-width: 769px) {
+    .arrow-icon {
+      display: block;
+    }
+    
+    .btn-more {
+      display: block;
+    }
+    
+    .card--clickable {
+      cursor: default;
+    }
+  }
+
+  .head-left {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-direction: column;
+  }
+
+  .title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1C140E;
+    font-family: "FoglihtenNo06", serif;
+  }
+
+  .num-badge {
+    font-size: 20px;
+    color: #F7B500;
+    font-weight: 700;
+    font-family: "FoglihtenNo06", serif;
+  }
+
+
+  .date-line {
+    margin-bottom: 2px;
+    font-size: 13px;
+    color: #6B7280;
+  }
+
+  .date-line strong {
+    font-weight: 600;
+    color: #1F2937;
+  }
+
+  .info {
+    gap: 8px;
+    margin: 12px 0;
+  }
+
+  .info-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .label {
+    width: auto;
+    min-width: auto;
+    font-size: 13px;
+    color: #6B7280;
+    font-weight: 500;
+  }
+
+  .value {
+    font-size: 14px;
+    color: #1F2937;
+  }
+
+  .value--bold {
+    font-weight: 600;
+  }
+
+  .chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 12px;
+  }
+
+  .chip {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  .card__row--bottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+
+}
 </style>
