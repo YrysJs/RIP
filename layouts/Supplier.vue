@@ -20,26 +20,27 @@ const props = defineProps({
 // Динамический заголовок страницы
 const pageTitle = computed(() => {
   const path = route.path;
-  
-  if (path.includes('/supplier/tickets/')) {
-    if (path.includes('/active')) return 'АКТИВНЫЕ ЗАЯВКИ';
-    if (path.includes('/archive')) return 'АРХИВНЫЕ ЗАЯВКИ';
+
+  if (path.includes("/supplier/tickets/")) {
+    if (path.includes("/active")) return "АКТИВНЫЕ ЗАЯВКИ";
+    if (path.includes("/archive")) return "АРХИВНЫЕ ЗАЯВКИ";
   }
-  
-  if (path.includes('/supplier/services')) {
-    if (path === '/supplier/services') return 'ТОВАРЫ И УСЛУГИ';
-    if (path.includes('/active')) return 'АКТИВНЫЕ УСЛУГИ';
-    if (path.includes('/consideration')) return 'НА РАССМОТРЕНИИ';
-    if (path.includes('/improvement')) return 'ТРЕБУЕТ ДОРАБОТКИ';
-    if (path.includes('/inactive')) return 'НЕ АКТИВНЫЕ';
-    if (path.includes('/add')) return 'ДОБАВИТЬ УСЛУГУ';
+
+  if (path.includes("/supplier/services")) {
+    if (path === "/supplier/services") return "ТОВАРЫ И УСЛУГИ";
+    if (path.includes("/active")) return "АКТИВНЫЕ УСЛУГИ";
+    if (path.includes("/consideration")) return "НА РАССМОТРЕНИИ";
+    if (path.includes("/improvement")) return "ТРЕБУЕТ ДОРАБОТКИ";
+    if (path.includes("/inactive")) return "НЕ АКТИВНЫЕ";
+    if (path.includes("/add")) return "ДОБАВИТЬ УСЛУГУ";
   }
-  
-  if (path.includes('/supplier/reviews')) return 'ОТЗЫВЫ';
-  if (path.includes('/supplier/reports')) return 'ОТЧЕТЫ';
-  if (path.includes('/supplier/goverment/requests')) return 'ОБРАЩЕНИЕ В АКИМАТ';
-  
-  return 'КАБИНЕТ ПОСТАВЩИКА УСЛУГ';
+
+  if (path.includes("/supplier/reviews")) return "ОТЗЫВЫ";
+  if (path.includes("/supplier/reports")) return "ОТЧЕТЫ";
+  if (path.includes("/supplier/goverment/requests"))
+    return "ОБРАЩЕНИЕ В АКИМАТ";
+
+  return "КАБИНЕТ ПОСТАВЩИКА УСЛУГ";
 });
 
 onMounted(async () => {
@@ -177,7 +178,7 @@ onMounted(async () => {
 
 .mobile-header {
   display: none;
-  
+
   @media (max-width: 768px) {
     display: block !important;
     position: fixed !important;
@@ -190,7 +191,7 @@ onMounted(async () => {
 }
 
 /* Дополнительное скрытие десктопного хедера */
-:global(.app-header) {
+:global(.supplier .app-header) {
   @media (max-width: 768px) {
     display: none !important;
     visibility: hidden !important;

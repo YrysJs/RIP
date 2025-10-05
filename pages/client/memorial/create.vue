@@ -319,10 +319,12 @@ const submitMemorial = async () => {
                   }}
                   -
                   {{
-                    new Date(burial?.deceased?.death_date).toLocaleString(
-                      "ru-RU",
-                      { day: "2-digit", month: "2-digit", year: "numeric" }
-                    )
+                    burial?.deceased?.death_date
+                      ? new Date(burial?.deceased?.death_date).toLocaleString(
+                          "ru-RU",
+                          { day: "2-digit", month: "2-digit", year: "numeric" }
+                        )
+                      : ""
                   }}
                 </p>
                 <p class="text-xs text-[#666C72]">

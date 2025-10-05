@@ -5,6 +5,8 @@ import AppHeader from "~/components/layout/AppHeader.vue";
 import { getCurrentUser } from "~/services/login";
 import { onMounted } from "vue";
 import { useUserStore } from "~/store/user";
+import AppHeaderClient from "~/components/layout/AppHeaderClient.vue";
+import MobileFooter from "~/components/layout/MobileFooter.vue";
 
 const userStore = useUserStore();
 
@@ -31,19 +33,20 @@ onMounted(async () => {
 <template>
   <main>
     <AppHeader type="client" />
+    <AppHeaderClient />
     <div class="container">
       <div
-        class="py-[24px] min-h-[100vh] mt-[104px] rounded-lg flex gap-[24px] max-sm:flex-col-reverse max-sm:py-0 max-sm:gap-0"
+        class="main-mt py-[24px] min-h-[100vh] mt-[104px] rounded-lg flex gap-[24px] max-md:py-0 max-md:gap-0"
       >
         <aside
-          class="bg-white p-[20px] max-w-[408px] min-w-[305px] relative max-sm:max-w-full rounded-lg"
+          class="mob-hidden bg-white p-[20px] max-w-[408px] min-w-[305px] relative rounded-lg"
         >
           <ClientSidebar title="ЛИЧНЫЙ КАБИНЕТ" />
         </aside>
 
         <div
           :class="[
-            'min-w-0 w-full h-fit flex flex-col gap-10 rounded-lg max-sm:pt-6 max-sm:px-4 max-sm:pb-9',
+            'min-w-0 w-full h-fit flex flex-col gap-10 rounded-lg max-md:pt-6 max-md:px-4 max-md:pb-[106px]',
             props.contentClass,
           ]"
         >
@@ -51,6 +54,7 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+    <MobileFooter />
   </main>
 </template>
 
@@ -59,6 +63,19 @@ onMounted(async () => {
   max-width: 1200px;
   width: 100%;
   margin: auto;
+}
+
+@media (max-width: 768px) {
+  .main-mt {
+    margin-top: 56px;
+    padding-top: 0;
+    background-color: #fff;
+    min-height: calc(100vh - 126px);
+  }
+
+  .mob-hidden {
+    display: none;
+  }
 }
 // .client {
 //   background: #faf7ef;
