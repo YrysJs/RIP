@@ -723,7 +723,7 @@ const submitMemorial = async () => {
                 <div
                   class="h-[30px] flex items-center text-base font-medium max-sm:gap-2"
                 >
-                  <div class="text-base text-[#050202]">Создатель:</div>
+                  <div class="text-base text-[#050202] mr-2">Создатель:</div>
                   <div class="text-sm text-[#999]">
                     {{ memorial?.creator_phone }}
                   </div>
@@ -731,7 +731,7 @@ const submitMemorial = async () => {
                 <div
                   class="h-[30px] flex items-center text-base font-medium max-sm:gap-2"
                 >
-                  <div class="text-base text-[#050202]">Публичность:</div>
+                  <div class="text-base text-[#050202] mr-2">Публичность:</div>
                   <div class="text-sm text-[#999]">
                     {{ memorial?.is_public ? "Публичный" : "Приватный" }}
                   </div>
@@ -739,7 +739,7 @@ const submitMemorial = async () => {
                 <div
                   class="h-[30px] flex items-center text-base font-medium max-sm:gap-2"
                 >
-                  <div class="text-base text-[#050202]">
+                  <div class="text-base text-[#050202] mr-2">
                     Последнее обновление:
                   </div>
                   <div class="text-sm text-[#999]">

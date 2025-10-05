@@ -162,7 +162,15 @@ const submitMemorial = async () => {
     useState("aboutPerson").value = aboutPerson.value;
     useState("videos").value = videos.value;
 
-    router.push("/client/memorial/created");
+    const created = resp?.data?.data ?? resp?.data ?? {};
+    const createdId = created.id;
+
+    if (createdId) {
+      router.push(`/client/memorial/created?id=${createdId}`);
+    } else {
+      // fallback — если сервер не вернул id
+      router.push("/client/memorial");
+    }
 
     // Можно перенаправить пользователя
     // await navigateTo('/client/memorials')
@@ -185,13 +193,13 @@ const submitMemorial = async () => {
     <div>
       <button
         class="btn-back mb-6 mr-4 ml-[2px] text-base text-[#B88F34] font-medium flex items-center"
-        @click="router.push('/client/memorial')"
+        @click="router.go(-1)"
       >
         <img
           class="w-4 h-4 mr-[10px]"
           src="/icons/arrow-left-orange.svg"
           alt=""
-        >
+        />
         Вернуться
       </button>
 
@@ -210,7 +218,7 @@ const submitMemorial = async () => {
           <button
             class="flex items-center gap-2 bg-[#00000014] py-[10px] px-4 rounded-[10px] hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition max-sm:bg-transparent"
           >
-            <img src="/icons/share.svg" alt="" class="max-sm:w-5 max-sm:h-5" >
+            <img src="/icons/share.svg" alt="" class="max-sm:w-5 max-sm:h-5" />
             <span class="max-sm:hidden">Поделиться</span>
           </button>
         </div>
@@ -227,7 +235,7 @@ const submitMemorial = async () => {
             >
               <div class="upload-content">
                 <div class="flex justify-center mb-[20px]">
-                  <img src="/icons/upload.svg" alt="" class="upload-icon" >
+                  <img src="/icons/upload.svg" alt="" class="upload-icon" />
                 </div>
                 <p class="upload-text">Загрузите фотографии</p>
                 <p class="upload-hint">
@@ -257,7 +265,7 @@ const submitMemorial = async () => {
                   :key="preview.id"
                   class="image-preview-container"
                 >
-                  <img :src="preview.url" alt="Preview" class="image-preview" >
+                  <img :src="preview.url" alt="Preview" class="image-preview" />
                   <div class="image-overlay">
                     <button class="remove-btn" @click="removeImage(index)">
                       ✕
@@ -281,7 +289,7 @@ const submitMemorial = async () => {
               multiple
               class="hidden"
               @change="handleImageUpload"
-            >
+            />
           </div>
           <div class="memorial-info h-full min-h-[250px] max-sm:min-h-fit">
             <!-- <div class="border-b border-[#EEEEEE] pb-4 font-medium text-base">
@@ -300,7 +308,23 @@ const submitMemorial = async () => {
                 Информация о захоронении
               </h3>
               <div class="pb-2 border-b border-b-[#2010011F]">
-                <p class="text-lg text-[#1A1C1F]">01.01.1900 - 01.01.2000</p>
+                <p class="text-lg text-[#1A1C1F]">
+                  {{
+                    burial?.deceased?.birth_date
+                      ? new Date(burial.deceased.birth_date).toLocaleDateString(
+                          "ru-RU",
+                          { day: "2-digit", month: "2-digit", year: "numeric" }
+                        )
+                      : ""
+                  }}
+                  -
+                  {{
+                    new Date(burial?.deceased?.death_date).toLocaleString(
+                      "ru-RU",
+                      { day: "2-digit", month: "2-digit", year: "numeric" }
+                    )
+                  }}
+                </p>
                 <p class="text-xs text-[#666C72]">
                   Дата рождения - Дата смерти
                 </p>
@@ -343,16 +367,16 @@ const submitMemorial = async () => {
                     </div>
                   </div>
                 </div>
-<!--                <div-->
-<!--                  class="h-11 flex items-center text-base font-medium gap-[11px]"-->
-<!--                >-->
-<!--                  <div class="flex-1 text-base text-[#050202]">-->
-<!--                    Координаты:-->
-<!--                  </div>-->
-<!--                  <div class="flex-1 text-sm text-[#999]">-->
-<!--                    56.35107309557659, 62.01158847670595-->
-<!--                  </div>-->
-<!--                </div>-->
+                <!--                <div-->
+                <!--                  class="h-11 flex items-center text-base font-medium gap-[11px]"-->
+                <!--                >-->
+                <!--                  <div class="flex-1 text-base text-[#050202]">-->
+                <!--                    Координаты:-->
+                <!--                  </div>-->
+                <!--                  <div class="flex-1 text-sm text-[#999]">-->
+                <!--                    56.35107309557659, 62.01158847670595-->
+                <!--                  </div>-->
+                <!--                </div>-->
               </div>
             </div>
           </div>
@@ -389,7 +413,7 @@ const submitMemorial = async () => {
                 v-model="switcher"
                 type="checkbox"
                 class="sr-only peer input"
-              >
+              />
               <span
                 class="absolute inset-0 bg-gray-200 rounded-full transition-colors peer-checked:bg-[#E9B949] peer-checked:ring-2 peer-checked:ring-[#E9B949]"
               />
@@ -421,7 +445,7 @@ const submitMemorial = async () => {
                 src="/icons/upload.svg"
                 alt=""
                 class="w-[17px] h-[18px] m-[3px] mr-1"
-              >
+              />
             </div>
             <p class="text-base text-[#3F474F]">
               <span class="font-medium text-[#E9B949]">Загрузите файлы</span>
@@ -437,7 +461,7 @@ const submitMemorial = async () => {
             multiple
             class="hidden"
             @change="handleAchievementPhotoUpload"
-          >
+          />
 
           <!-- Галерея фото достижений -->
           <div
@@ -458,7 +482,7 @@ const submitMemorial = async () => {
                   :src="photo.url"
                   alt="Achievement photo"
                   class="image-preview"
-                >
+                />
                 <div class="image-overlay">
                   <button
                     class="remove-btn"
@@ -482,7 +506,7 @@ const submitMemorial = async () => {
             @click="showVideoInputField"
           >
             <div class="flex justify-center mb-2">
-              <img src="/icons/upload-video.svg" alt="" class="w-6 h-6" >
+              <img src="/icons/upload-video.svg" alt="" class="w-6 h-6" />
             </div>
             <p class="text-base text-[#3F474F]">
               <span class="font-medium text-[#E9B949]">Загрузите файлы</span>
@@ -499,7 +523,7 @@ const submitMemorial = async () => {
                 placeholder="Вставьте ссылку на YouTube видео"
                 class="flex-1 border border-[#222222] rounded-lg p-3 text-base"
                 @keyup.enter="addVideo"
-              >
+              />
               <button
                 class="bg-[#224C4F] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#1a3a3c] transition-colors"
                 @click="addVideo"
