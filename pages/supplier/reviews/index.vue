@@ -1,7 +1,15 @@
 <script setup>
-import {getSupplierProductReviews, addReviewResponse, createReviewAppeal, getSupplierInfo} from '~/services/supplier'
-import Cookies from "js-cookie";
-import {parseJwt} from "~/utils/parseJwt.js";
+import {
+  getReviews,
+  addReviewResponse,
+  createReviewAppeal,
+  getSupplierInfo
+} from '~/services/supplier'
+
+// Применяем middleware для проверки авторизации поставщика
+definePageMeta({
+  middleware: 'supplier'
+})
 
 const props = defineProps({
     value: {
@@ -29,31 +37,63 @@ const appealForms = ref({}) // Объект для хранения состоя
 const appealReasons = ref({}) // Объект для хранения причины обжалования для каждого отзыва
 const sendingAppeal = ref({}) // Объект для отслеживания отправки обжалования
 
-// Загружаем отзывы с сервера
-const { data: reviews, refresh } = await useLazyAsyncData('supplier-reviews', async () => {
-    pending.value = true
-  const rawToken = Cookies.get('token');
-  const token = parseJwt(rawToken);
-    try {
-      const profile = await getSupplierInfo();
+// Реактивные данные для отзывов
+const reviews = ref({ items: [], total_pages: 0, total_count: 0, page: 1, limit: 10 })
 
-        const response = await getSupplierProductReviews(profile.data.phone, currentPage.value)
-        return response.data || { items: [], total_pages: 0, total_count: 0, page: 1, limit: 10 }
+// Функция загрузки отзывов
+const loadReviews = async () => {
+    pending.value = true
+    console.log('Загрузка отзывов поставщика...')
+    
+    try {
+
+        const response = await getReviews(currentPage.value)
+        console.log('Отзывы получены:', response)
+        
+        if (!response?.data) {
+            console.warn('Пустой ответ от сервера отзывов')
+            reviews.value = { items: [], total_pages: 0, total_count: 0, page: 1, limit: 10 }
+        } else {
+            reviews.value = response.data
+        }
+        
     } catch (error) {
         console.error('Ошибка загрузки отзывов:', error)
-        return { items: [], total_pages: 0, total_count: 0, page: 1, limit: 10 }
+        // Показываем пользователю более информативную ошибку
+        if (error.response?.status === 401) {
+            console.error('Ошибка авторизации - перенаправление на главную')
+            await navigateTo('/')
+        } else if (error.response?.status === 403) {
+            console.error('Нет доступа к отзывам')
+        }
+        reviews.value = { items: [], total_pages: 0, total_count: 0, page: 1, limit: 10 }
     } finally {
         pending.value = false
     }
-}, {
-    watch: [currentPage]
+}
+
+// Функция обновления (аналог refresh)
+const refresh = () => {
+    loadReviews()
+}
+
+// Загружаем отзывы при монтировании компонента
+onMounted(() => {
+    console.log('Компонент отзывов поставщика смонтирован')
+    loadReviews()
+})
+
+// Следим за изменением страницы и перезагружаем данные
+watch(currentPage, () => {
+    console.log('Изменилась страница на:', currentPage.value)
+    loadReviews()
 })
 
 // Функция изменения страницы
 const changePage = (page) => {
     if (page >= 1 && page <= reviews.value?.total_pages) {
         currentPage.value = page
-        refresh()
+        // loadReviews() будет вызван автоматически через watcher
     }
 }
 

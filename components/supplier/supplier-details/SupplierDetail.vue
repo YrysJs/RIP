@@ -168,10 +168,10 @@ const graveId = computed(() => orderData.value?.grave_info?.grave_number ?? "—
 
 const graveModalData = computed(() => ({
   image: "/images/main_service/f1.jpg",
-  title: orderData.value?.cemetery_name || "—",
-  sector: orderData.value?.sector_number ?? "—",
-  place: orderData.value?.grave_id ?? "—",
-  description: orderData.value?.grave_description || "",
+  title: orderData.value?.grave_info?.cemetery_name || "—",
+  sector: orderData.value?.grave_info?.sector_number ?? "—",
+  place: orderData.value?.grave_info?.grave_number ?? "—",
+  description: orderData.value?.grave_info?.description || "",
   note: orderData.value?.grave_note || "",
 }));
 
