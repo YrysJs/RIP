@@ -89,7 +89,7 @@ const pluralDays = (v) => {
 </script>
 
 <template>
-  <NuxtLayout name="supplier">
+  <NuxtLayout name="supplier" class="supplier-services-page">
     <!-- заголовок -->
     <div class="page-head">
       <h2 class="page-title">Активные товары и услуги</h2>
@@ -162,12 +162,20 @@ const pluralDays = (v) => {
             <span v-else>Деактивировать</span>
           </button>
 
-          <NuxtLink
-            class="btn btn--primary btn--lg"
-            :to="`/supplier/services/add-service/${product.id}`"
-          >
-            Редактировать
-          </NuxtLink>
+          <div class="btn-group">
+            <NuxtLink
+              class="btn btn--primary btn--lg"
+              :to="`/supplier/services/add-service/${product.id}`"
+            >
+              Редактировать
+            </NuxtLink>
+            
+            <button class="btn btn--delete" @click="deactivateProduct(product.id)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -218,12 +226,12 @@ const pluralDays = (v) => {
 }
 @keyframes spin{ to { transform: rotate(360deg) } }
 
-/* ---------- CARD (в точности как в inactive) ---------- */
+/* ---------- CARD (горизонтальная для веба) ---------- */
 .active-card{
   display:grid;
   grid-template-columns: 320px 1fr;
   gap:16px;
-  background:#F7F8FA;
+  background:#0000000A;
   border:1px solid #EAECEE;
   border-radius:16px;
   padding:12px;
@@ -259,6 +267,31 @@ const pluralDays = (v) => {
 .active-card__bottom{
   display:flex; justify-content:flex-end; align-items:center;
   gap:10px; margin-top:40px; flex-wrap:wrap;
+}
+
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn--delete {
+  background: #F3F4F6;
+  color: #6B7280;
+  border: 1px solid #E5E7EB;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #E5E7EB;
+    color: #374151;
+  }
 }
 
 /* ---------- BUTTONS (такие же размеры/радиусы) ---------- */
@@ -313,5 +346,140 @@ const pluralDays = (v) => {
   .active-card{ grid-template-columns: 1fr; }
   .active-card__media{ height:200px; }
   .active-card__bottom{ justify-content:flex-start; }
+}
+
+/* Мобильные стили для услуг */
+@media (max-width: 768px) {
+  :global(.supplier-services-page) {
+    background: #ffffff !important;
+  }
+
+  :global(.supplier-services-page .supplier) {
+    background: #ffffff !important;
+  }
+
+  .page-head {
+    padding: 20px 16px 16px;
+    margin-bottom: 16px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  .page-title {
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  .active-card {
+    display: flex;
+    flex-direction: column;
+    background: #0000000A;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 0;
+    margin: 0 16px 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .active-card__media {
+    width: 100%;
+    height: 180px;
+    border-radius: 0;
+  }
+
+  .active-card__body {
+    padding: 16px;
+  }
+
+  .active-card__top {
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .titlebox {
+    width: 100%;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1C140E;
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0;
+  }
+
+  .price-badge {
+    align-self: flex-start;
+    background: #F3F4F6;
+    color: #1C140E;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .meta-row {
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .meta {
+    color: #6B7280;
+    font-size: 13px;
+  }
+
+  .ico {
+    width: 14px;
+    height: 14px;
+  }
+
+  .active-card__bottom {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 0;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .btn--primary {
+    flex: 1;
+    height: 44px;
+    font-size: 14px;
+  }
+
+  .btn--lg {
+    width: 100%;
+    height: 44px;
+    font-size: 14px;
+  }
+
+  .btn--delete {
+    width: 44px;
+    height: 44px;
+    background: #F3F4F6;
+    color: #6B7280;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+  }
+
+  .state-card {
+    margin: 0 16px;
+    padding: 20px;
+    border-radius: 12px;
+  }
 }
 </style>

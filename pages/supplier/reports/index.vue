@@ -192,15 +192,152 @@ onMounted(async () => {
   text-decoration: underline;
 }
 
-/* адаптив */
-@media (max-width: 760px) {
+/* Мобильные стили */
+@media (max-width: 768px) {
+  :global(.supplier-reports-page) {
+    background: #F8F5F0 !important;
+  }
+
+  :global(.supplier-reports-page .supplier) {
+    background: #F8F5F0 !important;
+  }
+
+  /* Исправляем смещение контента */
+  :global(.supplier-reports-page .supplier .container) {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  :global(.supplier-reports-page .supplier .main-content) {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Заголовок */
+  .page-head {
+    margin: 0 0 16px 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2E1E17;
+    font-family: "FoglihtenNo06", serif;
+  }
+
+  /* Карточка */
+  .card {
+    margin: 0;
+    padding: 16px;
+    border-radius: 0;
+    background: #ffffff;
+    box-shadow: none;
+    border: none;
+  }
+
+  /* Таблица - горизонтальная как в макете */
   .reports__head,
   .reports__row {
-    grid-template-columns: 1.2fr repeat(4, 0.8fr);
+    display: grid;
+    grid-template-columns: 1.5fr 0.8fr 0.8fr 0.8fr 0.8fr;
+    gap: 8px;
+    padding: 12px 16px;
+    align-items: center;
   }
-  .td,
+
+  .reports__head {
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    margin-bottom: 4px;
+  }
+
   .th {
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+  }
+
+  .th--name {
+    text-align: left;
+  }
+
+  .reports__row {
+    background: #ffffff;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    margin-bottom: 4px;
+  }
+
+  /* Зебра - чередующиеся цвета строк */
+  .reports__row:nth-child(even) {
+    background: #F8F9FA;
+  }
+
+  .reports__row:nth-child(odd) {
+    background: #ffffff;
+  }
+
+  .td {
     font-size: 14px;
+    color: #1F2937;
+    text-align: center;
+  }
+
+  .td--name {
+    font-weight: 600;
+    color: #2E1E17;
+    text-align: left;
+  }
+
+  .td--num {
+    font-weight: 600;
+    color: #2E1E17;
+  }
+
+  /* Загрузка */
+  .state {
+    padding: 20px;
+  }
+
+  .spinner {
+    width: 28px;
+    height: 28px;
+  }
+
+  .muted {
+    font-size: 14px;
+    color: #6B7280;
+  }
+
+  /* Ссылки для скачивания */
+  .downloads {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+    align-items: flex-start;
+  }
+
+  .dl {
+    font-size: 14px;
+    color: #2680eb;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dl:hover {
+    text-decoration: underline;
+  }
+
+  .dl::after {
+    content: "📥";
+    font-size: 12px;
   }
 }
 </style>

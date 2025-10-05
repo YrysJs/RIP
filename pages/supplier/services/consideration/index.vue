@@ -45,7 +45,7 @@ const formatDateTime = (iso) => {
 </script>
 
 <template>
-    <NuxtLayout name="supplier">
+    <NuxtLayout name="supplier" class="supplier-services-page">
         <!-- заголовок -->
         <div class="page-head">
             <h2 class="page-title">Товары и услуги на рассмотрении</h2>
@@ -120,9 +120,11 @@ const formatDateTime = (iso) => {
                         Дата и время заявки: {{ formatDateTime(product.created_at) }}
                     </div>
 
-                    <NuxtLink class="btn btn--primary btn--lg" :to="`/supplier/services/add-service/${product.id}`">
-                        Редактировать
-                    </NuxtLink>
+                    <div class="btn-group">
+                        <NuxtLink class="btn btn--primary btn--lg" :to="`/supplier/services/add-service/${product.id}`">
+                            Редактировать
+                        </NuxtLink>
+                    </div>
                 </div>
             </div>
         </div>
@@ -156,12 +158,12 @@ const formatDateTime = (iso) => {
 }
 @keyframes spin{ to { transform: rotate(360deg) } }
 
-/* ---------- card ---------- */
+/* ---------- card (горизонтальная для веба) ---------- */
 .pending-card{
   display:grid;
   grid-template-columns: 320px 1fr;
   gap:16px;
-  background:#F7F8FA;         /* мягкий фон как в макете */
+  background:#0000000A;
   border:1px solid #EAECEE;
   border-radius:16px;
   padding:12px;
@@ -203,6 +205,12 @@ const formatDateTime = (iso) => {
 }
 .submitted{ color:#7C8794; font-size:14px; line-height:1.2; }
 
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* buttons */
 .btn{
   border:none; border-radius:12px; font-weight:800;
@@ -226,5 +234,134 @@ const formatDateTime = (iso) => {
   }
   .pending-card__media{ height:200px; }
   .pending-card__bottom{ flex-direction:column; align-items:flex-start; }
+}
+
+/* Мобильные стили для услуг на рассмотрении */
+@media (max-width: 768px) {
+  :global(.supplier-services-page) {
+    background: #ffffff !important;
+  }
+
+  :global(.supplier-services-page .supplier) {
+    background: #ffffff !important;
+  }
+
+  .page-head {
+    padding: 20px 16px 16px;
+    margin-bottom: 16px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  .page-title {
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  .pending-card {
+    display: flex;
+    flex-direction: column;
+    background: #0000000A;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 0;
+    margin: 0 16px 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .pending-card__media {
+    width: 100%;
+    height: 180px;
+    border-radius: 0;
+  }
+
+  .pending-card__body {
+    padding: 16px;
+  }
+
+  .pending-card__top {
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .titlebox {
+    width: 100%;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1C140E;
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0;
+  }
+
+  .price-badge {
+    align-self: flex-start;
+    background: #F3F4F6;
+    color: #1C140E;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .meta-row {
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .meta {
+    color: #6B7280;
+    font-size: 13px;
+  }
+
+  .ico {
+    width: 14px;
+    height: 14px;
+  }
+
+  .pending-card__bottom {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 0;
+  }
+
+  .submitted {
+    font-size: 13px;
+    color: #6B7280;
+  }
+
+  .btn-group {
+    width: 100%;
+  }
+
+  .btn--primary {
+    width: 100%;
+    height: 44px;
+    font-size: 14px;
+  }
+
+  .btn--lg {
+    width: 100%;
+    height: 44px;
+    font-size: 14px;
+  }
+
+  .state-card {
+    margin: 0 16px;
+    padding: 20px;
+    border-radius: 12px;
+  }
 }
 </style>

@@ -1,12 +1,15 @@
 <script setup>
-import LayoutTop from '~/components/layout/LayoutTop.vue'
+// import LayoutTop from '~/components/layout/LayoutTop.vue'
 import ManagerSidebar from '~/components/layout/ManagerSidebar.vue'
 import AppHeader from "~/components/layout/AppHeader.vue";
+import AppHeaderManager from "~/components/layout/AppHeaderManager.vue";
+import ManagerBottomNav from "~/components/layout/ManagerBottomNav.vue";
 </script>
 
 <template>
   <section class="manager">
     <AppHeader type="manager" />
+    <AppHeaderManager />
 
     <div class="manager__wrap">
       <aside class="manager__sidebar">
@@ -17,6 +20,9 @@ import AppHeader from "~/components/layout/AppHeader.vue";
         <slot />
       </main>
     </div>
+    
+    <!-- Bottom Navigation для мобильных устройств -->
+    <ManagerBottomNav />
   </section>
 </template>
 
@@ -53,6 +59,10 @@ import AppHeader from "~/components/layout/AppHeader.vue";
     @media (max-width: 1100px) {
       position: static;
     }
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   &__content {
@@ -62,6 +72,18 @@ import AppHeader from "~/components/layout/AppHeader.vue";
     padding: 20px;
     color: #1c1c1c;
     min-height: 640px;
+    
+    /* Отступ снизу для bottom navigation на мобильных */
+    @media (max-width: 768px) {
+      padding-bottom: 80px;
+    }
+  }
+}
+
+/* Скрыть адаптивный хедер на десктопе */
+@media (min-width: 769px) {
+  :deep(.mobile-header) {
+    display: none !important;
   }
 }
 </style>

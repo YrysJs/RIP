@@ -4,7 +4,7 @@ import {getManagerCemeteries, getGraves} from "~/services/cemetery"
 import CemeteryMap from "~/components/map/CemeteryMap.vue";
 import {getGraveById, getGraveImages} from "~/services/client/index.js";
 import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
-import ManagerProfileCard from '@/components/manager/ManagerProfileCard.vue'
+// import ManagerProfileCard from '@/components/manager/ManagerProfileCard.vue'
 
 const cemeteries = ref([])
 const selectedCemetery = ref({})
@@ -16,11 +16,11 @@ const graveDetailModalVisible = ref(false)
 const grave = ref({})
 const graveImages = ref([])
 
-const managerProfile = ref({
-  fullName: 'Алтынбекова Сымбат Ержанкызы',
-  iin: '981231300267',
-  phone: '77777777777' // можно и сразу с +7
-})
+// const managerProfile = ref({
+//   fullName: 'Алтынбекова Сымбат Ержанкызы',
+//   iin: '981231300267',
+//   phone: '77777777777' // можно и сразу с +7
+// })
 // definePageMeta({
 //   middleware: ['auth', 'manager'],
 // });
@@ -31,7 +31,7 @@ const selectCemetery = async (cemetery) => {
     const response = await getGraves({ cemetery_id: selectedCemetery.value.id })
     gravesList.value = response.data.data || []
     isMap.value = true
-  } catch (error) {
+  } catch (_error) {
     gravesList.value = []
   }
 }
@@ -92,5 +92,10 @@ onMounted((async () => {
 </template>
 
 <style scoped>
-
+/* Мобильная адаптация для manager */
+@media (max-width: 768px) {
+  .cem-card {
+    margin-top: 30px;
+  }
+}
 </style>
