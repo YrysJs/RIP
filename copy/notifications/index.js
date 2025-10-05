@@ -4,7 +4,7 @@ function getNotifications(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/my/notifications',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v10/my/notifications',
         params,
     })
 }
@@ -13,7 +13,7 @@ function markAsRead(notificationId) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/my/notifications/${notificationId}/read`
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v10/my/notifications/${notificationId}/read`
     })
 }
 
@@ -21,7 +21,7 @@ function markAsReadAll() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/my/notifications/read-all',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v10/my/notifications/read-all',
     })
 }
 
@@ -29,7 +29,7 @@ function getUnreadNotifications() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/my/notifications/unread',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v10/my/notifications/unread',
     })
 }
 

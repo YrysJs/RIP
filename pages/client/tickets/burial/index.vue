@@ -349,7 +349,7 @@ const shareGraveData = async (grave_id) => {
               <p v-else class="p-[4px] block rounded-md black-16 mr-4">Отсутствуют</p>
             </div>
           </div>
-          <div class="flex gap-4 mt-[16px] max-lg:flex-col">
+          <div v-if="request.status !== 'cancelled'" class="flex gap-4 mt-[16px] max-lg:flex-col">
             <button
               class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-sm font-medium hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
               @click="$router.push(`/client/memorial/create?id=${request.id}`)"
@@ -376,19 +376,19 @@ const shareGraveData = async (grave_id) => {
         </template>
       </div>
     </template>
+    <ShareCoordModal
+        :visible="shareCoordModalState"
+        :lat="Number.isFinite(Number(graveLat)) ? Number(graveLat) : null"
+        :lng="Number.isFinite(Number(graveLng)) ? Number(graveLng) : null"
+        @close="shareCoordModalState = false"
+    />
+    <GraveDataModal
+        :visible="graveDataModalState"
+        :grave="graveData"
+        :cemeteryData="cemeteryData"
+        @close="graveDataModalState = false"
+    />
   </NuxtLayout>
-  <ShareCoordModal
-    :visible="shareCoordModalState"
-    :lat="Number.isFinite(Number(graveLat)) ? Number(graveLat) : null"
-    :lng="Number.isFinite(Number(graveLng)) ? Number(graveLng) : null"
-    @close="shareCoordModalState = false"
-  />
-  <GraveDataModal
-    :visible="graveDataModalState"
-    :grave="graveData"
-    :cemeteryData="cemeteryData"
-    @close="graveDataModalState = false"
-  />
 </template>
 
 <style lang="scss" scoped>
