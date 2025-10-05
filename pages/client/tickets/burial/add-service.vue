@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { getProducts, addToCart, getCart, removeFromCart, getProductById, getProductReviews } from '~/services/client'
+import { getProducts, addToCart, getCart, removeFromCart, getProductById, getProductReviews, getBurialRequestById } from '~/services/client'
 import { getSupplier } from '~/services/login'
 import PaymentModalProducts from '~/components/layout/modals/PaymentModalProducts.vue'
 import DeliveryModal from '~/components/layout/modals/DeliveryModal.vue'
@@ -22,6 +22,8 @@ const serviceDetailModalVisible = ref(false)
 const serviceDelivery = ref({})
 const serviceReviews = ref([])
 const serviceSupplier = ref({})
+const burialData = ref(null)
+const route = useRoute()
 
 // Вычисляемое свойство для общей суммы корзины
 const cartTotal = computed(() => {
@@ -176,6 +178,23 @@ const fetchProduct = async (id) => {
   }
 }
 
+// Функция для загрузки данных о захоронении
+const loadBurialData = async () => {
+  try {
+    loading.value = true
+    error.value = null
+    const response = await getBurialRequestById(route.query.burial_id)
+    burialData.value = response.data.data
+  } catch (err) {
+    error.value = 'Ошибка при загрузке данных о захоронении'
+    console.error('Error loading burial data:', err)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
+  } finally {
+    loading.value = false
+  }
+}
+
 // Загрузка данных при монтировании компонента
 onMounted(async () => {
   try {
@@ -184,6 +203,11 @@ onMounted(async () => {
       loadCart()
     ])
     products.value = productsResponse.data.items || productsResponse.data || []
+    
+    // Проверяем наличие burial_id в query параметрах и загружаем данные о захоронении
+    if (route.query.burial_id) {
+      await loadBurialData()
+    }
   } catch (err) {
     error.value = 'Ошибка при загрузке услуг'
     console.error(err)
@@ -328,6 +352,7 @@ onMounted(async () => {
         cartTotal: cartTotal, 
         cartItems: cartItems 
       }"
+      :burial-data="burialData"
       @close="closePaymentModal"
       @success="handlePaymentSuccess"
     />
