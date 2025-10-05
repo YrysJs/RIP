@@ -482,4 +482,236 @@ onMounted(async () => {
 .su-modal__text{  font-size: 16px; color:#475569;  margin-bottom: 18px; }
 .su-modal__btn{   width: 100%; height: 52px; border-radius: 12px; }
 
+/* Мобильные стили */
+@media (max-width: 768px) {
+  :global(.form-page) {
+    background: #ffffff !important;
+  }
+
+  :global(.form-page .supplier) {
+    background: #ffffff !important;
+  }
+
+  .card {
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .header {
+    margin: 0 16px 16px;
+    padding: 16px;
+    background: transparent;
+    border-radius: 0;
+  }
+
+  .title {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #1C140E;
+    margin: 0;
+  }
+
+  .btn-back {
+    height: 36px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+  }
+
+  .section {
+    gap: 12px;
+    margin: 0 16px 16px;
+    padding: 16px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1C140E;
+  }
+
+  .field {
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 2px;
+  }
+
+  .control {
+    height: 44px;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1px solid #E5E7EB;
+    background: #ffffff;
+  }
+
+  .control:focus {
+    border-color: #F7B500;
+    box-shadow: 0 0 0 3px rgba(247, 181, 0, 0.1);
+  }
+
+  .textarea {
+    min-height: 100px;
+    padding: 10px 14px;
+    resize: vertical;
+  }
+
+  .row-2 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .segmented {
+    width: 100%;
+    gap: 4px;
+    padding: 4px;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+  }
+
+  .seg-btn {
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+  }
+
+  .seg-ic {
+    width: 16px;
+    height: 16px;
+  }
+
+  .thumbs {
+    gap: 8px;
+  }
+
+  .thumb {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+  }
+
+  .thumb-remove {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    border-radius: 50%;
+  }
+
+  .dz {
+    min-height: 160px;
+    border-radius: 8px;
+    border: 2px dashed #D1D5DB;
+    background: #F9FAFB;
+  }
+
+  .dz:hover {
+    background: #F3F4F6;
+    border-color: #F7B500;
+  }
+
+  .dz__inner {
+    padding: 20px 12px;
+    gap: 8px;
+  }
+
+  .dz__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1C140E;
+  }
+
+  .dz__hint {
+    font-size: 12px;
+    color: #6B7280;
+  }
+
+  .dz__previews {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    gap: 8px;
+  }
+
+  .dz__thumb {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin: 0 16px 16px;
+  }
+
+  .btn-primary,
+  .btn-ghost {
+    width: 100%;
+    height: 48px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+  }
+
+  .btn-ghost {
+    order: 1;
+    background: #ffffff;
+    color: #374151;
+    border: 1px solid #E5E7EB;
+  }
+
+  .btn-primary {
+    order: 2;
+    background: #F7B500;
+    color: #1C140E;
+  }
+
+  .su-modal {
+    margin: 16px;
+    padding: 24px 20px 20px;
+    border-radius: 12px;
+  }
+
+  .su-modal__title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .su-modal__text {
+    font-size: 14px;
+    color: #6B7280;
+  }
+
+  .su-modal__btn {
+    height: 48px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+  }
+}
+
 </style>

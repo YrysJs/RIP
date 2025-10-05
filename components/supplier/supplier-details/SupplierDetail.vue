@@ -7,6 +7,7 @@ import GraveInfoModal from "~/components/layout/modals/GraveInfoModal.vue";
 
 const props = defineProps(["ticketId"]);
 const showModal = ref(false);
+const showCompletedModal = ref(false);
 const graveModalOpen = ref(false);
 
 // Переменная для хранения данных заказа
@@ -130,8 +131,11 @@ const handleStatusChange = async () => {
       orderData.value.id,
       currentStatusAction.value.next
     );
-    if (currentStatusAction.value.next === "in_progress")
+    if (currentStatusAction.value.next === "completed") {
+      showCompletedModal.value = true;
+    } else if (currentStatusAction.value.next === "in_progress") {
       showModal.value = true;
+    }
   } finally {
     loading.value = false;
   }
@@ -347,6 +351,23 @@ const graveModalData = computed(() => ({
         {{ loading ? "Обновление..." : currentStatusAction.title }}
       </button>
       <CompletedModal v-if="showModal" @close="showModal = false" />
+      
+      <!-- Модальное окно "Заявка завершена" -->
+      <div v-if="showCompletedModal" class="modal-overlay" @click="showCompletedModal = false">
+        <div class="completed-modal" @click.stop>
+          <div class="completed-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" fill="#10B981"/>
+              <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="completed-title">Заявка завершена</h3>
+          <button class="completed-close-btn" @click="showCompletedModal = false">
+            Закрыть
+          </button>
+        </div>
+      </div>
+      
       <GraveInfoModal v-model="graveModalOpen" :data="graveModalData" />
     </template>
 
@@ -369,5 +390,193 @@ const graveModalData = computed(() => ({
 .black-16 {
   font-size: 16px;
   color: #050202;
+}
+
+/* ===== МОБИЛЬНЫЕ СТИЛИ ===== */
+@media (max-width: 768px) {
+  /* Предотвращаем горизонтальный скролл */
+  * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Принудительно ограничиваем ширину всех элементов */
+  div, p, span, button {
+    max-width: 100% !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+  /* Основной контейнер */
+  .w-full {
+    padding: 20px 16px;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    background: #ffffff;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Заголовок */
+  .text-fluid {
+    font-size: 24px;
+    line-height: 28px;
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
+
+  /* Информация о дате заявки */
+  .text-sm {
+    font-size: 16px;
+  }
+
+  /* Секции с информацией */
+  .flex.justify-between {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #E5E7EB;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Кнопка "Координаты кладбища" */
+  .rounded-md {
+    width: 100%;
+    padding: 16px;
+    font-size: 18px;
+    margin-top: 16px;
+    border-radius: 12px;
+    text-align: center;
+    display: block;
+    font-weight: 600;
+  }
+
+  /* Информационные строки */
+  .h-\[38px\] {
+    height: auto;
+    padding: 8px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .min-w-\[150px\] {
+    min-width: auto;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .black-16 {
+    font-size: 16px;
+    color: #1C140E;
+    line-height: 1.4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    font-weight: 500;
+  }
+
+  /* Статус */
+  .h-\[48px\] {
+    height: auto;
+    padding: 12px 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Стили для кружка статуса */
+  .inline-block {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+
+  /* Кнопка действия */
+  .block {
+    width: 100%;
+    padding: 18px;
+    font-size: 18px;
+    border-radius: 12px;
+    margin-top: 24px;
+    margin-left: 0;
+    background: #E9B949;
+    color: #1C140E;
+    font-weight: 700;
+    text-align: center;
+    display: block;
+  }
+
+  /* Адаптивные отступы */
+  .max-sm\:mt-3 {
+    margin-top: 16px;
+  }
+
+  .max-sm\:pb-3 {
+    padding-bottom: 16px;
+  }
+
+  .max-sm\:gap-0 {
+    gap: 8px;
+  }
+
+  /* Модальное окно "Заявка завершена" */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .completed-modal {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    max-width: 320px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .completed-icon {
+    margin-bottom: 16px;
+  }
+
+  .completed-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1C140E;
+    margin-bottom: 24px;
+  }
+
+  .completed-close-btn {
+    background: #E9B949;
+    color: #1C140E;
+    border: none;
+    border-radius: 12px;
+    padding: 16px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .completed-close-btn:hover {
+    background: #D4A842;
+  }
 }
 </style>

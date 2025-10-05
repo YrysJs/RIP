@@ -157,7 +157,7 @@ const formatDateTime = (iso) => {
             Дата последнего изменения: {{ formatDateTime(product.updated_at || product.created_at) }}
           </div>
 
-          <div class="btn-row">
+          <div class="btn-group">
             <button class="btn btn--primary btn--lg" @click="activateProduct(product.id)">
               Активировать
             </button>
@@ -220,7 +220,7 @@ const formatDateTime = (iso) => {
   display:grid;
   grid-template-columns: 320px 1fr;
   gap:16px;
-  background:#F7F8FA;
+  background:#0000000A;
   border:1px solid #EAECEE;
   border-radius:16px;
   padding:12px;
@@ -256,7 +256,12 @@ const formatDateTime = (iso) => {
   align-items:center; gap:16px; margin-top:40px;
 }
 .submitted{ color:#7C8794; font-size:14px; line-height:1.2; }
-.btn-row{ display:flex; gap:10px; }
+
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
 /* buttons */
 .btn{
@@ -302,7 +307,153 @@ const formatDateTime = (iso) => {
   .inactive-card{ grid-template-columns: 1fr; }
   .inactive-card__media{ height:200px; }
   .inactive-card__bottom{ flex-direction:column; align-items:flex-start; }
-  .btn-row{ width:100%; }
-  .btn-row .btn{ width:100%; text-align:center; }
+  .btn-group{ width:100%; }
+  .btn-group .btn{ width:100%; text-align:center; }
+}
+
+/* Мобильные стили для неактивных услуг */
+@media (max-width: 768px) {
+  :global(.supplier-services-page) {
+    background: #ffffff !important;
+  }
+
+  :global(.supplier-services-page .supplier) {
+    background: #ffffff !important;
+  }
+
+  .page-head {
+    padding: 20px 16px 16px;
+    margin-bottom: 16px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  .page-title {
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  .inactive-card {
+    display: flex;
+    flex-direction: column;
+    background: #0000000A;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 0;
+    margin: 0 16px 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .inactive-card__media {
+    width: 100%;
+    height: 180px;
+    border-radius: 0;
+  }
+
+  .inactive-card__body {
+    padding: 16px;
+  }
+
+  .inactive-card__top {
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .titlebox {
+    width: 100%;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1C140E;
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0;
+  }
+
+  .price-badge {
+    align-self: flex-start;
+    background: #F3F4F6;
+    color: #1C140E;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .meta-row {
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .meta {
+    color: #6B7280;
+    font-size: 13px;
+  }
+
+  .ico {
+    width: 14px;
+    height: 14px;
+  }
+
+  .submitted {
+    font-size: 13px;
+    color: #6B7280;
+    margin-bottom: 12px;
+  }
+
+  .inactive-card__bottom {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 0;
+  }
+
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+    height: 44px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .btn--primary {
+    background: #E9B949;
+    color: #1C140E;
+  }
+
+  .btn--outline {
+    background: #F3F4F6;
+    color: #6B7280;
+    border: 1px solid #E5E7EB;
+  }
+
+  .btn--lg {
+    width: 100%;
+    height: 44px;
+    font-size: 14px;
+  }
+
+  .state-card {
+    margin: 0 16px;
+    padding: 20px;
+    border-radius: 12px;
+  }
 }
 </style>

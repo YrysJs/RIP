@@ -627,6 +627,14 @@ onMounted(async () => {
   await fetchStatuses();
   await fetchAppeals();
   await fetchUsers();
+  
+  // Принудительно устанавливаем бежевый фон для страницы заявок
+  setTimeout(() => {
+    const body = document.body;
+    const userElement = document.querySelector('.user');
+    if (body) body.style.background = '#faf7ef';
+    if (userElement) userElement.style.background = '#faf7ef';
+  }, 100);
 });
 
 const applicantName = (a) => {
@@ -1032,7 +1040,7 @@ option[disabled][hidden] { display: none; }
     box-shadow: 0 0 0 2px rgba(247, 181, 0, 0.1) !important;
   }
 
-  /* Принудительно устанавливаем бежевый фон для страницы заявок */
+  /* Принудительно устанавливаем бежевый фон для страницы заявок на мобильных */
   :global(.tickets-page) {
     background: #faf7ef !important;
   }
@@ -1040,4 +1048,13 @@ option[disabled][hidden] { display: none; }
   :global(.tickets-page .user) {
     background: #faf7ef !important;
   }
+
+/* Дополнительные стили для принудительного бежевого фона */
+:global(.tickets-page) {
+  background: #faf7ef !important;
+}
+
+:global(.tickets-page .user) {
+  background: #faf7ef !important;
+}
 </style>

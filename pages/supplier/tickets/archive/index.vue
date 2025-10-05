@@ -62,7 +62,7 @@ onMounted(fetchOrders);
 </script>
 
 <template>
-  <NuxtLayout name="supplier">
+  <NuxtLayout name="supplier" class="supplier-archive-page">
     <div class="page-head">
       <h2 class="page-title">Архивные заявки</h2>
     </div>
@@ -90,6 +90,7 @@ onMounted(fetchOrders);
             :to="row.id ? `/supplier/tickets/archive/${row.id}` : '#'"
             class="orders-row"
             :class="{ 'orders-row--alt': i % 2 === 1 }"
+            @click.prevent="!row.id"
           >
             <div class="orders-cell">{{ row.product }}</div>
             <div class="orders-cell">{{ row.customer }}</div>
@@ -101,6 +102,13 @@ onMounted(fetchOrders);
                 <i class="chip__dot"></i>
                 {{ statusChip(row.status).text }}
               </span>
+            </div>
+            
+            <!-- Стрелка для мобильных -->
+            <div class="orders-arrow">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M9 18l6-6-6-6" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </div>
           </NuxtLink>
         </div>
@@ -214,6 +222,165 @@ onMounted(fetchOrders);
   }
   .orders-head {
     display: none;
+  }
+}
+
+/* Мобильные стили для архивных заявок */
+@media (max-width: 768px) {
+  :global(.supplier-archive-page) {
+    background: #ffffff !important;
+  }
+
+  :global(.supplier-archive-page .supplier) {
+    background: #ffffff !important;
+  }
+
+  .page-head {
+    padding: 20px 16px 16px;
+    margin-bottom: 16px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  .page-title {
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  .orders-table-wrap {
+    margin: 0;
+    border-radius: 0;
+    padding: 0 16px;
+  }
+
+  .orders-table {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .orders-row {
+    background: #FAF7EF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 16px;
+    gap: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
+    padding-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .orders-row--alt {
+    background: #FAF7EF;
+  }
+
+  .orders-head {
+    display: none !important;
+  }
+
+  .orders-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .orders-cell:nth-child(1) {
+    font-weight: 600;
+    font-size: 16px;
+    color: #1C140E;
+  }
+
+  .orders-cell:nth-child(2) {
+    font-size: 14px;
+    color: #6B7280;
+  }
+
+  .orders-cell:nth-child(3) {
+    font-size: 14px;
+    color: #6B7280;
+  }
+
+  .orders-cell:nth-child(4) {
+    font-size: 14px;
+    color: #6B7280;
+  }
+
+  .orders-cell:nth-child(1)::before {
+    content: "Товар/услуга: ";
+    font-weight: 600;
+    color: #6B7280;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .orders-cell:nth-child(2)::before {
+    content: "Заказчик: ";
+    font-weight: 600;
+    color: #6B7280;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .orders-cell:nth-child(3)::before {
+    content: "Дата похорон: ";
+    font-weight: 600;
+    color: #6B7280;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .orders-cell:nth-child(4)::before {
+    content: "Статус: ";
+    font-weight: 600;
+    color: #6B7280;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+/* Стрелка для навигации - скрыта по умолчанию */
+.orders-arrow {
+  display: none;
+}
+
+/* Показываем стрелку только на мобильных */
+@media (max-width: 768px) {
+  .orders-arrow {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  .orders-empty {
+    padding: 40px 16px;
+    font-size: 16px;
+  }
+
+  .chip {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+
+  .chip__dot {
+    width: 6px;
+    height: 6px;
   }
 }
 </style>
