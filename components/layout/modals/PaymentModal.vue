@@ -184,6 +184,7 @@ export default {
         // 2. Обновляем данные захоронения (дата и время)
         if (this.burialData?.burial_date || this.burialData?.burial_time) {
           const burialUpdateData = {
+            death_date: this.burialData.death_date + "T00:00:00Z",
             burial_date: `${this.burialData.burial_date}T${this.burialData.burial_time}:00Z`,
             burial_time: this.burialData.burial_time,
           };

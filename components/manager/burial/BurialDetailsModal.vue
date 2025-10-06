@@ -193,6 +193,11 @@ const statusConfig = computed(() => {
           </div>
         </div>
 
+        <div class="flex text-base mt-2">
+          <p class="min-w-[150px] max-w-[150px] font-medium">Завершено:</p>
+          <p class="font-bold">{{ booking?.is_complete ? 'Да' : 'Нет' }}</p>
+        </div>
+
         <!-- Кнопки -->
         <div class="flex justify-between mt-6">
           <!-- Кнопка чека (показывается для paid и confirmed) -->

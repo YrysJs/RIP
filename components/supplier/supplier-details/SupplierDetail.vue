@@ -254,9 +254,9 @@ function formatToDDMMYYYY(iso) {
           <div class="min-w-[580px] font-medium flex flex-col gap-2">
             <div class="h-[38px] flex items-center text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">Дата похорон:</p>
-              <p v-if="orderData?.burial_date">
+              <p v-if="orderData?.burial_info?.burial_date">
                 {{
-                  new Date(orderData.burial_date).toLocaleDateString("ru-RU")
+                  new Date(orderData?.burial_info?.burial_date).toLocaleDateString("ru-RU")
                 }}, {{ orderData?.burial_time || "—" }}
               </p>
               <p v-else class="text-base text-[#DB1414]">

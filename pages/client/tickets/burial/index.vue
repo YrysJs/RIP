@@ -340,6 +340,16 @@ const shareGraveData = async (grave_id) => {
               </div>
             </div>
           </div>
+          <div
+              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+          >
+            <div class="flex text-base">
+              <p class="min-w-[150px] max-w-[150px] grey-14">Завершено:</p>
+              <p class="font-bold">
+                {{ request.is_complete ? 'Да' : 'Нет' }}
+              </p>
+            </div>
+          </div>
           <div class="flex justify-between items-start mt-[16px] max-sm:mt-3">
             <div class="flex text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">

@@ -166,7 +166,7 @@ const submitMemorial = async () => {
     const createdId = created.id;
 
     if (createdId) {
-      router.push(`/client/memorial/created?id=${createdId}`);
+      router.push(`/client/memorial/${createdId}`);
     } else {
       // fallback — если сервер не вернул id
       router.push("/client/memorial");
