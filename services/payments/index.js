@@ -4,7 +4,7 @@ function processCardPayment(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: 'http://194.32.140.103:8091/api/v1/payments/card',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/payments/card',
         data: {
             amount: data.amount,
             cardNumber: data.cardNumber,
@@ -23,7 +23,7 @@ function confirmOrderPayment(orderId, transactionId) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: `http://194.32.140.103:8090/api/v1/orders/${orderId}/confirm-payment`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/orders/${orderId}/confirm-payment`,
         headers: {
             'accept': 'application/json',
             'Content-Type': 'application/json'
@@ -38,7 +38,7 @@ function confirmBurialPayment(burialRequestId, transactionId) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: `http://194.32.140.103:8094/api/v1/burial-requests/${burialRequestId}/confirm-payment`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${burialRequestId}/confirm-payment`,
         headers: {
             'accept': 'application/json',
             'Content-Type': 'application/json'
@@ -53,7 +53,7 @@ function getPaymentReceipt(receiptId) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: `http://194.32.140.103:8091/api/v1/payments/receipt/${receiptId}`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/payments/receipt/${receiptId}`,
         headers: {
             'accept': 'application/json',
         }

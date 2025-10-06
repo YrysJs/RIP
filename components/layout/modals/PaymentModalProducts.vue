@@ -155,7 +155,7 @@ export default {
         // 2. Создаем заказ через API с правильной структурой
         const orderRequestData = {
           burial_date: this.burialData.burial_date,
-          burial_order_id: 23, // ID захоронения 0000023
+          burial_order_id: this.burialData.id, // ID захоронения 0000023
           burial_time: this.burialData.burial_time,
           cemetery_id: this.burialData.cemetery_id, // Северное кладбище
           deceased_id: this.burialData.deceased_id, // ID покойного
