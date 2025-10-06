@@ -207,11 +207,12 @@ function uploadDeceasedDeathCertificate(deceasedId, certificate) {
   const { $axios } = useNuxtApp()
 
   const formData = new FormData()
-  formData.append('certificate', certificate)
+  // API ожидает массив файлов, поэтому добавляем файл с индексом
+  formData.append('files', certificate)
 
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v7/deceased/death-certificate/${deceasedId}`,
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v7/deceased/death_certificate/${deceasedId}`,
     data: formData,
   })
 }
