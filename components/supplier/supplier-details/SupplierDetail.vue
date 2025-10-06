@@ -33,6 +33,8 @@ const fetchOrderData = async () => {
   } catch (err) {
     error.value = err.message || "Ошибка при загрузке данных заказа";
     console.error("Error fetching order:", err);
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     loading.value = false;
   }
@@ -48,6 +50,8 @@ const getCemetryInfoById = async (id) => {
   } catch (err) {
     error.value = err.message || "Ошибка при загрузке данных заказа";
     console.error("Error fetching order:", err);
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     loading.value = false;
   }
@@ -65,6 +69,8 @@ const handleStatusUpdate = async (orderId, newStatus) => {
     await fetchOrderData();
   } catch (error) {
     console.error("Ошибка при обновлении статуса:", error);
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   }
 };
 
@@ -146,9 +152,9 @@ const fullName = computed(() => {
   const u = orderData.value?.user_info;
   return [u?.surname, u?.name, u?.patronymic].filter(Boolean).join(" ") || "—";
 });
-const cemeteryName = computed(() => orderData.value?.cemetery_name || "—");
-const sectorNumber = computed(() => orderData.value?.sector_number ?? "—");
-const graveId = computed(() => orderData.value?.grave_id ?? "—");
+const cemeteryName = computed(() => orderData.value?.grave_info?.cemetery_name || "—");
+const sectorNumber = computed(() => orderData.value?.grave_info?.sector_number ?? "—");
+const graveId = computed(() => orderData.value?.grave_info?.grave_number ?? "—");
 
 // const whatsAppLink = computed(() => {
 //   const phone = orderData.value?.user_phone?.replace(/\D/g, "") || "";
@@ -162,12 +168,17 @@ const graveId = computed(() => orderData.value?.grave_id ?? "—");
 
 const graveModalData = computed(() => ({
   image: "/images/main_service/f1.jpg",
-  title: orderData.value?.cemetery_name || "—",
-  sector: orderData.value?.sector_number ?? "—",
-  place: orderData.value?.grave_id ?? "—",
-  description: orderData.value?.grave_description || "",
+  title: orderData.value?.grave_info?.cemetery_name || "—",
+  sector: orderData.value?.grave_info?.sector_number ?? "—",
+  place: orderData.value?.grave_info?.grave_number ?? "—",
+  description: orderData.value?.grave_info?.description || "",
   note: orderData.value?.grave_note || "",
 }));
+
+function formatToDDMMYYYY(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("ru-RU"); // например "17.05.2025"
+}
 </script>
 
 <template>
@@ -232,7 +243,7 @@ const graveModalData = computed(() => ({
             <div class="h-[38px] flex items-center text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">ФИО покойного:</p>
               <p class="black-16">
-                {{ orderData?.deceased?.full_name || "—" }}
+                {{ orderData?.burial_info?.deceased?.full_name || "—" }}
               </p>
             </div>
           </div>
@@ -243,9 +254,9 @@ const graveModalData = computed(() => ({
           <div class="min-w-[580px] font-medium flex flex-col gap-2">
             <div class="h-[38px] flex items-center text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">Дата похорон:</p>
-              <p v-if="orderData?.burial_date">
+              <p v-if="orderData?.burial_info?.burial_date">
                 {{
-                  new Date(orderData.burial_date).toLocaleDateString("ru-RU")
+                  new Date(orderData?.burial_info?.burial_date).toLocaleDateString("ru-RU")
                 }}, {{ orderData?.burial_time || "—" }}
               </p>
               <p v-else class="text-base text-[#DB1414]">
@@ -284,7 +295,7 @@ const graveModalData = computed(() => ({
             <div class="h-[38px] flex items-center text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">Время прибытия:</p>
               <p class="black-16">
-                {{ it?.delivery_destination_time || "—" }}
+                {{ formatToDDMMYYYY(it?.delivery_arrival_time) || "—" }}
               </p>
             </div>
           </div>

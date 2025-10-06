@@ -188,7 +188,15 @@ function selectPlot(item) {
 
 /* ===== lifecycle ===== */
 const unwatchers = []
-onMounted(() => { initMap().catch(console.error) })
+onMounted(async () => { 
+  try {
+    await initMap()
+  } catch (error) {
+    console.error('Ошибка при инициализации карты:', error)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
+  }
+})
 onBeforeUnmount(() => {
   unwatchers.forEach(u => { try { u() } catch {} })
   try { if (map) map.destroy() } catch {}

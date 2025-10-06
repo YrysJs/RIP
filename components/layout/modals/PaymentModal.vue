@@ -157,7 +157,7 @@ export default {
       try {
         // Подготавливаем данные для оплаты
         const paymentData = {
-          amount: 100, // Госпошлина
+          amount: this.burialData.burial_price || 100, // Госпошлина
           cardNumber: this.cardNumber.replace(/\s/g, ""),
           currency: "KZT",
           cvc: this.cvcCode,
@@ -184,6 +184,7 @@ export default {
         // 2. Обновляем данные захоронения (дата и время)
         if (this.burialData?.burial_date || this.burialData?.burial_time) {
           const burialUpdateData = {
+            death_date: this.burialData.death_date + "T00:00:00Z",
             burial_date: `${this.burialData.burial_date}T${this.burialData.burial_time}:00Z`,
             burial_time: this.burialData.burial_time,
           };
@@ -203,10 +204,9 @@ export default {
       } catch (error) {
         console.log(error)
         console.error("Payment process failed:", error);
-        alert(
-            "Ошибка при создании мемориала: " +
-            (error.response?.data?.error || error.message)
-        );
+        const { $toast } = useNuxtApp()
+        $toast.error("Ошибка при попытке оплаты: " +
+            (error.response?.data?.error || error.message))
       } finally {
         this.isProcessing = false;
       }

@@ -6,6 +6,7 @@ import { getCemeteries, getGraves } from "~/services/cemetery";
 import ShareCoordModal from "~/components/layout/modals/ShareCoordModal.vue";
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
+import AppHeaderClient from "~/components/layout/AppHeaderClient.vue";
 
 const router = useRouter();
 
@@ -44,6 +45,8 @@ const selectedCemetery = ref({});
 const gravesList = ref([]);
 const selectedGrave = ref(null);
 const showGraveDetails = ref(false);
+const isMobile = ref(false);
+const showInfoMobile = ref(false);
 
 const showList = computed(() => !(isMobile.value && showInfoMobile.value));
 
@@ -99,10 +102,22 @@ async function getCemeteriesReq() {
       const stillExists = !!cemetriessList.value.find(
         (c) => c.id === selectedCemetery.value?.id
       );
+
       if (!stillExists) {
         // тихо выставляем (без мобильного showInfo)
         selectedCemetery.value = first; // триггерит watch(selectedCemetery)
-        showInfoMobile.value = false; // чтобы не открывать карточку на мобиле
+        await nextTick();
+
+        // 👇 Главное изменение: на мобиле сразу показываем карточку, чтобы был крестик
+        if (isMobile.value) {
+          showInfoMobile.value = true;
+          const anchor = document.querySelector("#mobile-info-anchor");
+          if (anchor) {
+            window.scrollTo({ top: anchor.offsetTop - 12, behavior: "smooth" });
+          }
+        } else {
+          showInfoMobile.value = false;
+        }
       }
     } else {
       // Пустой результат — сбрасываем выбор
@@ -156,6 +171,12 @@ watch(selected, (newSelected) => {
   }
 });
 
+watch([isMobile, selectedCemetery], ([mobile, cem]) => {
+  if (mobile && cem?.id && !showInfoMobile.value && !showGraveDetails.value) {
+    showInfoMobile.value = true; // чтобы крестик точно появился
+  }
+});
+
 onMounted(async () => {
   await getCemeteriesReq();
 });
@@ -189,9 +210,6 @@ const shareGraveData = () => {
   graveLng.value = selected.value.polygon_data.coordinates[0][0];
   shareCoordModalState.value = true;
 };
-
-const isMobile = ref(false);
-const showInfoMobile = ref(false);
 
 function updateIsMobile() {
   isMobile.value = window.matchMedia("(max-width: 640px)").matches;
@@ -245,9 +263,10 @@ function getReligionIcon(item) {
 <template>
   <main>
     <AppHeader type="client" />
+    <AppHeaderClient />
     <div class="container">
       <div
-        class="py-[24px] min-h-[calc(100vh-104px)] mt-[104px] rounded-lg gap-[24px] max-sm:py-0 max-sm:gap-0"
+        class="main-mt py-[24px] min-h-[calc(100vh-104px)] mt-[104px] rounded-lg gap-[24px] max-sm:py-0 max-sm:gap-0"
       >
         <div
           class="w-full relative flex max-sm:flex-col-reverse gap-6 max-sm:gap-0"
@@ -373,6 +392,7 @@ function getReligionIcon(item) {
             >
               <ClientOnly>
                 <MapSecond
+                  :key="selectedCemetery?.id || 'none'"
                   :polygons="gravesList"
                   :cemetery-boundary="selectedCemetery"
                   :center-coords="selectedCemetery.location_coords"
@@ -498,9 +518,10 @@ function getReligionIcon(item) {
                   </p>
 
                   <button
-                      class="reserve__btn w-full"
-                      :disabled="selectedGrave.status !== 'free'"
-                      @click="reserve">
+                    class="reserve__btn w-full"
+                    :disabled="selectedGrave?.status !== 'free'"
+                    @click="reserve"
+                  >
                     <img
                       src="/icons/pencil.svg"
                       alt="Reserve icon"
@@ -606,7 +627,7 @@ function getReligionIcon(item) {
               <button
                 v-if="showGraveDetails"
                 class="reserve__btn"
-                :disabled="selectedGrave.status !== 'free'"
+                :disabled="selectedGrave?.status !== 'free'"
                 @click="reserve"
               >
                 <img
@@ -735,10 +756,10 @@ function getReligionIcon(item) {
       </div>
     </div>
     <ShareCoordModal
-        :visible="shareCoordModalState"
-        :lat="graveLat"
-        :lng="graveLng"
-        @close="shareCoordModalState = false"
+      :visible="shareCoordModalState"
+      :lat="graveLat"
+      :lng="graveLng"
+      @close="shareCoordModalState = false"
     />
   </main>
 </template>
@@ -847,6 +868,12 @@ function getReligionIcon(item) {
 @media (max-width: 930px) {
   .align-c {
     align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-mt {
+    margin-top: 56px;
   }
 }
 </style>

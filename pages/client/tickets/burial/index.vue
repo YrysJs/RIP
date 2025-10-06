@@ -73,6 +73,8 @@ onMounted(async () => {
     burialRequests.value = response.data.data.data;
   } catch (error) {
     console.error("Ошибка при получении заявок:", error);
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   } finally {
     loading.value = false;
   }
@@ -338,6 +340,16 @@ const shareGraveData = async (grave_id) => {
               </div>
             </div>
           </div>
+          <div
+              class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
+          >
+            <div class="flex text-base">
+              <p class="min-w-[150px] max-w-[150px] grey-14">Завершено:</p>
+              <p class="font-bold">
+                {{ request.is_complete ? 'Да' : 'Нет' }}
+              </p>
+            </div>
+          </div>
           <div class="flex justify-between items-start mt-[16px] max-sm:mt-3">
             <div class="flex text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">
@@ -376,18 +388,21 @@ const shareGraveData = async (grave_id) => {
         </template>
       </div>
     </template>
-    <ShareCoordModal
-        :visible="shareCoordModalState"
-        :lat="Number.isFinite(Number(graveLat)) ? Number(graveLat) : null"
-        :lng="Number.isFinite(Number(graveLng)) ? Number(graveLng) : null"
-        @close="shareCoordModalState = false"
-    />
-    <GraveDataModal
-        :visible="graveDataModalState"
-        :grave="graveData"
-        :cemeteryData="cemeteryData"
-        @close="graveDataModalState = false"
-    />
+    <Teleport to="body">
+      <ShareCoordModal
+          :visible="shareCoordModalState"
+          :lat="Number.isFinite(Number(graveLat)) ? Number(graveLat) : null"
+          :lng="Number.isFinite(Number(graveLng)) ? Number(graveLng) : null"
+          @close="shareCoordModalState = false"
+      />
+      <GraveDataModal
+          :visible="graveDataModalState"
+          :grave="graveData"
+          :cemeteryData="cemeteryData"
+          @close="graveDataModalState = false"
+      />
+    </Teleport>
+
   </NuxtLayout>
 </template>
 

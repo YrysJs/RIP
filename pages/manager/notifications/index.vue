@@ -197,7 +197,8 @@ const handleNotificationClick = async (notification) => {
                     @click="handleNotificationClick(notification)"
                 >
                     <div class="flex flex-col flex-1">
-                        <nuxt-link :to="notification.type === 'new_review' ? `/supplier/reviews` : `/supplier/tickets/active/${notification.entity_id}`" class="text-sm font-semibold">Уведомление - {{ notification.subject }} - {{ notification.data.order_id || notification.data.request_number }}</nuxt-link>
+<!--                      <nuxt-link :to="notification.type === 'new_review' ? `/supplier/reviews` : `/supplier/tickets/active/${notification.entity_id}`" class="text-sm font-semibold">Уведомление - {{ notification.subject }} - {{ notification.data.order_id || notification.data.request_number }}</nuxt-link>-->
+                      <p class="text-sm font-semibold">Уведомление - {{ notification.subject }} - {{ notification.data.order_id || notification.data.request_number }}</p>
                         <p v-if="notification.content" class="text-xs text-gray-600 mt-1">{{ notification.content }}</p>
                         <p class="text-xs text-[#224C4F] mt-1">{{ formatDate(notification.created_at) }}</p>
                     </div>

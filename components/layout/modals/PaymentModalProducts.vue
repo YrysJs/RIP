@@ -88,6 +88,10 @@ export default {
     orderData: {
       type: Object,
       default: () => ({})
+    },
+    burialData: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -150,12 +154,12 @@ export default {
 
         // 2. Создаем заказ через API с правильной структурой
         const orderRequestData = {
-          burial_date: "2025-05-17",
-          burial_order_id: 23, // ID захоронения 0000023
-          burial_time: "09:00:00",
-          cemetery_id: 1, // Северное кладбище
-          deceased_id: 1, // ID покойного
-          grave_id: 1, // ID места захоронения
+          burial_date: this.burialData.burial_date,
+          burial_order_id: this.burialData.id, // ID захоронения 0000023
+          burial_time: this.burialData.burial_time,
+          cemetery_id: this.burialData.cemetery_id, // Северное кладбище
+          deceased_id: this.burialData.deceased_id, // ID покойного
+          grave_id: this.burialData.grave_id, // ID места захоронения
           order_items: this.orderData.cartItems?.map(item => ({
             delivery_arrival_time: item.delivery_arrival_time || "2025-05-17T09:00:00Z",
             delivery_destination_address: item.delivery_destination_address || "Алматы, ул. Еревагская 157",
@@ -163,12 +167,12 @@ export default {
             quantity: item.quantity
           })) || []
         }
-        
+
         const orderResponse = await createOrder(orderRequestData)
 
         // Получаем transaction_id из ответа платежа
         const transactionId = paymentResponse.data.data.paymentInfo.id
-        
+
         // 1.1. Подтверждаем платеж заказа (используем order_id из ответа createOrder)
         if (transactionId && orderResponse?.data?.id) {
           console.log('Confirming order payment...')

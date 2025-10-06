@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { defineNuxtPlugin } from '#app'
 import Cookies from 'js-cookie'
+import { toast } from 'vue3-toastify'
 
 export default defineNuxtPlugin(() => {
     const api = axios.create({
@@ -18,10 +19,12 @@ export default defineNuxtPlugin(() => {
         return Promise.reject(error)
     })
 
-    // Обработка 401: удаляем токен и роль из куков
+    // Обработка ошибок: показываем тост и обрабатываем 401
     api.interceptors.response.use(response => {
         return response
     }, error => {
+        // Показываем тост об ошибке сервера
+        
         if (error.response?.status === 401) {
             Cookies.remove('token')
             Cookies.remove('role')

@@ -238,6 +238,7 @@ const handleNotificationClick = async (notification) => {
         <div v-if="loadingMore" class="loading-more">
           <div class="loading-spinner loading-spinner--small"/>
           <span class="loading-text">Загрузка...</span>
+
         </div>
         
         <!-- Сообщение о завершении загрузки -->

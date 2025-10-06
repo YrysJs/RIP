@@ -51,6 +51,8 @@ watch(inn, async (newValue) => {
     loadingStore.stopLoading();
   } catch (err) {
     console.error("Ошибка при запросе:", err);
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   }
 });
 
@@ -99,6 +101,8 @@ const handleBooking = async () => {
     }, 1000);
   } catch (error) {
     console.error("Ошибка при отправке данных:", error);
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
   }
 };
 
