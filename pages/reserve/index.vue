@@ -6,6 +6,7 @@ import { getCemeteries, getGraves } from "~/services/cemetery";
 import ShareCoordModal from "~/components/layout/modals/ShareCoordModal.vue";
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
+import AppHeaderClient from "~/components/layout/AppHeaderClient.vue";
 
 const router = useRouter();
 
@@ -245,9 +246,10 @@ function getReligionIcon(item) {
 <template>
   <main>
     <AppHeader type="client" />
+    <AppHeaderClient />
     <div class="container">
       <div
-        class="py-[24px] min-h-[calc(100vh-104px)] mt-[104px] rounded-lg gap-[24px] max-sm:py-0 max-sm:gap-0"
+        class="main-mt py-[24px] min-h-[calc(100vh-104px)] mt-[104px] rounded-lg gap-[24px] max-sm:py-0 max-sm:gap-0"
       >
         <div
           class="w-full relative flex max-sm:flex-col-reverse gap-6 max-sm:gap-0"
@@ -498,9 +500,10 @@ function getReligionIcon(item) {
                   </p>
 
                   <button
-                      class="reserve__btn w-full"
-                      :disabled="selectedGrave.status !== 'free'"
-                      @click="reserve">
+                    class="reserve__btn w-full"
+                    :disabled="selectedGrave.status !== 'free'"
+                    @click="reserve"
+                  >
                     <img
                       src="/icons/pencil.svg"
                       alt="Reserve icon"
@@ -735,10 +738,10 @@ function getReligionIcon(item) {
       </div>
     </div>
     <ShareCoordModal
-        :visible="shareCoordModalState"
-        :lat="graveLat"
-        :lng="graveLng"
-        @close="shareCoordModalState = false"
+      :visible="shareCoordModalState"
+      :lat="graveLat"
+      :lng="graveLng"
+      @close="shareCoordModalState = false"
     />
   </main>
 </template>
@@ -847,6 +850,12 @@ function getReligionIcon(item) {
 @media (max-width: 930px) {
   .align-c {
     align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-mt {
+    margin-top: 56px;
   }
 }
 </style>

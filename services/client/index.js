@@ -211,7 +211,7 @@ function uploadDeceasedDeathCertificate(deceasedId, certificate) {
 
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v9/deceased/death-certificate/${deceasedId}`,
+    url: useRuntimeConfig().public.apiBaseUrl + `/api/v7/deceased/death-certificate/${deceasedId}`,
     data: formData,
   })
 }
