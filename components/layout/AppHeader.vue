@@ -213,11 +213,13 @@ onMounted(async () => {
 
   // дальше можно грузить пользователя параллельно
   try {
-    const response = await getCurrentUser({ id: localStorage.getItem("user_id") })
+    const response = await getCurrentUser({
+      id: localStorage.getItem("user_id"),
+    });
     userInfo.value = response.data;
     userStore.setUser(userInfo.value);
   } catch (error) {
-    console.error('Ошибка при получении данных пользователя:', error)
+    console.error("Ошибка при получении данных пользователя:", error);
   }
 });
 
@@ -280,6 +282,14 @@ onUnmounted(() => {
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
+}
+
+.nav-links a:hover {
+  color: #c6bfbf;
+}
+
+.nav-links a:active {
+  color: #9c9595;
 }
 
 .right-actions {

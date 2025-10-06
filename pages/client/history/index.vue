@@ -128,7 +128,7 @@ async function openReceiptModal(order) {
 
 const closeReceiptModal = () => {
   showReceiptModal.value = false;
-}
+};
 
 // Методы для работы с модалкой отзыва
 function openCommentModal(order) {
@@ -186,7 +186,7 @@ useHead({
           class="bg-[#0000000A] rounded-2xl flex gap-3 md:gap-4 items-stretch max-xl:flex-col max-xl:max-w-[457px] max-sm:max-w-full mb-4"
         >
           <!-- image -->
-          <div class="min-w-[400px] max-w-[400px] shrink-0">
+          <div class="min-w-[400px] max-w-[400px] shrink-0 mx-auto">
             <img
               :src="o.items[0]?.product?.image_urls[0]"
               alt=""

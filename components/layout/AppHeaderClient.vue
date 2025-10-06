@@ -9,18 +9,23 @@
     <div
       class="h-[56px] flex items-center justify-between px-4 py-3 text-white"
     >
-      <NuxtLink
-        v-if="token"
-        @click.stop="profileClick"
-        class="flex items-center gap-2 text-white"
-      >
-        <img src="/icons/person.svg" alt="Reserve icon" class="w-5 h-5" />
-        <span>{{ userInfo?.name }} {{ userInfo?.surname }}</span>
-      </NuxtLink>
+      <ClientOnly>
+        <template #default>
+          <NuxtLink
+            v-if="hasToken"
+            @click.stop="profileClick"
+            class="flex items-center gap-2 text-white"
+            :key="'auth'"
+          >
+            <img src="/icons/person.svg" alt="Reserve icon" class="w-5 h-5" />
+            <span>{{ userInfo?.name }} {{ userInfo?.surname }}</span>
+          </NuxtLink>
 
-      <NuxtLink v-else to="/">
-        <img src="/icons/logo2.svg" alt="logo" class="h-8" />
-      </NuxtLink>
+          <NuxtLink v-else to="/" :key="'guest'">
+            <img src="/icons/logo2.svg" alt="logo" class="h-8" />
+          </NuxtLink>
+        </template>
+      </ClientOnly>
 
       <button @click="toggleMenu">
         <img src="/icons/menu-new.svg" alt="Меню" class="w-6 h-6" />
@@ -61,6 +66,12 @@
             </div>
           </template>
 
+          <template v-if="token">
+            <NuxtLink to="/client/profile" class="m-link"
+              >Профиль</NuxtLink
+            ></template
+          >
+
           <NuxtLink to="/" class="m-link">Главная</NuxtLink>
           <NuxtLink to="/services" class="m-link">Услуги</NuxtLink>
           <button class="m-link" @click="router.push('/reserve')">
@@ -100,6 +111,7 @@ import ClientLogin from "../auth/ClientLogin.vue";
 import SupplierLogin from "../auth/SupplierLogin.vue";
 import { useUserStore } from "~/store/user";
 import { getCurrentUser } from "~/services/login";
+import { NuxtLink } from "#components";
 
 const router = useRouter();
 const authModalStore = useAuthModalStore();
@@ -118,9 +130,14 @@ const props = defineProps({
 });
 
 const open = ref(false);
-const token = computed(() => Cookies.get("token"));
 const userInfo = ref(null);
 const userStore = useUserStore();
+
+// ✅ SSR-aware и реактивный токен
+const token = useCookie("token", { watch: true }); // ref<string | null>
+const hasToken = computed(
+  () => !!token.value && token.value !== "null" && token.value !== "undefined"
+);
 
 function toggleMenu() {
   open.value = !open.value;
@@ -133,8 +150,7 @@ function login(type) {
 }
 
 function logout() {
-  Cookies.remove("token");
-  token.value = undefined;
+  token.value = null; // useCookie сам удалит cookie
   open.value = false;
   router.push("/");
 }
@@ -188,25 +204,8 @@ onMounted(() => {
   loadUser();
 });
 
-watch(
-  () => token.value,
-  (t) => {
-    if (t) loadUser();
-  }
-);
-
-onMounted(() => {
-  // навешиваем слушатель сразу
-  handleScroll();
-  window.addEventListener("scroll", handleScroll, { passive: true });
-
-  // дальше можно грузить пользователя параллельно
-  getCurrentUser({ id: localStorage.getItem("user_id") })
-    .then((response) => {
-      userInfo.value = response.data;
-      userStore.setUser(userInfo.value);
-    })
-    .catch(() => {});
+watch(hasToken, (t) => {
+  if (t) loadUser();
 });
 
 onUnmounted(() => {

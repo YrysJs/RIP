@@ -112,8 +112,8 @@ const fetchNews = async () => {
     newsList.value = response.data;
   } catch (error) {
     console.error("Ошибка при получении новостей:", error);
-    const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    const { $toast } = useNuxtApp();
+    $toast.error("Сервер не доступен");
   }
 };
 
@@ -410,7 +410,7 @@ onMounted(() => {
       line-height: 1.25;
       border-radius: 8px;
       white-space: nowrap;
-      transition: all 0.3 ease;
+      transition: all 0.3ms ease;
 
       &--search {
         background-color: #fff;
@@ -492,6 +492,10 @@ onMounted(() => {
     font-weight: 500;
     gap: clamp(1rem, 3vw, 2rem);
     color: #201001;
+    transition: all 0.4ms ease;
+    &:hover {
+      text-decoration: underline;
+    }
 
     img {
       width: clamp(3rem, 6vw, 5rem);
@@ -512,7 +516,7 @@ onMounted(() => {
 }
 
 .mission {
-  margin: clamp(4rem, 8vw, 6.125rem) auto 0;
+  margin: clamp(4rem, 17vw, 128px) auto 0;
   max-width: 650px;
   text-align: center;
 
@@ -551,7 +555,7 @@ onMounted(() => {
 }
 
 .services {
-  padding: clamp(3rem, 5vw, 4rem) 0 2.75rem;
+  padding: clamp(3rem, 13vw, 168px) 0 2.75rem;
 
   .services__title {
     height: clamp(4.6rem, 5vw, 5.25rem);
@@ -635,7 +639,7 @@ onMounted(() => {
       background: #e9b949;
       border-radius: 8px;
       position: relative;
-      transition: all 0.4 ease;
+      transition: all 0.4ms ease;
       &::after {
         content: "";
         background-image: url(/icons/arrow-classic.svg);
@@ -704,6 +708,13 @@ onMounted(() => {
       padding: clamp(0.75rem, 2vw, 0.875rem) 20px;
       background: #e9b949;
       border-radius: 8px;
+      transition: all 0.4ms ease;
+      &:hover {
+        background-color: #d1a53f;
+      }
+      &:active {
+        background-color: #b88f34;
+      }
     }
   }
 }
