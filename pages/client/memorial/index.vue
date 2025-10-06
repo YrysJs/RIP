@@ -71,7 +71,7 @@ onMounted(() => {
             <div
               v-for="memorial in memorials"
               :key="memorial.id"
-              class="memorial flex justify-between items-center bg-white rounded-[16px] p-[20px] gap-[30px] cursor-pointer hover:bg-[#E7E8EA] transition max-sm:bg-[#F4F0E7]"
+              class="memorial flex justify-between items-center bg-white rounded-[16px] p-[20px] gap-[30px] cursor-pointer hover:bg-[#E7E8EA] transition max-md:bg-[#F4F0E7]"
               @click="$router.push(`/client/memorial/${memorial.id}`)"
             >
               <div>

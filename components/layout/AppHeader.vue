@@ -1,6 +1,6 @@
 <template>
   <header
-    class="app-header"
+    class="app-header desktop-header"
     :class="{
       'app-header--transparent': props.style === 'landing' && isTop,
       'app-header--solid': !(props.style === 'landing' && isTop),
@@ -49,7 +49,10 @@
             </div>
           </template>
           <template v-else>
-            <button class="profile__btn" @click="authModalStore.toggleLoginMenu">
+            <button
+              class="profile__btn"
+              @click="authModalStore.toggleLoginMenu"
+            >
               <img src="/icons/person.svg" alt="Reserve icon" class="w-5 h-5" />
               Войти
             </button>
@@ -66,7 +69,10 @@
       class="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center"
       @click.self="authModalStore.closeModal"
     >
-      <ClientLogin v-if="currentAuthModal === 'client'" @close="authModalStore.closeModal" />
+      <ClientLogin
+        v-if="currentAuthModal === 'client'"
+        @close="authModalStore.closeModal"
+      />
       <SupplierLogin
         v-if="currentAuthModal === 'supplier'"
         @close="authModalStore.closeModal"
@@ -125,17 +131,16 @@ const userInfo = ref(null);
 
 // Computed свойства для безопасного доступа к значениям стора
 const showAuthModal = computed(() => {
-  return authModalStore.activeModal && authModalStore.activeModal !== '';
+  return authModalStore.activeModal && authModalStore.activeModal !== "";
 });
 
 const currentAuthModal = computed(() => {
-  return authModalStore.activeModal || '';
+  return authModalStore.activeModal || "";
 });
 
 const showLoginMenu = computed(() => {
   return authModalStore.showLoginMenu === true;
 });
-
 
 const props = defineProps({
   type: String,
@@ -231,6 +236,12 @@ onUnmounted(() => {
   padding: 0 24px;
   z-index: 50;
   transition: background-color 200ms ease;
+}
+
+@media (max-width: 768px) {
+  .desktop-header {
+    display: none;
+  }
 }
 
 /* когда вверху */
@@ -353,5 +364,4 @@ onUnmounted(() => {
 .profile__btn:active {
   filter: brightness(0.5);
 }
-
 </style>

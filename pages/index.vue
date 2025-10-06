@@ -12,6 +12,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import AppLoader from "~/components/loader/AppLoader.vue";
 import { useLoadingStore } from "~/store/loading.js";
+import AppHeaderClient from "~/components/layout/AppHeaderClient.vue";
 
 const dataId = ref(0);
 const mainPageModalState = ref(false);
@@ -98,7 +99,6 @@ const services = [
   },
 ];
 
-
 const router = useRouter();
 
 const newsList = ref([]);
@@ -131,6 +131,7 @@ onMounted(() => {
   <main class="relative">
     <AppLoader v-if="loadingStore.loading" />
     <AppHeader type="client" :style="'landing'" />
+    <AppHeaderClient :style="'landing'" />
     <section class="relative" id="main">
       <Swiper
         :modules="[Navigation, Pagination, Autoplay]"
