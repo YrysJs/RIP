@@ -1,6 +1,6 @@
 <script setup>
 // import { useRouter } from 'vue-router'
-import { getBurialRequestById, getBurialRequests, getBurialRequestStatus } from '~/services/manager'
+import { getBurialRequestById, getBurialRequests, getBurialRequestStatus, burialRequestComplete } from '~/services/manager'
 import BurialDetailsModal from '~/components/manager/burial/BurialDetailsModal.vue'
 import { getGraveById, getGraveImages } from '~/services/client'
 import { getCemeteries } from '~/services/cemetery'
@@ -84,6 +84,18 @@ const cancelRequest = async (comment) => {
 const approveRequest = async () => {
   try {
     await getBurialRequestStatus({ id: burial.value?.id, status: 'confirmed', comment: '' })
+    burialDetailModalVisible.value = false
+    fetchBurials()
+  } catch (error) {
+    console.error('Ошибка при подтверждении заявки:', error)
+    const { $toast } = useNuxtApp()
+    $toast.error('Сервер не доступен')
+  }
+}
+
+const completeRequest = async () => {
+  try {
+    await burialRequestComplete(burial.value?.id)
     burialDetailModalVisible.value = false
     fetchBurials()
   } catch (error) {
@@ -231,6 +243,7 @@ watch([dateFrom, dateTo, cemeteryId], () => {
         :booking="burial"
         @cancel="selectRequest"
         @confirm="approveRequest"
+        @complete="completeRequest"
         @close="burialDetailModalVisible = false"
       />
       <CancelModal :visible="isCancelModalVisible" @cancel="cancelRequest"  @close="isCancelModalVisible = false" />

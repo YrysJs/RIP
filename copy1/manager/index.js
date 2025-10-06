@@ -29,9 +29,20 @@ function getBurialRequestStatus(data) {
     })
 }
 
+function burialRequestComplete(id) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PUT',
+        url: `http://194.32.140.103:8094/api/v1/burial-requests/${id}/complete`,
+        data: {
+            "is_complete": true
+        },
+    })
+}
 
 export {
     getBurialRequests,
     getBurialRequestById,
-    getBurialRequestStatus
+    getBurialRequestStatus,
+    burialRequestComplete
 }
