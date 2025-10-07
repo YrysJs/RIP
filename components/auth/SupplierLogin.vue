@@ -134,8 +134,8 @@ watch(bin, async (newValue) => {
               
               attempts++;
               if (attempts < maxAttempts) {
-                // Ждем 1 секунду и повторяем попытку
-                personDataTimeoutId.value = setTimeout(pollData, 1000);
+                // Ждем 5 секунд и повторяем попытку
+                personDataTimeoutId.value = setTimeout(pollData, 5000);
               } else {
                 console.log("Превышено максимальное количество попыток получения person_data");
                 isFcb.value = true;
@@ -495,14 +495,6 @@ const otpCheck = async () => {
             </p>
           </div>
         </div>
-        <button
-          type="button"
-          class="py-[18px] bg-[#E9B949] rounded-lg text-base text-[#000] font-medium mb-4 flex justify-center"
-          :disabled="!bin.length || !check"
-          @click="run"
-        >
-          Зарегистрироваться
-        </button>
       </div>
   </div>
 </template>
