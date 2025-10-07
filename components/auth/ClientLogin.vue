@@ -132,6 +132,20 @@ watch(iin, async (newValue) => {
                 return false; // данные еще не готовы
               } catch (error) {
                 console.error("Ошибка при получении person_data:", error);
+                
+                // Проверяем на ошибку таймаута ПКБ
+                if (error.response?.data?.message === "Timeout") {
+                  const { $toast } = useNuxtApp();
+                  $toast.error("Сервис ПКБ не доступен");
+                  loadingStore.stopLoading();
+                  isFcb.value = true;
+                  if (personDataTimeoutId.value) {
+                    clearTimeout(personDataTimeoutId.value);
+                    personDataTimeoutId.value = null;
+                  }
+                  return true; // прекращаем попытки
+                }
+                
                 return false;
               }
             };
@@ -150,7 +164,7 @@ watch(iin, async (newValue) => {
               attempts++;
               if (attempts < maxAttempts) {
                 // Ждем 5 секунд и повторяем попытку
-                personDataTimeoutId.value = setTimeout(pollData, 5000);
+                personDataTimeoutId.value = setTimeout(pollData, 10000);
               } else {
                 console.log("Превышено максимальное количество попыток получения person_data");
                 isFcb.value = true;
@@ -542,6 +556,21 @@ const otpCheck = async () => {
                 </p>
               </div>
             </div>
+            <button
+                type="button"
+                class="py-[18px] bg-[#E9B949] rounded-lg text-base text-[#000] font-medium mb-4 flex justify-center"
+                :disabled="isSubmitting || !check"
+                @click="run"
+            >
+              <template v-if="!isSubmitting"> Зарегистрироваться </template>
+              <template v-else>
+                <div class="dots flex gap-2">
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                </div>
+              </template>
+            </button>
           </div>
         </template>
         <template v-else>
