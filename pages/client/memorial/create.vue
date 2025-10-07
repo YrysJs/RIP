@@ -162,7 +162,7 @@ const submitMemorial = async () => {
     useState("aboutPerson").value = aboutPerson.value;
     useState("videos").value = videos.value;
 
-    const created = resp?.data?.data ?? resp?.data ?? {};
+    const created = response?.data?.data ?? response?.data ?? {};
     const createdId = created.id;
 
     if (createdId) {
@@ -175,10 +175,9 @@ const submitMemorial = async () => {
     // Можно перенаправить пользователя
     // await navigateTo('/client/memorials')
   } catch (error) {
-    alert(
-      "Ошибка при создании мемориала: " +
-        (error.response?.data?.error || error.message)
-    );
+    const { $toast } = useNuxtApp()
+    $toast.error("Ошибка при создании мемориала: " +
+        (error.response?.data?.error || error.message))
   } finally {
     isSubmitting.value = false;
   }

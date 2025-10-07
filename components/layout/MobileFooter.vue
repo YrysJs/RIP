@@ -241,7 +241,7 @@
           Личный кабинет
         </button>
 
-        <button
+        <!-- <button
           class="w-full text-left px-3 py-2 rounded-lg hover:bg-black/5 active:bg-black/10"
           :class="
             isActive('/client/reviews').value ? 'text-[#E9B949]' : 'text-[#222]'
@@ -251,12 +251,12 @@
         >
           <div class="flex items-center justify-between">
             <span>Отзывы</span>
-            <span
+             <span
               class="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#E4A624]/15 text-[#B88F34] text-[11px] px-1"
               >1</span
-            >
+            > 
           </div>
-        </button>
+        </button> -->
 
         <button
           class="w-full text-left px-3 py-2 rounded-lg hover:bg-black/5 active:bg-black/10"
@@ -282,6 +282,25 @@
           Обращение в акимат
         </button>
 
+        <button
+          class="w-full text-left px-3 py-2 rounded-lg hover:bg-black/5 active:bg-black/10 flex items-center gap-2"
+          :class="
+            isActive('/client/notifications').value
+              ? 'text-[#E9B949]'
+              : 'text-[#222]'
+          "
+          role="menuitem"
+          @click="go('/client/notifications')"
+        >
+          Уведомления
+          <span
+            v-if="unreadCount > 0"
+            class="inline-flex items-center justify-center min-w-[20px] h-[20px] px-[6px] rounded-full bg-[#E9B949] text-white text-[12px]"
+          >
+            {{ unreadCount }}
+          </span>
+        </button>
+
         <div class="p-2">
           <button
             class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-[#E4A624] text-[#201001] font-medium py-2.5 hover:brightness-95 active:brightness-90"
@@ -299,10 +318,12 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
+import { getUnreadNotifications } from "~/services/notifications";
 
 const router = useRouter();
 const route = useRoute();
 const open = ref(false);
+const unreadCount = ref(0);
 
 const isActive = (path) => computed(() => route.path.startsWith(path));
 
@@ -318,6 +339,19 @@ const go = (to) => {
   closeMenu();
   router.push(to);
 };
+
+const fetchUnreadCount = async () => {
+  try {
+    const response = await getUnreadNotifications();
+    unreadCount.value = response.data?.total || 0;
+  } catch (error) {
+    console.error("Ошибка загрузки непрочитанных уведомлений:", error);
+  }
+};
+
+onMounted(() => {
+  fetchUnreadCount();
+});
 
 const onKey = (e) => {
   if (e.key === "Escape") closeMenu();

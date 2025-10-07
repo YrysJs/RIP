@@ -530,12 +530,12 @@ const submitMemorial = async () => {
               }}
             </h3>
           </div>
-          <button
-            class="flex items-center gap-2 bg-[#00000014] py-[10px] px-4 rounded-[10px] hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition max-sm:bg-transparent"
-          >
-            <img src="/icons/share.svg" alt="" class="max-sm:w-5 max-sm:h-5" />
-            <span class="max-sm:hidden">Поделиться</span>
-          </button>
+<!--          <button-->
+<!--            class="flex items-center gap-2 bg-[#00000014] py-[10px] px-4 rounded-[10px] hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition max-sm:bg-transparent"-->
+<!--          >-->
+<!--            <img src="/icons/share.svg" alt="" class="max-sm:w-5 max-sm:h-5" />-->
+<!--            <span class="max-sm:hidden">Поделиться</span>-->
+<!--          </button>-->
         </div>
         <div
           class="grid grid-cols-2 gap-4 my-4 items-stretch max-lg:grid-cols-1"

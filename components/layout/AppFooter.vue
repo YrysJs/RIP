@@ -6,21 +6,25 @@
       <ul class="contacts__list">
         <li>г. Алматы, Ул.&nbsp;Тимирязева. 428</li>
         <li>
-          <a href="tel:+77758100110">+7 (775) 810-01-10</a>
+          <a class="underlined" href="tel:+77758100110">+7 (775) 810-01-10</a>
         </li>
         <li>
-          <a href="mailto:info@ripservice.kz ">info@ripservice.kz</a>
+          <a class="underlined" href="mailto:info@ripservice.kz "
+            >info@ripservice.kz</a
+          >
         </li>
       </ul>
       <div class="footer__links">
         <ul class="links__left">
-          <li><a href="#main">Главная</a></li>
-          <li><a href="#about">О компании</a></li>
-          <li><a href="#services">Услуги</a></li>
-          <li><a href="#contact">Контакты</a></li>
+          <li><a href="#main" class="underlined">Главная</a></li>
+          <li><a href="#about" class="underlined">О компании</a></li>
+          <li><a href="#services" class="underlined">Услуги</a></li>
+          <li><a href="#contact" class="underlined">Контакты</a></li>
         </ul>
         <div class="links__middle">
-          <RouterLink to="/instructions">Политика конфиденциальности</RouterLink>
+          <RouterLink to="/instructions" class="underlined"
+            >Политика конфиденциальности</RouterLink
+          >
           <ul>
             <li>
               <a
@@ -68,7 +72,7 @@
 
 <script setup>
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
-import {RouterLink} from "#vue-router";
+import { RouterLink } from "#vue-router";
 
 const showSuccessModal = ref(false);
 
@@ -205,5 +209,12 @@ const closeSuccessModal = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.underlined {
+  transition: all 0.4ms ease;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 </style>

@@ -149,8 +149,8 @@ watch(iin, async (newValue) => {
               
               attempts++;
               if (attempts < maxAttempts) {
-                // Ждем 1 секунду и повторяем попытку
-                personDataTimeoutId.value = setTimeout(pollData, 1000);
+                // Ждем 5 секунд и повторяем попытку
+                personDataTimeoutId.value = setTimeout(pollData, 5000);
               } else {
                 console.log("Превышено максимальное количество попыток получения person_data");
                 isFcb.value = true;
@@ -448,15 +448,6 @@ const otpCheck = async () => {
             >
               Получить код по СМС
             </button>
-            <p class="text-[#7D7D7D] text-base max-lg:text-[15px]">
-              Еще нет аккаунта ?
-              <NuxtLink
-                to=""
-                class="text-black font-semibold cursor-pointer"
-                @click.prevent="step = 2"
-                >Зарегистрироваться</NuxtLink
-              >
-            </p>
           </div>
           <div v-if="step == 1" class="flex flex-col">
             <h3 class="text-2xl font-bold text-left text-[#222222] mb-[8px]">
@@ -551,25 +542,6 @@ const otpCheck = async () => {
                 </p>
               </div>
             </div>
-            <button
-              type="button"
-              class="py-[18px] bg-[#E9B949] rounded-lg text-base text-[#000] font-medium mb-4 flex justify-center"
-              :disabled="isSubmitting"
-              @click="run"
-            >
-              <template v-if="!isSubmitting"> Зарегистрироваться </template>
-              <template v-else>
-                <div class="dots flex gap-2">
-                  <span class="dot"></span>
-                  <span class="dot"></span>
-                  <span class="dot"></span>
-                </div>
-              </template>
-            </button>
-            <p class="text-base text-[#7D7D7D] max-lg:text-[15px]">
-              Уже есть аккаунт ?
-              <span class="font-semibols text-black">Войти</span>
-            </p>
           </div>
         </template>
         <template v-else>
