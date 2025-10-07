@@ -117,6 +117,19 @@ watch(iin, async (newValue) => {
                   data: pkbToken.data.access.hash,
                 });
                 
+                // Проверяем на ответ таймаута ПКБ
+                if (response?.data?.message === "Timeout") {
+                  const { $toast } = useNuxtApp();
+                  $toast.error("Сервис ПКБ не доступен");
+                  loadingStore.stopLoading();
+                  isFcb.value = true;
+                  if (personDataTimeoutId.value) {
+                    clearTimeout(personDataTimeoutId.value);
+                    personDataTimeoutId.value = null;
+                  }
+                  return true; // завершаем обработку
+                }
+                
                 // Проверяем наличие person_data
                 if (response?.data?.data?.person_data) {
                   isFcb.value = true;
@@ -132,20 +145,6 @@ watch(iin, async (newValue) => {
                 return false; // данные еще не готовы
               } catch (error) {
                 console.error("Ошибка при получении person_data:", error);
-                
-                // Проверяем на ошибку таймаута ПКБ
-                if (error.response?.data?.message === "Timeout") {
-                  const { $toast } = useNuxtApp();
-                  $toast.error("Сервис ПКБ не доступен");
-                  loadingStore.stopLoading();
-                  isFcb.value = true;
-                  if (personDataTimeoutId.value) {
-                    clearTimeout(personDataTimeoutId.value);
-                    personDataTimeoutId.value = null;
-                  }
-                  return true; // прекращаем попытки
-                }
-                
                 return false;
               }
             };
