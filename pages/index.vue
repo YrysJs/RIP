@@ -299,10 +299,12 @@ onMounted(() => {
     <section class="questions">
       <div class="questions__inner">
         <p>Можете связаться с нами в любое время!</p>
-        <button>
-          <img src="/icons/whatsapp.svg" alt="Whatsapp icon" />
-          Написать на WhatsApp
-        </button>
+        <a href="http://wa.me/77758100110" target="_blank">
+          <button>
+            <img src="/icons/whatsapp.svg" alt="Whatsapp icon" />
+            Написать на WhatsApp
+          </button>
+        </a>
       </div>
     </section>
     <AppFooter />

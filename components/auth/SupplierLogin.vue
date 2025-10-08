@@ -108,13 +108,6 @@ watch(bin, async (newValue) => {
                 if (response?.data?.message === "Timeout") {
                   const { $toast } = useNuxtApp();
                   $toast.error("Сервис ПКБ не доступен");
-                  loadingStore.stopLoading();
-                  isFcb.value = true;
-                  if (personDataTimeoutId.value) {
-                    clearTimeout(personDataTimeoutId.value);
-                    personDataTimeoutId.value = null;
-                  }
-                  return true; // завершаем обработку
                 }
                 
                 // Проверяем наличие person_data
@@ -190,6 +183,8 @@ watch(bin, async (newValue) => {
   } catch (error) {
     loadingStore.stopLoading()
     console.error('Ошибка при получении токена:', error);
+    const { $toast } = useNuxtApp();
+    $toast.error("Не удалось получить данные, проверьте БИН.");
   }
 });
 
@@ -238,12 +233,28 @@ async function run () {
     emit('close');
   } catch (error) {
     console.error('Ошибка при логине:', error)
+    
+    const { $toast } = useNuxtApp();
+    
+    // Проверяем на ошибку неверного кода
+    if (
+      error?.response?.status === 400 ||
+      error?.response?.data?.message?.includes("Invalid") ||
+      error?.response?.data?.message?.includes("код") ||
+      error?.response?.data?.description?.includes("Invalid") ||
+      error?.response?.data?.description?.includes("код")
+    ) {
+      $toast.error("Неверный код подтверждения");
+      return;
+    }
 
     if (
         error?.response?.status === 500 &&
         error?.response?.data?.description?.includes('Role not found for phone')
     ) {
       step.value++;
+    } else {
+      $toast.error("Произошла ошибка при регистрации");
     }
   } finally {
     console.log('login')
@@ -351,13 +362,30 @@ const otpCheck = async () => {
     emit('close');
     await router.push('/supplier/tickets/active')
   } catch (error) {
+    console.error('Ошибка при логине:', error)
+    
+    const { $toast } = useNuxtApp();
+    
+    // Проверяем на ошибку неверного кода
+    if (
+      error?.response?.status === 400 ||
+      error?.response?.data?.message?.includes("Invalid") ||
+      error?.response?.data?.message?.includes("код") ||
+      error?.response?.data?.description?.includes("Invalid") ||
+      error?.response?.data?.description?.includes("код")
+    ) {
+      $toast.error("Неверный код подтверждения");
+      return;
+    }
+    
     if (
         error?.response?.status === 500 &&
         error?.response?.data?.description?.includes('Role not found for phone')
     ) {
       step.value = 2;
+    } else {
+      $toast.error("Произошла ошибка при входе");
     }
-    console.error('Ошибка при логине:', error)
   } finally {
     console.log('login')
   }

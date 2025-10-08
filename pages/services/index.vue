@@ -42,7 +42,7 @@ const filters = ref({
   category_id: null,
   type: null,
   min_price: null,
-  max_price: null,
+  max_price: 0,
   city: "Алматы",
   search: "",
 });
@@ -394,12 +394,14 @@ function updatePriceRange(event) {
                   type="number"
                   v-model="filters.min_price"
                   placeholder="От"
+                  min="0"
                   class="w-full p-[8px] border border-gray-300 rounded"
                 />
                 <input
                   type="number"
                   v-model="filters.max_price"
                   placeholder="До"
+                  min="0"
                   class="w-full p-[8px] border border-gray-300 rounded"
                 />
               </div>
@@ -412,6 +414,7 @@ function updatePriceRange(event) {
                 min="0"
                 max="750000"
                 step="1000"
+                :value="filters.max_price"
                 @input="updatePriceRange"
               />
               <div class="absolute bottom-[-25px] right-0">750000</div>

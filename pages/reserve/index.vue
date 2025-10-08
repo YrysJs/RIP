@@ -836,6 +836,10 @@ function getReligionIcon(item) {
   background: #b88f34;
 }
 
+.reserve__btn:disabled {
+  color: #999999;
+}
+
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition: all 0.25s ease;

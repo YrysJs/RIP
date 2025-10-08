@@ -52,7 +52,7 @@ watch(inn, async (newValue) => {
   } catch (err) {
     console.error("Ошибка при запросе:", err);
     const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    $toast.error('Не удалось получить данные усопшего.')
   }
 });
 
@@ -123,12 +123,13 @@ function validateRequired() {
 const handleFileSelect = (event) => {
   selectedFiles.value = Array.from(event.target.files);
   const file = event.target.files[0];
-  if (file && file.type === "application/pdf") {
-    deathCertificateFile.value = file;
-  } else {
-    alert("Пожалуйста, выберите PDF файл");
-    event.target.value = "";
-  }
+  deathCertificateFile.value = file;
+  // if (file && file.type === "application/pdf") {
+  //   deathCertificateFile.value = file;
+  // } else {
+  //   alert("Пожалуйста, выберите PDF файл");
+  //   event.target.value = "";
+  // }
 };
 
 function formatFileSize(size) {
@@ -136,6 +137,17 @@ function formatFileSize(size) {
   if (size < 1024 * 1024) return (size / 1024).toFixed(1) + " KB";
   return (size / (1024 * 1024)).toFixed(1) + " MB";
 }
+
+// Функция для обработки ввода ФИО (только буквы и пробелы)
+const handleFullNameInput = (event) => {
+  const value = event.target.value;
+  // Разрешаем только кириллицу, латиницу и пробелы
+  const filteredValue = value.replace(/[^а-яёА-ЯЁa-zA-Z\s]/g, '');
+  if (value !== filteredValue) {
+    fullName.value = filteredValue;
+    event.target.value = filteredValue;
+  }
+};
 </script>
 
 <template>
@@ -260,6 +272,7 @@ function formatFileSize(size) {
                   class="py-[18px] px-3 w-[100%] !border !border-[#AFB5C166] rounded-lg text-base input focus:outline-none"
                   :class="errors.fullName ? '!border-red-500' : ''"
                   placeholder="ФИО"
+                  @input="handleFullNameInput"
                 />
                 <span v-if="errors.fullName" class="text-sm text-[#D63C3C]">
                   {{ errors.fullName }}</span

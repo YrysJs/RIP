@@ -26,6 +26,9 @@ async function run () {
     emit('finish')
   } catch (error) {
     console.error('Ошибка при логине:', error)
+    
+    const { $toast } = useNuxtApp();
+    $toast.error("Произошла ошибка при обновлении данных");
 
   } finally {
     console.log('login')
