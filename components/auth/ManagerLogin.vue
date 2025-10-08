@@ -96,12 +96,27 @@ const otpCheck = async () => {
     Cookies.set('token', response.data.token);
     Cookies.set('role', 'manager');
     emit('close');
+    router.push('/manager/burial')
   } catch (error) {
     console.error('Ошибка при логине:', error)
+    
+    const { $toast } = useNuxtApp();
+    
+    // Проверяем на ошибку неверного кода
+    if (
+      error?.response?.status === 400 ||
+      error?.response?.data?.message?.includes("Invalid") ||
+      error?.response?.data?.message?.includes("код") ||
+      error?.response?.data?.description?.includes("Invalid") ||
+      error?.response?.data?.description?.includes("код")
+    ) {
+      $toast.error("Неверный код подтверждения");
+      return;
+    } else {
+      $toast.error("Произошла ошибка при входе");
+    }
   } finally {
     console.log('login')
-    router.push('/manager/burial')
-    close()
   }
 
 }

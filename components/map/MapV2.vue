@@ -1,7 +1,14 @@
+<template>
+  <ClientOnly>
+    <div ref="mapEl" style="width:100%; height:600px;"></div>
+  </ClientOnly>
+</template>
+
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRuntimeConfig } from '#imports'
 
+/* ========== Props & emits ========== */
 const props = defineProps({
   polygons: { type: [Array, Object], required: true },   // ref([]) или []
   modelValue: { type: Object, default: null },
@@ -10,17 +17,19 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 
+/* ========== Local refs/state ========== */
 const mapEl = ref(null)
 let map = null
 let cemeteryPolygon = null
 let plotObjects = []     // [{ id, polygon, data }]
 const selected = ref(props.modelValue || null)
+const unwatchers = []
 
-/* ===== utils ===== */
+/* ========== Utilities ========== */
 const getItems = () => (Array.isArray(props.polygons) ? props.polygons : (props.polygons?.value || []))
 
 function toLatLng(ring) {
-  // ymaps 2.1 ждёт [lat, lng] !
+  // YMaps 2.1 ждёт [lat, lng]
   return (Array.isArray(ring) ? ring : []).map(([lng, lat]) => [lat, lng])
 }
 const isRing = (ring) => Array.isArray(ring) && ring.length >= 3 && ring.every(p => Array.isArray(p) && p.length === 2)
@@ -43,30 +52,72 @@ function getStrokeColor (item, isSelected) {
 }
 const strokeWidth = (isSelected) => (isSelected ? 4 : 1)
 
-/* ===== loader для Yandex Maps API 2.1 ===== */
+/* ========== Robust loader for Yandex Maps 2.1 ========== */
 async function loadYMaps21(apiKey, lang='ru_RU') {
-  if (window.ymaps && window.ymaps.load) {
-    await window.ymaps.load()
+  // If ymaps already present and Map constructor available — return it.
+  if (window.ymaps && typeof window.ymaps.Map === 'function') {
     return window.ymaps
   }
+
+  // If namespace exists with .load — prefer using it (it returns a promise)
+  if (window.ymaps && typeof window.ymaps.load === 'function') {
+    try {
+      const ym = await window.ymaps.load()
+      return ym || window.ymaps
+    } catch (err) {
+      console.warn('ymaps.load() rejected, will try re-injecting script', err)
+      // fall through to script injection attempt
+    }
+  }
+
+  // Check if a script with YMaps base already exists — avoid duplicate injection
+  const srcPrefix = 'https://api-maps.yandex.ru/2.1/'
+  const existing = Array.from(document.getElementsByTagName('script'))
+      .find(s => s.src && s.src.startsWith(srcPrefix))
+
+  const desiredSrc = `https://api-maps.yandex.ru/2.1/?apikey=${encodeURIComponent(apiKey)}&lang=${lang}`
+
+  if (existing) {
+    // If script exists but ymaps not ready, wait shortly and try to use .load or direct namespace
+    if (window.ymaps && typeof window.ymaps.load === 'function') {
+      const ym = await window.ymaps.load()
+      return ym || window.ymaps
+    }
+    // give small grace period for initialization
+    await new Promise(res => setTimeout(res, 300))
+    if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
+    throw new Error('Yandex Maps script is present but ymaps namespace not ready')
+  }
+
+  // Inject script
   await new Promise((resolve, reject) => {
     const s = document.createElement('script')
-    s.src = `https://api-maps.yandex.ru/2.1/?apikey=${encodeURIComponent(apiKey)}&lang=${lang}`
+    s.src = desiredSrc
     s.async = true
-    s.onload = resolve
+    s.defer = true
+    s.onload = () => resolve(true)
     s.onerror = () => reject(new Error('Failed to load Yandex Maps API 2.1'))
     document.head.appendChild(s)
   })
-  await window.ymaps.load()
-  return window.ymaps
+
+  // Prefer using window.ymaps.load if available
+  if (window.ymaps && typeof window.ymaps.load === 'function') {
+    const ym = await window.ymaps.load()
+    return ym || window.ymaps
+  }
+
+  // Final check
+  if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
+
+  throw new Error('Yandex Maps did not initialize correctly')
 }
 
-/* ===== инициализация карты и слоёв ===== */
+/* ========== Center calculation ========== */
 function initialCenter() {
   const items = getItems()
   if (Array.isArray(props.centerCoords) && props.centerCoords.length === 2) {
     const [lat, lng] = props.centerCoords
-    return [lat, lng] // в 2.1 — [lat, lng]
+    return [lat, lng]
   }
   const ring = props.cemeteryBoundary?.polygon_data?.coordinates
   if (isRing(ring)) {
@@ -75,93 +126,140 @@ function initialCenter() {
   }
   const first = items?.[0]?.polygon_data?.coordinates?.[0]
   if (Array.isArray(first)) return [first[1], first[0]]
-  return [43.238949, 76.889709] // [lat, lng]
+  return [43.238949, 76.889709] // default [lat, lng]
 }
 
+/* ========== Map initialization ========== */
 async function initMap() {
   const cfg = useRuntimeConfig()
   const API_KEY = cfg.public?.yandexMapApiKey || cfg.public?.yandexMaps?.apikey
   if (!API_KEY) throw new Error('public.yandexMapApiKey not found')
 
+  // Wait for DOM render of mapEl (ClientOnly etc.)
+  await nextTick()
+  if (!mapEl.value) {
+    // small fallback wait
+    await new Promise(res => setTimeout(res, 100))
+  }
+  if (!mapEl.value) {
+    throw new Error('map container (mapEl) not found — cannot initialize map')
+  }
+
   const ymaps = await loadYMaps21(API_KEY, 'ru_RU')
 
+  if (!ymaps || typeof ymaps.Map !== 'function') {
+    throw new Error('ymaps namespace is present but does not expose Map constructor')
+  }
+
+  // If previously created map — destroy to avoid duplicates
+  try { if (map) { map.destroy(); map = null } } catch (e) { /* ignore */ }
+
   map = new ymaps.Map(mapEl.value, {
-    center: initialCenter(), // [lat,lng]
+    center: initialCenter(),
     zoom: props.centerCoords ? 15 : (props.cemeteryBoundary ? 14 : 18),
     controls: [],
   }, {
     suppressMapOpenBlock: true,
   })
 
-  // граница кладбища
-  drawCemetery()
+  // If container is invisible or zero-size, YMaps may try to read offsetWidth and fail.
+  // We'll try a small deferred fitToViewport to allow browser to layout.
+  try {
+    const rect = mapEl.value.getBoundingClientRect?.()
+    if (!rect || rect.width === 0 || rect.height === 0) {
+      setTimeout(() => {
+        try { map.container.fitToViewport(); } catch (e) { /* ignore */ }
+      }, 200)
+    }
+  } catch (e) {
+    // do not block initialization for this
+  }
 
-  // участки
+  // Draw data
+  drawCemetery()
   drawPlots()
 
-  // вотчеры
+  // Watchers to react to prop changes
   unwatchers.push(
       watch(() => props.cemeteryBoundary, () => { redrawCemetery() }, { deep: true }),
       watch(() => props.polygons, () => { redrawPlots() }, { deep: true }),
       watch(() => props.centerCoords, (v) => {
         if (Array.isArray(v) && v.length === 2 && map) {
-          map.setCenter([v[0], v[1]], 15)
+          try { map.setCenter([v[0], v[1]], 15) } catch (e) { /* ignore */ }
         }
       })
   )
 }
 
-/* ===== граница кладбища ===== */
+/* ========== Cemetery boundary ========== */
 function drawCemetery() {
   const ymaps = window.ymaps
+  if (!map || !ymaps) return
+
   if (cemeteryPolygon) {
-    try { map.geoObjects.remove(cemeteryPolygon) } catch {}
+    try {
+      map.geoObjects.remove(cemeteryPolygon)
+    } catch {
+    }
     cemeteryPolygon = null
   }
   const ring = props.cemeteryBoundary?.polygon_data?.coordinates
   if (!isRing(ring)) return
-  cemeteryPolygon = new ymaps.Polygon([ toLatLng(ring) ], {}, {
+
+  cemeteryPolygon = new ymaps.Polygon([toLatLng(ring)], {}, {
     fillColor: 'rgba(0,0,0,0)',
     strokeColor: '#FF0000',
     strokeWidth: 3,
     zIndex: 1,
     cursor: 'default',
   })
-  map.geoObjects.add(cemeteryPolygon)
+  try {
+    map.geoObjects.add(cemeteryPolygon)
+  } catch (e) {
+    console.warn('Failed to add cemetery polygon', e)
+  }
 }
+
 const redrawCemetery = () => drawCemetery()
 
-/* ===== участки ===== */
+/* ========== Plots handling ========== */
 function clearPlots() {
   plotObjects.forEach(p => {
-    try { map.geoObjects.remove(p.polygon) } catch {}
+    try {
+      map.geoObjects.remove(p.polygon)
+    } catch {
+    }
   })
   plotObjects = []
 }
 
 function drawPlots() {
   const ymaps = window.ymaps
-  const items = getItems()
+  if (!map || !ymaps) return
 
+  const items = getItems()
   items.forEach(item => {
     const ring = item?.polygon_data?.coordinates
     if (!isRing(ring)) return
 
     const isSel = !!(selected.value && selected.value.id === item.id)
-    const polygon = new ymaps.Polygon([ toLatLng(ring) ], {}, {
+    const polygon = new ymaps.Polygon([toLatLng(ring)], {}, {
       fillColor: getFillColor(item, isSel),
       strokeColor: getStrokeColor(item, isSel),
       strokeWidth: strokeWidth(isSel),
       zIndex: 10,
       cursor: 'pointer',
-      // делаем «щедрый» хитбокс по контуру
       strokeStyle: isSel ? 'solid' : 'solid',
     })
 
     polygon.events.add('click', () => selectPlot(item))
-    map.geoObjects.add(polygon)
+    try {
+      map.geoObjects.add(polygon)
+    } catch (e) {
+      console.warn('Failed to add plot polygon', e)
+    }
 
-    plotObjects.push({ id: item.id, polygon, data: item })
+    plotObjects.push({id: item.id, polygon, data: item})
   })
 }
 
@@ -170,42 +268,58 @@ function redrawPlots() {
   drawPlots()
 }
 
-/* ===== выбор и подсветка ===== */
+/* ========== Selection logic ========== */
 function selectPlot(item) {
   selected.value = item
   emit('update:modelValue', item)
-  plotObjects.forEach(({ id, polygon, data }) => {
+  plotObjects.forEach(({id, polygon, data}) => {
     const sel = id === item.id
-    polygon.options.set({
-      fillColor: getFillColor(data, sel),
-      strokeColor: getStrokeColor(data, sel),
-      strokeWidth: strokeWidth(sel),
-      zIndex: sel ? 12 : 10,
-      cursor: 'pointer',
-    })
+    try {
+      polygon.options.set({
+        fillColor: getFillColor(data, sel),
+        strokeColor: getStrokeColor(data, sel),
+        strokeWidth: strokeWidth(sel),
+        zIndex: sel ? 12 : 10,
+        cursor: 'pointer',
+      })
+    } catch (e) { /* ignore per-polygon failures */
+    }
   })
 }
 
-/* ===== lifecycle ===== */
-const unwatchers = []
-onMounted(async () => { 
+/* ========== Lifecycle ========== */
+onMounted(async () => {
   try {
     await initMap()
   } catch (error) {
     console.error('Ошибка при инициализации карты:', error)
-    const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    const {$toast} = useNuxtApp()
+    if ($toast && typeof $toast.error === 'function') {
+      $toast.error('Не удалось загрузить карту: ' + (error.message || 'ошибка'))
+    }
   }
 })
+
 onBeforeUnmount(() => {
-  unwatchers.forEach(u => { try { u() } catch {} })
-  try { if (map) map.destroy() } catch {}
+  unwatchers.forEach(u => {
+    try {
+      u()
+    } catch {
+    }
+  })
+  try {
+    if (map) {
+      // try remove geoObjects to be safe
+      try {
+        map.geoObjects.removeAll()
+      } catch {
+      }
+      map.destroy()
+    }
+  } catch (e) { /* ignore */
+  }
   map = null
+  cemeteryPolygon = null
+  plotObjects = []
 })
 </script>
-
-<template>
-  <ClientOnly>
-    <div ref="mapEl" style="width:100%; height:600px;"></div>
-  </ClientOnly>
-</template>
