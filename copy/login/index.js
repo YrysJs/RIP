@@ -228,7 +228,7 @@ function pkbGetDeceasedData(data) {
     return $axios({
         method: 'GET',
         url: useRuntimeConfig().public.apiBaseUrl + `/api/v5/deceased`,
-        params: data.params,
+        params: data,
     })
 }
 

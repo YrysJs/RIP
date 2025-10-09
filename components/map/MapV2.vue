@@ -57,34 +57,100 @@ function getStrokeColor (item, isSelected) {
 const strokeWidth = (isSelected) => (isSelected ? 4 : 1)
 
 /* ========== Robust loader for Yandex Maps 2.1 ========== */
-async function loadYMaps21(apiKey, lang='ru_RU') {
+/* ========== Robust loader for Yandex Maps 2.1 (replacement) ========== */
+async function loadYMaps21(apiKey, lang = 'ru_RU') {
+  if (!apiKey) throw new Error('Yandex Maps API key required')
+
+  // if already fully available
   if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
 
-  if (window.ymaps && typeof window.ymaps.load === 'function') {
-    try {
-      const ym = await window.ymaps.load()
-      return ym || window.ymaps
-    } catch (err) {
-      console.warn('ymaps.load() rejected, will try re-injecting script', err)
+  // helper: wait until ymaps exposes Map constructor or load()
+  function waitForYmapsReady(timeout = 5000, poll = 150) {
+    return new Promise((resolve) => {
+      const start = Date.now()
+      const iv = setInterval(() => {
+        if (window.ymaps && (typeof window.ymaps.Map === 'function' || typeof window.ymaps.load === 'function')) {
+          clearInterval(iv)
+          resolve(true)
+          return
+        }
+        if (Date.now() - start >= timeout) {
+          clearInterval(iv)
+          resolve(false)
+        }
+      }, poll)
+    })
+  }
+
+  // if ymaps exists but not ready yet, try waiting a bit
+  if (window.ymaps && !(typeof window.ymaps.Map === 'function' || typeof window.ymaps.load === 'function')) {
+    const ok = await waitForYmapsReady(4000, 150) // try short wait first
+    if (ok) {
+      if (typeof window.ymaps.load === 'function') {
+        try {
+          const ym = await window.ymaps.load()
+          return ym || window.ymaps
+        } catch (err) {
+          // fallthrough and try to return window.ymaps if possible
+        }
+      }
+      if (typeof window.ymaps.Map === 'function') return window.ymaps
     }
+    // if not ok, continue to the logic below (we will attempt more waiting / re-injection logic)
   }
 
   const srcPrefix = 'https://api-maps.yandex.ru/2.1/'
+  // Find any existing script with 2.1 in src (more tolerant than startsWith)
   const existing = Array.from(document.getElementsByTagName('script'))
-      .find(s => s.src && s.src.startsWith(srcPrefix))
+      .find(s => s.src && s.src.indexOf(srcPrefix) !== -1)
 
   const desiredSrc = `https://api-maps.yandex.ru/2.1/?apikey=${encodeURIComponent(apiKey)}&lang=${lang}`
 
   if (existing) {
-    if (window.ymaps && typeof window.ymaps.load === 'function') {
-      const ym = await window.ymaps.load()
-      return ym || window.ymaps
+    // If script tag exists, wait longer for ymaps to initialize
+    const ok = await waitForYmapsReady(8000, 200)
+    if (ok) {
+      if (window.ymaps && typeof window.ymaps.load === 'function') {
+        try {
+          const ym = await window.ymaps.load()
+          return ym || window.ymaps
+        } catch (err) {
+          // ignore, try Map constructor next
+        }
+      }
+      if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
     }
-    await new Promise(res => setTimeout(res, 300))
-    if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
+
+    // If still not ready after waiting, try to re-insert a script (but avoid double same-src)
+    // We will append a cache-busting param to force a fresh load if origins match.
+    try {
+      const freshSrc = existing.src === desiredSrc ? `${desiredSrc}&_cb=${Date.now()}` : desiredSrc
+      const s = document.createElement('script')
+      s.src = freshSrc
+      s.async = true
+      s.defer = true
+      // small safety: attach onerror/onload handlers, but don't resolve here — we will poll
+      s.onload = () => { /* loaded; we'll detect via polling */ }
+      s.onerror = () => { /* let polling catch failure */ }
+      document.head.appendChild(s)
+    } catch (err) {
+      // DOM might be restricted; fall through to polling below
+    }
+
+    // poll for readiness up to a moderate timeout
+    const ok2 = await waitForYmapsReady(10000, 250)
+    if (ok2) {
+      if (window.ymaps && typeof window.ymaps.load === 'function') {
+        const ym = await window.ymaps.load().catch(() => null)
+        return ym || window.ymaps
+      }
+      if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
+    }
+
     throw new Error('Yandex Maps script present but ymaps not ready')
   }
 
+  // No existing script — inject a fresh one and wait
   await new Promise((resolve, reject) => {
     const s = document.createElement('script')
     s.src = desiredSrc
@@ -95,15 +161,19 @@ async function loadYMaps21(apiKey, lang='ru_RU') {
     document.head.appendChild(s)
   })
 
-  if (window.ymaps && typeof window.ymaps.load === 'function') {
-    const ym = await window.ymaps.load()
-    return ym || window.ymaps
+  // After injection, wait for ymaps to become available
+  const ok3 = await waitForYmapsReady(10000, 200)
+  if (ok3) {
+    if (window.ymaps && typeof window.ymaps.load === 'function') {
+      const ym = await window.ymaps.load().catch(() => null)
+      return ym || window.ymaps
+    }
+    if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
   }
-
-  if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
 
   throw new Error('Yandex Maps did not initialize correctly')
 }
+
 
 /* ========== Center calculation ========== */
 function initialCenter() {
