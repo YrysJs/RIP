@@ -44,15 +44,33 @@ watch(inn, async (newValue) => {
     const response = await pkbGetDeceasedData({
       iin: newValue,
     });
-    isFcb.value = true;
-    fullName.value = capitalizeFullName(
-      response.data.data.person_data.fullName
-    );
+    
+    // Проверяем успешность запроса
+    if (response.data.code === "FDTH_COMPLETED" && response.data.data.resultCode === "0") {
+      const personData = response.data.data.actRecords.record[0].person;
+      
+      // Формируем ФИО из отдельных полей
+      const fullNameParts = [
+        personData.surname,
+        personData.name,
+        personData.secondname
+      ].filter(Boolean); // убираем пустые значения
+      
+      isFcb.value = true;
+      fullName.value = capitalizeFullName(fullNameParts.join(' '));
+      
+      // Заполняем дату смерти
+      if (personData.deathDate) {
+        deathDate.value = personData.deathDate;
+      }
+    }
+    
     loadingStore.stopLoading();
   } catch (err) {
     console.error("Ошибка при запросе:", err);
     const { $toast } = useNuxtApp()
     $toast.error('Не удалось получить данные усопшего.')
+    loadingStore.stopLoading();
   }
 });
 
