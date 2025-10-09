@@ -226,7 +226,7 @@ function pkbGetData(data) {
 function pkbGetDeceasedData(data) {
     const { $axios } = useNuxtApp()
     return $axios({
-        method: 'POST',
+        method: 'GET',
         url: useRuntimeConfig().public.apiBaseUrl + `/api/v5/deceased`,
         params: data.params,
     })
@@ -235,7 +235,7 @@ function pkbGetDeceasedData(data) {
 function pkbGetJurData(data) {
     const { $axios } = useNuxtApp()
     return $axios({
-        method: 'POST',
+        method: 'GET',
         url: useRuntimeConfig().public.apiBaseUrl + `/api/v5/jur`,
         params: data,
     })
