@@ -10,10 +10,10 @@ import { useRuntimeConfig } from '#imports'
 
 /* ========== Props & emits ========== */
 const props = defineProps({
-  polygons: { type: [Array, Object], required: true },   // ref([]) или []
+  polygons: { type: [Array, Object], required: true },
   modelValue: { type: Object, default: null },
-  cemeteryBoundary: { type: Object, default: null },     // { polygon_data: { coordinates: [[lng,lat], ...] } }
-  centerCoords: { type: Array, default: null },          // [lat, lng]
+  cemeteryBoundary: { type: Object, default: null },
+  centerCoords: { type: Array, default: null },
 })
 const emit = defineEmits(['update:modelValue'])
 
@@ -21,15 +21,19 @@ const emit = defineEmits(['update:modelValue'])
 const mapEl = ref(null)
 let map = null
 let cemeteryPolygon = null
-let plotObjects = []     // [{ id, polygon, data }]
+let plotObjects = []
 const selected = ref(props.modelValue || null)
 const unwatchers = []
+
+/* Resize / DOM helpers (for cleanup) */
+let _resizeHandler = null
+let _resizeObserver = null
+let _mutationObserver = null
 
 /* ========== Utilities ========== */
 const getItems = () => (Array.isArray(props.polygons) ? props.polygons : (props.polygons?.value || []))
 
 function toLatLng(ring) {
-  // YMaps 2.1 ждёт [lat, lng]
   return (Array.isArray(ring) ? ring : []).map(([lng, lat]) => [lat, lng])
 }
 const isRing = (ring) => Array.isArray(ring) && ring.length >= 3 && ring.every(p => Array.isArray(p) && p.length === 2)
@@ -53,43 +57,100 @@ function getStrokeColor (item, isSelected) {
 const strokeWidth = (isSelected) => (isSelected ? 4 : 1)
 
 /* ========== Robust loader for Yandex Maps 2.1 ========== */
-async function loadYMaps21(apiKey, lang='ru_RU') {
-  // If ymaps already present and Map constructor available — return it.
-  if (window.ymaps && typeof window.ymaps.Map === 'function') {
-    return window.ymaps
+/* ========== Robust loader for Yandex Maps 2.1 (replacement) ========== */
+async function loadYMaps21(apiKey, lang = 'ru_RU') {
+  if (!apiKey) throw new Error('Yandex Maps API key required')
+
+  // if already fully available
+  if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
+
+  // helper: wait until ymaps exposes Map constructor or load()
+  function waitForYmapsReady(timeout = 5000, poll = 150) {
+    return new Promise((resolve) => {
+      const start = Date.now()
+      const iv = setInterval(() => {
+        if (window.ymaps && (typeof window.ymaps.Map === 'function' || typeof window.ymaps.load === 'function')) {
+          clearInterval(iv)
+          resolve(true)
+          return
+        }
+        if (Date.now() - start >= timeout) {
+          clearInterval(iv)
+          resolve(false)
+        }
+      }, poll)
+    })
   }
 
-  // If namespace exists with .load — prefer using it (it returns a promise)
-  if (window.ymaps && typeof window.ymaps.load === 'function') {
-    try {
-      const ym = await window.ymaps.load()
-      return ym || window.ymaps
-    } catch (err) {
-      console.warn('ymaps.load() rejected, will try re-injecting script', err)
-      // fall through to script injection attempt
+  // if ymaps exists but not ready yet, try waiting a bit
+  if (window.ymaps && !(typeof window.ymaps.Map === 'function' || typeof window.ymaps.load === 'function')) {
+    const ok = await waitForYmapsReady(4000, 150) // try short wait first
+    if (ok) {
+      if (typeof window.ymaps.load === 'function') {
+        try {
+          const ym = await window.ymaps.load()
+          return ym || window.ymaps
+        } catch (err) {
+          // fallthrough and try to return window.ymaps if possible
+        }
+      }
+      if (typeof window.ymaps.Map === 'function') return window.ymaps
     }
+    // if not ok, continue to the logic below (we will attempt more waiting / re-injection logic)
   }
 
-  // Check if a script with YMaps base already exists — avoid duplicate injection
   const srcPrefix = 'https://api-maps.yandex.ru/2.1/'
+  // Find any existing script with 2.1 in src (more tolerant than startsWith)
   const existing = Array.from(document.getElementsByTagName('script'))
-      .find(s => s.src && s.src.startsWith(srcPrefix))
+      .find(s => s.src && s.src.indexOf(srcPrefix) !== -1)
 
   const desiredSrc = `https://api-maps.yandex.ru/2.1/?apikey=${encodeURIComponent(apiKey)}&lang=${lang}`
 
   if (existing) {
-    // If script exists but ymaps not ready, wait shortly and try to use .load or direct namespace
-    if (window.ymaps && typeof window.ymaps.load === 'function') {
-      const ym = await window.ymaps.load()
-      return ym || window.ymaps
+    // If script tag exists, wait longer for ymaps to initialize
+    const ok = await waitForYmapsReady(8000, 200)
+    if (ok) {
+      if (window.ymaps && typeof window.ymaps.load === 'function') {
+        try {
+          const ym = await window.ymaps.load()
+          return ym || window.ymaps
+        } catch (err) {
+          // ignore, try Map constructor next
+        }
+      }
+      if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
     }
-    // give small grace period for initialization
-    await new Promise(res => setTimeout(res, 300))
-    if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
-    throw new Error('Yandex Maps script is present but ymaps namespace not ready')
+
+    // If still not ready after waiting, try to re-insert a script (but avoid double same-src)
+    // We will append a cache-busting param to force a fresh load if origins match.
+    try {
+      const freshSrc = existing.src === desiredSrc ? `${desiredSrc}&_cb=${Date.now()}` : desiredSrc
+      const s = document.createElement('script')
+      s.src = freshSrc
+      s.async = true
+      s.defer = true
+      // small safety: attach onerror/onload handlers, but don't resolve here — we will poll
+      s.onload = () => { /* loaded; we'll detect via polling */ }
+      s.onerror = () => { /* let polling catch failure */ }
+      document.head.appendChild(s)
+    } catch (err) {
+      // DOM might be restricted; fall through to polling below
+    }
+
+    // poll for readiness up to a moderate timeout
+    const ok2 = await waitForYmapsReady(10000, 250)
+    if (ok2) {
+      if (window.ymaps && typeof window.ymaps.load === 'function') {
+        const ym = await window.ymaps.load().catch(() => null)
+        return ym || window.ymaps
+      }
+      if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
+    }
+
+    throw new Error('Yandex Maps script present but ymaps not ready')
   }
 
-  // Inject script
+  // No existing script — inject a fresh one and wait
   await new Promise((resolve, reject) => {
     const s = document.createElement('script')
     s.src = desiredSrc
@@ -100,17 +161,19 @@ async function loadYMaps21(apiKey, lang='ru_RU') {
     document.head.appendChild(s)
   })
 
-  // Prefer using window.ymaps.load if available
-  if (window.ymaps && typeof window.ymaps.load === 'function') {
-    const ym = await window.ymaps.load()
-    return ym || window.ymaps
+  // After injection, wait for ymaps to become available
+  const ok3 = await waitForYmapsReady(10000, 200)
+  if (ok3) {
+    if (window.ymaps && typeof window.ymaps.load === 'function') {
+      const ym = await window.ymaps.load().catch(() => null)
+      return ym || window.ymaps
+    }
+    if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
   }
-
-  // Final check
-  if (window.ymaps && typeof window.ymaps.Map === 'function') return window.ymaps
 
   throw new Error('Yandex Maps did not initialize correctly')
 }
+
 
 /* ========== Center calculation ========== */
 function initialCenter() {
@@ -126,66 +189,191 @@ function initialCenter() {
   }
   const first = items?.[0]?.polygon_data?.coordinates?.[0]
   if (Array.isArray(first)) return [first[1], first[0]]
-  return [43.238949, 76.889709] // default [lat, lng]
+  return [43.238949, 76.889709]
 }
 
-/* ========== Map initialization ========== */
+/* ======= helper: wait for element to exist in DOM and be connected ======= */
+function waitForElement(refGetter, timeout = 5000) {
+  return new Promise((resolve) => {
+    const start = Date.now()
+    const pollInterval = 100
+
+    function check() {
+      try {
+        const el = refGetter?.()
+        if (el && (el.isConnected === undefined || el.isConnected) ) {
+          resolve(el)
+          return
+        }
+      } catch {}
+      if (Date.now() - start >= timeout) {
+        resolve(null)
+        return
+      }
+      setTimeout(check, pollInterval)
+    }
+
+    check()
+
+    // additionally observe DOM mutations to wake up earlier if element is added
+    try {
+      if (typeof MutationObserver !== 'undefined') {
+        _mutationObserver = new MutationObserver(() => {
+          const el = refGetter?.()
+          if (el && (el.isConnected === undefined || el.isConnected)) {
+            try { _mutationObserver.disconnect() } catch {}
+            _mutationObserver = null
+            resolve(el)
+          }
+        })
+        _mutationObserver.observe(document.documentElement || document.body, { childList: true, subtree: true })
+      }
+    } catch (e) {
+      // ignore
+    }
+  })
+}
+
+/* ======= helper: wait until element has non-zero size (returns true/false) ======= */
+function waitForNonZeroSizeSafe(el, timeout = 2500) {
+  return new Promise((resolve) => {
+    if (!el) return resolve(false)
+
+    const rect = el.getBoundingClientRect?.()
+    if (rect && rect.width > 0 && rect.height > 0) return resolve(true)
+
+    let resolved = false
+    let ro = null
+    try {
+      ro = new ResizeObserver(entries => {
+        for (const entry of entries) {
+          const cr = entry.contentRect || entry.target.getBoundingClientRect()
+          if (cr && cr.width > 0 && cr.height > 0) {
+            if (!resolved) {
+              resolved = true
+              try { ro.disconnect() } catch {}
+              clearTimeout(timer)
+              resolve(true)
+            }
+            return
+          }
+        }
+      })
+      ro.observe(el)
+    } catch (e) {
+      // ResizeObserver not available — we'll fall back to polling
+    }
+
+    const pollInterval = 150
+    const start = Date.now()
+    const poll = setInterval(() => {
+      const r = el.getBoundingClientRect?.()
+      if (r && r.width > 0 && r.height > 0) {
+        if (!resolved) {
+          resolved = true
+          try { if (ro) ro.disconnect() } catch {}
+          clearInterval(poll)
+          clearTimeout(timer)
+          resolve(true)
+        }
+      }
+      if (Date.now() - start >= timeout) {
+        if (!resolved) {
+          resolved = true
+          try { if (ro) ro.disconnect() } catch {}
+          clearInterval(poll)
+          clearTimeout(timer)
+          resolve(false)
+        }
+      }
+    }, pollInterval)
+
+    const timer = setTimeout(() => {
+      if (!resolved) {
+        resolved = true
+        try { if (ro) ro.disconnect() } catch {}
+        clearInterval(poll)
+        resolve(false)
+      }
+    }, timeout)
+  })
+}
+
+/* ========== Map initialization with robust waiting and retries ========== */
 async function initMap() {
   const cfg = useRuntimeConfig()
   const API_KEY = cfg.public?.yandexMapApiKey || cfg.public?.yandexMaps?.apikey
   if (!API_KEY) throw new Error('public.yandexMapApiKey not found')
 
-  // Wait for DOM render of mapEl (ClientOnly etc.)
   await nextTick()
-  if (!mapEl.value) {
-    // small fallback wait
-    await new Promise(res => setTimeout(res, 100))
-  }
-  if (!mapEl.value) {
-    throw new Error('map container (mapEl) not found — cannot initialize map')
-  }
 
   const ymaps = await loadYMaps21(API_KEY, 'ru_RU')
-
   if (!ymaps || typeof ymaps.Map !== 'function') {
     throw new Error('ymaps namespace is present but does not expose Map constructor')
   }
 
-  // If previously created map — destroy to avoid duplicates
-  try { if (map) { map.destroy(); map = null } } catch (e) { /* ignore */ }
+  // destroy prev map if any
+  try { if (map) { map.destroy(); map = null } } catch (e) {}
 
-  map = new ymaps.Map(mapEl.value, {
-    center: initialCenter(),
-    zoom: props.centerCoords ? 15 : (props.cemeteryBoundary ? 14 : 18),
-    controls: [],
-  }, {
-    suppressMapOpenBlock: true,
-  })
+  const maxAttempts = 6
+  let lastErr = null
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      // Ждём появления элемента (короткий таймаут)
+      const el = await waitForElement(() => mapEl.value, 1200)
+      if (!el) {
+        // элемент не появился — пробуем ещё раз (в следующих итерациях)
+        throw new Error('mapEl not present before attempt')
+      }
 
-  // If container is invisible or zero-size, YMaps may try to read offsetWidth and fail.
-  // We'll try a small deferred fitToViewport to allow browser to layout.
-  try {
-    const rect = mapEl.value.getBoundingClientRect?.()
-    if (!rect || rect.width === 0 || rect.height === 0) {
-      setTimeout(() => {
-        try { map.container.fitToViewport(); } catch (e) { /* ignore */ }
-      }, 200)
+      // Дополнительно дождёмся ненулевого размера (короткий)
+      await waitForNonZeroSizeSafe(el, 900)
+
+      // Попытка создать карту
+      map = new ymaps.Map(el, {
+        center: initialCenter(),
+        zoom: props.centerCoords ? 18 : (props.cemeteryBoundary ? 20 : 18),
+        controls: [],
+      }, {
+        suppressMapOpenBlock: true,
+      })
+
+      // Успешно — выходим из цикла
+      break
+    } catch (e) {
+      lastErr = e
+      // Если элемент исчез в процессе — не бросаем окончательно, делаем backoff и ретрай
+      if (attempt < maxAttempts) {
+        const backoff = 120 * attempt + 80
+        await new Promise(res => setTimeout(res, backoff))
+        continue
+      }
     }
-  } catch (e) {
-    // do not block initialization for this
   }
 
-  // Draw data
+  if (!map) {
+    throw new Error('Failed to construct ymaps.Map: ' + (lastErr?.message || lastErr || 'unknown error'))
+  }
+
+  try { map.container.fitToViewport() } catch (e) { console.warn('fitToViewport failed', e) }
+
+  // стандартный resize/observer/рисование
+  _resizeHandler = () => { try { if (map) map.container.fitToViewport() } catch {} }
+  window.addEventListener('resize', _resizeHandler)
+  try {
+    _resizeObserver = new ResizeObserver(() => { try { if (map) map.container.fitToViewport() } catch {} })
+    _resizeObserver.observe(mapEl.value)
+  } catch (e) {}
   drawCemetery()
   drawPlots()
 
-  // Watchers to react to prop changes
+  // watchers
   unwatchers.push(
       watch(() => props.cemeteryBoundary, () => { redrawCemetery() }, { deep: true }),
       watch(() => props.polygons, () => { redrawPlots() }, { deep: true }),
       watch(() => props.centerCoords, (v) => {
         if (Array.isArray(v) && v.length === 2 && map) {
-          try { map.setCenter([v[0], v[1]], 15) } catch (e) { /* ignore */ }
+          try { map.setCenter([v[0], v[1]], 15) } catch {}
         }
       })
   )
@@ -197,10 +385,7 @@ function drawCemetery() {
   if (!map || !ymaps) return
 
   if (cemeteryPolygon) {
-    try {
-      map.geoObjects.remove(cemeteryPolygon)
-    } catch {
-    }
+    try { map.geoObjects.remove(cemeteryPolygon) } catch {}
     cemeteryPolygon = null
   }
   const ring = props.cemeteryBoundary?.polygon_data?.coordinates
@@ -213,22 +398,14 @@ function drawCemetery() {
     zIndex: 1,
     cursor: 'default',
   })
-  try {
-    map.geoObjects.add(cemeteryPolygon)
-  } catch (e) {
-    console.warn('Failed to add cemetery polygon', e)
-  }
+  try { map.geoObjects.add(cemeteryPolygon) } catch (e) { console.warn('Failed to add cemetery polygon', e) }
 }
-
 const redrawCemetery = () => drawCemetery()
 
 /* ========== Plots handling ========== */
 function clearPlots() {
   plotObjects.forEach(p => {
-    try {
-      map.geoObjects.remove(p.polygon)
-    } catch {
-    }
+    try { map.geoObjects.remove(p.polygon) } catch {}
   })
   plotObjects = []
 }
@@ -253,11 +430,7 @@ function drawPlots() {
     })
 
     polygon.events.add('click', () => selectPlot(item))
-    try {
-      map.geoObjects.add(polygon)
-    } catch (e) {
-      console.warn('Failed to add plot polygon', e)
-    }
+    try { map.geoObjects.add(polygon) } catch (e) { console.warn('Failed to add plot polygon', e) }
 
     plotObjects.push({id: item.id, polygon, data: item})
   })
@@ -282,8 +455,7 @@ function selectPlot(item) {
         zIndex: sel ? 12 : 10,
         cursor: 'pointer',
       })
-    } catch (e) { /* ignore per-polygon failures */
-    }
+    } catch (e) {}
   })
 }
 
@@ -292,32 +464,35 @@ onMounted(async () => {
   try {
     await initMap()
   } catch (error) {
-    console.error('Ошибка при инициализации карты:', error)
-    const {$toast} = useNuxtApp()
-    if ($toast && typeof $toast.error === 'function') {
-      $toast.error('Не удалось загрузить карту: ' + (error.message || 'ошибка'))
+    // show toast only if map never got created
+    if (!map) {
+      console.error('Ошибка при инициализации карты:', error)
+    } else {
+      console.warn('Init map reported error but map exists:', error)
     }
   }
 })
 
 onBeforeUnmount(() => {
-  unwatchers.forEach(u => {
-    try {
-      u()
-    } catch {
-    }
-  })
+  // remove watchers
+  unwatchers.forEach(u => { try { u() } catch {} })
+  unwatchers.length = 0
+
+  // mutation observer
+  try { if (_mutationObserver) { _mutationObserver.disconnect(); _mutationObserver = null } } catch {}
+
+  // resize observer/handler
+  try { if (_resizeObserver) { _resizeObserver.disconnect(); _resizeObserver = null } } catch {}
+  try { if (_resizeHandler) { window.removeEventListener('resize', _resizeHandler); _resizeHandler = null } } catch {}
+
+  // destroy map
   try {
     if (map) {
-      // try remove geoObjects to be safe
-      try {
-        map.geoObjects.removeAll()
-      } catch {
-      }
-      map.destroy()
+      try { map.geoObjects.removeAll() } catch {}
+      try { map.destroy() } catch {}
     }
-  } catch (e) { /* ignore */
-  }
+  } catch (e) {}
+
   map = null
   cemeteryPolygon = null
   plotObjects = []

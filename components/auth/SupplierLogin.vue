@@ -8,7 +8,8 @@ import {
   setSupplierFiles,
   getPkbToken,
   getPkbRequest,
-  pkbGetData
+  pkbGetData,
+  pkbGetJurData
 } from '~/services/login/index.js'
 import Cookies from 'js-cookie';
 import {ref, defineEmits, watch, onBeforeUnmount} from "vue";
@@ -26,7 +27,7 @@ const step = ref(0)
 const name = ref('')
 const surname = ref('')
 const patronymic = ref('')
-const serviceDescription = ('')
+const serviceDescription = ref('')
 const achievementPhotos = ref([])
 const vatTypeId = ref(0)
 const isFcb = ref(false)
@@ -77,99 +78,105 @@ watch(bin, async (newValue) => {
 
     const poll = async () => {
       try {
-        const res = await getPkbRequest({
-          params: { iin: newValue },
-          data: pkbToken.data.access.hash,
-        });
-
-        if (
-            res?.data?.code === 'OK' &&
-            (res.data?.data?.status_code === "VALID" || res.data?.data?.status_code === "PENDING")
-        ) {
-          console.log('VALID получен, делаем pkbGetData');
-
-          // вызываем pkbGetData с ожиданием person_data
-          const waitForPersonData = async () => {
-            const maxAttempts = 30; // максимум 30 попыток (30 секунд)
-            let attempts = 0;
-            
-            const checkData = async () => {
-              try {
-                const response = await pkbGetData({
-                  id: res.data.data.request_id,
-                  params: {
-                    iin: newValue,
-                    requestId: res.data.data.request_id,
-                  },
-                  data: pkbToken.data.access.hash,
-                });
-                
-                // Проверяем на ответ таймаута ПКБ
-                if (response?.data?.message === "Timeout") {
-                  const { $toast } = useNuxtApp();
-                  $toast.error("Сервис ПКБ не доступен");
-                }
-                
-                // Проверяем наличие person_data
-                if (response?.data?.data?.person_data) {
-                  isFcb.value = true;
-                  name.value = capitalize(response.data.data.person_data.name);
-                  surname.value = capitalize(response.data.data.person_data.surname);
-                  patronymic.value = capitalize(response.data.data.person_data.patronymic);
-                  loadingStore.stopLoading();
-                  return true; // данные получены
-                }
-                
-                return false; // данные еще не готовы
-              } catch (error) {
-                console.error("Ошибка при получении person_data:", error);
-                return false;
-              }
-            };
-            
-            const pollData = async () => {
-              const dataReceived = await checkData();
-              
-              if (dataReceived) {
-                if (personDataTimeoutId.value) {
-                  clearTimeout(personDataTimeoutId.value);
-                  personDataTimeoutId.value = null;
-                }
-                return; // данные получены, выходим
-              }
-              
-              attempts++;
-              if (attempts < maxAttempts) {
-                // Ждем 5 секунд и повторяем попытку
-                personDataTimeoutId.value = setTimeout(pollData, 10000);
-              } else {
-                console.log("Превышено максимальное количество попыток получения person_data");
-                isFcb.value = true;
-                loadingStore.stopLoading();
-                if (personDataTimeoutId.value) {
-                  clearTimeout(personDataTimeoutId.value);
-                  personDataTimeoutId.value = null;
-                }
-              }
-            };
-            
-            // Начинаем опрос
-            await pollData();
-          };
-          
-          await waitForPersonData();
-
-          // остановить дальнейшие попытки
-          if (timeoutId) {
-            clearTimeout(timeoutId);
-            timeoutId = null;
-          }
-
-        } else {
-          console.log('Ожидаем VALID, текущий статус:', res?.data?.data?.status_code);
-          loadingStore.stopLoading();
-          isFcb.value = true;
-        }
+        const res = await pkbGetJurData({
+          uin: newValue,
+          token: pkbToken.data.access.hash,
+        })
+        console.log(res)
+        // const res = await getPkbRequest({
+        //   params: { iin: newValue },
+        //   data: pkbToken.data.access.hash,
+        // });
+        //
+        // if (
+        //     res?.data?.code === 'OK' &&
+        //     (res.data?.data?.status_code === "VALID" || res.data?.data?.status_code === "PENDING")
+        // ) {
+        //   console.log('VALID получен, делаем pkbGetData');
+        //
+        //   // вызываем pkbGetData с ожиданием person_data
+        //   const waitForPersonData = async () => {
+        //     const maxAttempts = 30; // максимум 30 попыток (30 секунд)
+        //     let attempts = 0;
+        //
+        //     const checkData = async () => {
+        //       try {
+        //         const response = await pkbGetData({
+        //           id: res.data.data.request_id,
+        //           params: {
+        //             iin: newValue,
+        //             requestId: res.data.data.request_id,
+        //           },
+        //           data: pkbToken.data.access.hash,
+        //         });
+        //
+        //
+        //         // Проверяем на ответ таймаута ПКБ
+        //         if (response?.data?.message === "Timeout") {
+        //           const { $toast } = useNuxtApp();
+        //           $toast.error("Сервис ПКБ не доступен");
+        //         }
+        //
+        //         // Проверяем наличие person_data
+        //         if (response?.data?.data?.person_data) {
+        //           isFcb.value = true;
+        //           name.value = capitalize(response.data.data.person_data.name);
+        //           surname.value = capitalize(response.data.data.person_data.surname);
+        //           patronymic.value = capitalize(response.data.data.person_data.patronymic);
+        //           loadingStore.stopLoading();
+        //           return true; // данные получены
+        //         }
+        //
+        //         return false; // данные еще не готовы
+        //       } catch (error) {
+        //         console.error("Ошибка при получении person_data:", error);
+        //         return false;
+        //       }
+        //     };
+        //
+        //     const pollData = async () => {
+        //       const dataReceived = await checkData();
+        //
+        //       if (dataReceived) {
+        //         if (personDataTimeoutId.value) {
+        //           clearTimeout(personDataTimeoutId.value);
+        //           personDataTimeoutId.value = null;
+        //         }
+        //         return; // данные получены, выходим
+        //       }
+        //
+        //       attempts++;
+        //       if (attempts < maxAttempts) {
+        //         // Ждем 5 секунд и повторяем попытку
+        //         personDataTimeoutId.value = setTimeout(pollData, 10000);
+        //       } else {
+        //         console.log("Превышено максимальное количество попыток получения person_data");
+        //         isFcb.value = true;
+        //         loadingStore.stopLoading();
+        //         if (personDataTimeoutId.value) {
+        //           clearTimeout(personDataTimeoutId.value);
+        //           personDataTimeoutId.value = null;
+        //         }
+        //       }
+        //     };
+        //
+        //     // Начинаем опрос
+        //     await pollData();
+        //   };
+        //
+        //   await waitForPersonData();
+        //
+        //   // остановить дальнейшие попытки
+        //   if (timeoutId) {
+        //     clearTimeout(timeoutId);
+        //     timeoutId = null;
+        //   }
+        //
+        // } else {
+        //   console.log('Ожидаем VALID, текущий статус:', res?.data?.data?.status_code);
+        //   loadingStore.stopLoading();
+        //   isFcb.value = true;
+        // }
       } catch (err) {
         console.error('Ошибка при запросе:', err);
         loadingStore.stopLoading();
@@ -482,7 +489,7 @@ const otpCheck = async () => {
         </div>
         <div class="mt-[24px]">
           <p class="text-sm font-roboto text-[#222222]">Краткое описание услуг</p>
-          <textarea v-model="patronymic" class="w-full border-2 border-[#939393] py-[12px] pl-[16px] rounded-lg h-[120px]" type="text" placeholder="Краткое описание услуг" />
+          <textarea v-model="serviceDescription" class="w-full border-2 border-[#939393] py-[12px] pl-[16px] rounded-lg h-[120px]" type="text" placeholder="Краткое описание услуг" />
         </div>
         <div class="mt-[24px] mb-[24px]">
           <h3 class="text-[18px] font-medium mb-1">

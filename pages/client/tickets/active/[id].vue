@@ -101,12 +101,13 @@ watch(
 const handleFileSelect = (event) => {
   selectedFiles.value = Array.from(event.target.files);
   const file = event.target.files[0];
-  if (file && file.type === "application/pdf") {
-    deathCertificateFile.value = file;
-  } else {
-    alert("Пожалуйста, выберите PDF файл");
-    event.target.value = "";
-  }
+  deathCertificateFile.value = file;
+  // if (file && file.type === "application/pdf") {
+  //   deathCertificateFile.value = file;
+  // } else {
+  //   alert("Пожалуйста, выберите PDF файл");
+  //   event.target.value = "";
+  // }
 };
 
 function formatFileSize(size) {
@@ -155,6 +156,23 @@ const displayBurialDate = computed(() => {
 // Computed property для класса цвета даты похорон
 const burialDateClass = computed(() => {
   return burialData?.value?.burial_date ? "text-[#222222]" : "text-[#939393]";
+});
+
+// Computed property для проверки заполненности всех обязательных полей
+const isFormValid = computed(() => {
+  if (!burialData.value || !switcher.value) return false;
+  
+  const hasDeathDate = deathDate.value && deathDate.value.trim() !== '';
+  const hasBurialDate = burialDate.value && burialDate.value.trim() !== '';
+  const hasBurialTime = burialData.value.burial_time && burialData.value.burial_time.trim() !== '';
+  const hasDeathCertificate = selectedFiles.value.length > 0;
+  
+  return hasDeathDate && hasBurialDate && hasBurialTime && hasDeathCertificate;
+});
+
+// Computed property для проверки возможности оплаты (для обеих кнопок)
+const canPay = computed(() => {
+  return isFormValid.value;
 });
 </script>
 
@@ -484,24 +502,50 @@ const burialDateClass = computed(() => {
                 </h3>
               </div>
               <button
-                class="text-base py-[18px] px-[28px] rounded-lg bg-[#E9B949] text-black max-sm:w-full hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
-                :disabled="burialData?.status !== 'pending'"
-                :class="{
-                  'opacity-50 cursor-not-allowed':
-                    burialData?.status !== 'pending',
-                }"
-                @click="openPaymentModal"
+                :disabled="!canPay"
+                :class="[
+                  'text-base py-[18px] w-[300px] px-[28px] rounded-lg max-sm:w-full transition-all duration-200',
+                  canPay 
+                    ? 'bg-[#E9B949] text-black hover:bg-[#D1A53F] active:bg-[#B88F34] cursor-pointer' 
+                    : 'bg-[#F5F5F5] text-[#CCCCCC] border border-[#E0E0E0] cursor-not-allowed'
+                ]"
+                @click="canPay ? openPaymentModal() : null"
               >
-                Оплатить сбор
+                <span v-if="!canPay" class="flex items-center justify-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1ZM8.75 11.25C8.75 11.6642 8.41421 12 8 12C7.58579 12 7.25 11.6642 7.25 11.25V7.75C7.25 7.33579 7.58579 7 8 7C8.41421 7 8.75 7.33579 8.75 7.75V11.25ZM8 6C7.44772 6 7 5.55228 7 5C7 4.44772 7.44772 4 8 4C8.55228 4 9 4.44772 9 5C9 5.55228 8.55228 6 8 6Z" fill="#CCCCCC"/>
+                  </svg>
+                  Заполните все поля
+                </span>
+                <span v-else>Оплатить сбор</span>
               </button>
             </div>
-            <a href="https://pay.kaspi.kz/pay/6uegojfm" target="_blank">
-              <button
-                  class="text-base py-[18px] px-[28px] rounded-lg bg-[#E9B949] text-black max-sm:w-full hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
+            <div class="mt-4">
+              <a 
+                v-if="canPay" 
+                href="https://pay.kaspi.kz/pay/6uegojfm" 
+                target="_blank"
+                class="inline-block w-full max-sm:w-full"
               >
-                Оплатить услуги СКРУ
+                <button
+                  class="text-base py-[18px] px-[28px] rounded-lg bg-[#E9B949] text-black w-[300px] hover:bg-[#D1A53F] active:bg-[#B88F34] transition-all duration-200"
+                >
+                  Оплатить услуги СКРУ
+                </button>
+              </a>
+              <button
+                v-else
+                :disabled="true"
+                class="text-base w-[300px] py-[18px] px-[28px] rounded-lg bg-[#F5F5F5] text-[#CCCCCC] border border-[#E0E0E0] cursor-not-allowed max-sm:w-full transition-all duration-200"
+              >
+                <span class="flex items-center justify-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1ZM8.75 11.25C8.75 11.6642 8.41421 12 8 12C7.58579 12 7.25 11.6642 7.25 11.25V7.75C7.25 7.33579 7.58579 7 8 7C8.41421 7 8.75 7.33579 8.75 7.75V11.25ZM8 6C7.44772 6 7 5.55228 7 5C7 4.44772 7.44772 4 8 4C8.55228 4 9 4.44772 9 5C9 5.55228 8.55228 6 8 6Z" fill="#CCCCCC"/>
+                  </svg>
+                  Заполните все поля для оплаты услуг СКРУ
+                </span>
               </button>
-            </a>
+            </div>
           </div>
         </div>
         <Teleport to="body">
