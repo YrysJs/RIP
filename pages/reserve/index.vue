@@ -576,7 +576,7 @@ function getReligionIcon(item) {
                       class="w-[36px] h-[16px] rounded-sm bg-[#DCBA4366] border-2 border-[#DCBA43]"
                     ></div>
                     <p class="text-sm sm:text-[13px]">
-                      Зарезервировано: {{ selectedCemetery?.reserved }}
+                      Зарезервировано: {{ selectedCemetery?.reserved_spaces }}
                     </p>
                   </div>
                   <div class="flex gap-[8px] items-center">
@@ -584,7 +584,7 @@ function getReligionIcon(item) {
                       class="w-[36px] h-[16px] rounded-sm bg-[#93939366] border-2 border-[#939393]"
                     ></div>
                     <p class="text-sm sm:text-[13px]">
-                      Занято: {{ selectedCemetery?.taken }}
+                      Занято: {{ selectedCemetery?.occupied_spaces }}
                     </p>
                   </div>
                 </div>

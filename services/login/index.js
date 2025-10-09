@@ -227,8 +227,17 @@ function pkbGetDeceasedData(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/v5/deceased`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v5/deceased`,
         params: data.params,
+    })
+}
+
+function pkbGetJurData(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v5/jur`,
+        params: data,
     })
 }
 
@@ -257,5 +266,6 @@ export {
     pkbGetDeceasedData,
     checkWhatsappOtp,
     getWhatsappOtp,
-    signupClientWhatsapp
+    signupClientWhatsapp,
+    pkbGetJurData
 }

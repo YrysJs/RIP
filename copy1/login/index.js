@@ -231,6 +231,15 @@ function pkbGetDeceasedData(data) {
     })
 }
 
+function pkbGetJurData(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: `http://194.32.140.103:8083/v1/jur`,
+        params: data,
+    })
+}
+
 export {
     getOtp,
     checkOtp,
@@ -256,5 +265,6 @@ export {
     pkbGetDeceasedData,
     checkWhatsappOtp,
     getWhatsappOtp,
-    signupClientWhatsapp
+    signupClientWhatsapp,
+    pkbGetJurData
 }
