@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 
 import { getCemeteries } from "~/services/cemetery";
 import { getUser } from "~/services/login";
-import { getMyRequests } from "~/services/client";
+import { getMyRequests } from "~/services/akimat";
 import { parseJwt } from "~/utils/parseJwt";
 
 const router = useRouter();
