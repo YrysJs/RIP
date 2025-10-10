@@ -40,6 +40,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
+      googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || 'G-CG64RCB9FR',
       apiBaseUrl: 'https://ripservice.kz',
       twoGisApiKey: "0b75b800-a23a-42d2-a943-3d04be6ebfc3",
       yandexMapApiKey: "c8be6d3f-5040-4607-8cb1-082ea246eb81",
@@ -113,11 +114,54 @@ export default defineNuxtConfig({
           type: 'text/javascript',
           // опционально: уникальный id, чтобы Nuxt не дублировал его
           hid: 'yandex-metrika'
+        },
+        {
+          children: `
+            (function(m,e,t,r,i,k,a){
+              m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+              m[i].l=1*new Date();
+              for (var j = 0; j < document.scripts.length; j++) {
+                if (document.scripts[j].src === r) { return; }
+              }
+              k=e.createElement(t),a=e.getElementsByTagName(t)[0];
+              k.async=1;k.src=r;a.parentNode.insertBefore(k,a);
+            })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=104468348', 'ym');
+
+            ym(104468348, 'init', {
+              ssr: true,
+              webvisor: true,
+              clickmap: true,
+              ecommerce: "dataLayer",
+              accurateTrackBounce: true,
+              trackLinks: true
+            });
+          `,
+          type: 'text/javascript',
+          hid: 'yandex-metrika'
+        },
+
+        // --- Google gtag (async загрузчик) ---
+        {
+          src: 'https://www.googletagmanager.com/gtag/js?id=G-CG64RCB9FR',
+          async: true,
+          hid: 'gtag-js'
+        },
+
+        // --- Инициализация gtag ---
+        {
+          children: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-CG64RCB9FR', { send_page_view: false });
+          `,
+          type: 'text/javascript',
+          hid: 'gtag-init'
         }
       ],
+
       noscript: [
         {
-          // тоже используем children (в Nuxt это корректно)
           children: '<div><img src="https://mc.yandex.ru/watch/104468348" style="position:absolute; left:-9999px;" alt="" /></div>'
         }
       ]
