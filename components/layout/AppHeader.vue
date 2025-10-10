@@ -27,6 +27,9 @@
             Забронировать место
           </button>
           <template v-if="token">
+            <button v-if="isAkimat" class="profile__btn" @click="router.push('/user/tickets')">
+              Кабинет Акимата
+            </button>
             <button class="profile__btn" @click="profileClick">
               <img src="/icons/person.svg" alt="Reserve icon" class="w-5 h-5" />
               {{ userInfo?.name }} {{ userInfo?.surname }}
@@ -172,13 +175,13 @@ function profileClick() {
       router.push("/admin/cemetery");
       break;
     case "AKIMAT_MANAGER":
-      router.push("/user/tickets");
+      router.push("/client/profile");
       break;
     case "AKIMAT_ADMIN":
-      router.push("/user/tickets");
+      router.push("/client/profile");
       break;
     case "GOVERNMENT":
-      router.push("/user/tickets");
+      router.push("/client/profile");
       break;
     case "CEMETERY_MANAGER":
       router.push("/manager/burial");
@@ -191,6 +194,11 @@ function profileClick() {
       break;
   }
 }
+
+const isAkimat = computed(() => {
+  const parsedToken = parseJwt(token.value);
+  return parsedToken.role === 'AKIMAT_MANAGER' || parsedToken.role === 'AKIMAT_ADMIN' || parsedToken.role === 'GOVERNMENT'
+})
 
 function logout() {
   toggleDropdown();

@@ -5,9 +5,8 @@ import Cookies from "js-cookie";
 
 import { getCemeteries } from "~/services/cemetery";
 import { getUser } from "~/services/login";
+import { getMyRequests } from "~/services/client";
 import { parseJwt } from "~/utils/parseJwt";
-// Если у тебя есть API для получения запроса по id — подключи:
-// import { getRequestById } from "~/services/client";
 
 const router = useRouter();
 const route = useRoute();
@@ -19,7 +18,9 @@ const props = defineProps({
     type: Object,
     default: () => null,
   },
+
 });
+
 
 /* -------- state -------- */
 const token = ref(Cookies.get("token"));
@@ -33,14 +34,22 @@ const cemFallback = [
 ];
 
 const data = ref({
+  id: null,
   number: "№00001",
-  fromBurialId: 102,
-  toBurialId: 102,
-  reason: "Lorem ipsum dolor sit amet...",
-  death_certificate: "",
-  proof_of_relation: "",
-  grave_doc: "",
+  fromBurialId: 0,
+  toBurialId: 0,
+  reason: "",
+  death_certificate: null,
+  proof_of_relation: null,
+  grave_doc: null,
+  status: null,
+  user: null,
+  akimatDTO: null,
+  foreign_cemetery: null,
 });
+
+const loading = ref(true);
+const error = ref(null);
 
 /* -------- derived -------- */
 const cemList = computed(() =>
@@ -54,45 +63,68 @@ const cemNameById = (id) =>
 
 /* -------- init -------- */
 onMounted(async () => {
-  // юзер (если нужен кому-то из заголовков/логики)
-  const parsed = parseJwt(token.value || "");
-  try {
-    const u = await getUser({ phone: parsed?.sub });
-    userInfo.value = u?.data ?? null;
-  } catch {
-    userInfo.value = null;
-  }
+  loading.value = true;
+  error.value = null;
 
-  // кладбища
   try {
-    const c = await getCemeteries();
-    cemeteries.value = c?.data || [];
-  } catch {
-    cemeteries.value = [];
-  }
+    // юзер (если нужен кому-то из заголовков/логики)
+    const parsed = parseJwt(token.value || "");
+    try {
+      const u = await getUser({ phone: parsed?.sub });
+      userInfo.value = u?.data ?? null;
+    } catch {
+      userInfo.value = null;
+    }
 
-  // источник данных: 1) API по id  2) props.request  3) мок
-  const id = props.requestId || route.params?.id;
-  if (id) {
-    // Раскомментируй при наличии API:
-    // const r = await getRequestById(id);
-    // if (r?.data) data.value = normalize(r.data);
-    data.value.number = `№${String(id).padStart(5, "0")}`;
-  } else if (props.request) {
-    data.value = normalize(props.request);
+    // кладбища
+    try {
+      const c = await getCemeteries();
+      cemeteries.value = c?.data?.data || [];
+    } catch {
+      cemeteries.value = [];
+    }
+
+    // получаем ID из роута
+    const requestId = route.params?.id;
+    if (requestId) {
+      // загружаем все запросы пользователя
+      const response = await getMyRequests();
+      const requests = response?.data || [];
+      
+      // находим запрос по ID
+      const foundRequest = requests.find(req => String(req.id) === String(requestId));
+      
+      if (foundRequest) {
+        data.value = normalize(foundRequest);
+      } else {
+        error.value = "Запрос не найден";
+      }
+    } else if (props.request) {
+      data.value = normalize(props.request);
+    }
+  } catch (err) {
+    console.error("Ошибка загрузки данных:", err);
+    error.value = "Ошибка загрузки данных";
+  } finally {
+    loading.value = false;
   }
 });
 
 /* -------- utils -------- */
 function normalize(r) {
   return {
-    number: r.number || "№00001",
+    id: r.id,
+    number: `№${String(r.id).padStart(5, "0")}`,
     fromBurialId: r.fromBurialId ?? 0,
     toBurialId: r.toBurialId ?? 0,
     reason: r.reason || "",
-    death_certificate: r.death_certificate || "",
-    proof_of_relation: r.proof_of_relation || "",
-    grave_doc: r.grave_doc || "",
+    death_certificate: r.death_certificate?.url || null,
+    proof_of_relation: r.proof_of_relation?.url || null,
+    grave_doc: r.grave_doc?.url || null,
+    status: r.status,
+    user: r.user,
+    akimatDTO: r.akimatDTO,
+    foreign_cemetery: r.foreign_cemetery,
   };
 }
 
@@ -111,76 +143,107 @@ function fileTitle(url) {
 <template>
   <NuxtLayout name="client">
     <div>
-      <div class="topbar">
-        <h1 class="page-title">ЗАПРОС НА ПЕРЕЗАХОРОНЕНИЕ</h1>
-        <div class="req-num">Запрос на перезахоронение {{ data.number }}</div>
+      <!-- Состояние загрузки -->
+      <div v-if="loading" class="loading-state">
+        <div class="loader">Загрузка...</div>
       </div>
 
-      <div class="view-card">
-        <div class="rows">
-          <div class="row">
-            <div class="label">Старое место<br />захоронения:</div>
-            <div class="value">{{ cemNameById(data.fromBurialId) }}</div>
-          </div>
+      <!-- Состояние ошибки -->
+      <div v-else-if="error" class="error-state">
+        <div class="error-message">{{ error }}</div>
+        <button class="btn-yellow" @click="$router.push('/client/burial')">
+          Вернуться к списку
+        </button>
+      </div>
 
-          <div class="row">
-            <div class="label">Новое место<br />захоронения:</div>
-            <div class="value">{{ cemNameById(data.toBurialId) }}</div>
+      <!-- Основной контент -->
+      <div v-else>
+        <div class="topbar">
+          <h1 class="page-title">ЗАПРОС НА ПЕРЕЗАХОРОНЕНИЕ</h1>
+          <div class="req-info">
+            <div class="req-num">Запрос на перезахоронение {{ data.number }}</div>
+<!--            <div v-if="data.status" class="req-status" :class="`status-${data.status.value.toLowerCase()}`">-->
+<!--              {{ data.status.nameRu }}-->
+<!--            </div>-->
           </div>
+        </div>
 
-          <div class="row">
-            <div class="label">Причина:</div>
-            <div class="value">{{ data.reason ?? "" }}</div>
-          </div>
-
-          <div class="row">
-            <div class="label">Свидетельство о<br />смерти:</div>
-            <div class="value">
-              <a
-                v-if="data.death_certificate"
-                class="doc-link"
-                :href="data.death_certificate"
-                target="_blank"
-                rel="noopener"
-              >
-                <img class="doc-ico" src="/icons/file.svg" alt="" />
-                <span>{{ fileTitle(data.death_certificate) }}</span>
-              </a>
-              <span v-else>—</span>
+        <div class="view-card">
+          <div class="rows">
+            <div class="row">
+              <div class="label">Старое место<br />захоронения:</div>
+              <div class="value">{{ cemNameById(data.fromBurialId) }}</div>
             </div>
-          </div>
 
-          <div class="row">
-            <div class="label">Подтверждение<br />родства заявителя:</div>
-            <div class="value">
-              <a
-                v-if="data.proof_of_relation"
-                class="doc-link"
-                :href="data.proof_of_relation"
-                target="_blank"
-                rel="noopener"
-              >
-                <img class="doc-ico" src="/icons/file.svg" alt="" />
-                <span>{{ fileTitle(data.proof_of_relation) }}</span>
-              </a>
-              <span v-else>—</span>
+            <div class="row">
+              <div class="label">Новое место<br />захоронения:</div>
+              <div class="value">{{ cemNameById(data.toBurialId) }}</div>
             </div>
-          </div>
 
-          <div class="row">
-            <div class="label">Документ на могилу:</div>
-            <div class="value">
-              <a
-                v-if="data.grave_doc"
-                class="doc-link"
-                :href="data.grave_doc"
-                target="_blank"
-                rel="noopener"
-              >
-                <img class="doc-ico" src="/icons/file.svg" alt="" />
-                <span>{{ fileTitle(data.grave_doc) }}</span>
-              </a>
-              <span v-else>—</span>
+            <div v-if="data.foreign_cemetery" class="row">
+              <div class="label">Внешнее кладбище:</div>
+              <div class="value">{{ data.foreign_cemetery }}</div>
+            </div>
+
+            <div class="row">
+              <div class="label">Причина:</div>
+              <div class="value">{{ data.reason || "—" }}</div>
+            </div>
+
+            <div v-if="data.user" class="row">
+              <div class="label">Заявитель:</div>
+              <div class="value">{{ data.user.fio }}</div>
+            </div>
+
+            <div class="row">
+              <div class="label">Свидетельство о<br />смерти:</div>
+              <div class="value">
+                <a
+                  v-if="data.death_certificate"
+                  class="doc-link"
+                  :href="data.death_certificate"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img class="doc-ico" src="/icons/file.svg" alt="" />
+                  <span>{{ fileTitle(data.death_certificate) }}</span>
+                </a>
+                <span v-else class="no-doc">—</span>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="label">Подтверждение<br />родства заявителя:</div>
+              <div class="value">
+                <a
+                  v-if="data.proof_of_relation"
+                  class="doc-link"
+                  :href="data.proof_of_relation"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img class="doc-ico" src="/icons/file.svg" alt="" />
+                  <span>{{ fileTitle(data.proof_of_relation) }}</span>
+                </a>
+                <span v-else class="no-doc">—</span>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="label">Документ на могилу:</div>
+              <div class="value">
+                <a
+                  v-if="data.grave_doc"
+                  class="doc-link"
+                  :href="data.grave_doc"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img class="doc-ico" src="/icons/file.svg" alt="" />
+                  <span>{{ fileTitle(data.grave_doc) }}</span>
+                </a>
+                <span v-else class="no-doc">—</span>
+              </div>
             </div>
           </div>
         </div>
@@ -190,6 +253,27 @@ function fileTitle(url) {
 </template>
 
 <style scoped>
+/* Состояния загрузки и ошибки */
+.loading-state, .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: 16px;
+}
+
+.loader {
+  font-size: 18px;
+  color: #8c8c8c;
+}
+
+.error-message {
+  font-size: 18px;
+  color: #ef4444;
+  text-align: center;
+}
+
 .topbar {
   padding-bottom: 16px;
   display: flex;
@@ -205,9 +289,38 @@ function fileTitle(url) {
   color: #1c140e;
   margin: 0;
 }
+.req-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
 .req-num {
   color: #8c8c8c;
   font-size: 14px;
+}
+.req-status {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.status-new {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.status-in_progress {
+  background: #fef3c7;
+  color: #d97706;
+}
+.status-completed {
+  background: #d1fae5;
+  color: #059669;
+}
+.status-rejected {
+  background: #fee2e2;
+  color: #dc2626;
 }
 
 /* Карточка просмотра */
@@ -237,6 +350,14 @@ function fileTitle(url) {
   color: #111827;
 }
 
+/* Детали акимата */
+.akimat-details {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
 /* Ссылки на документы */
 .doc-link {
   display: inline-flex;
@@ -251,6 +372,10 @@ function fileTitle(url) {
 .doc-ico {
   width: 18px;
   height: 18px;
+}
+.no-doc {
+  color: #9ca3af;
+  font-style: italic;
 }
 
 /* Кнопка */
@@ -281,12 +406,25 @@ function fileTitle(url) {
 
 /* Адаптив */
 @media (max-width: 640px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .req-info {
+    align-items: flex-start;
+  }
+  .page-title {
+    font-size: 24px;
+  }
   .row {
     grid-template-columns: 1fr;
   }
   .label {
     color: #000;
     font-weight: 500;
+  }
+  .btn-yellow {
+    width: 100%;
   }
 }
 </style>

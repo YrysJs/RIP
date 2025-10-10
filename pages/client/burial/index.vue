@@ -95,11 +95,11 @@ const formatPhoneNumber = (phone) => {
                     String(req.id).padStart(3, "0")
                   }}</span>
               </div>
-              <div class="dates">
-                <div class="date-line">
-                  Дата создания: {{ fmtDate(req.createdAt || req.created_at) }}
-                </div>
-              </div>
+<!--              <div class="dates">-->
+<!--                <div class="date-line">-->
+<!--                  Дата создания: {{ fmtDate(req.createdAt || req.created_at) }}-->
+<!--                </div>-->
+<!--              </div>-->
             </div>
 
             <div class="info">
