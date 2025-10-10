@@ -92,6 +92,17 @@ const cemeteryOptions = computed(() =>
     : fallbackCemeteries
 );
 
+const isFormValid = computed(() => {
+  return (
+    fromBurialId.value > 0 &&
+    toBurialId.value > 0 &&
+    reason.value.trim().length > 0 &&
+    death_certificate.value.length > 0 &&
+    proof_of_relation.value.length > 0 &&
+    grave_doc.value.length > 0
+  );
+});
+
 onMounted(async () => {
   const parsed = parseJwt(token.value);
   const u = await getUser({ phone: parsed.sub });
@@ -99,7 +110,7 @@ onMounted(async () => {
 
   try {
     const c = await getCemeteries();
-    cemeteries.value = c.data || [];
+    cemeteries.value = c.data.data || [];
   } catch {
     cemeteries.value = [];
   }
@@ -122,7 +133,7 @@ onMounted(async () => {
               <select v-model="fromBurialId" class="select">
                 <option value="0" disabled>Выберите кладбище</option>
                 <option
-                  v-for="cem in cemeteryOptions"
+                  v-for="cem in cemeteries"
                   :key="cem.id"
                   :value="cem.id"
                 >
@@ -139,7 +150,7 @@ onMounted(async () => {
               <select v-model="toBurialId" class="select">
                 <option value="0" disabled>Выберите кладбище</option>
                 <option
-                  v-for="cem in cemeteryOptions"
+                  v-for="cem in cemeteries"
                   :key="cem.id"
                   :value="cem.id"
                 >
@@ -339,7 +350,12 @@ onMounted(async () => {
 
         <!-- Кнопка -->
         <div class="actions">
-          <button class="btn-yellow" @click="userCreateAppeal">
+          <button 
+            class="btn-yellow" 
+            :disabled="!isFormValid"
+            :class="{ 'btn-disabled': !isFormValid }"
+            @click="userCreateAppeal"
+          >
             Создать запрос в акимат
           </button>
         </div>
@@ -553,6 +569,15 @@ onMounted(async () => {
 }
 .btn-yellow:active {
   background-color: #b88f34;
+}
+.btn-disabled {
+  background-color: #d1d5db !important;
+  color: #9ca3af !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+}
+.btn-disabled:hover {
+  background-color: #d1d5db !important;
 }
 
 /* утилиты */

@@ -450,7 +450,7 @@ function download(doc) {
   grid-template-columns: repeat(3, minmax(220px, 1fr));
   gap: 16px;
 }
-.doc-col { display: flex; flex-direction: column; gap: 8px; }
+.doc-col { display: flex; flex-direction: column; gap: 8px; justify-content: space-between }
 .doc-label { color: var(--ink); font-weight: 700; font-size: 14px; }
 .doc-card {
   display: flex;

@@ -70,8 +70,6 @@ const cities = [
 watch(bin, async (newValue) => {
   if (newValue.length !== 12) return;
 
-  let timeoutId; // чтобы можно было отменить повторы
-
   try {
     loadingStore.startLoading()
     const pkbToken = await getPkbToken();
@@ -83,100 +81,27 @@ watch(bin, async (newValue) => {
           token: pkbToken.data.access.hash,
         })
         console.log(res)
-        // const res = await getPkbRequest({
-        //   params: { iin: newValue },
-        //   data: pkbToken.data.access.hash,
-        // });
-        //
-        // if (
-        //     res?.data?.code === 'OK' &&
-        //     (res.data?.data?.status_code === "VALID" || res.data?.data?.status_code === "PENDING")
-        // ) {
-        //   console.log('VALID получен, делаем pkbGetData');
-        //
-        //   // вызываем pkbGetData с ожиданием person_data
-        //   const waitForPersonData = async () => {
-        //     const maxAttempts = 30; // максимум 30 попыток (30 секунд)
-        //     let attempts = 0;
-        //
-        //     const checkData = async () => {
-        //       try {
-        //         const response = await pkbGetData({
-        //           id: res.data.data.request_id,
-        //           params: {
-        //             iin: newValue,
-        //             requestId: res.data.data.request_id,
-        //           },
-        //           data: pkbToken.data.access.hash,
-        //         });
-        //
-        //
-        //         // Проверяем на ответ таймаута ПКБ
-        //         if (response?.data?.message === "Timeout") {
-        //           const { $toast } = useNuxtApp();
-        //           $toast.error("Сервис ПКБ не доступен");
-        //         }
-        //
-        //         // Проверяем наличие person_data
-        //         if (response?.data?.data?.person_data) {
-        //           isFcb.value = true;
-        //           name.value = capitalize(response.data.data.person_data.name);
-        //           surname.value = capitalize(response.data.data.person_data.surname);
-        //           patronymic.value = capitalize(response.data.data.person_data.patronymic);
-        //           loadingStore.stopLoading();
-        //           return true; // данные получены
-        //         }
-        //
-        //         return false; // данные еще не готовы
-        //       } catch (error) {
-        //         console.error("Ошибка при получении person_data:", error);
-        //         return false;
-        //       }
-        //     };
-        //
-        //     const pollData = async () => {
-        //       const dataReceived = await checkData();
-        //
-        //       if (dataReceived) {
-        //         if (personDataTimeoutId.value) {
-        //           clearTimeout(personDataTimeoutId.value);
-        //           personDataTimeoutId.value = null;
-        //         }
-        //         return; // данные получены, выходим
-        //       }
-        //
-        //       attempts++;
-        //       if (attempts < maxAttempts) {
-        //         // Ждем 5 секунд и повторяем попытку
-        //         personDataTimeoutId.value = setTimeout(pollData, 10000);
-        //       } else {
-        //         console.log("Превышено максимальное количество попыток получения person_data");
-        //         isFcb.value = true;
-        //         loadingStore.stopLoading();
-        //         if (personDataTimeoutId.value) {
-        //           clearTimeout(personDataTimeoutId.value);
-        //           personDataTimeoutId.value = null;
-        //         }
-        //       }
-        //     };
-        //
-        //     // Начинаем опрос
-        //     await pollData();
-        //   };
-        //
-        //   await waitForPersonData();
-        //
-        //   // остановить дальнейшие попытки
-        //   if (timeoutId) {
-        //     clearTimeout(timeoutId);
-        //     timeoutId = null;
-        //   }
-        //
-        // } else {
-        //   console.log('Ожидаем VALID, текущий статус:', res?.data?.data?.status_code);
-        //   loadingStore.stopLoading();
-        //   isFcb.value = true;
-        // }
+        
+        // Проверяем успешный ответ с данными
+        if (res?.data?.code === 'OK' && res?.data?.data?.fio) {
+          // Парсим ФИО из строки
+          const fioString = res.data.data.fio;
+          const fioParts = fioString.split(' ');
+          
+          if (fioParts.length >= 2) {
+            surname.value = capitalize(fioParts[0] || '');
+            name.value = capitalize(fioParts[1] || '');
+            patronymic.value = capitalize(fioParts[2] || '');
+          }
+          
+          isFcb.value = true;
+        } else {
+          isFcb.value = true;
+        }
+        
+        // Останавливаем лоадер в любом случае
+        loadingStore.stopLoading();
+        
       } catch (err) {
         console.error('Ошибка при запросе:', err);
         loadingStore.stopLoading();

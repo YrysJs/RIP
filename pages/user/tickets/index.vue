@@ -77,7 +77,7 @@
         <!-- Нижний ряд: статус / период / заявитель (+ кастомные даты) -->
         <div class="filters-row flex flex-wrap gap-[12px] mb-[16px]">
           <!-- Статус -->
-          <div class="field relative min-w-[270px]">
+          <div class="field relative flex-1 min-w-[270px]">
             <span class="field__icon" aria-hidden>
               <!-- clock -->
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -103,7 +103,7 @@
           </div>
 
           <!-- Период заявки -->
-          <div class="field relative min-w-[270px]">
+          <div class="field relative flex-1 min-w-[270px]">
             <span class="field__icon" aria-hidden>
               <!-- calendar -->
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -132,32 +132,32 @@
           </div>
 
           <!-- Заявитель -->
-          <div class="field relative min-w-[250px]">
-            <span class="field__icon" aria-hidden>
-              <!-- user -->
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M20 21a8 8 0 1 0-16 0M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
-                      stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <select
-              class="field__control appearance-none w-full pr-[40px]"
-              v-model="applicant"
-              required
-              @change="refetch()"
-            >
-              <!-- плейсхолдер только в контроле -->
-              <option value="" disabled hidden>Заявитель</option>
-              <option v-for="item in applicants" :key="item.id" :value="item.id">
-                {{ item.name }}
-              </option>
-            </select>
-            <span class="field__chevron" aria-hidden>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-          </div>
+<!--          <div class="field relative min-w-[250px]">-->
+<!--            <span class="field__icon" aria-hidden>-->
+<!--              &lt;!&ndash; user &ndash;&gt;-->
+<!--              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">-->
+<!--                <path d="M20 21a8 8 0 1 0-16 0M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"-->
+<!--                      stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>-->
+<!--              </svg>-->
+<!--            </span>-->
+<!--            <select-->
+<!--              class="field__control appearance-none w-full pr-[40px]"-->
+<!--              v-model="applicant"-->
+<!--              required-->
+<!--              @change="refetch()"-->
+<!--            >-->
+<!--              &lt;!&ndash; плейсхолдер только в контроле &ndash;&gt;-->
+<!--              <option value="" disabled hidden>Заявитель</option>-->
+<!--              <option v-for="item in applicants" :key="item.id" :value="item.id">-->
+<!--                {{ item.name }}-->
+<!--              </option>-->
+<!--            </select>-->
+<!--            <span class="field__chevron" aria-hidden>-->
+<!--              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">-->
+<!--                <path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>-->
+<!--              </svg>-->
+<!--            </span>-->
+<!--          </div>-->
 
           <!-- Даты (только для custom) -->
           <div v-if="period === 'custom'" class="field relative min-w-[180px]">
@@ -384,14 +384,16 @@
     </div>
 
     <!-- модалки -->
-    <SetResponsibleModal
-      v-if="isSetResponsibleModal"
-      :roles="roles"
-      :open="isSetResponsibleModal"
-      @close="isSetResponsibleModal = false"
-      @choose="setResponsible"
-    />
-    <SuccessModal v-if="showSuccessModal" :open="showSuccessModal" :text="successText" @close="closeSuccessModal" />
+    <Teleport to="body">
+      <SetResponsibleModal
+          v-if="isSetResponsibleModal"
+          :users="roles"
+          :open="isSetResponsibleModal"
+          @close="isSetResponsibleModal = false"
+          @choose="setResponsible"
+      />
+      <SuccessModal v-if="showSuccessModal" :open="showSuccessModal" :text="successText" @close="closeSuccessModal" />
+    </Teleport>
   </NuxtLayout>
 </template>
 
@@ -599,7 +601,8 @@ async function fetchRequests(params) {
 const fetchUsers = async () => {
   try {
     const response = await getUsersByRole({ roleIds: '8' });
-    roles.value = response.data;
+    console.log(response)
+    roles.value = response.data[0].users;
   } catch (e) {
     console.error('Ошибка при получении пользователей:', e);
   }
