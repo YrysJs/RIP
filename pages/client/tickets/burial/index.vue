@@ -363,6 +363,7 @@ const shareGraveData = async (grave_id) => {
           </div>
           <div v-if="request.status !== 'cancelled'" class="flex gap-4 mt-[16px] max-lg:flex-col">
             <button
+                v-if="!request.deceased.has_memorial"
               class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-sm font-medium hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
               @click="$router.push(`/client/memorial/create?id=${request.id}`)"
             >

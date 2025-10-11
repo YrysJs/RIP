@@ -113,16 +113,21 @@
 
       <!-- нижняя панель -->
       <div class="footer-bar">
-        <button type="button" class="copy-link" @click="copyLink">
+        <!-- <button type="button" class="copy-link" @click="copyLink">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <rect x="7" y="7" width="10" height="10" rx="2" stroke="#6B7280" stroke-width="1.6"/>
             <path d="M7 9H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1"
                   stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           Скопировать ссылку на новость
-        </button>
+        </button> -->
 
-        <button class="btn btn-submit" @click="saveNews">
+        <button 
+          class="btn btn-submit" 
+          :class="{ 'btn-submit--disabled': !isFormValid }"
+          :disabled="!isFormValid"
+          @click="saveNews"
+        >
           {{ isEdit ? 'Сохранить' : 'Опубликовать' }}
         </button>
       </div>
@@ -143,7 +148,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { createNews, setAkimatFile /* если есть updateNews — можно импортнуть и его */ } from '~/services/akimat'
+import { createNews, setAkimatFile, updateNews } from '~/services/akimat'
 import { useNewsStore } from '~/store/news'
 import SuccessModal from '~/components/layout/modals/SuccessModal.vue'
 import Cookies from 'js-cookie'
@@ -168,6 +173,13 @@ const showSuccessModal = ref(false)
 
 const CHAR_LIMIT = 3500
 const charCount = computed(() => (newsContent.value || '').length)
+
+// Валидация формы
+const isFormValid = computed(() => {
+  return newsCategory.value && 
+         newsTitle.value.trim() && 
+         newsContent.value.trim()
+})
 
 // предварительное заполнение при редактировании
 onMounted(async () => {
@@ -263,10 +275,7 @@ const saveNews = async () => {
     if (filerRes?.data?.success) payload.fileUrl = filerRes.data.files?.[0]?.fileUrl
 
     if (isEdit.value) {
-      // если в сервисах есть апи для обновления — раскомментируй:
-      // await updateNews(editId.value, payload)
-      // временный фолбэк, чтобы не падало:
-      await createNews({ ...payload, title: payload.title + ' (копия)' })
+      await updateNews(editId.value, payload)
     } else {
       await createNews(payload)
     }
@@ -372,7 +381,7 @@ const saveNews = async () => {
 
 /* Нижняя панель */
 .footer-bar{
-  display:flex; justify-content:space-between; align-items:center; gap:12px;
+  display:flex; justify-content: flex-end; align-items:center; gap:12px;
   margin-top:16px; padding-top:12px; border-top:1px solid #F0F2F5;
 }
 .copy-link{
@@ -387,6 +396,10 @@ const saveNews = async () => {
   height:48px; background:#F7B500; color:#1F2937; padding:0 18px; border-radius:12px; font-weight:700;
 }
 .btn-submit:hover{ filter:brightness(.98); }
+.btn-submit--disabled{
+  background:#E5E7EB; color:#9CA3AF; cursor:not-allowed;
+}
+.btn-submit--disabled:hover{ filter:none; }
 
 /* Мобильная адаптация */
 @media (max-width: 768px) {
@@ -589,6 +602,12 @@ const saveNews = async () => {
     border-radius: 12px;
     background: #F7B500;
     color: #1F2937;
+  }
+
+  .btn-submit--disabled {
+    background: #E5E7EB;
+    color: #9CA3AF;
+    cursor: not-allowed;
   }
 
   /* Скрываем панель редактора на мобильных */

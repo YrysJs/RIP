@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch } from "vue";
-import { createDeceased, createBurialRequest } from "~/services/client";
+import { createDeceased, createBurialRequest, uploadDeceasedDeathCertificate } from "~/services/client";
 import { useRouter } from "vue-router";
 import { useCemeteryStore } from "~/store/cemetery";
 import { pkbGetDeceasedData } from "~/services/login/index.js";
@@ -15,6 +15,7 @@ const router = useRouter();
 const cemeteryStore = useCemeteryStore();
 const authModalStore = useAuthModalStore();
 const selectedFiles = ref([]);
+const deathCertificateFile = ref(null);
 
 const showSuccessModal = ref(false);
 const time = ref(3);
@@ -99,12 +100,34 @@ const handleBooking = async () => {
   }
 
   try {
+    // Сначала создаем усопшего
+
+    // Загружаем файл свидетельства о смерти, если он есть
+    let deathCertUrl = "";
+    if (deathCertificateFile.value) {
+      try {
+        const fileResponse = await uploadDeceasedDeathCertificate(
+            121121,
+          deathCertificateFile.value
+        );
+        deathCertUrl = fileResponse?.data?.files?.[0]?.fileUrl || "";
+      } catch (fileError) {
+        console.error("Ошибка при загрузке файла:", fileError);
+        const { $toast } = useNuxtApp()
+        $toast.error('Ошибка при загрузке файла свидетельства о смерти')
+      }
+    }
+
+    // Создаем запрос на захоронение с дополнительными полями
     const dataBurial = {
       cemetery_id: cemeteryStore.selectedGrave.cemetery_id,
       full_name: fullName.value,
       inn: inn.value,
       death_date: deathDate.value ? deathDate.value + "T00:00:00Z" : undefined,
       grave_id: cemeteryStore.selectedGrave.id,
+      burial_date: burialDate.value ? burialDate.value + "T00:00:00Z" : undefined,
+      burial_time: burialTime.value || undefined,
+      death_cert_url: deathCertUrl,
     };
 
     await createBurialRequest(dataBurial);

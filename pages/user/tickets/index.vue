@@ -34,50 +34,33 @@
       <!-- Контент -->
       <template v-if="activeTab === 'relocation'">
         <!-- Верхний ряд: поиск + сортировка справа -->
-        <div class="filters-row flex items-center gap-[12px] flex-wrap mb-[12px]">
-          <!-- Поиск -->
-          <div class="field relative flex-1 min-w-[320px]">
-            <span class="field__icon" aria-hidden>
-              <!-- search -->
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M21 21l-4.2-4.2M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"
-                      stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <input
-              class="field__control w-full"
-              type="text"
-              placeholder="Поиск по заявкам"
-              v-model="search"
-              @input="onSearchInput"
-            />
-          </div>
+<!--        <div class="filters-row flex items-center gap-[12px] flex-wrap mb-[12px]">-->
+<!--          &lt;!&ndash; Поиск &ndash;&gt;-->
+<!--          <div class="field relative flex-1 min-w-[320px]">-->
+<!--            <span class="field__icon" aria-hidden>-->
+<!--              &lt;!&ndash; search &ndash;&gt;-->
+<!--              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">-->
+<!--                <path d="M21 21l-4.2-4.2M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"-->
+<!--                      stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>-->
+<!--              </svg>-->
+<!--            </span>-->
+<!--            <input-->
+<!--              class="field__control w-full"-->
+<!--              type="text"-->
+<!--              placeholder="Поиск по заявкам"-->
+<!--              v-model="search"-->
+<!--              @input="onSearchInput"-->
+<!--            />-->
+<!--          </div>-->
 
-          <!-- Сортировка (справа) -->
-          <div class="ml-auto field relative min-w-[270px]">
-            <span class="field__icon" aria-hidden>
-              <!-- sort -->
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M7 4v16M7 4l-3 3M7 4l3 3M17 20V4m0 16l3-3m-3 3l-3-3"
-                      stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <select class="field__control appearance-none w-full pr-[40px]" v-model="sort" @change="refetch()">
-              <option value="newest">Сначала новые</option>
-              <option value="oldest">Сначала старые</option>
-            </select>
-            <span class="field__chevron" aria-hidden>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-          </div>
-        </div>
+<!--          &lt;!&ndash; Сортировка (справа) &ndash;&gt;-->
+<!--          -->
+<!--        </div>-->
 
         <!-- Нижний ряд: статус / период / заявитель (+ кастомные даты) -->
         <div class="filters-row flex flex-wrap gap-[12px] mb-[16px]">
           <!-- Статус -->
-          <div class="field relative flex-1 min-w-[270px]">
+          <div class="field relative flex-1">
             <span class="field__icon" aria-hidden>
               <!-- clock -->
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -103,7 +86,7 @@
           </div>
 
           <!-- Период заявки -->
-          <div class="field relative flex-1 min-w-[270px]">
+          <div class="field relative flex-1">
             <span class="field__icon" aria-hidden>
               <!-- calendar -->
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -123,6 +106,26 @@
               <option value="thisMonth">Этот месяц</option>
               <option value="prevMonth">Прошлый месяц</option>
               <option value="custom">Указать даты</option>
+            </select>
+            <span class="field__chevron" aria-hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+
+
+          <div class="ml-auto field relative flex-1">
+            <span class="field__icon" aria-hidden>
+              <!-- sort -->
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M7 4v16M7 4l-3 3M7 4l3 3M17 20V4m0 16l3-3m-3 3l-3-3"
+                      stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <select class="field__control appearance-none w-full pr-[40px]" v-model="sort" @change="refetch()">
+              <option value="newest">Сначала новые</option>
+              <option value="oldest">Сначала старые</option>
             </select>
             <span class="field__chevron" aria-hidden>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -392,7 +395,7 @@
           @close="isSetResponsibleModal = false"
           @choose="setResponsible"
       />
-      <SuccessModal v-if="showSuccessModal" :open="showSuccessModal" :text="successText" @close="closeSuccessModal" />
+      <SuccessModal v-if="showSuccessModal" :open="showSuccessModal" :text="successText" @close="closeSuccessModal" :buttonText="'ОК'" />
     </Teleport>
   </NuxtLayout>
 </template>

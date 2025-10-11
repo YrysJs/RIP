@@ -62,10 +62,18 @@ function removeExistingPhoto(i){ existingPhotos.value.splice(i, 1) }
 
 // --- helpers ---
 function showPreview(){
-  if (!form.name.trim()) return alert('Введите название для предпросмотра')
-  if (!form.description.trim()) return alert('Введите описание для предпросмотра')
+  const { $toast } = useNuxtApp()
+  
+  if (!form.name.trim()) {
+    $toast.error('Введите название для предпросмотра')
+    return
+  }
+  if (!form.description.trim()) {
+    $toast.error('Введите описание для предпросмотра')
+    return
+  }
 
-  alert(`Предпросмотр:
+  $toast.info(`Предпросмотр:
 
 Название: ${form.name}
 Описание: ${form.description}
@@ -87,9 +95,20 @@ function getCategoryName(id){
 // --- submit ---
 async function submitForm(){
   try{
-    if (!form.name.trim()) return alert('Пожалуйста, введите название')
-    if (!form.description.trim()) return alert('Пожалуйста, введите описание')
-    if (!form.price || parseFloat(form.price) <= 0) return alert('Введите корректную цену')
+    const { $toast } = useNuxtApp()
+    
+    if (!form.name.trim()) {
+      $toast.error('Пожалуйста, введите название')
+      return
+    }
+    if (!form.description.trim()) {
+      $toast.error('Пожалуйста, введите описание')
+      return
+    }
+    if (!form.price || parseFloat(form.price) <= 0) {
+      $toast.error('Введите корректную цену')
+      return
+    }
 
     loading.value = true
     const productData = {
@@ -111,8 +130,9 @@ async function submitForm(){
     openSuccess({ title: 'Изменения сохранены', text: 'на рассмотрение!' })
   } catch (error){
     console.error('Ошибка при обновлении товара/услуги:', error)
+    const { $toast } = useNuxtApp()
     const msg = error?.response?.data?.message || error?.message || 'Ошибка при обновлении товара/услуги. Попробуйте ещё раз.'
-    alert(msg)
+    $toast.error(msg)
   } finally {
     loading.value = false
   }

@@ -10,6 +10,15 @@ function getRequests(params) {
     })
 }
 
+function requestStatus(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PATCH',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-government/v1/request/status',
+        data,
+    })
+}
+
 function getAppeals(params) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -136,6 +145,16 @@ function createNews(data) {
     })
 }
 
+
+function updateNews(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PATCH',
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v3/rip-government/v1/news`,
+        data,
+    })
+}
+
 function getBurialRequestStats(params) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -181,5 +200,7 @@ export {
     setAkimatFile,
     setRequestResponsible,
     getMyRequests,
-    getMyAppeals
+    getMyAppeals,
+    updateNews,
+    requestStatus
 }

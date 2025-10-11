@@ -149,6 +149,10 @@ export default {
           expDate: this.expiryDate.replace('/', ''),
         }
 
+        if (paymentResponse.data.data.secure3DURL) {
+          window.open(paymentResponse.data.data.secure3DURL, '_blank');
+        }
+
         // 1. Выполняем платеж (закомментировано для тестирования)
         const paymentResponse = await processCardPayment(paymentData)
 

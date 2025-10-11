@@ -49,13 +49,13 @@ const handleClose = () => {
       <p v-if="props.text && showButton" class="mt-4 mb-6 text-base text-[#17212A] max-sm:mt-2 max-sm:mb-4">
         {{ props.text }}
       </p>
-      <p v-if="props.subtext" class="text-sm text-[#939393] mb-[13px] max-sm:mb-2">
+      <p v-if="props.subtext" class="text-sm text-[#939393] max-sm:mb-2">
         {{props.subtext}}
       </p>
       <button
         v-if="!showButton"
         @click="handleClose"
-        class="block rounded-lg text-black text-sm font-medium bg-[#E9B949] py-[15px] w-full"
+        class="block rounded-lg text-black text-sm font-medium bg-[#E9B949] py-[15px] w-full mt-6"
       >
         {{ props.text }}
       </button>

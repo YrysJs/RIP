@@ -146,7 +146,7 @@ const pluralDays = (v) => {
               </g>
             </svg>
             <span>
-              Срок выполнения: {{ product.service_time }} {{ pluralDays(product.service_time) }}
+              Срок выполнения: {{ product.service_time }}
             </span>
           </div>
         </div>

@@ -125,6 +125,14 @@
                 </button>
 
                 <button
+                    v-if="news.newsStatus?.id === 2"
+                    class="btn btn--ghost"
+                    @click="hide(news)"
+                >
+                  Показать
+                </button>
+
+                <button
                   class="btn btn--yellow"
                   @click="edit(news)"
                 >
@@ -191,6 +199,16 @@ async function hide(news) {
     await changeNewsStatus({ newsId: news.id, newsStatusId: 2 })
     news.newsStatus.id = 2
     news.newsStatus.nameRu = 'Черновик'
+  } catch (e) {
+    console.error('Ошибка при смене статуса:', e)
+  }
+}
+
+async function show(news) {
+  try {
+    await changeNewsStatus({ newsId: news.id, newsStatusId: 2 })
+    news.newsStatus.id = 1
+    news.newsStatus.nameRu = 'Активно'
   } catch (e) {
     console.error('Ошибка при смене статуса:', e)
   }
