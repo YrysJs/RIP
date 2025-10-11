@@ -66,7 +66,7 @@ function getManagers(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/admin/cemetery-managers/all',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/admin/cemetery-managers',
         params,
     })
 }

@@ -35,6 +35,7 @@ const displayRows = computed(() => {
     ? orders.value.map((o) => ({
         id: o.id ?? o.burial_order_id,
         product: getProductName(o),
+        burial: o.burial_order_id || "—",
         customer: o.customer?.fullName || o.user_name || o.user_phone || "—",
         date: o.burial_date || o.created_at,
         status: o.status || "",
@@ -80,6 +81,7 @@ onMounted(fetchOrders);
           <div class="orders-row orders-head">
             <div>Товар/услуга</div>
             <div>Заказчик</div>
+            <div>Захоронение</div>
             <div>Дата похорон</div>
             <div>Статус</div>
           </div>
@@ -94,6 +96,7 @@ onMounted(fetchOrders);
           >
             <div class="orders-cell">{{ row.product }}</div>
             <div class="orders-cell">{{ row.customer }}</div>
+            <div class="orders-cell">{{ row.burial }}</div>
             <div class="orders-cell">
               {{ formatDate(row.date) || row.date }}
             </div>
@@ -148,7 +151,7 @@ onMounted(fetchOrders);
 }
 .orders-row {
   display: grid;
-  grid-template-columns: 1.2fr 1.6fr 0.9fr 0.9fr;
+  grid-template-columns: 1.2fr 1.6fr 0.8fr 0.9fr 0.9fr;
   align-items: center;
   padding: 10px 16px;
   font-size: 15px;
@@ -209,7 +212,7 @@ onMounted(fetchOrders);
 
 @media (max-width: 960px) {
   .orders-row {
-    grid-template-columns: 1.4fr 1.2fr 0.9fr 0.9fr;
+    grid-template-columns: 1.4fr 1.2fr 0.8fr 0.9fr 0.9fr;
     font-size: 14px;
     padding: 9px 14px;
   }
@@ -330,7 +333,7 @@ onMounted(fetchOrders);
   }
 
   .orders-cell:nth-child(3)::before {
-    content: "Дата похорон: ";
+    content: "Захоронение: ";
     font-weight: 600;
     color: #6B7280;
     font-size: 12px;
@@ -339,6 +342,15 @@ onMounted(fetchOrders);
   }
 
   .orders-cell:nth-child(4)::before {
+    content: "Дата похорон: ";
+    font-weight: 600;
+    color: #6B7280;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .orders-cell:nth-child(5)::before {
     content: "Статус: ";
     font-weight: 600;
     color: #6B7280;
