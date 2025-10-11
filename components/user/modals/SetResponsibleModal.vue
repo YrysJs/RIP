@@ -10,7 +10,7 @@ function close() {
 
 async function run () {
   if(responsible.value) {
-    emit('finish', responsible.value)
+    emit('choose', responsible.value)
   }
 }
 

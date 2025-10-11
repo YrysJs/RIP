@@ -40,7 +40,7 @@ const isPlaceholderMode = computed(() => !burials.value || burials.value.length 
 const displayBurials = computed(() => (isPlaceholderMode.value ? placeholderBurials : burials.value))
 
 /* Загрузка */
-const fetchBurials = async (params = { show_confirmed_and_paid: true }) => {
+const fetchBurials = async (params = {  }) => {
   try {
     loading.value = true
     const response = await getBurialRequests(params)
@@ -152,8 +152,7 @@ watch(search, (val) => {
   if (val.length >= 3 || val.length === 0) {
     timeout = setTimeout(() => {
       fetchBurials({
-        show_confirmed_and_paid: true,
-        ...(val.length >= 3 ? { created_by: val } : {}),
+        ...(val.length >= 3 ? { request_number: val } : {}),
         date_from: toIsoDate(dateFrom.value) || undefined,
         date_to:   toIsoDate(dateTo.value)   || undefined,
         cemetery_id: cemeteryId.value || undefined,
@@ -163,8 +162,7 @@ watch(search, (val) => {
 })
 watch([dateFrom, dateTo, cemeteryId], () => {
   fetchBurials({
-    show_confirmed_and_paid: true,
-    ...(search.value.length >= 3 ? { created_by: search.value } : {}),
+    ...(search.value.length >= 3 ? { request_number: search.value } : {}),
     date_from: toIsoDate(dateFrom.value) || undefined,
     date_to:   toIsoDate(dateTo.value)   || undefined,
     cemetery_id: cemeteryId.value || undefined,

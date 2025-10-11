@@ -77,10 +77,24 @@ const removePhoto = i => photos.value.splice(i, 1)
 const loading = ref(false)
 const submitForm = async () => {
   try {
-    if (!form.name.trim())   return alert('Введите название')
-    if (!form.description.trim()) return alert('Введите описание')
-    if (!form.price || Number(form.price) <= 0) return alert('Введите корректную цену')
-    if (isProduct.value && !form.unit) return alert('Выберите единицу измерения')
+    const { $toast } = useNuxtApp()
+    
+    if (!form.name.trim()) {
+      $toast.error('Введите название')
+      return
+    }
+    if (!form.description.trim()) {
+      $toast.error('Введите описание')
+      return
+    }
+    if (!form.price || Number(form.price) <= 0) {
+      $toast.error('Введите корректную цену')
+      return
+    }
+    if (isProduct.value && !form.unit) {
+      $toast.error('Выберите единицу измерения')
+      return
+    }
 
     loading.value = true
     const payload = {
@@ -105,7 +119,8 @@ const submitForm = async () => {
       text: 'на рассмотрение!',
     })
   } catch (e) {
-    alert(e?.response?.data?.message || e?.message || 'Ошибка при создании')
+    const { $toast } = useNuxtApp()
+    $toast.error(e?.response?.data?.message || e?.message || 'Ошибка при создании')
   } finally {
     loading.value = false
   }
@@ -293,7 +308,7 @@ const submitForm = async () => {
 
     <!-- Кнопки -->
     <div class="card actions">
-      <button class="btn btn-ghost" :disabled="loading" @click="alert('Временно без предпросмотра')">Предпросмотр</button>
+      <button class="btn btn-ghost" :disabled="loading" @click="() => { const { $toast } = useNuxtApp(); $toast.info('Временно без предпросмотра') }">Предпросмотр</button>
       <button class="btn btn-primary" :disabled="loading" @click="submitForm">
         <span v-if="loading">Создание…</span>
         <span v-else>Опубликовать</span>

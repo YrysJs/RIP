@@ -108,7 +108,6 @@ const formatDateTime = (iso) => {
                         <span>
                             Срок выполнения:
                             {{ product.service_time }}
-                            {{ String(product.service_time) === '1' ? 'день' : 'дня/дней' }}
                         </span>
                     </div>
                 </div>

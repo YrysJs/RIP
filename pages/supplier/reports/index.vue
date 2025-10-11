@@ -25,10 +25,10 @@ onMounted(async () => {
   try {
     const { data } = await getSalesStats();
     stats.value = {
-      seven_days: toNum(data?.["7_days"] ?? data?.seven_days),
-      one_month: toNum(data?.["1_month"] ?? data?.one_month),
-      three_months: toNum(data?.["3_months"] ?? data?.three_months),
-      all_time: toNum(data?.["all_time"] ?? data?.all_time),
+      seven_days: toNum(data?.["7_days"] ?? data?.total_stats.seven_days),
+      one_month: toNum(data?.["1_month"] ?? data?.total_stats.one_month),
+      three_months: toNum(data?.["3_months"] ?? data?.total_stats.three_months),
+      all_time: toNum( data?.total_stats.all_time),
     };
   } catch (e) {
     console.error("Ошибка при загрузке статистики:", e);
@@ -69,7 +69,7 @@ onMounted(async () => {
           <div class="td td--num">{{ stats.one_month }}</div>
           <div class="td td--num">{{ stats.three_months }}</div>
           <div class="td td--num">
-            {{ Number.isFinite(stats.all_time) ? stats.all_time : 0 }}
+            {{ stats.all_time }}
           </div>
         </div>
 

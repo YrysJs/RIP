@@ -167,7 +167,7 @@
           <div v-for="doc in documents" :key="doc.name" class="doc-col">
             <div class="doc-label">{{ doc.name }}</div>
 
-            <div class="doc-card">
+            <div class="doc-card" @click="download(request?.death_certificate)">
               <div class="doc-card__left">
                 <div class="doc-fileicon" aria-hidden>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -177,9 +177,9 @@
                 </div>
 
               </div>
-
+              Скачать
               <div class="doc-card__right">
-                <button class="doc-btn" @click="download(request?.death_certificate)" title="Скачать">
+                <button class="doc-btn" title="Скачать">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 21h14" stroke="#111827" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -192,10 +192,21 @@
       </section>
 
       <!-- actions -->
-      <div class="actions">
-        <button class="btn btn--ghost-red">Отказать</button>
-        <button class="btn btn--ghost-gray">Отправить на доработку</button>
-        <button class="btn btn--yellow">Согласовать захоронение</button>
+      <div v-if="!shouldHideButtons" class="actions">
+        <button 
+          class="btn btn--ghost-red" 
+          :disabled="isLoading"
+          @click="handleReject"
+        >
+          {{ isLoading ? 'Обновление...' : 'Отказать' }}
+        </button>
+        <button 
+          class="btn btn--yellow" 
+          :disabled="isLoading"
+          @click="handleApprove"
+        >
+          {{ isLoading ? 'Обновление...' : 'Согласовать захоронение' }}
+        </button>
       </div>
     </div>
   </NuxtLayout>
@@ -205,7 +216,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getCemeteries } from '~/services/cemetery'
-import { getRequests } from '~/services/akimat'
+import { getRequests, requestStatus } from '~/services/akimat'
 
 const router = useRouter()
 const route = useRoute()
@@ -213,6 +224,7 @@ const route = useRoute()
 const cemeteries = ref([])
 const requests = ref([])
 const request = ref({})
+const isLoading = ref(false)
 
 const documents = ref([
   { name: 'Свидетельство о смерти', display: 'Document.pdf', size: '5 МБ', file: 'document.pdf' },
@@ -299,6 +311,43 @@ function download(doc) {
   } else {
     console.error('Документ не содержит URL:', doc)
   }
+}
+
+// Проверка, нужно ли скрыть кнопки
+const shouldHideButtons = computed(() => {
+  const statusId = request.value?.status?.id
+  return statusId === 4 || statusId === 5 || statusId === 6
+})
+
+// Обновление статуса заявки
+const updateRequestStatus = async (statusId) => {
+  try {
+    isLoading.value = true
+    const { $toast } = useNuxtApp()
+    
+    await requestStatus({
+      id: Number(route.params.id),
+      statusId: statusId
+    })
+    
+    $toast.success('Статус заявки обновлен')
+    router.push('/user/tickets')
+  } catch (error) {
+    console.error('Ошибка при обновлении статуса:', error)
+    const { $toast } = useNuxtApp()
+    $toast.error('Ошибка при обновлении статуса заявки')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Обработчики кнопок
+const handleReject = () => {
+  updateRequestStatus(4)
+}
+
+const handleApprove = () => {
+  updateRequestStatus(5)
 }
 </script>
 
@@ -458,6 +507,7 @@ function download(doc) {
   align-items: center;
   gap: 12px;
   border: 1px solid #E5E7EB;
+  cursor: pointer;
   border-radius: 12px;
   padding: 12px;
 }

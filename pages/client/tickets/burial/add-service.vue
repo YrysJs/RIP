@@ -257,31 +257,31 @@ onMounted(async () => {
                      alt="">
                 <h3 class="text-lg font-roboto font-medium text-[#222222] mt-[10px]">{{ product.name }}</h3>
                 <h4 class="text-2xl font-roboto font-medium text-[#222222] mb-[4px]">{{ product.price.toLocaleString() }} ₸</h4>
-                <div class="flex items-center mb-[4px]">
-                    <div class="flex space-x-1">
-                        <template v-for="n in totalStars" :key="n">
-                            <div class="relative text-2xl select-none">
-                                <span v-if="getStarClass(n) === 'half'" class="text-gray-300">★</span>
-                                <span 
-                                    v-else :class="{
-                                    'text-orange-400': getStarClass(n) === 'full',
-                                    'text-gray-300': getStarClass(n) === 'empty'
-                                    }"
-                                >
-                                    ★
-                                </span>
-                                <span
-                                    v-if="getStarClass(n) === 'half'"
-                                    class="absolute inset-0 overflow-hidden text-orange-400"
-                                    :style="{ width: '50%' }"
-                                >
-                                    ★
-                                </span>
-                            </div>
-                        </template>
-                    </div>
-                    <span class="font-roboto text-sm text-[#38949B]">(42 отзыва)</span>
-                </div>
+<!--                <div class="flex items-center mb-[4px]">-->
+<!--                    <div class="flex space-x-1">-->
+<!--                        <template v-for="n in totalStars" :key="n">-->
+<!--                            <div class="relative text-2xl select-none">-->
+<!--                                <span v-if="getStarClass(n) === 'half'" class="text-gray-300">★</span>-->
+<!--                                <span -->
+<!--                                    v-else :class="{-->
+<!--                                    'text-orange-400': getStarClass(n) === 'full',-->
+<!--                                    'text-gray-300': getStarClass(n) === 'empty'-->
+<!--                                    }"-->
+<!--                                >-->
+<!--                                    ★-->
+<!--                                </span>-->
+<!--                                <span-->
+<!--                                    v-if="getStarClass(n) === 'half'"-->
+<!--                                    class="absolute inset-0 overflow-hidden text-orange-400"-->
+<!--                                    :style="{ width: '50%' }"-->
+<!--                                >-->
+<!--                                    ★-->
+<!--                                </span>-->
+<!--                            </div>-->
+<!--                        </template>-->
+<!--                    </div>-->
+<!--                    <span class="font-roboto text-sm text-[#38949B]">(42 отзыва)</span>-->
+<!--                </div>-->
                 <div class="flex gap-[12px] text-sm font-roboto text-[#5C5C5C]">
                     <img src="/icons/calendar-icon.svg" alt=""> 
                     <span>Срок выполнения: {{ product.service_time || '1 день' }}</span>

@@ -156,10 +156,10 @@ const statusConfig = computed(() => {
 
 <!--         Заключение о смерти-->
 
-        <div v-if="booking.death_cert_url" class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-4">
+        <div v-if="booking.deceased.death_cert_url" class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-4">
           <p class="min-w-[150px] max-w-[150px] font-medium">Заключение о смерти:</p>
           <a
-              :href="booking.death_cert_url"
+              :href="booking.deceased.death_cert_url"
               target="_blank"
               class="text-[#007AFF] font-medium hover:underline"
           >

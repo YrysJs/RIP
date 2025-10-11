@@ -12,8 +12,8 @@
         <div class="grid grid-cols-12 text-sm font-semibold text-[#6B7280] py-[10px] border-b border-[#EEEEEE]">
           <div class="col-span-3">Название</div>
           <div class="col-span-3">Описание</div>
-          <div class="col-span-2">Цена</div>
-          <div class="col-span-2">Статус</div>
+          <div class="col-span-1">Цена</div>
+          <div class="col-span-3">Статус</div>
           <div class="col-span-2">Категория</div>
         </div>
         <div
@@ -24,8 +24,8 @@
         >
           <div class="col-span-3">{{ product.name }}</div>
           <div class="col-span-3">{{ product.description }}</div>
-          <div class="col-span-2">{{ product.price }}</div>
-          <div class="col-span-2">
+          <div class="col-span-1">{{ product.price }}</div>
+          <div class="col-span-3">
             <span class="status" :class="getStatusClass(product.status)">
               {{ getStatusText(product.status) }}
             </span>
