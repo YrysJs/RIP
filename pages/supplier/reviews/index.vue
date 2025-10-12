@@ -237,10 +237,16 @@ const submitAppeal = async (reviewId) => {
                     <div class="flex items-center gap-[20px]">
                         <span class="text-sm">Продукт ID: #{{ review.product_id }}</span>
                         <span 
-                            v-if="review.is_moderated"
+                            v-if="review.moderation_status === 'approved'"
                             class="text-sm p-1 rounded-md text-white font-medium bg-[#339B38]"
                         >
-                            Модерирован
+                            Одобрен
+                        </span>
+                        <span 
+                            v-else-if="review.moderation_status === 'rejected'"
+                            class="text-sm p-1 rounded-md text-white font-medium bg-red-500"
+                        >
+                            Отклонен
                         </span>
                         <span 
                             v-else
@@ -327,7 +333,7 @@ const submitAppeal = async (reviewId) => {
                     <!-- Кнопки действий (показываются только если нет ответа) -->
                     <div v-if="!review.response && !replyForms[review.id] && !appealForms[review.id]" class="flex justify-end gap-2">
                         <button
-                            v-if="review.is_moderated"
+                            v-if="review.moderation_status === 'approved'"
                             @click="toggleAppealForm(review.id)"
                             class="px-4 py-2 text-white text-sm font-medium rounded-lg bg-red-600 hover:bg-red-700 transition-colors"
                         >

@@ -66,7 +66,7 @@ function getManagers(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.103:8092/api/v1/admin/cemetery-managers',
+        url: 'http://194.32.140.103:8092/api/v1/admin/cemetery-managers/all',
         params,
     })
 }
