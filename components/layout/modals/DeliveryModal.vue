@@ -58,7 +58,7 @@ const isFormValid = computed(() => {
         </h3>
         
         <p class="text-lg max-lg:text-base mb-4">
-          Введите адрес подачи машины:
+          Введите адрес:
         </p>
         <input 
           v-model="deliveryAddress" 

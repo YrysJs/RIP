@@ -69,7 +69,7 @@ const fetchProduct = async (id) => {
     const response = await getProductById(id);
     serviceDelivery.value = response.data;
     const reviews = await getProductReviews(id);
-    serviceReviews.value = reviews.data;
+    serviceReviews.value = reviews.data.items;
     const supplierRes = await getSupplier({
       phone: serviceDelivery.value.supplier_phone,
     });
@@ -450,11 +450,11 @@ function updatePriceRange(event) {
           </div>
 
           <!-- Список продуктов -->
-          <div v-else class="flex flex-wrap gap-[18px]">
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-[18px]">
             <div
               v-for="product in products"
               :key="product.id"
-              class="p-[9px] rounded-lg max-w-[376px] w-full bg-white"
+              class="p-[9px] rounded-lg w-full bg-white"
             >
               <div>
                 <img

@@ -85,6 +85,9 @@ const view = computed(() => ({
               </span>
             </div>
 
+            <p class="mt-4 text-sm leading-6 text-[#222]">
+              {{ `https://yandex.ru/maps/?pt=${props?.data?.cords[0]},${props?.data?.cords[1]}&z=17&l=map` }}
+            </p>
             <!-- Описание -->
             <p class="mt-4 text-sm leading-6 text-[#222]">
               {{ view.description }}

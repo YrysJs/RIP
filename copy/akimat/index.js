@@ -159,7 +159,7 @@ function getBurialRequestStats(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/statistics/burial-requests',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v8/statistics/burial-requests',
         params,
     })
 }

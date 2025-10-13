@@ -5,7 +5,7 @@
       <!-- ===== СЕКЦИЯ: Количество заявок ===== -->
       <section class="section kpi-section">
         <div class="section__head">
-          <h2 class="h-title">Количество заявок всего: {{ totalRequests }}</h2>
+          <h2 class="h-title">Количество заявок всего: {{ burialStats?.statistics?.confirmed + burialStats?.statistics?.cancelled + burialStats?.statistics?.pending + burialStats?.statistics?.paid }}</h2>
 
           <!-- период: неделя / месяц / всё время -->
           <select v-model="reqPeriod" class="period" @change="onPeriodChange('requests')">
@@ -18,19 +18,19 @@
         <div class="kpi-grid">
           <div class="kpi kpi--green">
             <div class="kpi__label">Согласовано</div>
-            <div class="kpi__value">{{ countBy('CONFIRMED') }}</div>
+            <div class="kpi__value">{{ burialStats?.statistics?.confirmed }}</div>
           </div>
           <div class="kpi kpi--peach">
             <div class="kpi__label">Отказано</div>
-            <div class="kpi__value">{{ countBy('REJECTED') }}</div>
+            <div class="kpi__value">{{ burialStats?.statistics?.cancelled }}</div>
           </div>
           <div class="kpi kpi--blue">
             <div class="kpi__label">В работе</div>
-            <div class="kpi__value">{{ countBy('IN_PROCESS') }}</div>
+            <div class="kpi__value">{{ burialStats?.statistics?.pending }}</div>
           </div>
           <div class="kpi kpi--sand">
-            <div class="kpi__label">На доработке</div>
-            <div class="kpi__value">{{ countBy('PENDING') }}</div>
+            <div class="kpi__label">Оплачено</div>
+            <div class="kpi__value">{{ burialStats?.statistics?.paid }}</div>
           </div>
         </div>
 
@@ -80,30 +80,30 @@
       </section>
 
       <!-- ===== Захоронения ===== -->
-      <template v-for="(value, key) in burialStats">
-        <section v-if="key !== 'total'" :key="key" class="section">
-          <div class="card flat">
-            <div class="card__head">
-              <h3 class="card__title card__title--muted">{{ burialStatsTitles[key] }}</h3>
-            </div>
-            <div class="chips">
-              <span v-for="item in value" :key="item.name" class="chip">
-                {{ key === 'by_months' ? formatYearMonth(item.name) : item.name }}: {{ item.count }}
-              </span>
-            </div>
-          </div>
-        </section>
-      </template>
+<!--      <template v-for="(value, key) in burialStats">-->
+<!--        <section v-if="key !== 'total'" :key="key" class="section">-->
+<!--          <div class="card flat">-->
+<!--            <div class="card__head">-->
+<!--              <h3 class="card__title card__title&#45;&#45;muted">{{ burialStatsTitles[key] }}</h3>-->
+<!--            </div>-->
+<!--            <div class="chips">-->
+<!--              <span v-for="item in value" :key="item.name" class="chip">-->
+<!--                {{ key === 'by_months' ? formatYearMonth(item.name) : item.name }}: {{ item.count }}-->
+<!--              </span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </section>-->
+<!--      </template>-->
 
       <!-- ===== Новостей всего ===== -->
       <section class="section news-section">
         <div class="section__head">
           <h2 class="h-title">Новостей всего: {{ newsStats?.count ?? 0 }}</h2>
-          <select v-model="newsPeriod" class="period" @change="onPeriodChange('news')">
-            <option value="week">За неделю</option>
-            <option value="month">За месяц</option>
-            <option value="all">За всё время</option>
-          </select>
+<!--          <select v-model="newsPeriod" class="period" @change="onPeriodChange('news')">-->
+<!--            <option value="week">За неделю</option>-->
+<!--            <option value="month">За месяц</option>-->
+<!--            <option value="all">За всё время</option>-->
+<!--          </select>-->
         </div>
         <div class="news-stats">
           <span
@@ -128,16 +128,9 @@
           </div>
 
           <div class="topnews" v-if="topNews.length">
-            <div v-for="n in topNews" :key="n.id" class="topnews__row">
+            <div v-for="n in topNews.slice(0, 5)" :key="n.id" class="topnews__row">
               <div class="topnews__title" :title="n.title">{{ n.title }}</div>
               <div class="topnews__meta">
-                <span class="topnews__views" title="Просмотры">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/>
-                  </svg>
-                  <span>{{ n.views ?? n.viewCount ?? 0 }}</span>
-                </span>
                 <svg class="topnews__chev" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -162,6 +155,7 @@ import {
   exportAppealsReport,
   exportRequestsReport,
   getBurialRequestStats,
+  getNews,
   // getTopNews, // ← оставляю закомментированным, чтобы не ловить 500
 } from '~/services/akimat'
 import { downloadBase64File } from '~/utils/downloadBase64.js'
@@ -244,28 +238,36 @@ const exportRequests = async () => {
   downloadBase64File(res.data.base64, 'Отчет по заявкам.xslx')
 }
 
-/* ---- Top-5 news: пока без API, пустое при отсутствии ---- */
+/* ---- Top-5 news: загружаем реальные новости ---- */
 const topNews = ref([])
-function loadTopNews(){
-  // когда появится API:
-  // const { data } = await getTopNews({ limit: 5, period: newsPeriod.value })
-  // topNews.value = Array.isArray(data?.items) ? data.items : (Array.isArray(data) ? data : [])
-  topNews.value = []
+async function loadTopNews(){
+  try {
+    const { data } = await getNews({ 
+      limit: 5, 
+      sortingType: 'desc' // сначала новые
+    })
+    topNews.value = Array.isArray(data) ? data : []
+  } catch (e) {
+    console.error('Ошибка при загрузке топ новостей:', e)
+    topNews.value = []
+  }
 }
 
 /* ---- data load + автorefresh ---- */
 async function loadDashboard(){
   loading.value = true
   try {
-    const [newsRes, reqRes, burRes] = await Promise.all([
+    const [newsRes, reqRes, burRes, topNewsRes] = await Promise.all([
       getNewsStats(/* { period: newsPeriod.value } */),
       getRequestsStats(/* { period: reqPeriod.value } */),
       getBurialRequestStats(/* { period: typesPeriod.value } */),
+      getNews({ limit: 5, sortingType: 'desc' })
     ])
 
     newsStats.value    = newsRes.data || {}
     requestStats.value = reqRes.data  || {}
-    burialStats.value  = burRes.data  || {}
+    burialStats.value  = burRes.data?.data  || {}
+    topNews.value = Array.isArray(topNewsRes.data) ? topNewsRes.data : []
 
     const t = requestStats.value?.types || []
     if (t.length) {
@@ -283,13 +285,12 @@ async function loadDashboard(){
 }
 
 let timer = null
-function startAutoRefresh(){ stopAutoRefresh(); timer = setInterval(() => { loadDashboard(); loadTopNews(); }, 30000) }
+function startAutoRefresh(){ stopAutoRefresh(); timer = setInterval(() => { loadDashboard(); }, 30000) }
 function stopAutoRefresh(){ if (timer) { clearInterval(timer); timer = null; } }
-function onVis(){ if (document.visibilityState === 'visible') { loadDashboard(); loadTopNews() } }
+function onVis(){ if (document.visibilityState === 'visible') { loadDashboard() } }
 
 onMounted(() => {
   loadDashboard()
-  loadTopNews()
   startAutoRefresh()
   document.addEventListener('visibilitychange', onVis)
 })
@@ -374,9 +375,8 @@ onBeforeUnmount(() => {
   padding:10px 12px; transition:background .15s;
 }
 .topnews__row:hover{ background:#F0F2F4; }
-.topnews__title{ font-size:14px; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: calc(100% - 140px); }
-.topnews__meta{ display:flex; align-items:center; gap:12px; }
-.topnews__views{ display:inline-flex; align-items:center; gap:6px; color:#6B7280; font-weight:600; }
+.topnews__title{ font-size:14px; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: calc(100% - 40px); }
+.topnews__meta{ display:flex; align-items:center; }
 .topnews__chev{ color:#9CA3AF; }
 .topnews__empty{ color:#939393; font-size:14px; }
 
@@ -576,11 +576,7 @@ onBeforeUnmount(() => {
 
   .topnews__title {
     font-size: 14px;
-    max-width: calc(100% - 80px);
-  }
-
-  .topnews__views {
-    font-size: 12px;
+    max-width: calc(100% - 40px);
   }
 
   /* Кнопки */

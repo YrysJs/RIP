@@ -521,30 +521,41 @@ const canPay = computed(() => {
               </button>
             </div>
             <div class="mt-4">
-              <a 
-                v-if="canPay" 
-                href="https://pay.kaspi.kz/pay/6uegojfm" 
-                target="_blank"
-                class="inline-block w-full max-sm:w-full"
-              >
-                <button
-                  class="text-base py-[18px] px-[28px] rounded-lg bg-[#E9B949] text-black w-[300px] hover:bg-[#D1A53F] active:bg-[#B88F34] transition-all duration-200"
+              <div class="flex items-center gap-2">
+                <a 
+                  v-if="canPay" 
+                  href="https://pay.kaspi.kz/pay/6uegojfm" 
+                  target="_blank"
+                  class="inline-block w-full max-sm:w-full"
                 >
-                  Оплатить услуги СКРУ
+                  <button
+                    class="text-base py-[18px] px-[28px] rounded-lg bg-[#E9B949] text-black w-[300px] hover:bg-[#D1A53F] active:bg-[#B88F34] transition-all duration-200"
+                  >
+                    Оплатить услуги СКРУ
+                  </button>
+                </a>
+                <button
+                  v-else
+                  :disabled="true"
+                  class="text-base w-[300px] py-[18px] px-[28px] rounded-lg bg-[#F5F5F5] text-[#CCCCCC] border border-[#E0E0E0] cursor-not-allowed max-sm:w-full transition-all duration-200"
+                >
+                  <span class="flex items-center justify-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1ZM8.75 11.25C8.75 11.6642 8.41421 12 8 12C7.58579 12 7.25 11.6642 7.25 11.25V7.75C7.25 7.33579 7.58579 7 8 7C8.41421 7 8.75 7.33579 8.75 7.75V11.25ZM8 6C7.44772 6 7 5.55228 7 5C7 4.44772 7.44772 4 8 4C8.55228 4 9 4.44772 9 5C9 5.55228 8.55228 6 8 6Z" fill="#CCCCCC"/>
+                    </svg>
+                    Заполните все поля для оплаты услуг СКРУ
+                  </span>
                 </button>
-              </a>
-              <button
-                v-else
-                :disabled="true"
-                class="text-base w-[300px] py-[18px] px-[28px] rounded-lg bg-[#F5F5F5] text-[#CCCCCC] border border-[#E0E0E0] cursor-not-allowed max-sm:w-full transition-all duration-200"
-              >
-                <span class="flex items-center justify-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1ZM8.75 11.25C8.75 11.6642 8.41421 12 8 12C7.58579 12 7.25 11.6642 7.25 11.25V7.75C7.25 7.33579 7.58579 7 8 7C8.41421 7 8.75 7.33579 8.75 7.75V11.25ZM8 6C7.44772 6 7 5.55228 7 5C7 4.44772 7.44772 4 8 4C8.55228 4 9 4.44772 9 5C9 5.55228 8.55228 6 8 6Z" fill="#CCCCCC"/>
+                <div class="relative inline-block group">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="cursor-help">
+                    <path d="M8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1ZM8.75 11.25C8.75 11.6642 8.41421 12 8 12C7.58579 12 7.25 11.6642 7.25 11.25V7.75C7.25 7.33579 7.58579 7 8 7C8.41421 7 8.75 7.33579 8.75 7.75V11.25ZM8 6C7.44772 6 7 5.55228 7 5C7 4.44772 7.44772 4 8 4C8.55228 4 9 4.44772 9 5C9 5.55228 8.55228 6 8 6Z" fill="currentColor"/>
                   </svg>
-                  Заполните все поля для оплаты услуг СКРУ
-                </span>
-              </button>
+                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                    ТОО "Специализированный комбинат ритуальных услуг города Алматы"
+                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

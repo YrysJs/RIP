@@ -127,7 +127,7 @@
                 <button
                     v-if="news.newsStatus?.id === 2"
                     class="btn btn--ghost"
-                    @click="hide(news)"
+                    @click="show(news)"
                 >
                   Показать
                 </button>

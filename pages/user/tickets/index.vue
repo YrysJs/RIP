@@ -359,6 +359,14 @@
       </div>
 
       <div class="appeal-card__row">
+        <span class="appeal-card__label">Телефон:</span>
+        <span class="appeal-card__value">
+          {{ formatPhoneNumber(a.user?.phone) }}
+        </span>
+      </div>
+
+
+      <div class="appeal-card__row">
         <span class="appeal-card__label">Тип обращения:</span>
         <span class="appeal-card__value">
           {{ a.type?.nameRu || a.type?.name || '—' }}
@@ -488,7 +496,7 @@ const toIsoDate = (dateStr) => (dateStr ? `${dateStr}T00:00:00Z` : undefined);
 
 const refetch = async () => {
   const params = {
-    status: status.value || undefined,
+    statusId: status.value || undefined,
     from: dateFrom.value ? toIsoDate(dateFrom.value) : undefined,
     to: dateTo.value ? toIsoDate(dateTo.value) : undefined,
     sort: sort.value || undefined,

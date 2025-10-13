@@ -13,6 +13,13 @@ function close() {
   emit('close')
 }
 
+function handleIinInput(event) {
+  // Удаляем все символы кроме цифр
+  const value = event.target.value.replace(/\D/g, '')
+  // Ограничиваем до 12 символов
+  iin.value = value.slice(0, 12)
+}
+
 async function run () {
   try {
     await signupGov({
@@ -82,6 +89,10 @@ function extractDigits(phone) {
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
             placeholder="ИИН"
+            maxlength="12"
+            pattern="[0-9]*"
+            inputmode="numeric"
+            @input="handleIinInput"
           />
           <input
             v-model="phone_number"
