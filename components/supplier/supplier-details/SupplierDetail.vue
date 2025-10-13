@@ -147,6 +147,18 @@ const handleStatusChange = async () => {
   }
 };
 
+const cancelStatus = async () => {
+  loading.value = true;
+  try {
+    await handleStatusUpdate(
+        orderData.value.id,
+        'cancelled'
+    );
+  } finally {
+    loading.value = false;
+  }
+}
+
 // — безопасные геттеры
 const fullName = computed(() => {
   const u = orderData.value?.user_info;
@@ -173,6 +185,7 @@ const graveModalData = computed(() => ({
   place: orderData.value?.grave_info?.grave_number ?? "—",
   description: orderData.value?.grave_info?.description || "",
   note: orderData.value?.grave_note || "",
+  cords: orderData.value?.grave_info?.polygon_data?.coordinates[0]
 }));
 
 function formatToDDMMYYYY(iso) {
@@ -353,14 +366,24 @@ function formatToDDMMYYYY(iso) {
           </div>
         </div>
       </div>
-      <button
-        v-if="currentStatusAction && orderData.status !== 'completed'"
-        :disabled="loading"
-        class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-base font-semibold ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
-        @click="handleStatusChange"
-      >
-        {{ loading ? "Обновление..." : currentStatusAction.title }}
-      </button>
+      <div class="flex gap-3 justify-end">
+        <button
+          v-if="currentStatusAction && orderData.status !== 'completed'"
+          :disabled="loading"
+          class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          @click="handleStatusChange"
+        >
+          {{ loading ? "Обновление..." : currentStatusAction.title }}
+        </button>
+        <button
+          v-if="orderData.status !== 'cancelled' && orderData.status !== 'completed'"
+          :disabled="loading"
+          class="block py-[15px] px-[20px] rounded-lg bg-[#DB1414] text-white text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          @click="cancelStatus"
+        >
+          Отменить
+        </button>
+      </div>
       <CompletedModal v-if="showModal" @close="showModal = false" />
       
       <!-- Модальное окно "Заявка завершена" -->
@@ -511,19 +534,28 @@ function formatToDDMMYYYY(iso) {
     margin-right: 8px;
   }
 
-  /* Кнопка действия */
+  /* Кнопки действий */
+  .flex.gap-3 {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
   .block {
     width: 100%;
     padding: 18px;
     font-size: 18px;
     border-radius: 12px;
-    margin-top: 24px;
     margin-left: 0;
-    background: #E9B949;
-    color: #1C140E;
     font-weight: 700;
     text-align: center;
     display: block;
+  }
+
+  /* Кнопка отмены */
+  .bg-\[#DB1414\] {
+    background: #DB1414;
+    color: white;
   }
 
   /* Адаптивные отступы */

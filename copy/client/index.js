@@ -298,7 +298,7 @@ function searchDeceased(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/search-requests',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v8/search-requests',
         data,
     })
 }

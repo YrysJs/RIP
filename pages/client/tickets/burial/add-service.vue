@@ -164,7 +164,7 @@ const fetchProduct = async (id) => {
     const response = await getProductById(id)
     serviceDelivery.value = response.data
     const reviews = await getProductReviews(id)
-    serviceReviews.value = reviews.data
+    serviceReviews.value = reviews.data.items
     const supplierRes = await getSupplier({
       phone: serviceDelivery.value.supplier_phone
     })

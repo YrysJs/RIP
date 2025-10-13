@@ -10,6 +10,7 @@ import {
 
 const route = useRoute();
 const router = useRouter();
+const { $toast } = useNuxtApp();
 
 const normalizeYouTubeUrl = (raw) => {
   if (!raw) return "";
@@ -494,6 +495,19 @@ const submitMemorial = async () => {
     isSubmitting.value = false;
   }
 };
+
+// Функция для копирования ссылки на мемориал
+async function shareMemorial() {
+  try {
+    const memorialId = memorial.value?.id || route.params.id;
+    const memorialUrl = `${window.location.origin}/memorial/${memorialId}`;
+    await navigator.clipboard.writeText(memorialUrl);
+    $toast.success("Ссылка на мемориал скопирована");
+  } catch (error) {
+    console.error("Ошибка при копировании ссылки:", error);
+    $toast.error("Не удалось скопировать ссылку");
+  }
+}
 </script>
 
 <template>
@@ -530,12 +544,13 @@ const submitMemorial = async () => {
               }}
             </h3>
           </div>
-<!--          <button-->
-<!--            class="flex items-center gap-2 bg-[#00000014] py-[10px] px-4 rounded-[10px] hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition max-sm:bg-transparent"-->
-<!--          >-->
-<!--            <img src="/icons/share.svg" alt="" class="max-sm:w-5 max-sm:h-5" />-->
-<!--            <span class="max-sm:hidden">Поделиться</span>-->
-<!--          </button>-->
+          <button
+            @click="shareMemorial"
+            class="flex items-center gap-2 bg-[#00000014] py-[10px] px-4 rounded-[10px] hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition max-sm:bg-transparent"
+          >
+            <img src="/icons/share.svg" alt="" class="max-sm:w-5 max-sm:h-5" />
+            <span class="max-sm:hidden">Поделиться</span>
+          </button>
         </div>
         <div
           class="grid grid-cols-2 gap-4 my-4 items-stretch max-lg:grid-cols-1"

@@ -266,8 +266,6 @@ const submitForm = async () => {
             <select v-model="form.country" class="control control--select">
               <option value="Казахстан">Казахстан</option>
               <option value="Узбекистан">Узбекистан</option>
-              <option value="Кыргызстан">Кыргызстан</option>
-              <option value="Таджикистан">Таджикистан</option>
             </select>
             <svg class="chevron" width="18" height="18" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
@@ -278,9 +276,6 @@ const submitForm = async () => {
           <div class="select-shell">
             <select v-model="form.city" class="control control--select">
               <option value="Алматы">Алматы</option>
-              <option value="Астана">Астана</option>
-              <option value="Шымкент">Шымкент</option>
-              <option value="Тараз">Тараз</option>
             </select>
             <svg class="chevron" width="18" height="18" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>

@@ -149,40 +149,44 @@ export default {
           expDate: this.expiryDate.replace('/', ''),
         }
 
+        // 1. Выполняем платеж (закомментировано для тестирования)
+        const paymentResponse = await processCardPayment(paymentData)
+
         if (paymentResponse.data.data.secure3DURL) {
           window.open(paymentResponse.data.data.secure3DURL, '_blank');
         }
 
-        // 1. Выполняем платеж (закомментировано для тестирования)
-        const paymentResponse = await processCardPayment(paymentData)
 
         // 2. Создаем заказ через API с правильной структурой
-        const orderRequestData = {
-          burial_date: this.burialData.burial_date,
-          burial_order_id: this.burialData.id, // ID захоронения 0000023
-          burial_time: this.burialData.burial_time,
-          cemetery_id: this.burialData.cemetery_id, // Северное кладбище
-          deceased_id: this.burialData.deceased_id, // ID покойного
-          grave_id: this.burialData.grave_id, // ID места захоронения
-          order_items: this.orderData.cartItems?.map(item => ({
-            delivery_arrival_time: item.delivery_arrival_time || "2025-05-17T09:00:00Z",
-            delivery_destination_address: item.delivery_destination_address || "Алматы, ул. Еревагская 157",
-            product_id: item.product_id,
-            quantity: item.quantity
-          })) || []
+        if (this.burialData) {
+          const orderRequestData = {
+            burial_date: this.burialData.burial_date,
+            burial_order_id: this.burialData.id, // ID захоронения 0000023
+            burial_time: this.burialData.burial_time,
+            cemetery_id: this.burialData.cemetery_id, // Северное кладбище
+            deceased_id: this.burialData.deceased_id, // ID покойного
+            grave_id: this.burialData.grave_id, // ID места захоронения
+            order_items: this.orderData.cartItems?.map(item => ({
+              delivery_arrival_time: item.delivery_arrival_time || "2025-05-17T09:00:00Z",
+              delivery_destination_address: item.delivery_destination_address || "Алматы, ул. Еревагская 157",
+              product_id: item.product_id,
+              quantity: item.quantity
+            })) || []
+          }
+
+          const orderResponse = await createOrder(orderRequestData)
+
+          // Получаем transaction_id из ответа платежа
+          const transactionId = paymentResponse.data.data.paymentInfo.id
+
+          // 1.1. Подтверждаем платеж заказа (используем order_id из ответа createOrder)
+          if (transactionId && orderResponse?.data?.id) {
+            console.log('Confirming order payment...')
+            await confirmOrderPayment(orderResponse.data.id, transactionId)
+            console.log('Order payment confirmed')
+          }
         }
 
-        const orderResponse = await createOrder(orderRequestData)
-
-        // Получаем transaction_id из ответа платежа
-        const transactionId = paymentResponse.data.data.paymentInfo.id
-
-        // 1.1. Подтверждаем платеж заказа (используем order_id из ответа createOrder)
-        if (transactionId && orderResponse?.data?.id) {
-          console.log('Confirming order payment...')
-          await confirmOrderPayment(orderResponse.data.id, transactionId)
-          console.log('Order payment confirmed')
-        }
 
         // 3. Закрываем модалку и сообщаем о успешной оплате
         this.$emit('close')
