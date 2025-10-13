@@ -120,7 +120,16 @@ onMounted(async () => {
       .filter(Boolean);
   } catch (e) {
     console.error(e);
-    errorMsg.value = e?.response?.data?.message || e.message;
+    const errorMessage = e?.response?.data?.error || e?.response?.data?.message || e.message;
+    
+    // Если мемориал приватный, показываем тост и перенаправляем
+    if (errorMessage && errorMessage.includes('приватным')) {
+      $toast.error('Мемориал является приватным');
+      router.push('/');
+      return;
+    }
+    
+    errorMsg.value = errorMessage;
   } finally {
     isLoading.value = false;
   }
