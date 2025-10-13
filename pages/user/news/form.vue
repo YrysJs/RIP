@@ -268,8 +268,8 @@ const saveNews = async () => {
       categoryId: newsCategory.value || undefined,
       // если выбрали новый файл обложки — шлём base64, иначе поле не трогаем
       ...(coverBase64 ? { coverImageBase64: coverBase64 } : {}),
-      // при создании оставил статус как раньше
-      ...(isEdit.value ? {} : { newsStatusId: 1 })
+      // при создании устанавливаем статус "Новый запрос"
+      ...(isEdit.value ? {} : { newsStatusId: "NEW" })
     }
 
     if (filerRes?.data?.success) payload.fileUrl = filerRes.data.files?.[0]?.fileUrl
