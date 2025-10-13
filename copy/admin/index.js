@@ -146,6 +146,15 @@ function updateProductStatus(id, data) {
     })
 }
 
+function getSearchRequests(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v8/search-requests',
+        params
+    })
+}
+
 export {
     getTemplate,
     CreateCemetery,
@@ -162,5 +171,6 @@ export {
     getReviewById,
     getProducts,
     updateProductStatus,
-    getCities
+    getCities,
+    getSearchRequests
 }
