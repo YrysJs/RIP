@@ -37,6 +37,11 @@ const managerMenu = [
     path: "/admin/products",
     childs: []
   },
+  {
+    title: "Поиск захоронении",
+    path: "/admin/burial",
+    childs: []
+  },
 ]
 
 </script>
