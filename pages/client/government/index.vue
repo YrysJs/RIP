@@ -29,24 +29,27 @@ const statusMeta = (s) => {
   const raw = statusText(s) || "";
   const v = raw.toString().toLowerCase();
 
-  if (v.includes("reject") || v.includes("отклон"))
-    return { kind: "rejected", text: raw || "Отклонён" };
-  if (
-    v.includes("accept") ||
-    v.includes("approve") ||
-    v.includes("принят") ||
-    v.includes("одобр") ||
-    v.includes("complete") ||
-    v.includes("заверш")
-  )
-    return { kind: "accepted", text: raw || "Принят" };
-  if (
-    v.includes("new") ||
-    v.includes("ожид") ||
-    v.includes("process") ||
-    v.includes("обработ")
-  )
-    return { kind: "pending", text: raw || "NEW" };
+  // Новые статусы из таблицы (приходят в UPPERCASE)
+  if (v.includes("rejected") || v.includes("отказано"))
+    return { kind: "rejected", text: "Отказано" };
+  if (v.includes("confirmed") || v.includes("подтверждено"))
+    return { kind: "accepted", text: "Подтверждено" };
+  if (v.includes("closed") || v.includes("закрыто"))
+    return { kind: "accepted", text: "Закрыто" };
+  if (v.includes("new") || v.includes("новый запрос"))
+    return { kind: "pending", text: "Новый запрос" };
+  if (v.includes("in_process") || v.includes("в работе"))
+    return { kind: "pending", text: "В работе" };
+  if (v.includes("pending") || v.includes("ожидание"))
+    return { kind: "pending", text: "Ожидание" };
+
+  // Прямые проверки для UPPERCASE статусов
+  if (raw === "REJECTED") return { kind: "rejected", text: "Отказано" };
+  if (raw === "CONFIRMED") return { kind: "accepted", text: "Подтверждено" };
+  if (raw === "CLOSED") return { kind: "accepted", text: "Закрыто" };
+  if (raw === "NEW") return { kind: "pending", text: "Новый запрос" };
+  if (raw === "IN_PROCESS") return { kind: "pending", text: "В работе" };
+  if (raw === "PENDING") return { kind: "pending", text: "Ожидание" };
 
   return { kind: "default", text: raw || "—" };
 };
