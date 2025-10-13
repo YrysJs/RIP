@@ -270,7 +270,7 @@ function formatToDDMMYYYY(iso) {
               <p v-if="orderData?.burial_info?.burial_date">
                 {{
                   new Date(orderData?.burial_info?.burial_date).toLocaleDateString("ru-RU")
-                }}, {{ orderData?.burial_time || "—" }}
+                }}, {{ orderData?.burial_info?.burial_time || "—" }}
               </p>
               <p v-else class="text-base text-[#DB1414]">
                 Необходимо указать даты похорон

@@ -279,10 +279,14 @@ const saveNews = async () => {
     } else {
       await createNews(payload)
     }
+    
+    // Показываем модалку успеха только если запрос прошел успешно
+    showSuccessModal.value = true
   } catch (e) {
     console.error('Ошибка при сохранении новости:', e)
-  } finally {
-    showSuccessModal.value = true
+    // Показываем тост об ошибке
+    const { $toast } = useNuxtApp()
+    $toast.error('Ошибка сервера')
   }
 }
 </script>

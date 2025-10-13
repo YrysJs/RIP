@@ -482,7 +482,7 @@ function refetchAppeals() {
   return fetchAppeals({
     search: appealSearch.value || undefined,
     sort: appealSort.value || undefined,
-    type: appealType.value || undefined,
+    typeId: appealType.value || undefined,
   })
 }
 
