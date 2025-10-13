@@ -419,7 +419,7 @@ const submitAppeal = async (reviewId) => {
                         </div>
                     </div>
 
-                  <div v-if="review.response" class="mb-4 p-4 bg-gray-50 rounded-lg">
+                  <div v-if="review.appeal" class="mb-4 p-4 bg-gray-50 rounded-lg">
                     <div class="flex justify-between items-center mb-2">
                       <div class="font-medium text-sm text-gray-700">Обжалования</div>
                       <div class="text-xs text-gray-500">{{ formatDate(review.appeal.created_at) }}</div>
