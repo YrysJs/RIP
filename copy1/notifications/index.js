@@ -4,7 +4,7 @@ function getNotifications(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: 'http://194.32.140.103:8096/api/v1/my/notifications',
+        url: 'http://194.32.140.103:8096/api/v1/my/notifications?channel=push',
         params,
     })
 }

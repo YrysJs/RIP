@@ -27,82 +27,170 @@ function formatDate(arr) {
 }
 
 
+const route = useRoute()
+const router = useRouter()
+
 const fetchNews = async () => {
   try {
     const response = await getNews({
       statusId: 1,
     })
     newsList.value = response.data
+    
+    // Находим новость по ID из URL
+    const newsId = parseInt(route.params.id)
+    const selectedNews = newsList.value.find(news => news.id === newsId)
+    
+    if (selectedNews) {
+      newsStore.setSelected(selectedNews)
+    }
   } catch (error) {
     console.error('Ошибка при получении новостей:', error)
   }
 }
 
-const goToNews = (news) => {
-  newsStore.setSelected(news)
-  router.push('/user/news/' + news.id)
-}
-
 onMounted(() => {
   fetchNews()
 })
-
-function goBack() {
-    router.go(-1)
-}
 </script>
 
 <template>
     <AppHeader type="client" />
-    <div class="container py-[80px]">
-        <button class="flex gap-[15px] items-center text-sm font-semibold" @click="goBack">
-            <img src="/icons/back-icon-blue.svg" alt=""> Назад
-        </button>
-
-        <div class="flex justify-between items-start gap-[24px] mt-[24px]">
-            <div class="max-w-[876px]">
-                <div class="flex gap-[10px] items-center">
-                    <div class="bg-[#224C4F26] text-[#4E4E4E] text-xs py-[2px] px-[6px] w-fit">{{ newsStore.selectedNews?.category?.name }}</div>
-                    <div class="bg-[#224C4F26] text-[#4E4E4E] text-xs py-[2px] px-[6px] w-fit">{{ formatDate(newsStore.selectedNews?.registrationDate) }}</div>
-                </div>
-
-                <h1 class="text-4xl text-[#333333] font-medium font-roboto pt-[4px] pb-[27px]">
-                  {{ newsStore.selectedNews?.title }}
-                </h1>
-
-                <img class="rounded-lg h-[475px] w-full object-cover overflow-hidden" :src="newsStore.selectedNews?.coverImageUrl" alt="image">
-
-
-                <p class="text-base text-[#333333] font-normal font-roboto">
-                  {{ newsStore.selectedNews?.content }}
-                </p>
+    <div class="container news-page">
+        <div class="news-content">
+            <div class="news-meta">
+                <div class="news-tag">{{ newsStore.selectedNews?.category?.name }}</div>
+                <div class="news-date">{{ formatDate(newsStore.selectedNews?.registrationDate) }}</div>
             </div>
-            <div class="pt-[100px]">
-                <h3 class="text-base text-[#333333] font-semibold font-roboto pb-[17px]">Может быть интересно:</h3>
-                <div class="flex flex-col gap-[12px]">
-                    <div
-                        class="p-[12px] rounded-lg bg-[#E9EDED] flex flex-col"
-                        v-for="news in newsList.slice(0, 3)"
-                        :key="news.id"
-                        @click="goToNews(news)"
-                    >
-                        <div class="bg-[#224C4F26] text-[#4E4E4E] text-xs py-[2px] px-[6px] w-fit">{{ news.category?.name }}</div>
-                        <h3 class="text-sm text-[#333333] font-medium font-roboto py-[10px]">{{news.title}}</h3>
-                        <p class="text-sm text-[#333333] font-medium font-roboto">{{ formatDate(news.registrationDate) }}</p>
-                    </div>
-                </div>
-            </div>
+
+            <h1 class="news-title">
+              {{ newsStore.selectedNews?.title }}
+            </h1>
+
+            <img class="news-image" :src="newsStore.selectedNews?.coverImageUrl" alt="image">
+
+            <p class="news-content-text">
+              {{ newsStore.selectedNews?.content }}
+            </p>
         </div>
     </div>
     <AppFooter />
 </template>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
 .container {
     max-width: 1200px;
     width: 100%;
     margin: auto;
 }
+
+.news-page {
+    padding: clamp(2rem, 8vw, 80px) clamp(1rem, 4vw, 2rem) clamp(2rem, 8vw, 80px);
+    margin-top: clamp(60px, 10vw, 110px);
+}
+
+.news-content {
+    max-width: 876px;
+    margin: 0 auto;
+}
+
+.news-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
+.news-tag,
+.news-date {
+    background: #224C4F26;
+    color: #4E4E4E;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.news-title {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    color: #333333;
+    font-weight: 500;
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.2;
+    margin: 4px 0 27px 0;
+}
+
+.news-image {
+    width: 100%;
+    height: clamp(250px, 40vw, 475px);
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.news-content-text {
+    font-size: clamp(14px, 2vw, 16px);
+    color: #333333;
+    font-weight: 400;
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    margin: 0;
+}
+
+// Адаптивность для планшетов
+@media (max-width: 768px) {
+    .news-page {
+        padding: 40px 20px;
+        margin-top: 80px;
+    }
+    
+    .news-meta {
+        gap: 8px;
+    }
+    
+    .news-title {
+        margin-bottom: 20px;
+    }
+    
+    .news-image {
+        margin-bottom: 20px;
+    }
+}
+
+// Адаптивность для мобильных
+@media (max-width: 480px) {
+    .news-page {
+        padding: 20px 16px;
+        margin-top: 60px;
+    }
+    
+    .news-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+    
+    .news-tag,
+    .news-date {
+        font-size: 11px;
+        padding: 1px 4px;
+    }
+    
+    .news-title {
+        margin-bottom: 16px;
+        line-height: 1.3;
+    }
+    
+    .news-image {
+        margin-bottom: 16px;
+    }
+    
+    .news-content-text {
+        line-height: 1.5;
+    }
+}
+
 .card {
     box-shadow: 0px 4px 10px -5px #000;
 }

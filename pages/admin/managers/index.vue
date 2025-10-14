@@ -110,7 +110,7 @@ onMounted((async () => {
     const response = await getManagers()
     roles.value = response.data
     const res = await getCemeteries()
-    cemeteries.value = res.data
+    cemeteries.value = res.data.data
   } catch (error) {
     console.error('Ошибка при получении пользователей:', error)
   } finally {

@@ -307,6 +307,27 @@ onMounted(() => {
         </a>
       </div>
     </section>
+    <div v-if="newsList.length" class="container news">
+      <h3 class="news__title">Новости</h3>
+      <ul>
+        <li
+            v-for="service in newsList"
+            :key="service.id"
+            class="news__item"
+        >
+          <NuxtImg
+              :src="`${service.coverImageUrl}`"
+              :alt="`${service.title}`"
+              class="news__img"
+              loading="lazy"
+          />
+          <p class="news__description"><b>{{service.title}}</b><br/>{{ service.content }}</p>
+          <button @click="router.push('/news/' + service.id)" class="news__btn">
+            Подробнее
+          </button>
+        </li>
+      </ul>
+    </div>
     <AppFooter />
     <Teleport to="body">
       <MainPageModal
@@ -750,6 +771,127 @@ onMounted(() => {
           width: 20px;
           margin-right: 4px;
         }
+      }
+    }
+  }
+}
+
+// Стили для блока новостей (2 колонки)
+.news {
+  padding: clamp(3rem, 13vw, 168px) 0 2.75rem;
+
+  .news__title {
+    height: clamp(4.6rem, 5vw, 5.25rem);
+    width: fit-content;
+    margin: 0 auto clamp(2rem, 2vw, 3.125rem);
+    font-family: "FoglihtenNo06", sans-serif;
+    font-size: clamp(2rem, 5vw, 4.125rem);
+    color: #201001;
+
+    @media (max-width: 540px) {
+      display: flex;
+      align-items: end;
+    }
+  }
+
+  .news__item {
+    display: grid;
+    padding: clamp(2rem, 2vw, 2.75rem) clamp(1rem, 2vw, 2.125rem);
+    border-top: 1px solid #e9b949;
+    justify-content: space-between;
+    column-gap: 40px;
+    // Адаптировано под размер картинки 200px
+    grid-template-columns: 200px 1fr;
+    grid-template-areas:
+      "image description"
+      "image button";
+
+    @media (max-width: 820px) {
+      align-items: center;
+      grid-template-columns: 143px 1fr;
+      grid-template-areas:
+        "image description"
+        "button button";
+    }
+
+    @media (max-width: 540px) {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "image"
+        "description"
+        "button";
+    }
+
+    .news__img {
+      grid-area: image;
+      width: 200px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      @media (max-width: 820px) {
+        width: 143px;
+        height: 107px;
+      }
+      @media (max-width: 540px) {
+        width: 100%;
+        height: 200px;
+      }
+    }
+
+    .news__description {
+      grid-area: description;
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(14px, 2vw, 16px);
+      line-height: 26px;
+      margin-bottom: 28px;
+
+      @media (max-width: 820px) {
+        margin-top: 28px;
+      }
+
+      @media (max-width: 540px) {
+        line-height: 18px;
+        margin-top: 10px;
+        margin-bottom: 16px;
+      }
+    }
+
+    .news__btn {
+      grid-area: button;
+      width: fit-content;
+      padding: 16px;
+      padding-left: 28px;
+      font-family: "Manrope", sans-serif;
+      font-size: 16px;
+      height: 60px;
+      font-weight: 500;
+      background: #e9b949;
+      border-radius: 8px;
+      position: relative;
+      transition: all 0.4ms ease;
+      &::after {
+        content: "";
+        background-image: url(/icons/arrow-classic.svg);
+        background-repeat: no-repeat;
+        background-size: contain;
+        display: inline-block;
+        margin-left: 8px;
+        margin-bottom: 2px;
+        width: 20px;
+        height: 20px;
+      }
+
+      &:hover {
+        background-color: #d4a842;
+      }
+
+      &:active {
+        background-color: #b88f34;
+      }
+
+      @media (max-width: 540px) {
+        padding: 9px 16px;
+        font-size: 14px;
       }
     }
   }

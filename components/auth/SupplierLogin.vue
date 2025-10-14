@@ -72,13 +72,11 @@ watch(bin, async (newValue) => {
 
   try {
     loadingStore.startLoading()
-    const pkbToken = await getPkbToken();
 
     const poll = async () => {
       try {
         const res = await pkbGetJurData({
-          uin: newValue,
-          token: pkbToken.data.access.hash,
+          uin: newValue
         })
         console.log(res)
         
@@ -356,7 +354,7 @@ const otpCheck = async () => {
           <p v-if="true" class="text-base font-semibold text-[#939393]">Отправить код повторно: через {{ fakeTimer }}</p>
           <button v-else>Отправить еще раз</button>
         </div>
-        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold" :class="{ '!bg-[#38949B] text-white': code >= 4 }" @click="otpCheck">Подтвердить</button>
+        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold" :class="{ '!bg-[#E9B949] text-white': code >= 4 }" @click="otpCheck">Подтвердить</button>
       </div>
       <div v-if="step === 2" class="flex flex-col  max-h-[800px] overflow-x-auto">
         <h3 class="text-2xl font-extrabold text-left text-[#222222] mb-[32px] max-lg:text-[22px] max-lg:mb-4">

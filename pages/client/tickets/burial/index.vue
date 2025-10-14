@@ -370,6 +370,7 @@ const shareGraveData = async (grave_id) => {
               Создать мемориал
             </button>
             <button
+              v-if="!request.is_complete && request.status !== 'confirmed'"
               class="block py-[15px] px-[20px] rounded-lg bg-[#AFB5C133] text-[#17212A] text-sm font-medium hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition"
               @click="
                 $router.push(

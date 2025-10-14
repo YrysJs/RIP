@@ -9,6 +9,15 @@ function getAppeals(params) {
   })
 }
 
+function getMyAppeals(params) {
+  const { $axios } = useNuxtApp()
+  return $axios({
+    method: 'GET',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-government/v1/appeal/my',
+    params,
+  })
+}
+
 function createAppeal(data) {
   const { $axios } = useNuxtApp()
   return $axios({
@@ -298,7 +307,7 @@ function searchDeceased(data) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v8/search-requests',
+    url: useRuntimeConfig().public.apiBaseUrl + '/api/v9/search-requests',
     data,
   })
 }
@@ -428,5 +437,6 @@ export {
   createAppeal,
   createProductReview,
   createRequest,
-  updateMemorial
+  updateMemorial,
+  getMyAppeals
 }

@@ -200,10 +200,9 @@ function getPkbToken() {
 function getPkbRequest(data) {
     const { $axios } = useNuxtApp()
     return $axios({
-        method: 'POST',
+        method: 'GET',
         url: useRuntimeConfig().public.apiBaseUrl + '/api/v5/individual/send/request',
-        params: data.params,
-        data: data.data,
+        params: data,
         headers: {
             'Content-Type': 'text/plain' // или 'application/json' если строка — это JSON-строка
         }
@@ -213,10 +212,9 @@ function getPkbRequest(data) {
 function pkbGetData(data) {
     const { $axios } = useNuxtApp()
     return $axios({
-        method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v5/individual/request/${data.id}`,
-        params: data.params,
-        data: data.data,
+        method: 'GET',
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v5/individual/request/${data.requestId}`,
+        params: data,
         headers: {
             'Content-Type': 'text/plain' // или 'application/json' если строка — это JSON-строка
         }

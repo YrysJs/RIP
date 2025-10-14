@@ -150,7 +150,7 @@ const otpCheck = async () => {
           <p v-if="true" class="text-base font-semibold text-[#939393]">Отправить код повторно: через {{ fakeTimer }}</p>
           <button v-else>Отправить еще раз</button>
         </div>
-        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold" :class="{ '!bg-[#38949B] text-white': code >= 4 }" @click="otpCheck">Подтвердить</button>
+        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold" :class="{ '!bg-[#E9B949] text-white': code >= 4 }" @click="otpCheck">Подтвердить</button>
       </div>
   </div>
 </template>

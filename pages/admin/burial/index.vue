@@ -15,10 +15,10 @@
         <div>Покойный</div>
       </div>
       <div
-          v-for="user in suppliers"
+          v-for="user in burials"
           :key="user.id"
           class="grid grid-cols-4 items-center text-sm py-[14px] border-b border-[#EEEEEE] hover:bg-[#F9FAFB] transition cursor-pointer"
-          @click="showModerateModal(user)"
+          @click="showDetailModal(user)"
       >
 
         <div>{{ user.applicant_name }}</div>
@@ -36,11 +36,10 @@
           title="Обращение обработано!"
           @close="closeSuccessModal"
       />
-      <ModerateAppealModal
-          :visible="isModerateModal"
-          :appeal="selectedComment"
-          @finish="moderate"
-          @close="isModerateModal = false"
+      <BurialDetailModal
+          :visible="isDetailModal"
+          :burial="selectedBurial"
+          @close="isDetailModal = false"
       />
     </Teleport>
   </NuxtLayout>
@@ -48,9 +47,9 @@
 
 <script setup>
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
-import ModerateAppealModal from "~/components/admin/comments/ModerateAppealModal.vue";
+import BurialDetailModal from "~/components/admin/burial/BurialDetailModal.vue";
 
-import { getModerateAppeals, moderateAppeal, getSearchRequests } from '~/services/admin'
+import { getSearchRequests } from '~/services/admin'
 import {ref} from "vue";
 
 
@@ -60,36 +59,15 @@ definePageMeta({
 });
 
 const showSuccessModal = ref(false)
-const isModerateModal = ref(false)
-const suppliers = ref([])
-const selectedComment = ref({})
+const isDetailModal = ref(false)
+const burials = ref([])
+const selectedBurial = ref({})
 
 
 
-const moderate = async (data) => {
-  try {
-    await moderateAppeal({
-      id: selectedComment.value.id,
-      data: {
-        admin_response: data.admin_response,
-        status: data.status
-      }
-    })
-
-    // Обновляем список после модерации
-    const response = await getModerateAppeals()
-    suppliers.value = response.data?.items
-
-    isModerateModal.value = false
-    showSuccessModal.value = true
-  } catch (error) {
-    console.error('Ошибка при модерации обращения:', error)
-  }
-}
-
-const showModerateModal = (comment) => {
-  isModerateModal.value = true
-  selectedComment.value = comment
+const showDetailModal = (burial) => {
+  isDetailModal.value = true
+  selectedBurial.value = burial
 }
 
 function formatPhoneNumber(phone) {
@@ -105,7 +83,7 @@ onMounted((async () => {
 
   try {
     const response = await  getSearchRequests();
-    suppliers.value = response.data?.data?.data
+    burials.value = response.data?.data?.data
   } catch (error) {
     console.error('Ошибка при получении пользователей:', error)
   } finally {
