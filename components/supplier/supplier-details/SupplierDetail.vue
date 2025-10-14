@@ -278,7 +278,7 @@ function formatToDDMMYYYY(iso) {
             </div>
             <div class="h-[38px] flex items-center text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">Заказчик:</p>
-              <p class="black-16">
+              <p class="black-16">ёё
                 {{ fullName }}
               </p>
             </div>

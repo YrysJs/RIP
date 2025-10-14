@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getAppeals } from '~/services/client'
+import {getMyAppeals} from '~/services/client'
 
 const router = useRouter()
 const appeals = ref([])
@@ -23,7 +23,7 @@ const onSearchInput = () => {
 async function fetchAppeals() {
   try {
     isLoading.value = true
-    const response = await getAppeals({
+    const response = await getMyAppeals({
       search: search.value || undefined,
       type: appealType.value || undefined,
     })
@@ -89,51 +89,6 @@ onMounted(async () => {
         >
           Создать обращение
         </button>
-      </div>
-
-      <!-- Фильтры -->
-      <div class="filters-row">
-        <!-- Поиск -->
-        <div class="field relative flex-1 min-w-[320px]">
-          <span class="field__icon" aria-hidden>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M21 21l-4.2-4.2M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"
-                    stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <input
-            class="field__control w-full"
-            type="text"
-            placeholder="Поиск по обращениям"
-            v-model="search"
-            @input="onSearchInput"
-          />
-        </div>
-
-        <!-- Тип обращения -->
-        <div class="field relative min-w-[270px]">
-          <span class="field__icon" aria-hidden>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M20 7L10 17l-6-6" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <select
-            class="field__control appearance-none w-full pr-[40px]"
-            v-model="appealType"
-            @change="fetchAppeals()"
-          >
-            <option value="" disabled hidden>Тип</option>
-            <option value="COMPLAINT">Жалоба</option>
-            <option value="OFFER">Предложение</option>
-            <option value="REQUEST">Запрос</option>
-          </select>
-          <span class="field__chevron" aria-hidden>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </div>
-
       </div>
 
       <!-- Загрузка -->

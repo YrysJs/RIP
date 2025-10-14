@@ -259,25 +259,30 @@ const saveNews = async () => {
       filerRes = await setAkimatFile(formData)
     }
 
-    // обложка
-    const coverBase64 = file.value ? await convertToBase64(file.value) : ''
-
-    const payload = {
+    // Создаем FormData для основного запроса
+    const formData = new FormData()
+    
+    // Добавляем данные в JSON формате
+    const dataPayload = {
       title: newsTitle.value,
       content: newsContent.value,
       categoryId: newsCategory.value || undefined,
-      // если выбрали новый файл обложки — шлём base64, иначе поле не трогаем
-      ...(coverBase64 ? { coverImageBase64: coverBase64 } : {}),
-      // при создании устанавливаем статус "Новый запрос"
-      ...(isEdit.value ? {} : { newsStatusId: "NEW" })
+      ...(isEdit.value ? {} : { newsStatusId: 1 })
+    }
+    
+    if (filerRes?.data?.success) dataPayload.fileUrl = filerRes.data.files?.[0]?.fileUrl
+    
+    formData.append('data', JSON.stringify(dataPayload))
+    
+    // Добавляем файл обложки если есть
+    if (file.value) {
+      formData.append('coverImage', file.value)
     }
 
-    if (filerRes?.data?.success) payload.fileUrl = filerRes.data.files?.[0]?.fileUrl
-
     if (isEdit.value) {
-      await updateNews(editId.value, payload)
+      await updateNews(editId.value, formData)
     } else {
-      await createNews(payload)
+      await createNews(formData)
     }
     
     // Показываем модалку успеха только если запрос прошел успешно

@@ -86,13 +86,11 @@ watch(iin, async (newValue) => {
 
   try {
     loadingStore.startLoading();
-    const pkbToken = await getPkbToken();
 
     const poll = async () => {
       try {
         const res = await getPkbRequest({
-          params: { iin: newValue },
-          data: pkbToken.data.access.hash,
+           iin: newValue ,
         });
 
         if (
@@ -109,12 +107,8 @@ watch(iin, async (newValue) => {
             const checkData = async () => {
               try {
                 const response = await pkbGetData({
-                  id: res.data.data.request_id,
-                  params: {
-                    iin: newValue,
-                    requestId: res.data.data.request_id,
-                  },
-                  data: pkbToken.data.access.hash,
+                  requestId: res.data.data.request_id,
+                  iin: newValue
                 });
                 
                 // Проверяем на ответ таймаута ПКБ
@@ -511,7 +505,7 @@ const otpCheck = async () => {
             </div>
             <button
               class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold"
-              :class="{ '!bg-[#38949B] text-white': code >= 4 }"
+              :class="{ '!bg-[#E9B949] text-white': code >= 4 }"
               @click="otpCheck"
             >
               Подтвердить

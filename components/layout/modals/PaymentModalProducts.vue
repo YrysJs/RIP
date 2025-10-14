@@ -58,7 +58,7 @@
             <label class="label">CVC код</label>
             <input 
               v-model="cvcCode" 
-              type="text" 
+              type="password"
               class="input"
               placeholder="234"
               maxlength="3"

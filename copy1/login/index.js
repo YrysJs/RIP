@@ -199,10 +199,9 @@ function getPkbToken() {
 function getPkbRequest(data) {
     const { $axios } = useNuxtApp()
     return $axios({
-        method: 'POST',
+        method: 'GET',
         url: 'http://194.32.140.103:8083/v1/individual/send/request',
-        params: data.params,
-        data: data.data,
+        params: data,
         headers: {
             'Content-Type': 'text/plain' // или 'application/json' если строка — это JSON-строка
         }
@@ -213,9 +212,8 @@ function pkbGetData(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'POST',
-        url: `http://194.32.140.103:8083/v1/individual/request/${data.id}`,
-        params: data.params,
-        data: data.data,
+        url: `http://194.32.140.103:8083/v1/individual/request/${data.requestId}`,
+        params: data,
         headers: {
             'Content-Type': 'text/plain' // или 'application/json' если строка — это JSON-строка
         }

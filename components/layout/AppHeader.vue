@@ -30,6 +30,12 @@
             <button v-if="isAkimat" class="profile__btn" @click="router.push('/user/tickets')">
               Кабинет Акимата
             </button>
+            <button v-if="isManager" class="profile__btn" @click="router.push('/manager/burial')">
+              Кабинет Менеджера
+            </button>
+            <button v-if="isAdmin" class="profile__btn" @click="router.push('/admin/cemetery')">
+              Кабинет Админа
+            </button>
             <button class="profile__btn" @click="profileClick">
               <img src="/icons/person.svg" alt="Reserve icon" class="w-5 h-5" />
               {{ userInfo?.name }} {{ userInfo?.surname }}
@@ -172,7 +178,7 @@ function profileClick() {
   const parsedToken = parseJwt(token.value);
   switch (parsedToken.role) {
     case "ADMIN":
-      router.push("/admin/cemetery");
+      router.push("/client/profile");
       break;
     case "AKIMAT_MANAGER":
       router.push("/client/profile");
@@ -184,7 +190,7 @@ function profileClick() {
       router.push("/client/profile");
       break;
     case "CEMETERY_MANAGER":
-      router.push("/manager/burial");
+      router.push("/client/profile");
       break;
     case "USER":
       router.push("/client/profile");
@@ -198,6 +204,16 @@ function profileClick() {
 const isAkimat = computed(() => {
   const parsedToken = parseJwt(token.value);
   return parsedToken.role === 'AKIMAT_MANAGER' || parsedToken.role === 'AKIMAT_ADMIN' || parsedToken.role === 'GOVERNMENT'
+})
+
+const isManager = computed(() => {
+  const parsedToken = parseJwt(token.value);
+  return parsedToken.role === 'CEMETERY_MANAGER'
+})
+
+const isAdmin = computed(() => {
+  const parsedToken = parseJwt(token.value);
+  return parsedToken.role === 'ADMIN'
 })
 
 function logout() {

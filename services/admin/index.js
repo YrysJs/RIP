@@ -150,7 +150,7 @@ function getSearchRequests(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v8/search-requests',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v9/search-requests',
         params
     })
 }

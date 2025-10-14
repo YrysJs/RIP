@@ -4,7 +4,7 @@ function getNotifications(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v10/my/notifications',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v10/my/notifications?channel=push',
         params,
     })
 }

@@ -40,7 +40,7 @@ const displayRows = computed(() => {
         date: o.burial_date || o.created_at,
         status: o.status || "",
       }))
-    : placeholderRows;
+    : [];
 
   return base.filter((r) => ARCHIVE_STATUSES.includes(r.status));
 });

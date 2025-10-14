@@ -1,12 +1,12 @@
 <script setup>
 import { ref } from "vue";
-import { getAppeals } from "~/services/client";
+import {getAppeals, getMyAppeals} from "~/services/client";
 
 const router = useRouter();
 const appeals = ref([]);
 
 async function getUserAppeals() {
-  const response = await getAppeals();
+  const response = await getMyAppeals();
   appeals.value = response.data;
 }
 
