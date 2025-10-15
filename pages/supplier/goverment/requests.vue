@@ -97,6 +97,31 @@ onMounted(async () => {
         <p class="loading-text">Загрузка обращений...</p>
       </div>
 
+      <!-- Пустое состояние -->
+      <div v-else-if="appeals.length === 0" class="empty-state">
+        <div class="empty-state__content">
+          <div class="empty-state__icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z"/>
+              <path d="M14 2v6h6"/>
+              <path d="M16 13H8"/>
+              <path d="M16 17H8"/>
+              <path d="M10 9H8"/>
+            </svg>
+          </div>
+          <h3 class="empty-state__title">Пока нет обращений</h3>
+          <p class="empty-state__description">
+            Создайте первое обращение в Акимат для решения ваших вопросов
+          </p>
+          <button 
+            @click="router.push('/supplier/goverment/create')" 
+            class="empty-state__button"
+          >
+            Создать обращение
+          </button>
+        </div>
+      </div>
+
       <!-- Список обращений -->
       <div v-else class="appeals-list">
         <div
@@ -139,11 +164,11 @@ onMounted(async () => {
           <div class="appeal-card__row">
             <span class="appeal-card__label">Обращение:</span>
             <p class="appeal-card__text">{{ appeal.content || appeal.text }}</p>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-     </NuxtLayout>
+      </div>
+    </div>
+    </NuxtLayout>
 </template>
 
 <style scoped lang="scss">
@@ -270,6 +295,56 @@ option[disabled][hidden] {
 .loading-text {
   color: #6b7280;
   font-size: 16px;
+}
+
+/* Пустое состояние */
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 40px 20px;
+}
+
+.empty-state__content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.empty-state__icon {
+  margin-bottom: 24px;
+  opacity: 0.6;
+}
+
+.empty-state__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1C140E;
+  margin: 0 0 12px 0;
+}
+
+.empty-state__description {
+  font-size: 16px;
+  color: #6B7280;
+  line-height: 1.5;
+  margin: 0 0 32px 0;
+}
+
+.empty-state__button {
+  background: #F7B500;
+  color: #1F2937;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.empty-state__button:hover {
+  background: #E6A300;
+  transform: translateY(-1px);
 }
 
 /* Список обращений */
@@ -508,6 +583,42 @@ option[disabled][hidden] {
 
   .appeal-card__file {
     font-size: 13px;
+  }
+
+  /* Пустое состояние на мобильных */
+  .empty-state {
+    min-height: 300px;
+    padding: 20px 16px;
+  }
+
+  .empty-state__content {
+    max-width: 100%;
+  }
+
+  .empty-state__icon {
+    margin-bottom: 16px;
+  }
+
+  .empty-state__icon svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  .empty-state__title {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .empty-state__description {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .empty-state__button {
+    width: 100%;
+    height: 44px;
+    font-size: 14px;
+    padding: 12px 20px;
   }
 }
 

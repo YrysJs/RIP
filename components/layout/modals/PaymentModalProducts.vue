@@ -157,34 +157,39 @@ export default {
         }
 
 
+        console.log(this.burialData)
         // 2. Создаем заказ через API с правильной структурой
-        if (this.burialData) {
-          const orderRequestData = {
+        // Создаем заказ независимо от наличия burialData
+        const orderRequestData = {
+          // Данные захоронения (если есть)
+          ...(this.burialData && {
             burial_date: this.burialData.burial_date,
-            burial_order_id: this.burialData.id, // ID захоронения 0000023
+            burial_order_id: this.burialData.id,
             burial_time: this.burialData.burial_time,
-            cemetery_id: this.burialData.cemetery_id, // Северное кладбище
-            deceased_id: this.burialData.deceased_id, // ID покойного
-            grave_id: this.burialData.grave_id, // ID места захоронения
-            order_items: this.orderData.cartItems?.map(item => ({
-              delivery_arrival_time: item.delivery_arrival_time || "2025-05-17T09:00:00Z",
-              delivery_destination_address: item.delivery_destination_address || "Алматы, ул. Еревагская 157",
-              product_id: item.product_id,
-              quantity: item.quantity
-            })) || []
-          }
+            cemetery_id: this.burialData.cemetery_id,
+            deceased_id: this.burialData.deceased_id,
+            grave_id: this.burialData.grave_id,
+          }),
+          // Товары заказа
+          order_items: this.orderData.cartItems?.map(item => ({
+            delivery_arrival_time: item.delivery_arrival_time || "2025-05-17T09:00:00Z",
+            delivery_destination_address: item.delivery_destination_address || "Алматы, ул. Еревагская 157",
+            product_id: item.product_id,
+            quantity: item.quantity
+          })) || []
+        }
 
-          const orderResponse = await createOrder(orderRequestData)
+        console.log('Order request data:', orderRequestData)
+        const orderResponse = await createOrder(orderRequestData)
 
-          // Получаем transaction_id из ответа платежа
-          const transactionId = paymentResponse.data.data.paymentInfo.id
+        // Получаем transaction_id из ответа платежа
+        const transactionId = paymentResponse.data.data.paymentInfo.id
 
-          // 1.1. Подтверждаем платеж заказа (используем order_id из ответа createOrder)
-          if (transactionId && orderResponse?.data?.id) {
-            console.log('Confirming order payment...')
-            await confirmOrderPayment(orderResponse.data.id, transactionId)
-            console.log('Order payment confirmed')
-          }
+        // Подтверждаем платеж заказа
+        if (transactionId && orderResponse?.data?.id) {
+          console.log('Confirming order payment...')
+          await confirmOrderPayment(orderResponse.data.id, transactionId)
+          console.log('Order payment confirmed')
         }
 
 

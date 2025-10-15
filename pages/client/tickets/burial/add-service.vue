@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { getProducts, addToCart, getCart, removeFromCart, getProductById, getProductReviews, getBurialRequestById } from '~/services/client'
+import { getProducts, addToCart, getCart, removeFromCart, getProductById, getProductReviews, getBurialRequestById, updateCartCount } from '~/services/client'
 import { getSupplier } from '~/services/login'
 import PaymentModalProducts from '~/components/layout/modals/PaymentModalProducts.vue'
 import DeliveryModal from '~/components/layout/modals/DeliveryModal.vue'
@@ -126,6 +126,25 @@ const removeProductFromCart = async (productId) => {
     $toast.error('Сервер не доступен')
   } finally {
     removingFromCart.value = false
+  }
+}
+
+// Функция для обновления количества товара в корзине
+const updateProductQuantity = async (productId, newQuantity) => {
+  if (newQuantity < 0) return
+  
+  try {
+    await updateCartCount({
+      id: productId,
+      data: {
+        quantity: newQuantity
+      }
+    })
+    await loadCart() // Перезагружаем корзину
+  } catch (err) {
+    console.error('Ошибка при обновлении количества:', err)
+    const { $toast } = useNuxtApp()
+    $toast.error('Ошибка при обновлении количества')
   }
 }
 
@@ -312,13 +331,35 @@ onMounted(async () => {
                 <p class="text-sm font-roboto text-[#222222]">{{ item.product.name }}</p>
                 <p class="text-xs font-roboto text-[#5C5C5C]">{{ item.quantity }} шт. × {{ item.product.price.toLocaleString() }} ₸</p>
               </div>
-              <button 
-                @click="removeProductFromCart(item.id)"
-                :disabled="removingFromCart"
-                class="ml-[8px] text-red-500 hover:text-red-700 text-sm"
-              >
-                ✕
-              </button>
+              <div class="flex items-center gap-2">
+                <!-- Кнопки изменения количества -->
+                <div class="flex items-center border border-gray-300 rounded-md">
+                  <button 
+                    @click="updateProductQuantity(item.id, item.quantity - 1)"
+                    :disabled="item.quantity <= 1"
+                    class="px-2 py-1 text-gray-600 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    −
+                  </button>
+                  <span class="px-3 py-1 text-sm font-medium text-gray-700 min-w-[30px] text-center">
+                    {{ item.quantity }}
+                  </span>
+                  <button 
+                    @click="updateProductQuantity(item.id, item.quantity + 1)"
+                    class="px-2 py-1 text-gray-600 hover:text-gray-800"
+                  >
+                    +
+                  </button>
+                </div>
+                <!-- Кнопка удаления -->
+                <button 
+                  @click="removeProductFromCart(item.id)"
+                  :disabled="removingFromCart"
+                  class="ml-2 text-red-500 hover:text-red-700 text-sm p-1"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
           </div>
         </div>

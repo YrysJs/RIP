@@ -147,6 +147,15 @@ function removeFromCart(productId) {
     })
 }
 
+function updateCartCount(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PATCH',
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/ccart/${data.id}`,
+        data: data.data
+    })
+}
+
 function clearCart() {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -438,5 +447,6 @@ export {
     createProductReview,
     createRequest,
     updateMemorial,
-    getMyAppeals
+    getMyAppeals,
+    updateCartCount
 }
