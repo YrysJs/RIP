@@ -143,7 +143,7 @@ async function run () {
     if (isWhatsappLogin.value) {
       // Если код получен через WhatsApp
       response = await signupSupplierWhatsapp({
-        whatsappOTP: {
+        whatsappOTPVerify: {
           phone: extractDigits(phone_number.value),
           code: code.value,
         },

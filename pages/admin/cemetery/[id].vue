@@ -49,7 +49,8 @@ const form = reactive({
     coordinates: []
   },
   location_coords: [],
-  capacity: 0
+  capacity: 0,
+  burial_price: ''
 });
 
 const router = useRouter();
@@ -94,6 +95,7 @@ onMounted(async () => {
     form.polygon_data = response.data.polygon_data
     form.location_coords = response.data.location_coords
     form.capacity = response.data.capacity
+    form.burial_price = response.data.burial_price || ''
   } catch (error) {
     console.error('Ошибка при получении заявок:', error)
   } finally {
@@ -136,6 +138,17 @@ onMounted(async () => {
       <div>
         <label class="block text-sm mb-1">Вместимость</label>
         <input type="number" v-model="form.capacity" class="input" />
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Цена захоронения</label>
+        <input 
+          type="text" 
+          v-model="form.burial_price" 
+          v-mask="'##########'"
+          class="input" 
+          placeholder="Введите цену"
+        />
       </div>
 
       <div>

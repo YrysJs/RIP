@@ -47,7 +47,8 @@ const form = reactive({
     coordinates: []
   },
   location_coords: [],
-  capacity: 0
+  capacity: 0,
+  burial_price: ''
 });
 
 const router = useRouter();
@@ -107,6 +108,17 @@ const create = async () => {
       <div>
         <label class="block text-sm mb-1">Вместимость</label>
         <input type="number" v-model="form.capacity" class="input" />
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Цена захоронения</label>
+        <input 
+          type="text" 
+          v-model="form.burial_price" 
+          v-mask="'##########'"
+          class="input" 
+          placeholder="Введите цену"
+        />
       </div>
 
       <div>
