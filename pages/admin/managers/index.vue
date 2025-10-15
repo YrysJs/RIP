@@ -108,7 +108,7 @@ const closeSuccessModal = () => {
 onMounted((async () => {
   try {
     const response = await getManagers()
-    roles.value = response.data
+    roles.value = response.data.data
     const res = await getCemeteries()
     cemeteries.value = res.data.data
   } catch (error) {

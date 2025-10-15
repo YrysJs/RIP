@@ -9,6 +9,7 @@ import {
   getPkbToken,
   getPkbRequest,
   pkbGetData,
+  signupSupplierWhatsapp,
   pkbGetJurData
 } from '~/services/login/index.js'
 import Cookies from 'js-cookie';
@@ -137,25 +138,47 @@ async function run () {
       filerRes = await setSupplierFiles(formData)
     }
 
-    const data = {
-      otpRequest: {
-        id: loginId.value,
-        code: code.value
-      },
-      bin: bin.value,
-      name: name.value,
-      surname: surname.value,
-      patronymic: patronymic.value,
-      vatTypeId: vatTypeId.value,
-      cityId: cityId.value,
-      isActive: false,
-      docs: ['1111'],
-      serviceDescription: serviceDescription.value
+    let response;
+    
+    if (isWhatsappLogin.value) {
+      // Если код получен через WhatsApp
+      response = await signupSupplierWhatsapp({
+        whatsappOTP: {
+          phone: extractDigits(phone_number.value),
+          code: code.value,
+        },
+        bin: bin.value,
+        name: name.value,
+        surname: surname.value,
+        patronymic: patronymic.value,
+        vatTypeId: vatTypeId.value,
+        cityId: cityId.value,
+        isActive: false,
+        docs: filerRes?.data?.success ? filerRes.data.files.map(file => file.fileUrl) : ['1111'],
+        serviceDescription: serviceDescription.value
+      });
+    } else {
+      // Если код получен через SMS
+      const data = {
+        otpRequest: {
+          id: loginId.value,
+          code: code.value
+        },
+        bin: bin.value,
+        name: name.value,
+        surname: surname.value,
+        patronymic: patronymic.value,
+        vatTypeId: vatTypeId.value,
+        cityId: cityId.value,
+        isActive: false,
+        docs: ['1111'],
+        serviceDescription: serviceDescription.value
+      }
+      if (filerRes?.data?.success) {
+        data.docs = filerRes.data.files.map(file => file.fileUrl)
+      }
+      response = await signupSupplier(data);
     }
-    if (filerRes?.data?.success) {
-      data.docs = filerRes.data.files.map(file => file.fileUrl)
-    }
-    const response = await signupSupplier(data)
 
     Cookies.set('token', response.data.token);
     Cookies.set('role', 'supplier');
@@ -414,50 +437,50 @@ const otpCheck = async () => {
           <p class="text-sm font-roboto text-[#222222]">Краткое описание услуг</p>
           <textarea v-model="serviceDescription" class="w-full border-2 border-[#939393] py-[12px] pl-[16px] rounded-lg h-[120px]" type="text" placeholder="Краткое описание услуг" />
         </div>
-        <div class="mt-[24px] mb-[24px]">
-          <h3 class="text-[18px] font-medium mb-1">
-            Прикрепить сертификат
-          </h3>
+<!--        <div class="mt-[24px] mb-[24px]">-->
+<!--          <h3 class="text-[18px] font-medium mb-1">-->
+<!--            Прикрепить сертификат-->
+<!--          </h3>-->
 
-          <!-- Кнопка загрузки фото -->
-          <button
-              @click="$refs.achievementFileInput.click()"
-              class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"
-          >
-            Добавить
-          </button>
+<!--          &lt;!&ndash; Кнопка загрузки фото &ndash;&gt;-->
+<!--          <button-->
+<!--              @click="$refs.achievementFileInput.click()"-->
+<!--              class="bg-[#EEEEEE] w-[120px] h-[28px] font-semibold text-[#224C4F] rounded-lg hover:bg-[#DDD] transition-colors mb-4"-->
+<!--          >-->
+<!--            Добавить-->
+<!--          </button>-->
 
-          <!-- Скрытый input для файлов -->
-          <input
-              ref="achievementFileInput"
-              type="file"
-              multiple
-              @change="handleAchievementPhotoUpload"
-              class="hidden"
-          >
-          <!-- Галерея фото достижений -->
-          <div v-if="achievementPhotos.length > 0" class="achievement-photos-gallery">
+<!--          &lt;!&ndash; Скрытый input для файлов &ndash;&gt;-->
+<!--          <input-->
+<!--              ref="achievementFileInput"-->
+<!--              type="file"-->
+<!--              multiple-->
+<!--              @change="handleAchievementPhotoUpload"-->
+<!--              class="hidden"-->
+<!--          >-->
+<!--          &lt;!&ndash; Галерея фото достижений &ndash;&gt;-->
+<!--          <div v-if="achievementPhotos.length > 0" class="achievement-photos-gallery">-->
 
-            <div class="gallery-grid">
-              <div
-                  v-for="(photo, index) in achievementPhotos"
-                  :key="photo.id"
-                  class="image-preview-container"
-              >
-                <img src="/images/doc.png" alt="Achievement photo" class="image-preview">
-                <div class="image-overlay">
-                  <button
-                      @click="removeAchievementPhoto(index)"
-                      class="remove-btn"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div class="image-number">{{ index + 1 }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
+<!--            <div class="gallery-grid">-->
+<!--              <div-->
+<!--                  v-for="(photo, index) in achievementPhotos"-->
+<!--                  :key="photo.id"-->
+<!--                  class="image-preview-container"-->
+<!--              >-->
+<!--                <img src="/images/doc.png" alt="Achievement photo" class="image-preview">-->
+<!--                <div class="image-overlay">-->
+<!--                  <button-->
+<!--                      @click="removeAchievementPhoto(index)"-->
+<!--                      class="remove-btn"-->
+<!--                  >-->
+<!--                    ✕-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--                <div class="image-number">{{ index + 1 }}</div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
           <div class="flex gap-[10px] items-start mb-[32px]">
             <input class="w-6 h-6" v-model="check" type="checkbox" />
             <p class="text-sm text-[#5C6771E6]">

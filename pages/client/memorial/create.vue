@@ -501,22 +501,22 @@ const submitMemorial = async () => {
           <h3 class="text-[18px] font-medium mb-1">Видеоматериалы</h3>
 
           <!-- Кнопка добавления видео -->
-          <button
-            v-if="!showVideoInput"
-            class="upload-area bg-[#E7E8EA] rounded-lg hover:bg-[#DDD] transition-colors py-4 flex flex-col"
-            @click="showVideoInputField"
-          >
-            <div class="flex justify-center mb-2">
-              <img src="/icons/upload-video.svg" alt="" class="w-6 h-6" />
-            </div>
-            <p class="text-base text-[#3F474F]">
-              <span class="font-medium text-[#E9B949]">Загрузите файлы</span>
-              или перетащите их
-            </p>
-          </button>
+<!--          <button-->
+<!--            v-if="!showVideoInput"-->
+<!--            class="upload-area bg-[#E7E8EA] rounded-lg hover:bg-[#DDD] transition-colors py-4 flex flex-col"-->
+<!--            @click="showVideoInputField"-->
+<!--          >-->
+<!--            <div class="flex justify-center mb-2">-->
+<!--              <img src="/icons/upload-video.svg" alt="" class="w-6 h-6" />-->
+<!--            </div>-->
+<!--            <p class="text-base text-[#3F474F]">-->
+<!--              <span class="font-medium text-[#E9B949]">Загрузите файлы</span>-->
+<!--              или перетащите их-->
+<!--            </p>-->
+<!--          </button>-->
 
           <!-- Поле ввода ссылки -->
-          <div v-if="showVideoInput" class="video-input-container">
+          <div class="video-input-container">
             <div class="flex gap-2 mb-4">
               <input
                 v-model="videoUrl"

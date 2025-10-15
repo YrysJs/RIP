@@ -73,7 +73,7 @@ const fetchProduct = async (id) => {
     const supplierRes = await getSupplier({
       phone: serviceDelivery.value.supplier_phone,
     });
-    serviceSupplier.value = supplierRes.value;
+    serviceSupplier.value = supplierRes.data;
   } catch (error) {
     console.error("Ошибка при услуги:", error);
     const { $toast } = useNuxtApp();

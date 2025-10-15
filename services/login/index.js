@@ -136,6 +136,15 @@ function signupSupplier(data) {
     })
 }
 
+function signupSupplierWhatsapp(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'PUT',
+        url: 'http://194.32.140.103:8081/v1/supplier/signup/whatsapp',
+        data
+    })
+}
+
 function getUser(params) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -180,12 +189,12 @@ function getSuppliers(params) {
     })
 }
 
-function activateSupplier(data) {
+function activateSupplier(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PATCH',
         url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/supplier/activate',
-        data
+        params
     })
 }
 
@@ -265,5 +274,6 @@ export {
     checkWhatsappOtp,
     getWhatsappOtp,
     signupClientWhatsapp,
-    pkbGetJurData
+    pkbGetJurData,
+    signupSupplierWhatsapp
 }

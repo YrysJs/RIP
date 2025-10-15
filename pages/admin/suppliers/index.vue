@@ -92,6 +92,9 @@ const activate = async () => {
       console.error('Ошибка при получении пользователей:', error)
     } finally {
       console.log('finally')
+      isConfirmModal.value = false;
+      const response = await getSuppliers()
+      suppliers.value = response.data
     }
 
 

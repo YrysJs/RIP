@@ -93,7 +93,7 @@ function formatPhoneNumber(phone) {
         <div class="mb-6 rounded-lg">
           <h3 class="font-semibold text-sm text-[#939393]">Поставщик услуг</h3>
           <p class="text-sm font-medium">{{ supplier?.name || 'Ритуальный Центр "Покой и Уважение"' }}</p>
-          <p class="text-sm">{{ supplier?.city || 'Улица Бейсекбаева, Алматы' }} <a href="" class="ml-3">{{ formatPhoneNumber(service?.supplier_phone) }}</a></p>
+          <p class="text-sm">{{ supplier?.city.name || 'Улица Бейсекбаева, Алматы' }} <a href="" class="ml-3">{{ formatPhoneNumber(service?.supplier_phone) }}</a></p>
         </div>
 
         <!-- Reviews -->
