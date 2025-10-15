@@ -79,6 +79,8 @@ function extractDigits(phone) {
           />
           <input
             v-model="iin"
+            v-mask="'############'"
+            maxlength="12"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
             placeholder="ИИН"
