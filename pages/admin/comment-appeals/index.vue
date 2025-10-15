@@ -9,20 +9,30 @@
           <!--        </button>-->
         </div>
   
-        <div class="grid grid-cols-3 text-sm font-semibold text-[#6B7280] py-[10px] border-b border-[#EEEEEE]">
+        <div class="grid grid-cols-5 text-sm font-semibold text-[#6B7280] py-[10px] border-b border-[#EEEEEE]">
           <div>Поставщик</div>
           <div>ID Обращения</div>
+          <div>Статус</div>
+          <div>Ответ администратора</div>
+          <div></div>
         </div>
         <div
             v-for="user in suppliers"
             :key="user.id"
-            class="grid grid-cols-3 items-center text-sm py-[14px] border-b border-[#EEEEEE] hover:bg-[#F9FAFB] transition cursor-pointer"
+            class="grid grid-cols-5 items-center text-sm py-[14px] border-b border-[#EEEEEE] hover:bg-[#F9FAFB] transition cursor-pointer"
             @click="showModerateModal(user)"
         >
           <div>{{ formatPhoneNumber(user.supplier_phone) }}</div>
           <div>{{ user.id }}</div>
-  
-          <div class="col-span-1 flex justify-end">
+          <div>
+            <span :class="getStatusClass(user.status)" class="status">
+              {{ getStatusText(user.status) }}
+            </span>
+          </div>
+          <div class="truncate max-w-[200px]" :title="user.admin_response || 'Нет ответа'">
+            {{ user.admin_response || 'Нет ответа' }}
+          </div>
+          <div class="flex justify-end">
             <img src="/icons/arrow-right.svg" class="w-4 h-4" />
           </div>
         </div>
@@ -94,6 +104,32 @@ import { getModerateAppeals, moderateAppeal } from '~/services/admin'
     if (!/^\d{11}$/.test(phone)) return 'Неверный формат номера';
   
     return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(4, 7)} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
+  }
+
+  function getStatusText(status) {
+    switch (status) {
+      case 'approved':
+        return 'Одобрено';
+      case 'rejected':
+        return 'Отклонено';
+      case 'pending':
+        return 'В ожидании';
+      default:
+        return 'Неизвестно';
+    }
+  }
+
+  function getStatusClass(status) {
+    switch (status) {
+      case 'approved':
+        return 'status--active';
+      case 'rejected':
+        return 'status--blocked';
+      case 'pending':
+        return 'status--pending';
+      default:
+        return 'status--pending';
+    }
   }
   
   const closeSuccessModal = () => {
