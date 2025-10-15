@@ -24,7 +24,7 @@ function UpdateCemetery(data) {
     return $axios({
         method: 'PUT',
         url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/admin/cemeteries/' + data.id,
-        data
+        data: data.input
     })
 }
 
@@ -32,7 +32,7 @@ function CreateAkimat(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: useRuntimeConfig().public.apiBaseUrl + 'api/v3/rip-government/v1/akimat',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-government/v1/akimat',
         data
     })
 }

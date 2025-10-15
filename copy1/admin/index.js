@@ -24,7 +24,7 @@ function UpdateCemetery(data) {
     return $axios({
         method: 'PUT',
         url: 'http://194.32.140.103:8092/api/v1/admin/cemeteries/' + data.id,
-        data
+        data: data.input
     })
 }
 

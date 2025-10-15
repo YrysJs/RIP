@@ -135,7 +135,13 @@ onMounted(async () => {
 
       <div>
         <label class="block text-sm mb-1">ИИН</label>
-        <input type="text" v-model="form.admin.iin" class="input" />
+        <input 
+          type="text" 
+          v-model="form.admin.iin" 
+          v-mask="'############'"
+          maxlength="12"
+          class="input" 
+        />
       </div>
 
       <div>
