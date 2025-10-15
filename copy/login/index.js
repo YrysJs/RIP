@@ -140,7 +140,7 @@ function signupSupplierWhatsapp(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PUT',
-        url: 'http://194.32.140.103:8081/v1/supplier/signup/whatsapp',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/supplier/signup/whatsapp',
         data
     })
 }
