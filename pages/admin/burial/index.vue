@@ -83,7 +83,7 @@ onMounted((async () => {
 
   try {
     const response = await  getSearchRequests();
-    burials.value = response.data?.data?.data
+    burials.value = response.data?.data
   } catch (error) {
     console.error('Ошибка при получении пользователей:', error)
   } finally {
