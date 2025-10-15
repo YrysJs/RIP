@@ -50,7 +50,7 @@ const form = reactive({
   },
   location_coords: [],
   capacity: 0,
-  burial_price: ''
+  burial_price: 0
 });
 
 const router = useRouter();
@@ -67,9 +67,14 @@ const finishDraw = (cords) => {
 
 const create = async () => {
   try {
+    // Убеждаемся, что burial_price отправляется как число
+    const formData = {
+      ...form,
+      burial_price: Number(form.burial_price) || 0
+    }
     const res = await UpdateCemetery({
       id: route.params.id,
-      input: form
+      input: formData
     })
   }
   catch (err) {
@@ -95,7 +100,7 @@ onMounted(async () => {
     form.polygon_data = response.data.polygon_data
     form.location_coords = response.data.location_coords
     form.capacity = response.data.capacity
-    form.burial_price = response.data.burial_price || ''
+    form.burial_price = response.data.burial_price || 0
   } catch (error) {
     console.error('Ошибка при получении заявок:', error)
   } finally {
@@ -143,9 +148,8 @@ onMounted(async () => {
       <div>
         <label class="block text-sm mb-1">Цена захоронения</label>
         <input 
-          type="text" 
-          v-model="form.burial_price" 
-          v-mask="'##########'"
+          type="number" 
+          v-model.number="form.burial_price" 
           class="input" 
           placeholder="Введите цену"
         />

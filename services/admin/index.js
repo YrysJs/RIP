@@ -76,7 +76,7 @@ function setCemeteryManager(data) {
     return $axios({
         method: 'POST',
         url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/admin/cemeteries/${data.id}/managers`,
-        data
+        data: data.data
     })
 }
 

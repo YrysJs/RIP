@@ -76,7 +76,7 @@ function setCemeteryManager(data) {
     return $axios({
         method: 'POST',
         url: `http://194.32.140.103:8092/api/v1/admin/cemeteries/${data.id}/managers`,
-        data
+        data: data.data
     })
 }
 

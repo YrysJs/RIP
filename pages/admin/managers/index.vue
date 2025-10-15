@@ -80,7 +80,9 @@ const setCemetery = async (id) => {
   try {
     await setCemeteryManager({
       id,
-      cemetery_manager_phone: selectedManagerPhone.value
+      data: {
+        cemetery_manager_phone: selectedManagerPhone.value
+      }
     })
     successText.value = 'Менеджер назначен!'
     isSetCemeteryModal.value = false
