@@ -116,6 +116,20 @@ function formatFileSize(size) {
   return (size / (1024 * 1024)).toFixed(1) + " MB";
 }
 
+// Функция для скачивания файла
+const downloadFile = (url) => {
+  if (!url) return;
+  
+  // Создаем временную ссылку для скачивания
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'death_certificate.pdf'; // Имя файла по умолчанию
+  link.target = '_blank';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 // Функция для открытия модалки оплаты
 const openPaymentModal = () => {
   paymentModalVisible.value = true;
@@ -426,8 +440,23 @@ const canPay = computed(() => {
                     Заключение о смерти от мед учереждении:
                   </p>
 
+                  <!-- Кнопка скачивания существующего файла -->
+                  <div
+                    v-if="burialData?.deceased?.death_cert_url && selectedFiles.length === 0"
+                    class="flex items-center gap-2 p-4 border-2 border-solid border-[#B88F34] rounded-lg bg-[#fef3c7]"
+                  >
+                    <img src="/icons/file.svg" alt="file" class="w-5 h-5" />
+                    <span class="text-[#222222] flex-1">Свидетельство о смерти загружено</span>
+                    <button
+                      @click="downloadFile(burialData.deceased.death_cert_url)"
+                      class="px-3 py-1 bg-[#B88F34] text-white rounded text-sm hover:bg-[#9a7a2a] transition-colors"
+                    >
+                      Скачать
+                    </button>
+                  </div>
+
                   <label
-                    v-if="selectedFiles.length === 0"
+                    v-if="selectedFiles.length === 0 && !burialData?.deceased?.death_cert_url"
                     for="file"
                     class="flex items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#9ca3af] hover:bg-[#e5e7eb] transition-all"
                   >

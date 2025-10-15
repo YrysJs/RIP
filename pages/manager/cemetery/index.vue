@@ -70,12 +70,23 @@ onMounted((async () => {
 <!--      @edit="router.push('/manager/profile/edit')"  />-->
 
     <p class="opacity-0">{{selectedCemetery.id}}</p>
-      <CemeteryCard
-          v-for="(cemetery, index) in cemeteries"
-          :key="index"
-          :cemetery="cemetery"
-          @open-map="selectCemetery"
-      />
+    
+    <!-- Сообщение если нет кладбищ -->
+    <div v-if="cemeteries.length === 0" class="text-center py-8">
+      <div class="bg-white rounded-lg p-6 shadow-sm">
+        <img src="/icons/cemetery-empty.svg" alt="Нет кладбищ" class="w-16 h-16 mx-auto mb-4 opacity-50" />
+        <h3 class="text-lg font-medium text-gray-600 mb-2">Вы пока не назначены</h3>
+        <p class="text-gray-500">Обратитесь к администратору для назначения на кладбища</p>
+      </div>
+    </div>
+    
+    <!-- Список кладбищ -->
+    <CemeteryCard
+        v-for="(cemetery, index) in cemeteries"
+        :key="index"
+        :cemetery="cemetery"
+        @open-map="selectCemetery"
+    />
     <Teleport to="body">
 
       <CemeteryMap
