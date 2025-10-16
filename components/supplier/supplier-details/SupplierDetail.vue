@@ -205,12 +205,6 @@ function formatToDDMMYYYY(iso) {
       <div
         class="flex justify-between items-start pb-4 border-b-2 border-[#EEEEEE]"
       >
-        <h3
-          class="font-foglihten text-fluid font-medium text-[#201001] leading-[48px]"
-        >
-          {{ orderData?.items?.[0]?.product?.name || "—" }}
-          <!-- <span class="text-[#B88F34]">{{ orderData?.id }}</span> -->
-        </h3>
         <p class="text-sm text-[#999]">
           Дата и время заявки:
           {{
@@ -221,6 +215,24 @@ function formatToDDMMYYYY(iso) {
         </p>
       </div>
       <div v-for="it in orderData.items || []" :key="it.id">
+        <div
+            class="flex justify-between items-start pb-4 border-b-2 border-[#EEEEEE] mt-2"
+        >
+          <h3
+              class="font-foglihten text-fluid font-medium text-[#201001] leading-[48px]"
+          >
+            {{ it.product?.name || "—" }}
+            <!-- <span class="text-[#B88F34]">{{ orderData?.id }}</span> -->
+          </h3>
+          <p class="text-sm text-[#999]">
+            Дата и время заявки:
+            {{
+              orderData?.created_at
+                  ? new Date(orderData.created_at).toLocaleString()
+                  : "—"
+            }}
+          </p>
+        </div>
         <!-- Показываем информацию о кладбище и покойном только если есть burial_info -->
         <template v-if="orderData?.burial_info">
           <div
@@ -268,7 +280,7 @@ function formatToDDMMYYYY(iso) {
           class="flex justify-between items-start mt-2 border-b-2 border-[#EEEEEE] pb-[16px]"
         >
           <div class="min-w-[580px] font-medium flex flex-col gap-2">
-            <div class="h-[38px] flex items-center text-base">
+            <div v-if="orderData?.burial_info" class="h-[38px] flex items-center text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">Дата похорон:</p>
               <p v-if="orderData?.burial_info?.burial_date">
                 {{

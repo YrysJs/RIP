@@ -27,17 +27,8 @@ const dateTo   = ref('')
 const cemeteryId = ref(null)
 const toIsoDate = (dateStr) => (dateStr ? `${dateStr}T00:00:00Z` : undefined)
 
-/* Плейсхолдеры под макет (показываются только при пустом ответе) */
-const placeholderBurials = [
-  { id:'ph-1', request_number:1, created_at:'2025-06-07T09:05:00Z', burial_date:'2025-06-07', burial_time:'10:00',
-    deceased:{ full_name:'Иван Иванов Иванович' }, cemetery:'Северное кладбище', sector:'23', grave_id:'56', status:'confirmed' },
-  { id:'ph-2', request_number:2, created_at:'2025-06-07T09:05:00Z', burial_date:'2025-06-07', burial_time:'10:00',
-    deceased:{ full_name:'Иван Иванов Иванович' }, cemetery:'Северное кладбище', sector:'23', grave_id:'56', status:'confirmed' },
-  { id:'ph-3', request_number:3, created_at:'2025-06-07T09:05:00Z', burial_date:'2025-06-07', burial_time:'10:00',
-    deceased:{ full_name:'Иван Иванов Иванович' }, cemetery:'Северное кладбище', sector:'33', grave_id:'151', status:'paid' },
-]
-const isPlaceholderMode = computed(() => !burials.value || burials.value.length === 0)
-const displayBurials = computed(() => (isPlaceholderMode.value ? placeholderBurials : burials.value))
+/* Проверка на пустые данные */
+const isEmpty = computed(() => !burials.value || burials.value.length === 0)
 
 /* Загрузка */
 const fetchBurials = async (params = {  }) => {
@@ -184,12 +175,24 @@ watch([dateFrom, dateTo, cemeteryId], () => {
         </div>
       </div>
 
+      <!-- Пустое состояние -->
+      <div v-if="isEmpty && !loading" class="empty-state">
+        <div class="empty-state__content">
+          <svg class="empty-state__icon" width="64" height="64" viewBox="0 0 24 24" fill="none">
+            <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <h3 class="empty-state__title">Заявок пока нет</h3>
+          <p class="empty-state__text">Когда появятся новые заявки на захоронение, они отобразятся здесь</p>
+        </div>
+      </div>
+
       <!-- Карточки -->
       <div
-        v-for="b in displayBurials"
-        :key="b.id || 'ph-' + b.request_number"
+        v-for="b in burials"
+        :key="b.id"
         class="card"
-        :class="{ 'card--placeholder': isPlaceholderMode, 'card--clickable': true }"
+        :class="{ 'card--clickable': true }"
         :style="{ cursor: b.id ? 'pointer' : 'default' }"
         @click="handleCardClick(b.id)"
       >
@@ -269,7 +272,23 @@ watch([dateFrom, dateTo, cemeteryId], () => {
   background:#fff; border-radius:16px; padding:16px; box-shadow:0 2px 6px rgba(0,0,0,.05);
   display:flex; flex-direction:column; gap:12px; transition:opacity .15s ease;
 }
-.card--placeholder{ opacity:.96; }
+/* Пустое состояние */
+.empty-state{
+  display:flex; justify-content:center; align-items:center;
+  min-height:300px; background:#fff; border-radius:16px; padding:40px 20px;
+}
+.empty-state__content{
+  text-align:center; max-width:300px;
+}
+.empty-state__icon{
+  color:#9AA0A6; margin:0 auto 16px;
+}
+.empty-state__title{
+  font-size:20px; font-weight:600; color:#1F2937; margin:0 0 8px;
+}
+.empty-state__text{
+  font-size:14px; color:#6B7280; margin:0; line-height:1.5;
+}
 
 .card__row{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:nowrap; }
 .card__row--bottom{ align-items:center; }
@@ -358,6 +377,21 @@ watch([dateFrom, dateTo, cemeteryId], () => {
     right: 12px;
     width: 20px;
     height: 20px;
+  }
+
+  .empty-state {
+    margin: 0 16px;
+    min-height: 200px;
+    padding: 40px 20px;
+    border-radius: 12px;
+  }
+
+  .empty-state__title {
+    font-size: 18px;
+  }
+
+  .empty-state__text {
+    font-size: 13px;
   }
 
   .card {
