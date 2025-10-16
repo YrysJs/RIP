@@ -221,46 +221,49 @@ function formatToDDMMYYYY(iso) {
         </p>
       </div>
       <div v-for="it in orderData.items || []" :key="it.id">
-        <div
-          class="flex justify-between items-start mt-2 border-b-2 border-[#EEEEEE] pb-2 max-sm:mt-3 max-sm:pb-3"
-        >
+        <!-- Показываем информацию о кладбище и покойном только если есть burial_info -->
+        <template v-if="orderData?.burial_info">
           <div
-            class="min-w-[580px] font-medium flex flex-col gap-2 max-sm:gap-0"
+            class="flex justify-between items-start mt-2 border-b-2 border-[#EEEEEE] pb-2 max-sm:mt-3 max-sm:pb-3"
           >
-            <div class="h-[38px] flex items-center text-base">
-              <p class="min-w-[150px] grey-14">Кладбище:</p>
-              <p class="black-16">
-                {{ cemeteryName }}
-              </p>
+            <div
+              class="min-w-[580px] font-medium flex flex-col gap-2 max-sm:gap-0"
+            >
+              <div class="h-[38px] flex items-center text-base">
+                <p class="min-w-[150px] grey-14">Кладбище:</p>
+                <p class="black-16">
+                  {{ cemeteryName }}
+                </p>
+              </div>
+              <div class="h-[38px] flex items-center text-base">
+                <p class="min-w-[150px] grey-14">Сектор</p>
+                <p class="black-16">{{ sectorNumber }}</p>
+              </div>
+              <div class="h-[38px] flex items-center text-base">
+                <p class="min-w-[150px] grey-14">Место:</p>
+                <p class="black-16">{{ graveId }}</p>
+              </div>
             </div>
-            <div class="h-[38px] flex items-center text-base">
-              <p class="min-w-[150px] grey-14">Сектор</p>
-              <p class="black-16">{{ sectorNumber }}</p>
-            </div>
-            <div class="h-[38px] flex items-center text-base">
-              <p class="min-w-[150px] grey-14">Место:</p>
-              <p class="black-16">{{ graveId }}</p>
+            <button
+              class="rounded-md p-2 text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]"
+              @click="graveModalOpen = true"
+            >
+              Координаты кладбища
+            </button>
+          </div>
+          <div
+            class="flex justify-between items-start mt-2 border-b-2 border-[#EEEEEE] pb-2 max-sm:mt-3 max-sm:pb-3"
+          >
+            <div class="font-medium flex flex-col gap-[10px]">
+              <div class="h-[38px] flex items-center text-base">
+                <p class="min-w-[150px] max-w-[150px] grey-14">ФИО покойного:</p>
+                <p class="black-16">
+                  {{ orderData?.burial_info?.deceased?.full_name || "—" }}
+                </p>
+              </div>
             </div>
           </div>
-          <button
-            class="rounded-md p-2 text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]"
-            @click="graveModalOpen = true"
-          >
-            Координаты кладбища
-          </button>
-        </div>
-        <div
-          class="flex justify-between items-start mt-2 border-b-2 border-[#EEEEEE] pb-2 max-sm:mt-3 max-sm:pb-3"
-        >
-          <div class="font-medium flex flex-col gap-[10px]">
-            <div class="h-[38px] flex items-center text-base">
-              <p class="min-w-[150px] max-w-[150px] grey-14">ФИО покойного:</p>
-              <p class="black-16">
-                {{ orderData?.burial_info?.deceased?.full_name || "—" }}
-              </p>
-            </div>
-          </div>
-        </div>
+        </template>
         <div
           class="flex justify-between items-start mt-2 border-b-2 border-[#EEEEEE] pb-[16px]"
         >
@@ -278,7 +281,7 @@ function formatToDDMMYYYY(iso) {
             </div>
             <div class="h-[38px] flex items-center text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">Заказчик:</p>
-              <p class="black-16">ёё
+              <p class="black-16">
                 {{ fullName }}
               </p>
             </div>

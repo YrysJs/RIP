@@ -276,7 +276,7 @@
       </template>
 
      <template v-if="activeTab === 'akimat'">
-  <!-- Фильтры: тип обращения / период / сортировка -->
+  <!-- Фильтры: тип обращения и сортировка -->
   <div class="filters-row flex flex-wrap gap-[12px] mb-[16px]">
     
     <!-- Тип обращения -->
@@ -304,34 +304,6 @@
       </span>
     </div>
 
-    <!-- Период обращения -->
-    <div class="field relative flex-1">
-      <span class="field__icon" aria-hidden>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M7 3v4M17 3v4M4 9h16M6 21h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"
-                stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </span>
-      <select
-        class="field__control appearance-none w-full pr-[40px]"
-        v-model="appealPeriod"
-        @change="onAppealPeriodChange"
-        required
-      >
-        <option value="" disabled hidden>Период обращения</option>
-        <option value="7d">Последние 7 дней</option>
-        <option value="30d">Последние 30 дней</option>
-        <option value="thisMonth">Этот месяц</option>
-        <option value="prevMonth">Прошлый месяц</option>
-        <option value="custom">Указать даты</option>
-      </select>
-      <span class="field__chevron" aria-hidden>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </span>
-    </div>
-
     <!-- Сортировка -->
     <div class="field relative flex-1">
       <span class="field__icon" aria-hidden>
@@ -349,35 +321,6 @@
           <path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </span>
-    </div>
-
-    <!-- Кастомные даты (только для custom) -->
-    <div v-if="appealPeriod === 'custom'" class="field relative min-w-[180px]">
-      <span class="field__icon" aria-hidden>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M7 3v4M17 3v4M4 9h16" stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </span>
-      <input
-        class="field__control w-full"
-        type="datetime-local"
-        v-model="appealDateFrom"
-        @change="refetchAppeals()"
-      />
-    </div>
-
-    <div v-if="appealPeriod === 'custom'" class="field relative min-w-[180px]">
-      <span class="field__icon" aria-hidden>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M7 3v4M17 3v4M4 9h16" stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </span>
-      <input
-        class="field__control w-full"
-        type="datetime-local"
-        v-model="appealDateTo"
-        @change="refetchAppeals()"
-      />
     </div>
   </div>
 
@@ -486,9 +429,6 @@ const akimatCount = computed(() => {
 });
 const appealSort = ref('newest');
 const appealTypeId = ref('');
-const appealPeriod = ref('');
-const appealDateFrom = ref('');
-const appealDateTo = ref('');
 
 const requests = ref([]);
 const appeals = ref([]);
@@ -512,34 +452,6 @@ const isSetResponsibleModal = ref(false);
 const applicants = ref([]); // если будет список заявителей — подставится сюда
 
 
-// Функция для изменения периода обращений
-const onAppealPeriodChange = () => {
-  const now = new Date();
-  const start = new Date(now);
-  const end = new Date(now);
-
-  if (appealPeriod.value === '7d') {
-    start.setDate(now.getDate() - 6);
-  } else if (appealPeriod.value === '30d') {
-    start.setDate(now.getDate() - 29);
-  } else if (appealPeriod.value === 'thisMonth') {
-    start.setDate(1);
-  } else if (appealPeriod.value === 'prevMonth') {
-    start.setMonth(now.getMonth() - 1, 1);
-    end.setMonth(now.getMonth(), 0);
-  } else if (appealPeriod.value === 'custom') {
-    return; // ручной ввод — не трогаем
-  } else {
-    // пусто
-    appealDateFrom.value = '';
-    appealDateTo.value = '';
-    return refetchAppeals();
-  }
-
-  appealDateFrom.value = toIsoDateTime(start);
-  appealDateTo.value = toIsoDateTime(end);
-  refetchAppeals();
-}
 
 // Функция для сортировки обращений на фронте
 const sortAppeals = () => {
@@ -557,17 +469,11 @@ const sortAppeals = () => {
   });
 }
 
-// Функция для конвертации даты в ISO формат
-const toIsoDateTime = (date) => {
-  return date.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM
-}
 
 // единая перезагрузка списка обращений
 function refetchAppeals() {
   return fetchAppeals({
     typeId: appealTypeId.value || undefined,
-    from: appealDateFrom.value || undefined,
-    to: appealDateTo.value || undefined,
   })
 }
 
