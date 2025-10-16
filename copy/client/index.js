@@ -151,7 +151,7 @@ function updateCartCount(data) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'PATCH',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/ccart/${data.id}`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/cart/${data.id}`,
         data: data.data
     })
 }

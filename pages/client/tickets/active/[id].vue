@@ -179,7 +179,8 @@ const isFormValid = computed(() => {
   const hasDeathDate = deathDate.value && deathDate.value.trim() !== '';
   const hasBurialDate = burialDate.value && burialDate.value.trim() !== '';
   const hasBurialTime = burialData.value.burial_time && burialData.value.burial_time.trim() !== '';
-  const hasDeathCertificate = selectedFiles.value.length > 0;
+  // Если есть существующий файл, не требуем загрузку нового
+  const hasDeathCertificate = selectedFiles.value.length > 0 || burialData.value?.deceased?.death_cert_url;
   
   return hasDeathDate && hasBurialDate && hasBurialTime && hasDeathCertificate;
 });
@@ -446,7 +447,7 @@ const canPay = computed(() => {
                     class="flex items-center gap-2 p-4 border-2 border-solid border-[#B88F34] rounded-lg bg-[#fef3c7]"
                   >
                     <img src="/icons/file.svg" alt="file" class="w-5 h-5" />
-                    <span class="text-[#222222] flex-1">Свидетельство о смерти загружено</span>
+                    <span class="text-[#222222] flex-1">Свидетельство о смерти</span>
                     <button
                       @click="downloadFile(burialData.deceased.death_cert_url)"
                       class="px-3 py-1 bg-[#B88F34] text-white rounded text-sm hover:bg-[#9a7a2a] transition-colors"
