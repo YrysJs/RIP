@@ -46,33 +46,33 @@ function formatPhoneNumber(phone) {
 </script>
 
 <template>
-  <div v-if="visible" class="modal fixed min-w-full min-h-[100vh] flex justify-center items-center z-50">
-    <div class="bg-white rounded-lg max-w-[795px] w-full max-h-[90vh] overflow-y-auto m-4">
+  <div v-if="visible" class="modal fixed min-w-full min-h-[100vh] flex justify-center items-center z-50 p-1 xs:p-2 sm:p-4">
+    <div class="bg-white rounded-lg max-w-[795px] w-full max-h-[95vh] xs:max-h-[90vh] overflow-y-auto">
       <!-- Header -->
-      <div class="flex justify-between items-start pt-6 pl-6 pr-6 pb-0 border-b">
-        <div class="flex-1">
-          <div class="flex items-center gap-2 mb-2">
-            <h2 class="text-xl font-bold">{{ service?.name || 'Доставка покойного' }}</h2>
+      <div class="flex justify-between items-start pt-3 xs:pt-4 sm:pt-6 pl-3 xs:pl-4 sm:pl-6 pr-3 xs:pr-4 sm:pr-6 pb-0 border-b">
+        <div class="flex-1 min-w-0 pr-2">
+          <div class="flex items-center gap-1 xs:gap-2 mb-1 xs:mb-2">
+            <h2 class="text-base xs:text-lg sm:text-xl font-bold truncate">{{ service?.name || 'Доставка покойного' }}</h2>
 <!--            <div class="flex items-center">-->
 <!--              <span class="text-orange-400 text-sm">{{ renderStars(service?.rating || 4.7) }}</span>-->
 <!--              <span class="text-sm text-gray-600 ml-1">{{ service?.rating || 4.7 }}</span>-->
 <!--            </div>-->
           </div>
-          <div class="text-2xl font-bold">
+          <div class="text-lg xs:text-xl sm:text-2xl font-bold">
             {{ formatPrice(service?.price || 100000) }} ₸
           </div>
         </div>
-        <button @click="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl ml-4">
+        <button @click="closeModal" class="text-gray-400 hover:text-gray-600 text-xl xs:text-2xl ml-1 xs:ml-2 sm:ml-4 flex-shrink-0">
           &times;
         </button>
       </div>
       
       <!-- Content -->
-      <div class="pt-2 pl-6 pr-6 pb-6">
+      <div class="pt-2 pl-3 xs:pl-4 sm:pl-6 pr-3 xs:pr-4 sm:pr-6 pb-3 xs:pb-4 sm:pb-6">
         <!-- Service Image -->
-        <div class="flex gap-[12px]">
-            <div v-if="service?.image_urls" class="mb-6">
-                <div class="min-w-[330px] w-full h-[221px] rounded-lg overflow-hidden bg-gray-100" v-for="image in service.image_urls" :key="image">
+        <div class="flex flex-col lg:flex-row gap-2 xs:gap-3 sm:gap-[12px]">
+            <div v-if="service?.image_urls" class="mb-3 xs:mb-4 sm:mb-6">
+                <div class="w-full lg:min-w-[330px] lg:max-w-[330px] h-[150px] xs:h-[200px] sm:h-[221px] rounded-lg overflow-hidden bg-gray-100" v-for="image in service.image_urls" :key="image">
                     <img 
                     :src="image"
                     :alt="service.title"
@@ -82,49 +82,54 @@ function formatPhoneNumber(phone) {
             </div>
 
             <!-- Description -->
-            <div class="mb-6">
-                <p class="text-base">
+            <div class="mb-3 xs:mb-4 sm:mb-6 flex-1">
+                <p class="text-xs xs:text-sm sm:text-base leading-relaxed">
                     {{ service?.description || 'Профессиональная транспортировка покойного осуществляется с соблюдением всех санитарных и этических норм. Мы обеспечиваем бережное отношение к усопшему на всех этапах перевозки для вас период. Услуга включает транспортировку тела в специализированном автомобиле, оформление сопроводительной документации и при необходимости, сопровождение близких.' }}
                 </p>
             </div>
         </div>
 
         <!-- Provider Info -->
-        <div class="mb-6 rounded-lg">
-          <h3 class="font-semibold text-sm text-[#939393]">Поставщик услуг</h3>
-          <p class="text-sm font-medium">{{ supplier?.name || 'Ритуальный Центр "Покой и Уважение"' }}</p>
-          <p class="text-sm">{{ supplier?.city?.name || 'Улица Бейсекбаева, Алматы' }} <a href="" class="ml-3">{{ formatPhoneNumber(service?.supplier_phone) }}</a></p>
+        <div class="mb-3 xs:mb-4 sm:mb-6 rounded-lg">
+          <h3 class="font-semibold text-xs sm:text-sm text-[#939393] mb-1">Поставщик услуг</h3>
+          <p class="text-xs sm:text-sm font-medium mb-1 break-words">{{ supplier?.name || 'Ритуальный Центр "Покой и Уважение"' }}</p>
+          <p class="text-xs sm:text-sm break-words">
+            {{ supplier?.city?.name || 'Улица Бейсекбаева, Алматы' }} 
+            <a href="" class="ml-1 xs:ml-2 sm:ml-3 text-blue-600 hover:text-blue-800 break-all">{{ formatPhoneNumber(service?.supplier_phone) }}</a>
+          </p>
         </div>
 
         <!-- Reviews -->
-        <div class="mb-6">
-          <h3 class="text-lg font-semibold mb-4">Отзывы</h3>
-          <div v-if="reviews && reviews.length" class="space-y-4">
+        <div class="mb-3 xs:mb-4 sm:mb-6">
+          <h3 class="text-sm xs:text-base sm:text-lg font-semibold mb-2 xs:mb-3 sm:mb-4">Отзывы</h3>
+          <div v-if="reviews && reviews.length" class="space-y-2 xs:space-y-3 sm:space-y-4">
             <div
               v-for="review in reviews"
               :key="review.id"
-              class="border-b border-gray-100 pb-3 last:border-b-0"
+              class="border-b border-gray-100 pb-2 xs:pb-2 sm:pb-3 last:border-b-0"
             >
-              <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-2">
-                  <span class="font-medium text-sm">{{ review.name }}</span>
-                  <span class="text-xs text-gray-500">{{ new Date(review.created_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</span>
+              <div class="flex flex-col gap-1">
+                <div class="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-1">
+                  <div class="flex flex-col xs:flex-row xs:items-center gap-1">
+                    <span class="font-medium text-xs sm:text-sm">{{ review.name }}</span>
+                    <span class="text-xs text-gray-500">{{ new Date(review.created_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</span>
+                  </div>
+                  <span class="text-orange-400 text-xs sm:text-sm">{{ renderStars(review.rating) }}</span>
                 </div>
-                <span class="text-orange-400 text-sm">{{ renderStars(review.rating) }}</span>
+                <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">{{ review.comment }}</p>
               </div>
-              <p class="text-sm text-gray-600">{{ review.comment }}</p>
             </div>
           </div>
-          <div v-else class="">
+          <div v-else class="text-xs xs:text-sm text-gray-500">
               Отзывы отсутствуют
           </div>
         </div>
 
         <!-- Action Button -->
-        <div class="flex justify-end">
+        <div class="flex justify-center sm:justify-end">
           <button 
             @click="orderService"
-            class="w-full max-w-[200px] py-3 bg-[#38949B] hover:bg-[#2d7c82] text-white rounded-lg font-semibold transition-colors"
+            class="w-full sm:w-auto sm:max-w-[200px] py-2 xs:py-3 px-3 xs:px-4 bg-[#E9B949] hover:bg-[#D1A53F] text-white rounded-lg font-semibold transition-colors text-sm xs:text-base"
           >
             {{ service?.buttonText || 'Добавить' }}
           </button>
@@ -139,5 +144,70 @@ function formatPhoneNumber(phone) {
   top: 0;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(2px);
+  z-index: 99;
+}
+
+// Кастомные стили для экранов меньше 425px
+@media (max-width: 424px) {
+  .modal {
+    padding: 4px;
+  }
+  
+  .modal > div {
+    max-height: 98vh;
+    border-radius: 8px;
+  }
+  
+  // Уменьшаем отступы для очень маленьких экранов
+  .modal .pt-3 {
+    padding-top: 8px;
+  }
+  
+  .modal .pl-3, .modal .pr-3 {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  
+  .modal .pb-3 {
+    padding-bottom: 8px;
+  }
+  
+  // Уменьшаем размеры изображений
+  .modal img {
+    height: 120px !important;
+  }
+  
+  // Уменьшаем размеры текста
+  .modal h2 {
+    font-size: 14px !important;
+    line-height: 1.2;
+  }
+  
+  .modal .text-lg {
+    font-size: 16px !important;
+  }
+  
+  .modal .text-xs {
+    font-size: 10px !important;
+  }
+  
+  .modal .text-sm {
+    font-size: 11px !important;
+  }
+  
+  // Уменьшаем отступы между элементами
+  .modal .mb-3 {
+    margin-bottom: 8px;
+  }
+  
+  .modal .gap-2 {
+    gap: 4px;
+  }
+  
+  // Улучшаем кнопку
+  .modal button {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+  }
 }
 </style> 

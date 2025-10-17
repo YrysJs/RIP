@@ -224,14 +224,6 @@ function formatToDDMMYYYY(iso) {
             {{ it.product?.name || "—" }}
             <!-- <span class="text-[#B88F34]">{{ orderData?.id }}</span> -->
           </h3>
-          <p class="text-sm text-[#999]">
-            Дата и время заявки:
-            {{
-              orderData?.created_at
-                  ? new Date(orderData.created_at).toLocaleString()
-                  : "—"
-            }}
-          </p>
         </div>
         <!-- Показываем информацию о кладбище и покойном только если есть burial_info -->
         <template v-if="orderData?.burial_info">

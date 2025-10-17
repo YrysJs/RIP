@@ -145,8 +145,7 @@ const onSubmit = async () => {
 }
 
 .btn-submit {
-  background: #38949B;
-  color: white;
+  background: #E9B949;
   font-weight: 500;
   padding: 16px 24px;
   font-size: 16px;

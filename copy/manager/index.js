@@ -9,6 +9,15 @@ function getBurialRequests(params) {
     })
 }
 
+function getManagerBurialRequests(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v8/burial-requests',
+        params,
+    })
+}
+
 function getBurialRequestById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -45,5 +54,6 @@ export {
     getBurialRequests,
     getBurialRequestById,
     getBurialRequestStatus,
-    burialRequestComplete
+    burialRequestComplete,
+    getManagerBurialRequests
 }

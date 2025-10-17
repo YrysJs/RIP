@@ -186,26 +186,26 @@ useHead({
           class="bg-[#0000000A] rounded-2xl flex gap-3 md:gap-4 items-stretch max-xl:flex-col max-xl:max-w-[457px] max-sm:max-w-full mb-4"
         >
           <!-- image -->
-          <div class="min-w-[400px] max-w-[400px] shrink-0 mx-auto">
+          <div class="w-full xs:min-w-[300px] xs:max-w-[300px] sm:min-w-[350px] sm:max-w-[350px] md:min-w-[400px] md:max-w-[400px] shrink-0 mx-auto">
             <img
               :src="o.items[0]?.product?.image_urls[0]"
               alt=""
-              class="w-full h-full object-cover rounded-xl"
+              class="w-full h-[200px] xs:h-[250px] sm:h-[300px] md:h-[350px] object-cover rounded-xl"
             />
           </div>
 
           <!-- content -->
-          <div class="flex-1 flex flex-col pt-3 pr-6 pb-6 gap-2 max-xl:px-6">
+          <div class="flex-1 flex flex-col pt-3 pr-3 xs:pr-4 sm:pr-6 pb-3 xs:pb-4 sm:pb-6 gap-2 max-xl:px-3 xs:px-4 sm:px-6">
             <div
-              class="flex items-start justify-between flex-wrap-reverse gap-2"
+              class="flex flex-col xs:flex-row xs:items-start xs:justify-between gap-2"
             >
-              <div class="text-[22px] font-semibold w-[250px]">
+              <div class="text-lg xs:text-xl sm:text-[22px] font-semibold min-w-0 flex-shrink">
                 Заказ №{{ o.items[0]?.order_id }}
               </div>
 
               <!-- status -->
               <div
-                class="px-3 py-1 rounded-lg text-[13px] flex items-center gap-2"
+                class="px-2 xs:px-3 py-1 rounded-lg text-xs xs:text-[13px] flex items-center gap-2 flex-shrink-0"
                 :class="statusView[o.status].wrap"
               >
                 <span
@@ -215,41 +215,41 @@ useHead({
                 {{ statusView[o.status].label }}
               </div>
             </div>
-            <div class="text-sm text-[#5C6771E6] flex flex-wrap">
+            <div class="text-xs xs:text-sm text-[#5C6771E6] flex flex-wrap break-words">
               {{ o.items[0]?.product?.name }},
-              <span
+              <span class="break-all"
                 >телефон:
                 {{
                   formatPhoneNumber(o.items[0]?.product?.supplier_phone)
                 }}</span
               >
             </div>
-            <div class="flex items-center gap-2">
-              <span><img src="/icons/pin.svg" alt="" /></span>
-              <div class="text-[#201001]">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 mt-0.5"><img src="/icons/pin.svg" alt="" class="w-4 h-4" /></span>
+              <div class="text-xs xs:text-sm text-[#201001] break-words">
                 Адрес прибытия: {{ o.items[0]?.delivery_destination_address }}
               </div>
             </div>
 
             <div class="flex items-start gap-2">
-              <span><img src="/icons/time.svg" alt="" /></span>
-              <div class="text-[#201001]">
+              <span class="flex-shrink-0 mt-0.5"><img src="/icons/time.svg" alt="" class="w-4 h-4" /></span>
+              <div class="text-xs xs:text-sm text-[#201001]">
                 Время прибытия:
                 {{ formatToDDMMYYYY(o.items[0]?.delivery_arrival_time) }}
               </div>
             </div>
 
             <div class="flex items-start gap-2">
-              <span><img src="/icons/check.svg" alt="" /></span>
-              <div class="text-[#201001]" @click="openReceiptModal(o)">
+              <span class="flex-shrink-0 mt-0.5"><img src="/icons/check.svg" alt="" class="w-4 h-4" /></span>
+              <div class="text-xs xs:text-sm text-[#201001] cursor-pointer hover:text-blue-600" @click="openReceiptModal(o)">
                 Чек об оплате
                 <!-- {{ o.receipt ? "Доступен" : "—" }} -->
               </div>
             </div>
 
-            <div class="mt-3 flex justify-end">
+            <div class="mt-2 xs:mt-3 flex justify-center xs:justify-end">
               <button
-                class="rounded-lg py-[9px] px-[37px] text-sm font-medium transition"
+                class="rounded-lg py-2 xs:py-[9px] px-4 xs:px-[37px] text-xs xs:text-sm font-medium transition w-full xs:w-auto"
                 :class="
                   o.status === 'completed'
                     ? 'bg-[#E9B949] text-black hover:bg-[#D1A53F] cursor-pointer active:bg-[#B88F34]'
@@ -298,5 +298,58 @@ useHead({
 <style lang="scss" scoped>
 .text-fluid {
   font-size: clamp(24px, 3vw, 32px);
+}
+
+// Кастомные стили для экранов меньше 425px
+@media (max-width: 424px) {
+  // Уменьшаем отступы для карточек заказов
+  article {
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  
+  // Адаптивные размеры изображений
+  article img {
+    height: 150px !important;
+  }
+  
+  // Уменьшаем размеры текста
+  article .text-lg {
+    font-size: 16px !important;
+  }
+  
+  article .text-xs {
+    font-size: 10px !important;
+  }
+  
+  article .text-sm {
+    font-size: 11px !important;
+  }
+  
+  // Уменьшаем отступы кнопки
+  article button {
+    padding: 6px 12px !important;
+    font-size: 10px !important;
+  }
+  
+  // Уменьшаем размеры иконок
+  article img[src*="icons"] {
+    width: 12px !important;
+    height: 12px !important;
+  }
+  
+  // Улучшаем отступы для контента
+  article .pt-3 {
+    padding-top: 8px;
+  }
+  
+  article .pr-3, article .pl-3 {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  
+  article .pb-3 {
+    padding-bottom: 8px;
+  }
 }
 </style>

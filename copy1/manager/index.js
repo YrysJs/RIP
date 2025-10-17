@@ -9,6 +9,16 @@ function getBurialRequests(params) {
     })
 }
 
+
+function getManagerBurialRequests(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: 'http://194.32.140.103:8094/api/v1/burial-requests',
+        params,
+    })
+}
+
 function getBurialRequestById(id) {
     const { $axios } = useNuxtApp()
     return $axios({
@@ -44,5 +54,6 @@ export {
     getBurialRequests,
     getBurialRequestById,
     getBurialRequestStatus,
-    burialRequestComplete
+    burialRequestComplete,
+    getManagerBurialRequests
 }
