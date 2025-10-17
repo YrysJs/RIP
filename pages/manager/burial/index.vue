@@ -1,6 +1,11 @@
 <script setup>
 // import { useRouter } from 'vue-router'
-import { getBurialRequestById, getBurialRequests, getBurialRequestStatus, burialRequestComplete } from '~/services/manager'
+import {
+  getBurialRequestById,
+  getBurialRequestStatus,
+  burialRequestComplete,
+  getManagerBurialRequests
+} from '~/services/manager'
 import BurialDetailsModal from '~/components/manager/burial/BurialDetailsModal.vue'
 import { getGraveById, getGraveImages } from '~/services/client'
 import { getCemeteries } from '~/services/cemetery'
@@ -34,7 +39,7 @@ const isEmpty = computed(() => !burials.value || burials.value.length === 0)
 const fetchBurials = async (params = {  }) => {
   try {
     loading.value = true
-    const response = await getBurialRequests(params)
+    const response = await getManagerBurialRequests(params)
     burials.value = response.data?.data?.data ?? []
   } catch (e) {
     console.error('Ошибка при получении заявок:', e)
