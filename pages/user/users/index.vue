@@ -81,6 +81,7 @@
       <SuccessModal
         v-if="showSuccessModal"
         :title="successText"
+        :show-button="true"
         @close="closeSuccessModal"
       />
 

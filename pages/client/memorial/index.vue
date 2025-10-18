@@ -47,6 +47,13 @@ const loadMemorials = async () => {
 onMounted(() => {
   loadMemorials();
 });
+
+// Функция для обрезки текста
+function truncateText(text, maxLength = 45) {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
+}
 </script>
 
 <template>
@@ -76,7 +83,7 @@ onMounted(() => {
             >
               <div>
                 <h3 class="text-fluid-16 font-medium">
-                  {{ memorial.about_person }}
+                  {{ truncateText(memorial.about_person) }}
                 </h3>
                 <p class="text-sm text-[#999] max-sm:text-[13px]">
                   {{

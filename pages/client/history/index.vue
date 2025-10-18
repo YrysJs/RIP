@@ -18,6 +18,10 @@ const receiptLoading = ref(false);
 const showCommentModal = ref(false);
 const selectedOrder = ref(null);
 
+// Состояние модалки товаров
+const showItemsModal = ref(false);
+const selectedOrderItems = ref(null);
+
 // Моки
 const orders = ref([]);
 
@@ -56,7 +60,7 @@ const statusView = {
 
 async function fetchOrders(page = 1, limit = 10) {
   try {
-    const response = await getOrders({ page, limit });
+    const response = await getOrders({page, limit});
     orders.value = response.data.items;
     // Инициализируем массив для отслеживания открытых элементов
     // openItems.value = response?.items?.map(() => false) || [];
@@ -71,15 +75,15 @@ function formatPhoneNumber(phone) {
   if (!/^\d{11}$/.test(phone)) return "Неверный формат номера";
 
   return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(
-    4,
-    7
+      4,
+      7
   )} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
 }
 
 const filtered = computed(() =>
-  activeTab.value === "Активные"
-    ? orders.value.filter((o) => o.status !== "done")
-    : orders.value.filter((o) => o.status === "done")
+    activeTab.value === "Активные"
+        ? orders.value.filter((o) => o.status !== "done")
+        : orders.value.filter((o) => o.status === "done")
 );
 
 function formatToDDMMYYYY(iso) {
@@ -98,11 +102,11 @@ async function openReceiptModal(order) {
     receiptData.value = null;
 
     const transactionId =
-      order.transaction_id ||
-      order.payment_transaction_id ||
-      order.payment_id ||
-      order.transaction ||
-      order.id;
+        order.transaction_id ||
+        order.payment_transaction_id ||
+        order.payment_id ||
+        order.transaction ||
+        order.id;
 
     if (!transactionId) {
       alert("Ошибка: Transaction ID не найден.");
@@ -148,11 +152,22 @@ function handleCommentSuccess(message) {
   fetchOrders(currentPage.value, pageSize.value);
 }
 
+// Методы для работы с модалкой товаров
+function openItemsModal(order) {
+  selectedOrderItems.value = order.items;
+  showItemsModal.value = true;
+}
+
+function closeItemsModal() {
+  showItemsModal.value = false;
+  selectedOrderItems.value = null;
+}
+
 // когда модалка открыта — добавим классы на body
 useHead({
   bodyAttrs: {
     class: computed(() =>
-      showReview.value ? "overflow-hidden overscroll-none" : ""
+        showReview.value ? "overflow-hidden overscroll-none" : ""
     ),
   },
 });
@@ -181,82 +196,90 @@ useHead({
       <!-- List -->
       <div class="mt-5">
         <article
-          v-for="o in orders"
-          :key="o.id"
-          class="bg-[#0000000A] rounded-2xl flex gap-3 md:gap-4 items-stretch max-xl:flex-col max-xl:max-w-[457px] max-sm:max-w-full mb-4"
+            v-for="o in orders"
+            :key="o.id"
+            class="bg-[#0000000A] rounded-2xl flex gap-3 md:gap-4 items-stretch max-xl:flex-col max-xl:max-w-[457px] max-sm:max-w-full mb-4"
         >
           <!-- image -->
-          <div class="w-full xs:min-w-[300px] xs:max-w-[300px] sm:min-w-[350px] sm:max-w-[350px] md:min-w-[400px] md:max-w-[400px] shrink-0 mx-auto">
+          <div class="min-w-[400px] max-w-[400px] shrink-0 mx-auto">
             <img
-              :src="o.items[0]?.product?.image_urls[0]"
-              alt=""
-              class="w-full h-[200px] xs:h-[250px] sm:h-[300px] md:h-[350px] object-cover rounded-xl"
+                :src="o.items[0]?.product?.image_urls[0]"
+                alt=""
+                class="w-full h-full object-cover rounded-xl"
             />
           </div>
 
           <!-- content -->
-          <div class="flex-1 flex flex-col pt-3 pr-3 xs:pr-4 sm:pr-6 pb-3 xs:pb-4 sm:pb-6 gap-2 max-xl:px-3 xs:px-4 sm:px-6">
+          <div class="flex-1 flex flex-col pt-3 pr-6 pb-6 gap-2 max-xl:px-6">
             <div
-              class="flex flex-col xs:flex-row xs:items-start xs:justify-between gap-2"
+                class="flex items-start justify-between flex-wrap-reverse gap-2"
             >
-              <div class="text-lg xs:text-xl sm:text-[22px] font-semibold min-w-0 flex-shrink">
+              <div class="text-[22px] font-semibold w-[250px]">
                 Заказ №{{ o.items[0]?.order_id }}
               </div>
 
               <!-- status -->
               <div
-                class="px-2 xs:px-3 py-1 rounded-lg text-xs xs:text-[13px] flex items-center gap-2 flex-shrink-0"
-                :class="statusView[o.status].wrap"
+                  class="px-3 py-1 rounded-lg text-[13px] flex items-center gap-2"
+                  :class="statusView[o.status].wrap"
               >
                 <span
-                  class="inline-block w-2 h-2 rounded-full"
-                  :class="statusView[o.status].dot"
+                    class="inline-block w-2 h-2 rounded-full"
+                    :class="statusView[o.status].dot"
                 />
                 {{ statusView[o.status].label }}
               </div>
             </div>
-            <div class="text-xs xs:text-sm text-[#5C6771E6] flex flex-wrap break-words">
+            <div v-if="o.items.length === 1" class="text-sm text-[#5C6771E6] flex flex-wrap">
               {{ o.items[0]?.product?.name }},
-              <span class="break-all"
-                >телефон:
+              <span
+              >телефон:
                 {{
                   formatPhoneNumber(o.items[0]?.product?.supplier_phone)
                 }}</span
               >
             </div>
-            <div class="flex items-start gap-2">
-              <span class="flex-shrink-0 mt-0.5"><img src="/icons/pin.svg" alt="" class="w-4 h-4" /></span>
-              <div class="text-xs xs:text-sm text-[#201001] break-words">
+            <div v-else class="text-sm text-[#5C6771E6]">
+              <span 
+                class="text-blue-600 cursor-pointer hover:text-blue-800 underline"
+                @click="openItemsModal(o)"
+              >
+                Количество товаров в заказе: {{ o.items.length }}
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span><img src="/icons/pin.svg" alt=""/></span>
+              <div class="text-[#201001]">
                 Адрес прибытия: {{ o.items[0]?.delivery_destination_address }}
               </div>
             </div>
 
             <div class="flex items-start gap-2">
-              <span class="flex-shrink-0 mt-0.5"><img src="/icons/time.svg" alt="" class="w-4 h-4" /></span>
-              <div class="text-xs xs:text-sm text-[#201001]">
+              <span><img src="/icons/time.svg" alt=""/></span>
+              <div class="text-[#201001]">
                 Время прибытия:
                 {{ formatToDDMMYYYY(o.items[0]?.delivery_arrival_time) }}
               </div>
             </div>
 
             <div class="flex items-start gap-2">
-              <span class="flex-shrink-0 mt-0.5"><img src="/icons/check.svg" alt="" class="w-4 h-4" /></span>
-              <div class="text-xs xs:text-sm text-[#201001] cursor-pointer hover:text-blue-600" @click="openReceiptModal(o)">
+              <span><img src="/icons/check.svg" alt=""/></span>
+              <div class="text-[#201001]" @click="openReceiptModal(o)">
                 Чек об оплате
                 <!-- {{ o.receipt ? "Доступен" : "—" }} -->
               </div>
             </div>
 
-            <div class="mt-2 xs:mt-3 flex justify-center xs:justify-end">
+            <div class="mt-3 flex justify-end">
               <button
-                class="rounded-lg py-2 xs:py-[9px] px-4 xs:px-[37px] text-xs xs:text-sm font-medium transition w-full xs:w-auto"
-                :class="
+                  class="rounded-lg py-[9px] px-[37px] text-sm font-medium transition"
+                  :class="
                   o.status === 'completed'
                     ? 'bg-[#E9B949] text-black hover:bg-[#D1A53F] cursor-pointer active:bg-[#B88F34]'
                     : 'bg-[#E9B949] text-black opacity-50 cursor-not-allowed'
                 "
-                :disabled="o.status !== 'completed'"
-                @click="openCommentModal(o)"
+                  :disabled="o.status !== 'completed'"
+                  @click="openCommentModal(o)"
               >
                 Оставить отзыв
               </button>
@@ -265,32 +288,77 @@ useHead({
         </article>
 
         <div
-          v-if="!filtered.length"
-          class="text-[#5C6771] text-sm bg-white border border-[#EFEFEF] rounded-xl p-6"
+            v-if="!filtered.length"
+            class="text-[#5C6771] text-sm bg-white border border-[#EFEFEF] rounded-xl p-6"
         >
           Заказов нет.
         </div>
       </div>
     </section>
-    <AddReviewModal v-model="showReview" />
+    <AddReviewModal v-model="showReview"/>
     <Teleport to="body">
       <AddComment
-        :visible="showCommentModal"
-        :productId="selectedOrder?.items?.[0]?.product_id"
-        :supplierPhone="selectedOrder?.items?.[0]?.product?.supplier_phone"
-        @close="closeCommentModal"
-        @success="handleCommentSuccess"
+          :visible="showCommentModal"
+          :productId="selectedOrder?.items?.[0]?.product_id"
+          :supplierPhone="selectedOrder?.items?.[0]?.product?.supplier_phone"
+          @close="closeCommentModal"
+          @success="handleCommentSuccess"
       />
     </Teleport>
 
     <!-- Модалка для отображения чека -->
     <Teleport to="body">
       <ReceiptModal
-        :visible="showReceiptModal"
-        :receiptData="receiptData"
-        :loading="receiptLoading"
-        @close="closeReceiptModal"
+          :visible="showReceiptModal"
+          :receiptData="receiptData"
+          :loading="receiptLoading"
+          @close="closeReceiptModal"
       />
+    </Teleport>
+
+    <!-- Модалка для отображения товаров -->
+    <Teleport to="body">
+      <div v-if="showItemsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+          <!-- Header -->
+          <div class="flex justify-between items-center p-4 border-b">
+            <h3 class="text-lg font-semibold">Товары в заказе</h3>
+            <button @click="closeItemsModal" class="text-gray-400 hover:text-gray-600 text-2xl">
+              &times;
+            </button>
+          </div>
+          
+          <!-- Content -->
+          <div class="p-4">
+            <div v-for="(item, index) in selectedOrderItems" :key="index" class="border-b border-gray-100 pb-4 mb-4 last:border-b-0">
+              <div class="flex gap-4">
+                <!-- Image -->
+                <div class="w-20 h-20 flex-shrink-0">
+                  <img 
+                    :src="item.product?.image_urls?.[0]" 
+                    :alt="item.product?.name"
+                    class="w-full h-full object-cover rounded-lg"
+                  />
+                </div>
+                
+                <!-- Info -->
+                <div class="flex-1">
+                  <h4 class="font-medium text-sm mb-1">{{ item.product?.name }}</h4>
+                  <p class="text-xs text-gray-600 mb-2">
+                    Телефон: {{ formatPhoneNumber(item.product?.supplier_phone) }}
+                  </p>
+                  <p class="text-xs text-gray-600">
+                    Адрес: {{ item.delivery_destination_address }}
+                  </p>
+                  <p class="text-xs text-gray-600">
+                    Время: {{ formatToDDMMYYYY(item.delivery_arrival_time) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </Teleport>
   </NuxtLayout>
 </template>
@@ -302,54 +370,15 @@ useHead({
 
 // Кастомные стили для экранов меньше 425px
 @media (max-width: 424px) {
-  // Уменьшаем отступы для карточек заказов
-  article {
-    margin-bottom: 12px;
-    gap: 8px;
+  // Изображение занимает 100% ширины контейнера на маленьких экранах
+  article div {
+    min-width: 100% !important;
+    max-width: 100% !important;
   }
   
-  // Адаптивные размеры изображений
+  // Уменьшаем высоту изображения для лучшего отображения
   article img {
-    height: 150px !important;
-  }
-  
-  // Уменьшаем размеры текста
-  article .text-lg {
-    font-size: 16px !important;
-  }
-  
-  article .text-xs {
-    font-size: 10px !important;
-  }
-  
-  article .text-sm {
-    font-size: 11px !important;
-  }
-  
-  // Уменьшаем отступы кнопки
-  article button {
-    padding: 6px 12px !important;
-    font-size: 10px !important;
-  }
-  
-  // Уменьшаем размеры иконок
-  article img[src*="icons"] {
-    width: 12px !important;
-    height: 12px !important;
-  }
-  
-  // Улучшаем отступы для контента
-  article .pt-3 {
-    padding-top: 8px;
-  }
-  
-  article .pr-3, article .pl-3 {
-    padding-left: 8px;
-    padding-right: 8px;
-  }
-  
-  article .pb-3 {
-    padding-bottom: 8px;
+    height: 200px !important;
   }
 }
 </style>

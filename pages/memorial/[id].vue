@@ -306,6 +306,15 @@ async function shareMemorial() {
                     {{ grave?.polygon_data.coordinates[0][0] + ', ' + grave?.polygon_data.coordinates[0][1] || "Не указаны" }}
                   </div>
                 </div>
+                <div v-if="grave?.polygon_data.coordinates[0][0] && grave?.polygon_data.coordinates[0][1]" class="mt-2">
+                  <a 
+                    :href="`https://yandex.ru/maps/?pt=${grave.polygon_data.coordinates[0][0]},${grave.polygon_data.coordinates[0][1]}&z=17&l=map`"
+                    target="_blank"
+                    class="text-blue-600 hover:text-blue-800 underline cursor-pointer text-sm"
+                  >
+                    Посмотреть на карте
+                  </a>
+                </div>
               </div>
             </aside>
           </div>

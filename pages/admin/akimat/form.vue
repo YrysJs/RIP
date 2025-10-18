@@ -174,6 +174,7 @@ onMounted(async () => {
     <Teleport to="body">
       <SuccessModal
           v-if="showSuccessModal"
+          :show-button="true"
           title="Акимат создан!"
           @close="closeSuccessModal"
       />

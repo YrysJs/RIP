@@ -138,7 +138,7 @@
         v-if="showSuccessModal"
         :title="isEdit ? 'Изменения сохранены!' : 'Новость опубликована!'"
         :text="'Закрыть'"
-        :show-button="false"
+        :show-button="true"
         @close="closeSuccessModal"
       />
     </Teleport>

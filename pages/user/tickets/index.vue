@@ -386,7 +386,7 @@
           @close="isSetResponsibleModal = false"
           @choose="setResponsible"
       />
-      <SuccessModal v-if="showSuccessModal" :open="showSuccessModal" :text="successText" @close="closeSuccessModal" :buttonText="'ОК'" />
+      <SuccessModal v-if="showSuccessModal" :open="showSuccessModal" :text="successText" @close="closeSuccessModal" :show-button="true" />
     </Teleport>
   </NuxtLayout>
 </template>
