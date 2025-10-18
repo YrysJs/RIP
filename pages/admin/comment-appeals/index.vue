@@ -42,6 +42,7 @@
         <SuccessModal
             v-if="showSuccessModal"
             title="Обращение обработано!"
+            :show-button="true"
             @close="closeSuccessModal"
         />
         <ModerateAppealModal

@@ -33,6 +33,7 @@
     <Teleport to="body">
       <SuccessModal
           v-if="showSuccessModal"
+          :show-button="true"
           title="Обращение обработано!"
           @close="closeSuccessModal"
       />

@@ -172,6 +172,7 @@ const create = async () => {
     <Teleport to="body">
       <SuccessModal
           v-if="showSuccessModal"
+          :show-button="true"
           title="Кладбище создано!"
           @close="closeSuccessModal"
       />

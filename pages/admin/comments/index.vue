@@ -34,6 +34,7 @@
       <SuccessModal
           v-if="showSuccessModal"
           title="Приглашение отправлено!"
+          :show-button="true"
           @close="closeSuccessModal"
       />
       <ModerateCommentModal

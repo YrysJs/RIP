@@ -8,7 +8,7 @@ const props = defineProps({
   },
   text: {
     type: String,
-    default: "Закрыть",
+    default: "",
   },
   subtext: {
     type: String,
@@ -57,7 +57,7 @@ const handleClose = () => {
         @click="handleClose"
         class="block rounded-lg text-black text-sm font-medium bg-[#E9B949] py-[15px] w-full mt-6"
       >
-        {{ props.text }}
+        Закрыть
       </button>
       <NuxtLink
         v-else

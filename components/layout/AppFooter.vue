@@ -64,6 +64,7 @@
       <SuccessModal
         v-if="showSuccessModal"
         title="Цена бронирования 10.000 тенге"
+        :show-button="true"
         @close="closeSuccessModal"
       />
     </Teleport>
