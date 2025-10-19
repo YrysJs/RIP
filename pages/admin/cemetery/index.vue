@@ -1,21 +1,49 @@
 <script setup>
 import AdminCemeteryCard from '@/components/admin/cemetery/AdminCemeteryCard.vue'
-import {getCemeteries} from "~/services/cemetery"
+import {getCemeteries, getGraves} from "~/services/cemetery"
 import { importXlsx } from '~/services/admin'
 import CemeteryMap from "~/components/map/CemeteryMap.vue";
+import {getGraveById, getGraveImages} from "~/services/client/index.js";
+import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
 
 const cemeteries = ref([])
 const selectedCemetery = ref({})
 const isMap = ref(false)
 const router = useRouter();
+const gravesList = ref([])
+
+const graveDetailModalVisible = ref(false)
+
+const grave = ref({})
+const graveImages = ref([])
 
 definePageMeta({
   middleware: ['auth', 'admin'],
 });
 
-const selectCemetery = (cemetery) => {
-  selectedCemetery.value = cemetery
-  isMap.value = true
+const selectCemetery = async (cemetery) => {
+  try {
+    selectedCemetery.value = cemetery
+    const response = await getGraves({ cemetery_id: selectedCemetery.value.id })
+    gravesList.value = response.data.data || []
+    isMap.value = true
+  } catch (error) {
+    gravesList.value = []
+  }
+}
+
+const fetchGraveDetails = async (id) => {
+  try {
+    const response = await getGraveById(id)
+    grave.value = response.data
+    const images = await getGraveImages(id)
+    graveImages.value = images.data
+    graveDetailModalVisible.value = true
+
+  } catch (error) {
+    console.error('Ошибка при услуги:', error)
+  }
+
 }
 
 const uploadFile = async (data, cemetery) => {
@@ -57,9 +85,12 @@ onMounted((async () => {
     <Teleport to="body">
       <CemeteryMap
           :cemetery="selectedCemetery"
+          :polygons="gravesList"
           :visible="isMap"
+          @grave-click="fetchGraveDetails"
           @close="() => isMap = false"
       />
+      <GraveDetailModal :visible="graveDetailModalVisible" :grave="grave" :images="graveImages" @close=" () => graveDetailModalVisible = false" />
     </Teleport>
   </NuxtLayout>
 
