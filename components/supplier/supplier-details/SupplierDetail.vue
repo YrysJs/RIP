@@ -27,9 +27,9 @@ const fetchOrderData = async () => {
     const response = await getOrderById(props.ticketId);
     orderData.value = response.data;
 
-    if (response.data) {
-      await getCemetryInfoById(response.data.items[0].product.id);
-    }
+    // if (response.data) {
+    //   await getCemetryInfoById(response.data.items[0].product.id);
+    // }
   } catch (err) {
     error.value = err.message || "Ошибка при загрузке данных заказа";
     console.error("Error fetching order:", err);
@@ -40,22 +40,22 @@ const fetchOrderData = async () => {
   }
 };
 
-const getCemetryInfoById = async (id) => {
-  loading.value = true;
-  error.value = null;
-
-  try {
-    const response = await getCemeteryById(id);
-    cemeteryData.value = response.data;
-  } catch (err) {
-    error.value = err.message || "Ошибка при загрузке данных заказа";
-    console.error("Error fetching order:", err);
-    const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
-  } finally {
-    loading.value = false;
-  }
-};
+// const getCemetryInfoById = async (id) => {
+//   loading.value = true;
+//   error.value = null;
+//
+//   try {
+//     const response = await getCemeteryById(id);
+//     cemeteryData.value = response.data;
+//   } catch (err) {
+//     error.value = err.message || "Ошибка при загрузке данных заказа";
+//     console.error("Error fetching order:", err);
+//     const { $toast } = useNuxtApp()
+//     $toast.error('Сервер не доступен')
+//   } finally {
+//     loading.value = false;
+//   }
+// };
 
 // Загружаем данные при монтировании компонента
 onMounted(() => {
