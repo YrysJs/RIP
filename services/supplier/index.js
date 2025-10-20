@@ -127,7 +127,7 @@ function getOrderById(id) {
     })
 }
 
-function updateOrderStatus(id, status) {
+function updateOrderStatus(id, status, itemId) {
     const { $axios } = useNuxtApp()
 
     if (!id) {
@@ -138,9 +138,13 @@ function updateOrderStatus(id, status) {
         throw new Error('Status is required')
     }
 
+    if (!itemId) {
+        throw new Error('Item is required')
+    }
+
     return $axios({
         method: 'PATCH',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/orders/${id}/status`,
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/orders/${id}/items/${itemId}/status`,
         data: { status },
     })
 }

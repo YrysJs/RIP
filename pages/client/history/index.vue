@@ -21,6 +21,7 @@ const selectedOrder = ref(null);
 // Состояние модалки товаров
 const showItemsModal = ref(false);
 const selectedOrderItems = ref(null);
+const selectedOrderStatus = ref(null);
 
 // Моки
 const orders = ref([]);
@@ -155,12 +156,14 @@ function handleCommentSuccess(message) {
 // Методы для работы с модалкой товаров
 function openItemsModal(order) {
   selectedOrderItems.value = order.items;
+  selectedOrderStatus.value = order.status;
   showItemsModal.value = true;
 }
 
 function closeItemsModal() {
   showItemsModal.value = false;
   selectedOrderItems.value = null;
+  selectedOrderStatus.value = null;
 }
 
 // когда модалка открыта — добавим классы на body
@@ -343,7 +346,20 @@ useHead({
                 
                 <!-- Info -->
                 <div class="flex-1">
-                  <h4 class="font-medium text-sm mb-1">{{ item.product?.name }}</h4>
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="font-medium text-sm">{{ item.product?.name }}</h4>
+                    <!-- Статус товара -->
+                    <div
+                      class="px-2 py-1 rounded-lg text-xs flex items-center gap-1 ml-2"
+                      :class="statusView[selectedOrderStatus]?.wrap"
+                    >
+                      <span
+                        class="inline-block w-1.5 h-1.5 rounded-full"
+                        :class="statusView[selectedOrderStatus]?.dot"
+                      />
+                      {{ statusView[selectedOrderStatus]?.label }}
+                    </div>
+                  </div>
                   <p class="text-xs text-gray-600 mb-2">
                     Телефон: {{ formatPhoneNumber(item.product?.supplier_phone) }}
                   </p>

@@ -415,7 +415,6 @@ function getReligionIcon(item) {
               v-if="
                 isMobile &&
                 selectedCemetery?.id &&
-                !showGraveDetails &&
                 showInfoMobile
               "
             >
@@ -423,7 +422,7 @@ function getReligionIcon(item) {
                 <div
                   :key="selectedCemetery?.id"
                   class="bg-[#FFF] py-6 px-[18px] rounded-lg"
-                  v-if="selectedCemetery?.id && !showGraveDetails"
+                  v-if="selectedCemetery?.id"
                 >
                   <div
                     class="relative flex justify-between items-start max-sm:flex-col"
@@ -519,7 +518,7 @@ function getReligionIcon(item) {
 
                   <button
                     class="reserve__btn w-full"
-                    :disabled="selectedGrave?.status !== 'free'"
+                    :disabled="selectedGrave && selectedGrave?.status !== 'free'"
                     @click="reserve"
                   >
                     <img
