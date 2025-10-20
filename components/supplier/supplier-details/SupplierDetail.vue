@@ -105,6 +105,36 @@ const currentStatusAction = computed(() => {
   );
 });
 
+// Функция для определения действия для конкретного элемента
+const getItemStatusAction = (itemStatus) => {
+  if (!itemStatus) return null;
+  
+  return orderStatuses.find(
+    (status) => status.current === itemStatus
+  );
+};
+
+// Функция для получения текста статуса элемента
+const getItemStatusText = (itemStatus) => {
+  const found = orderStatuses.find((x) => x.current === itemStatus)?.status;
+  if (found) return found;
+  if (itemStatus === "completed") return "Завершен";
+  if (itemStatus === "cancelled") return "Отменен";
+  return "—";
+};
+
+// Функция для получения цвета статуса элемента
+const getItemStatusColor = (itemStatus) => {
+  const map = {
+    new: "bg-blue-500",
+    processing: "bg-yellow-500",
+    in_progress: "bg-orange-500",
+    completed: "bg-green-500",
+    cancelled: "bg-red-500",
+  };
+  return map[itemStatus] || "bg-gray-500";
+};
+
 // Computed свойство для определения текущего статуса
 const currentStatus = computed(() => {
   const s = orderData.value?.status;
@@ -130,17 +160,25 @@ const statusColor = computed(() => {
 
 // Функция для обработки смены статуса
 const handleStatusChange = async (itemId) => {
-  if (!currentStatusAction.value || !orderData.value) return;
+  if (!orderData.value) return;
+  
+  // Находим элемент по ID
+  const item = orderData.value.items?.find(item => item.id === itemId);
+  if (!item) return;
+  
+  const itemStatusAction = getItemStatusAction(item.status);
+  if (!itemStatusAction) return;
+  
   loading.value = true;
   try {
     await handleStatusUpdate(
       orderData.value.id,
-      currentStatusAction.value.next,
+      itemStatusAction.next,
       itemId
     );
-    if (currentStatusAction.value.next === "completed") {
+    if (itemStatusAction.next === "completed") {
       showCompletedModal.value = true;
-    } else if (currentStatusAction.value.next === "in_progress") {
+    } else if (itemStatusAction.next === "in_progress") {
       showModal.value = true;
     }
   } finally {
@@ -220,12 +258,22 @@ function formatToDDMMYYYY(iso) {
         <div
             class="flex justify-between items-start pb-4 border-b-2 border-[#EEEEEE] mt-2"
         >
-          <h3
-              class="font-foglihten text-fluid font-medium text-[#201001] leading-[48px]"
-          >
-            {{ it.product?.name || "—" }}
-            <!-- <span class="text-[#B88F34]">{{ orderData?.id }}</span> -->
-          </h3>
+          <div class="flex-1">
+            <h3
+                class="font-foglihten text-fluid font-medium text-[#201001] leading-[48px]"
+            >
+              {{ it.product?.name || "—" }}
+              <!-- <span class="text-[#B88F34]">{{ orderData?.id }}</span> -->
+            </h3>
+            <!-- Статус продукта -->
+            <div class="flex items-center gap-2 mt-2">
+              <span class="text-sm text-[#17212A]">{{ getItemStatusText(it.status) }}</span>
+              <span
+                class="inline-block w-3 h-3 rounded-full"
+                :class="getItemStatusColor(it.status)"
+              ></span>
+            </div>
+          </div>
         </div>
         <!-- Показываем информацию о кладбище и покойном только если есть burial_info -->
         <template v-if="orderData?.burial_info">
@@ -326,15 +374,15 @@ function formatToDDMMYYYY(iso) {
         <!-- Кнопки для каждого элемента заказа -->
         <div class="flex gap-3 justify-end mt-4">
           <button
-            v-if="currentStatusAction && orderData.status !== 'completed'"
+            v-if="getItemStatusAction(it.status) && it.status !== 'completed'"
             :disabled="loading"
             class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             @click="handleStatusChange(it.id)"
           >
-            {{ loading ? "Обновление..." : currentStatusAction.title }}
+            {{ loading ? "Обновление..." : getItemStatusAction(it.status)?.title }}
           </button>
           <button
-            v-if="orderData.status !== 'cancelled' && orderData.status !== 'completed'"
+            v-if="it.status !== 'cancelled' && it.status !== 'completed'"
             :disabled="loading"
             class="block py-[15px] px-[20px] rounded-lg bg-[#DB1414] text-white text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             @click="cancelStatus(it.id)"
