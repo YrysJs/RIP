@@ -62,9 +62,9 @@ onMounted(() => {
   fetchOrderData();
 });
 
-const handleStatusUpdate = async (orderId, newStatus) => {
+const handleStatusUpdate = async (orderId, newStatus, itemId) => {
   try {
-    await updateOrderStatus(orderId, newStatus);
+    await updateOrderStatus(orderId, newStatus, itemId);
     // Обновить данные заказа после успешного изменения статуса
     await fetchOrderData();
   } catch (error) {
@@ -129,13 +129,14 @@ const statusColor = computed(() => {
 });
 
 // Функция для обработки смены статуса
-const handleStatusChange = async () => {
+const handleStatusChange = async (itemId) => {
   if (!currentStatusAction.value || !orderData.value) return;
   loading.value = true;
   try {
     await handleStatusUpdate(
       orderData.value.id,
-      currentStatusAction.value.next
+      currentStatusAction.value.next,
+      itemId
     );
     if (currentStatusAction.value.next === "completed") {
       showCompletedModal.value = true;
@@ -147,12 +148,13 @@ const handleStatusChange = async () => {
   }
 };
 
-const cancelStatus = async () => {
+const cancelStatus = async (itemId) => {
   loading.value = true;
   try {
     await handleStatusUpdate(
         orderData.value.id,
-        'cancelled'
+        'cancelled',
+        itemId
     );
   } finally {
     loading.value = false;
@@ -320,6 +322,26 @@ function formatToDDMMYYYY(iso) {
             </div>
           </div>
         </div>
+        
+        <!-- Кнопки для каждого элемента заказа -->
+        <div class="flex gap-3 justify-end mt-4">
+          <button
+            v-if="currentStatusAction && orderData.status !== 'completed'"
+            :disabled="loading"
+            class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            @click="handleStatusChange(it.id)"
+          >
+            {{ loading ? "Обновление..." : currentStatusAction.title }}
+          </button>
+          <button
+            v-if="orderData.status !== 'cancelled' && orderData.status !== 'completed'"
+            :disabled="loading"
+            class="block py-[15px] px-[20px] rounded-lg bg-[#DB1414] text-white text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            @click="cancelStatus(it.id)"
+          >
+            Отменить
+          </button>
+        </div>
       </div>
       <div
         class="flex justify-between items-start mt-[16px] max-sm:mt-3 max-sm:pb-3"
@@ -372,24 +394,6 @@ function formatToDDMMYYYY(iso) {
             </div>
           </div>
         </div>
-      </div>
-      <div class="flex gap-3 justify-end">
-        <button
-          v-if="currentStatusAction && orderData.status !== 'completed'"
-          :disabled="loading"
-          class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-          @click="handleStatusChange"
-        >
-          {{ loading ? "Обновление..." : currentStatusAction.title }}
-        </button>
-        <button
-          v-if="orderData.status !== 'cancelled' && orderData.status !== 'completed'"
-          :disabled="loading"
-          class="block py-[15px] px-[20px] rounded-lg bg-[#DB1414] text-white text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-          @click="cancelStatus"
-        >
-          Отменить
-        </button>
       </div>
       <CompletedModal v-if="showModal" @close="showModal = false" />
       
