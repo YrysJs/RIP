@@ -158,7 +158,7 @@ import {
   getNews,
   // getTopNews, // ← оставляю закомментированным, чтобы не ловить 500
 } from '~/services/akimat'
-import { downloadBase64File } from '~/utils/downloadBase64.js'
+import { downloadBase64File, downloadExcelFile } from '~/utils/downloadBase64.js'
 
 definePageMeta({ middleware: ['auth', 'akimat'] })
 ChartJS.register(ArcElement, Tooltip, Legend)
@@ -230,12 +230,22 @@ function formatYearMonth(dateStr){
 
 /* экспорт */
 const exportAppeals = async () => {
-  const res = await exportAppealsReport()
-  downloadBase64File(res.data.base64, 'Отчет по обращениям.xslx')
+  try {
+    const res = await exportAppealsReport()
+    console.log('Ответ сервера для обращений:', res.data)
+    downloadExcelFile(res.data.base64, 'Отчет по обращениям.xlsx')
+  } catch (error) {
+    console.error('Ошибка при экспорте обращений:', error)
+  }
 }
 const exportRequests = async () => {
-  const res = await exportRequestsReport()
-  downloadBase64File(res.data.base64, 'Отчет по заявкам.xslx')
+  try {
+    const res = await exportRequestsReport()
+    console.log('Ответ сервера для заявок:', res.data)
+    downloadExcelFile(res.data.base64, 'Отчет по заявкам.xlsx')
+  } catch (error) {
+    console.error('Ошибка при экспорте заявок:', error)
+  }
 }
 
 /* ---- Top-5 news: загружаем реальные новости ---- */
