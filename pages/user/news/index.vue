@@ -206,7 +206,7 @@ async function hide(news) {
 
 async function show(news) {
   try {
-    await changeNewsStatus({ newsId: news.id, newsStatusId: 2 })
+    await changeNewsStatus({ newsId: news.id, newsStatusId: 1 })
     news.newsStatus.id = 1
     news.newsStatus.nameRu = 'Активно'
   } catch (e) {
