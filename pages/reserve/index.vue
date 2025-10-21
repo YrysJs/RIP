@@ -48,6 +48,10 @@ const showGraveDetails = ref(false);
 const isMobile = ref(false);
 const showInfoMobile = ref(false);
 
+// Переменная для соседней могилы (приходит с карты)
+const neighborGrave = ref(null);
+
+
 const showList = computed(() => !(isMobile.value && showInfoMobile.value));
 
 const religionIconMap = {
@@ -63,7 +67,8 @@ const reserve = () => {
   if (selectedCemetery.value && selectedGrave.value) {
     cemeteryStore.setReservationData(
       selectedCemetery.value,
-      selectedGrave.value
+      selectedGrave.value,
+      neighborGrave.value // передаем соседнюю могилу
     );
   } else {
     cemeteryStore.setSelected(selectedCemetery.value);
@@ -168,6 +173,9 @@ watch(selected, (newSelected) => {
     showGraveDetails.value = true;
     // Сохраняем выбранную могилу в store
     cemeteryStore.setSelectedGrave(newSelected);
+  } else {
+    // Очищаем соседнюю могилу при сбросе выбора
+    neighborGrave.value = null;
   }
 });
 
@@ -185,6 +193,7 @@ const cancelGraveSelection = () => {
   selectedGrave.value = null;
   showGraveDetails.value = false;
   selected.value = null;
+  neighborGrave.value = null;
   // Очищаем выбранную могилу из store
   cemeteryStore.clearSelectedGrave();
 };
@@ -235,6 +244,7 @@ function selectCemetery(item) {
     }
   }
 }
+
 
 function getReligionIcon(item) {
   const raw = (item?.religion ?? item?.type ?? "")
@@ -394,9 +404,11 @@ function getReligionIcon(item) {
                 <MapSecond
                   :key="selectedCemetery?.id || 'none'"
                   :polygons="gravesList"
+                  :neighbor-grave="neighborGrave"
                   :cemetery-boundary="selectedCemetery"
                   :center-coords="selectedCemetery.location_coords"
                   v-model="selected"
+                  @update:neighbor-grave="neighborGrave = $event"
                 />
                 <template #fallback>
                   <div
@@ -415,6 +427,7 @@ function getReligionIcon(item) {
               v-if="
                 isMobile &&
                 selectedCemetery?.id &&
+                !showGraveDetails &&
                 showInfoMobile
               "
             >
@@ -422,7 +435,7 @@ function getReligionIcon(item) {
                 <div
                   :key="selectedCemetery?.id"
                   class="bg-[#FFF] py-6 px-[18px] rounded-lg"
-                  v-if="selectedCemetery?.id"
+                  v-if="selectedCemetery?.id && !showGraveDetails"
                 >
                   <div
                     class="relative flex justify-between items-start max-sm:flex-col"
@@ -516,9 +529,79 @@ function getReligionIcon(item) {
                     {{ selectedCemetery?.description }}
                   </p>
 
+                  <!-- Информация о выбранной могиле -->
+                  <div
+                    v-if="selectedGrave"
+                    class="bg-[#F4F0E7] p-4 rounded-lg my-4 border border-[#E9B949]"
+                  >
+                    <h4 class="text-base font-medium text-[#201001] mb-2">
+                      Выбранное место
+                    </h4>
+                    <div class="flex gap-4 text-sm">
+                      <div class="flex items-center gap-2">
+                        <span class="text-[#666]">Сектор:</span>
+                        <span class="font-medium text-[#201001]">{{ selectedGrave.sector_number }}</span>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[#666]">Место:</span>
+                        <span class="font-medium text-[#201001]">{{ selectedGrave.grave_number }}</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2 mt-2">
+                      <span class="text-[#666] text-sm">Статус:</span>
+                      <span 
+                        class="text-sm font-medium px-2 py-1 rounded"
+                        :class="{
+                          'bg-green-100 text-green-800': selectedGrave.status === 'free',
+                          'bg-yellow-100 text-yellow-800': selectedGrave.status === 'reserved',
+                          'bg-gray-100 text-gray-800': selectedGrave.status === 'occupied'
+                        }"
+                      >
+                        {{ getGraveStatusText(selectedGrave.status) }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Информация о выбранной соседней могиле -->
+                  <div
+                    v-if="neighborGrave"
+                    class="bg-[#E3F2FD] p-4 rounded-lg my-4 border border-[#2196F3]"
+                  >
+                    <h4 class="text-base font-medium text-[#1976D2] mb-2">
+                      Выбрана соседняя могила
+                    </h4>
+                    <div class="flex gap-4 text-sm">
+                      <div class="flex items-center gap-2">
+                        <span class="text-[#666]">Сектор:</span>
+                        <span class="font-medium text-[#1976D2]">{{ neighborGrave.sector_number }}</span>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[#666]">Место:</span>
+                        <span class="font-medium text-[#1976D2]">{{ neighborGrave.grave_number }}</span>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[#666]">Ряд:</span>
+                        <span class="font-medium text-[#1976D2]">{{ neighborGrave.row_number }}</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2 mt-2">
+                      <span class="text-[#666] text-sm">Статус:</span>
+                      <span 
+                        class="text-sm font-medium px-2 py-1 rounded"
+                        :class="{
+                          'bg-green-100 text-green-800': neighborGrave.status === 'free',
+                          'bg-yellow-100 text-yellow-800': neighborGrave.status === 'reserved',
+                          'bg-gray-100 text-gray-800': neighborGrave.status === 'occupied'
+                        }"
+                      >
+                        {{ getGraveStatusText(neighborGrave.status) }}
+                      </span>
+                    </div>
+                  </div>
+
                   <button
-                    class="reserve__btn w-full"
-                    :disabled="selectedGrave && selectedGrave?.status !== 'free'"
+                    class="reserve__btn w-full mt-4"
+                    :disabled="selectedGrave?.status !== 'free'"
                     @click="reserve"
                   >
                     <img
@@ -622,6 +705,79 @@ function getReligionIcon(item) {
               <p class="text-base text-[#222] py-4">
                 {{ selectedCemetery?.description }}
               </p>
+              <!-- Информация о выбранной могиле -->
+              <div
+                v-if="selectedGrave"
+                class="bg-[#F4F0E7] p-4 rounded-lg my-4 border border-[#E9B949]"
+              >
+                <h4 class="text-base font-medium text-[#201001] mb-2">
+                  Выбранное место
+                </h4>
+                <div class="flex gap-6 text-sm">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[#666]">Сектор:</span>
+                    <span class="font-medium text-[#201001]">{{ selectedGrave.sector_number }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[#666]">Место:</span>
+                    <span class="font-medium text-[#201001]">{{ selectedGrave.grave_number }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[#666]">Ряд:</span>
+                    <span class="font-medium text-[#201001]">{{ selectedGrave.row_number }}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 mt-2">
+                  <span class="text-[#666] text-sm">Статус:</span>
+                  <span 
+                    class="text-sm font-medium px-2 py-1 rounded"
+                    :class="{
+                      'bg-green-100 text-green-800': selectedGrave.status === 'free',
+                      'bg-yellow-100 text-yellow-800': selectedGrave.status === 'reserved',
+                      'bg-gray-100 text-gray-800': selectedGrave.status === 'occupied'
+                    }"
+                  >
+                    {{ getGraveStatusText(selectedGrave.status) }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Информация о выбранной соседней могиле -->
+              <div
+                v-if="neighborGrave"
+                class="bg-[#E3F2FD] p-4 rounded-lg my-4 border border-[#2196F3]"
+              >
+                <h4 class="text-base font-medium text-[#1976D2] mb-2">
+                  Выбрана соседняя могила
+                </h4>
+                <div class="flex gap-6 text-sm">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[#666]">Сектор:</span>
+                    <span class="font-medium text-[#1976D2]">{{ neighborGrave.sector_number }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[#666]">Место:</span>
+                    <span class="font-medium text-[#1976D2]">{{ neighborGrave.grave_number }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[#666]">Ряд:</span>
+                    <span class="font-medium text-[#1976D2]">{{ neighborGrave.row_number }}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 mt-2">
+                  <span class="text-[#666] text-sm">Статус:</span>
+                  <span 
+                    class="text-sm font-medium px-2 py-1 rounded"
+                    :class="{
+                      'bg-green-100 text-green-800': neighborGrave.status === 'free',
+                      'bg-yellow-100 text-yellow-800': neighborGrave.status === 'reserved',
+                      'bg-gray-100 text-gray-800': neighborGrave.status === 'occupied'
+                    }"
+                  >
+                    {{ getGraveStatusText(neighborGrave.status) }}
+                  </span>
+                </div>
+              </div>
 
               <button
                 v-if="showGraveDetails"
@@ -878,5 +1034,71 @@ function getReligionIcon(item) {
   .main-mt {
     margin-top: 56px;
   }
+}
+
+/* Стили для блока информации о выбранной могиле */
+.grave-info-block {
+  background: linear-gradient(135deg, #F4F0E7 0%, #F9F7F0 100%);
+  border: 2px solid #E9B949;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+  box-shadow: 0 2px 8px rgba(233, 185, 73, 0.1);
+  transition: all 0.3s ease;
+}
+
+.grave-info-block:hover {
+  box-shadow: 0 4px 12px rgba(233, 185, 73, 0.15);
+  transform: translateY(-1px);
+}
+
+.grave-info-title {
+  color: #201001;
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.grave-info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.grave-info-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.grave-info-value {
+  color: #201001;
+  font-weight: 600;
+}
+
+.grave-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.grave-status-free {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.grave-status-reserved {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.grave-status-occupied {
+  background-color: #F3F4F6;
+  color: #374151;
 }
 </style>

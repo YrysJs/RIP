@@ -6,7 +6,7 @@
       <ul class="contacts__list">
         <li>г. Алматы, Ул.&nbsp;Тимирязева. 428</li>
         <li>
-          <a class="underlined" href="tel:+77758100110">+7 (775) 810-01-10</a>
+          <a class="underlined" href="http://wa.me/77758100110" target="_blank">+7 (775) 810-01-10</a>
         </li>
         <li>
           <a class="underlined" href="mailto:info@ripservice.kz "
@@ -47,11 +47,7 @@
         <ul class="links__right">
           <li>
             <img src="/icons/whatsapp1.svg" alt="Whatsapp icon" />
-            <span>7 777 707 77 77</span>
-          </li>
-          <li>
-            <img src="/icons/tg2.svg" alt="Telegram icon" />
-            <span>@ripservice</span>
+            <a href="http://wa.me/77758100110" target="_blank">+7 (775) 810-01-10</a>
           </li>
           <li>
             <img src="/icons/pin.svg" alt="Pin icon" />
