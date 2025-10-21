@@ -4,6 +4,7 @@ export const useCemeteryStore = defineStore('cemetery', {
     state: () => ({
         selectedCemetery: null,
         selectedGrave: null,
+        neighborGrave: null,
     }),
     actions: {
         setSelected(cemetery) {
@@ -12,9 +13,10 @@ export const useCemeteryStore = defineStore('cemetery', {
         setSelectedGrave(grave) {
             this.selectedGrave = grave
         },
-        setReservationData(cemetery, grave) {
+        setReservationData(cemetery, grave, neighborGrave = null) {
             this.selectedCemetery = cemetery
             this.selectedGrave = grave
+            this.neighborGrave = neighborGrave
         },
         clearSelected() {
             this.selectedCemetery = null
@@ -22,9 +24,16 @@ export const useCemeteryStore = defineStore('cemetery', {
         clearSelectedGrave() {
             this.selectedGrave = null
         },
+        setNeighborGrave(neighborGrave) {
+            this.neighborGrave = neighborGrave
+        },
+        clearNeighborGrave() {
+            this.neighborGrave = null
+        },
         clearAll() {
             this.selectedCemetery = null
             this.selectedGrave = null
+            this.neighborGrave = null
         },
     },
     getters: {

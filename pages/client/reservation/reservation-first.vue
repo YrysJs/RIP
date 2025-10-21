@@ -130,6 +130,13 @@ const handleBooking = async () => {
       death_cert_url: deathCertUrl,
     };
 
+    // Добавляем поля для соседней могилы, если она выбрана
+    if (cemeteryStore.neighborGrave) {
+      dataBurial.adjacent_graves_count = 2;
+      dataBurial.reservation_type = "adjacent";
+      dataBurial.adjacent_grave_ids = [cemeteryStore.neighborGrave.id];
+    }
+
     await createBurialRequest(dataBurial);
     // showLogin.value = true;
     showSuccessModal.value = true;
@@ -252,6 +259,30 @@ const handleFullNameInput = (event) => {
                 <span class="text-sm text-[#999]">{{
                   cemeteryStore.selectedGrave?.grave_number ?? "—"
                 }}</span>
+              </div>
+            </div>
+            
+            <!-- Информация о соседней могиле -->
+            <div
+              v-if="cemeteryStore.neighborGrave"
+              class="bg-[#E3F2FD] p-4 rounded-lg my-4 border border-[#2196F3]"
+            >
+              <h4 class="text-base font-medium text-[#1976D2] mb-2">
+                Дополнительно выбрана соседняя могила
+              </h4>
+              <div class="flex gap-4 text-sm">
+                <div class="flex items-center gap-2">
+                  <span class="text-[#666]">Сектор:</span>
+                  <span class="font-medium text-[#1976D2]">{{ cemeteryStore.neighborGrave.sector_number }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[#666]">Место:</span>
+                  <span class="font-medium text-[#1976D2]">{{ cemeteryStore.neighborGrave.grave_number }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[#666]">Ряд:</span>
+                  <span class="font-medium text-[#1976D2]">{{ cemeteryStore.neighborGrave.row_number }}</span>
+                </div>
               </div>
             </div>
             <div
