@@ -234,7 +234,7 @@ watch([dateFrom, dateTo, cemeteryId], () => {
           <div class="chips">
             <span class="chip chip--gray">{{ b.cemetery || 'Северное кладбище' }}</span>
             <span v-if="b.sector" class="chip chip--gray">Сектор: {{ b.sector }}</span>
-            <span class="chip chip--gray">Место: {{ b.grave_id }}</span>
+            <span class="chip chip--gray">Место: {{ b.grave_number }}</span>
           </div>
           <button class="btn-more" :disabled="!b.id" @click="fetchBurialDetails(b.id)">Подробнее</button>
         </div>

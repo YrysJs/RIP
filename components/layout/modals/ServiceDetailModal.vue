@@ -1,8 +1,11 @@
 <script setup>
-import { defineProps } from 'vue';
+import { defineProps, ref } from 'vue';
 const props = defineProps(['service', 'visible', 'reviews', 'supplier'])
 
 const emit = defineEmits(['close', 'order'])
+
+// Состояние карусели
+const currentImageIndex = ref(0)
 
 const closeModal = () => {
   emit('close')
@@ -10,6 +13,25 @@ const closeModal = () => {
 
 const orderService = () => {
   emit('order', props.service.id)
+}
+
+// Функции карусели
+const nextImage = () => {
+  if (props.service?.image_urls?.length > 1) {
+    currentImageIndex.value = (currentImageIndex.value + 1) % props.service.image_urls.length
+  }
+}
+
+const prevImage = () => {
+  if (props.service?.image_urls?.length > 1) {
+    currentImageIndex.value = currentImageIndex.value === 0 
+      ? props.service.image_urls.length - 1 
+      : currentImageIndex.value - 1
+  }
+}
+
+const goToImage = (index) => {
+  currentImageIndex.value = index
 }
 
 const renderStars = (rating) => {
@@ -72,11 +94,64 @@ function formatPhoneNumber(phone) {
         <!-- Service Image -->
         <div class="flex flex-col lg:flex-row gap-2 xs:gap-3 sm:gap-[12px]">
             <div v-if="service?.image_urls" class="mb-3 xs:mb-4 sm:mb-6">
-                <div class="w-full lg:min-w-[330px] lg:max-w-[330px] h-[150px] xs:h-[200px] sm:h-[221px] rounded-lg overflow-hidden bg-gray-100" v-for="image in service.image_urls" :key="image">
+                <!-- Карусель изображений -->
+                <div v-if="service.image_urls.length > 1" class="relative">
+                    <!-- Основное изображение -->
+                    <div class="w-full lg:min-w-[330px] lg:max-w-[330px] h-[150px] xs:h-[200px] sm:h-[221px] rounded-lg overflow-hidden bg-gray-100 relative">
+                        <img 
+                            :src="service.image_urls[currentImageIndex]"
+                            :alt="service.title"
+                            class="w-full h-full object-cover"
+                        />
+                        
+                        <!-- Кнопки навигации -->
+                        <button 
+                            @click="prevImage"
+                            class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-opacity-70 transition-all"
+                        >
+                            ‹
+                        </button>
+                        <button 
+                            @click="nextImage"
+                            class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-opacity-70 transition-all"
+                        >
+                            ›
+                        </button>
+                        
+                        <!-- Индикатор текущего изображения -->
+                        <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+                            {{ currentImageIndex + 1 }} / {{ service.image_urls.length }}
+                        </div>
+                    </div>
+                    
+                    <!-- Миниатюры -->
+                    <div class="flex gap-2 mt-2 overflow-x-auto carousel-thumbnails">
+                        <button 
+                            v-for="(image, index) in service.image_urls" 
+                            :key="index"
+                            @click="goToImage(index)"
+                            :class="[
+                                'flex-shrink-0 w-12 h-12 rounded overflow-hidden border-2 transition-all',
+                                currentImageIndex === index 
+                                    ? 'border-blue-500' 
+                                    : 'border-gray-300 hover:border-gray-400'
+                            ]"
+                        >
+                            <img 
+                                :src="image"
+                                :alt="`${service.title} ${index + 1}`"
+                                class="w-full h-full object-cover"
+                            />
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Одно изображение -->
+                <div v-else class="w-full lg:min-w-[330px] lg:max-w-[330px] h-[150px] xs:h-[200px] sm:h-[221px] rounded-lg overflow-hidden bg-gray-100">
                     <img 
-                    :src="image"
-                    :alt="service.title"
-                    class="w-full h-full object-cover"
+                        :src="service.image_urls[0]"
+                        :alt="service.title"
+                        class="w-full h-full object-cover"
                     />
                 </div>
             </div>
@@ -209,5 +284,34 @@ function formatPhoneNumber(phone) {
     padding: 6px 12px !important;
     font-size: 12px !important;
   }
+}
+
+// Стили для карусели
+.carousel-nav-btn {
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.carousel-thumbnails {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 transparent;
+}
+
+.carousel-thumbnails::-webkit-scrollbar {
+  height: 4px;
+}
+
+.carousel-thumbnails::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.carousel-thumbnails::-webkit-scrollbar-thumb {
+  background-color: #cbd5e0;
+  border-radius: 2px;
+}
+
+.carousel-thumbnails::-webkit-scrollbar-thumb:hover {
+  background-color: #a0aec0;
 }
 </style> 

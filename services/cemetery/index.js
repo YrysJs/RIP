@@ -34,10 +34,20 @@ function getCemeteryById(id) {
     })
 }
 
+function getGravesByCoords(params) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'GET',
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/graves/by-coordinates`,
+        params
+    })
+}
+
 
 export {
     getGraves,
     getCemeteries,
     getCemeteryById,
-    getManagerCemeteries
+    getManagerCemeteries,
+    getGravesByCoords
 }

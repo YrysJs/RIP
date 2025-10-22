@@ -55,6 +55,12 @@ const addingToCart = ref(false);
 const cartMessage = ref("");
 const cartItems = ref([]);
 
+// Состояние пагинации
+const currentPage = ref(1);
+const totalPages = ref(1);
+const totalItems = ref(0);
+const itemsPerPage = ref(10);
+
 const token = ref(Cookies.get("token"));
 const router = useRouter();
 const authModalStore = useAuthModalStore();
@@ -107,7 +113,10 @@ function getStarClass(n) {
 async function fetchProducts() {
   try {
     loading.value = true;
-    const params = {};
+    const params = {
+      page: currentPage.value,
+      limit: itemsPerPage.value
+    };
 
     if (filters.value.category_id)
       params.category_id = filters.value.category_id;
@@ -121,7 +130,17 @@ async function fetchProducts() {
 
     // Обновляем для правильной структуры ответа API
     products.value = response.data?.items || [];
+    
+    // Обновляем данные пагинации
+    totalItems.value = response.data?.total || 0;
+    totalPages.value = response.data?.total_pages || 1;
+    
     console.log("Загружено продуктов:", products.value.length);
+    console.log("Пагинация:", {
+      currentPage: currentPage.value,
+      totalPages: totalPages.value,
+      totalItems: totalItems.value
+    });
   } catch (error) {
     console.error("Ошибка при загрузке продуктов:", error);
     const { $toast } = useNuxtApp();
@@ -226,6 +245,7 @@ watch(
     filters.value.city,
   ],
   () => {
+    resetPagination();
     fetchProducts();
   }
 );
@@ -239,6 +259,7 @@ watch(
       clearTimeout(searchTimeout);
     }
     searchTimeout = setTimeout(() => {
+      resetPagination();
       fetchProducts();
     }, 500); // задержка 500ms
   }
@@ -248,6 +269,46 @@ watch(
 function updatePriceRange(event) {
   const value = parseInt(event.target.value);
   filters.value.max_price = value;
+}
+
+// Функции для работы с пагинацией
+function goToPage(page) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchProducts();
+  }
+}
+
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+    fetchProducts();
+  }
+}
+
+function prevPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    fetchProducts();
+  }
+}
+
+// Функция для сброса пагинации при изменении фильтров
+function resetPagination() {
+  currentPage.value = 1;
+}
+
+// Функция для получения видимых страниц
+function getVisiblePages() {
+  const pages = [];
+  const start = Math.max(1, currentPage.value - 2);
+  const end = Math.min(totalPages.value, currentPage.value + 2);
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  
+  return pages;
 }
 </script>
 
@@ -545,6 +606,80 @@ function updatePriceRange(event) {
             >
               <p class="text-lg text-gray-500">Продукты не найдены</p>
             </div>
+          </div>
+
+          <!-- Пагинация -->
+          <div v-if="!loading && totalPages > 1" class="mt-8 flex justify-center">
+            <div class="flex items-center gap-2">
+              <!-- Кнопка "Предыдущая" -->
+              <button
+                @click="prevPage"
+                :disabled="currentPage === 1"
+                class="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium transition-colors"
+                :class="currentPage === 1 
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                  : 'bg-white text-gray-700 hover:bg-gray-50'"
+              >
+                Предыдущая
+              </button>
+
+              <!-- Номера страниц -->
+              <div class="flex gap-1">
+                <!-- Показываем первую страницу -->
+                <button
+                  v-if="currentPage > 3"
+                  @click="goToPage(1)"
+                  class="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium bg-white text-gray-700 hover:bg-gray-50"
+                >
+                  1
+                </button>
+                
+                <!-- Многоточие, если нужно -->
+                <span v-if="currentPage > 4" class="px-2 py-2 text-gray-500">...</span>
+
+                <!-- Страницы вокруг текущей -->
+                <template v-for="page in getVisiblePages()" :key="page">
+                  <button
+                    @click="goToPage(page)"
+                    class="px-3 py-2 rounded-lg border text-sm font-medium transition-colors"
+                    :class="page === currentPage
+                      ? 'bg-[#E9B949] text-[#17212A] border-[#E9B949]'
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                  >
+                    {{ page }}
+                  </button>
+                </template>
+
+                <!-- Многоточие, если нужно -->
+                <span v-if="currentPage < totalPages - 3" class="px-2 py-2 text-gray-500">...</span>
+
+                <!-- Показываем последнюю страницу -->
+                <button
+                  v-if="currentPage < totalPages - 2"
+                  @click="goToPage(totalPages)"
+                  class="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium bg-white text-gray-700 hover:bg-gray-50"
+                >
+                  {{ totalPages }}
+                </button>
+              </div>
+
+              <!-- Кнопка "Следующая" -->
+              <button
+                @click="nextPage"
+                :disabled="currentPage === totalPages"
+                class="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium transition-colors"
+                :class="currentPage === totalPages 
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                  : 'bg-white text-gray-700 hover:bg-gray-50'"
+              >
+                Следующая
+              </button>
+            </div>
+          </div>
+
+          <!-- Информация о пагинации -->
+          <div v-if="!loading && totalItems > 0" class="mt-4 text-center text-sm text-gray-600">
+            Показано {{ products.length }} из {{ totalItems }} товаров
           </div>
         </div>
       </div>

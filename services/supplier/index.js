@@ -152,32 +152,57 @@ function updateOrderStatus(id, status, itemId) {
 function createProduct(data) {
     const { $axios } = useNuxtApp()
 
-    const formData = new FormData()
+    // Подготавливаем JSON payload
+    const payload = {
+        name: data.name,
+        description: data.description,
+        price: data.price ? +data.price : 0,
+        category_id: data.category_id ? +data.category_id : 1,
+        type: data.type,
+        availability: data.availability,
+        country: data.country,
+        city: data.city,
+        service_time: data.service_time,
+        image_urls: data.image_urls || []
+    }
 
-    // Add all fields to formData
-    if (data.name) formData.append('name', data.name)
-    if (data.description) formData.append('description', data.description)
-    if (data.price) formData.append('price', +data.price)
-    if (data.category_id) formData.append('category_id', data.category_id)
-    if (data.type) formData.append('type', data.type)
-    if (data.availability !== undefined) formData.append('availability', data.availability)
-    if (data.country) formData.append('country', data.country)
-    if (data.city) formData.append('city', data.city)
-    if (data.service_time) formData.append('service_time', data.service_time)
-
-    // Handle images
-    if (data.images) {
-        if (Array.isArray(data.images)) {
-            data.images.forEach(image => formData.append('images', image))
-        } else {
-            formData.append('images', data.images)
-        }
+    // Добавляем unit только для товаров
+    if (data.type === 'product' && data.unit) {
+        payload.unit = data.unit
     }
 
     return $axios({
         method: 'POST',
         url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/products',
+        data: payload,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+function loadProductFiles(phone, files) {
+    const { $axios } = useNuxtApp()
+
+    const formData = new FormData()
+    formData.append('phone', phone)
+
+    // Добавляем файлы
+    if (Array.isArray(files)) {
+        files.forEach(file => {
+            formData.append('files', file)
+        })
+    } else {
+        formData.append('files', files)
+    }
+
+    return $axios({
+        method: 'POST',
+        url: useRuntimeConfig().public.apiBaseUrl + `/api/v7/products/product/${phone}`,
         data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
     })
 }
 
@@ -188,34 +213,35 @@ function updateProduct(id, data) {
         throw new Error('Product ID is required for update')
     }
 
-    const formData = new FormData()
+    // Подготавливаем JSON payload
+    const payload = {
+        name: data.name,
+        description: data.description,
+        price: data.price ? +data.price : 0,
+        category_id: data.category_id ? +data.category_id : 1,
+        type: data.type,
+        availability: data.availability,
+        country: data.country,
+        city: data.city,
+        service_time: data.service_time,
+        image_urls: data.image_urls || []
+    }
 
-    // Add all fields to formData
-    if (data.name) formData.append('name', data.name)
-    if (data.description) formData.append('description', data.description)
-    if (data.price) formData.append('price', data.price)
-    if (data.category_id) formData.append('category_id', data.category_id)
-    if (data.type) formData.append('type', data.type)
-    if (data.availability !== undefined) formData.append('availability', data.availability)
-    if (data.country) formData.append('country', data.country)
-    if (data.city) formData.append('city', data.city)
-    if (data.service_time) formData.append('service_time', data.service_time)
-
-    // Handle images
-    if (data.images) {
-        if (Array.isArray(data.images)) {
-            data.images.forEach(image => formData.append('images', image))
-        } else {
-            formData.append('images', data.images)
-        }
+    // Добавляем unit только для товаров
+    if (data.type === 'product' && data.unit) {
+        payload.unit = data.unit
     }
 
     return $axios({
         method: 'PUT',
         url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/products/${id}`,
-        data: formData,
+        data: payload,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
 }
+
 
 function getSupplierProductReviews(phone, page = 1, limit = 10) {
     const { $axios } = useNuxtApp()
@@ -273,5 +299,6 @@ export {
     getSupplierProductReviews,
     addReviewResponse,
     createReviewAppeal,
-    getReviewAppeals
+    getReviewAppeals,
+    loadProductFiles
 }
