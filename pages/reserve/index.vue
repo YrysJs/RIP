@@ -196,7 +196,6 @@ watch([isMobile, selected], ([mobile, grave]) => {
 });
 
 const mapMoved = async (coords) => {
-  console.log('Координаты карты:', coords)
   
   try {
     // Извлекаем параметры из объекта координат
@@ -217,12 +216,10 @@ const mapMoved = async (coords) => {
     if (selectedCemetery.value?.id) {
       params.cemetery_id = selectedCemetery.value.id;
     }
-    
-    console.log('Параметры для запроса:', params);
+
     
     // Вызываем запрос
     const response = await getGravesByCoords(params);
-    console.log('Ответ от getGravesByCoords:', response);
     
     // Обновляем список могил с новыми данными
     if (response?.data) {

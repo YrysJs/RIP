@@ -229,6 +229,41 @@ watch([dateFrom, dateTo, cemeteryId], () => {
           </div>
         </div>
 
+        <!-- Дополнительные могилы -->
+        <div
+          v-if="b.adjacent_graves_count > 0"
+          class="adjacent-graves-section"
+        >
+          <h4 class="adjacent-graves-title">
+            Дополнительные могилы: {{ b.adjacent_graves_count }} мест
+            <span v-if="b.reservation_type === 'adjacent'" class="adjacent-type">(соседние)</span>
+          </h4>
+          <div v-if="b.adjacent_graves && b.adjacent_graves.length > 0" class="graves-preview">
+            <span 
+              v-for="(grave, index) in b.adjacent_graves.slice(0, 2)" 
+              :key="grave.grave_id || index"
+              class="grave-chip"
+            >
+              {{ grave.sector_number }}-{{ grave.grave_number }}
+            </span>
+            <span v-if="b.adjacent_graves.length > 2" class="more-graves">
+              +{{ b.adjacent_graves.length - 2 }} еще
+            </span>
+          </div>
+          <div v-else-if="b.adjacent_grave_ids && b.adjacent_grave_ids.length > 0" class="graves-preview">
+            <span 
+              v-for="(graveId, index) in b.adjacent_grave_ids.slice(0, 2)" 
+              :key="graveId"
+              class="grave-chip"
+            >
+              ID: {{ graveId }}
+            </span>
+            <span v-if="b.adjacent_grave_ids.length > 2" class="more-graves">
+              +{{ b.adjacent_grave_ids.length - 2 }} еще
+            </span>
+          </div>
+        </div>
+
         <!-- Чипы + кнопка -->
         <div class="card__row card__row--bottom">
           <div class="chips">
@@ -356,6 +391,50 @@ watch([dateFrom, dateTo, cemeteryId], () => {
 }
 .btn-more:disabled{ opacity:.6; cursor:default; }
 .btn-more:not(:disabled):hover{ filter:brightness(.98); }
+
+/* Дополнительные могилы в списке */
+.adjacent-graves-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+}
+
+.adjacent-graves-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e40af;
+  margin: 0 0 8px 0;
+}
+
+.adjacent-type {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.graves-preview {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.grave-chip {
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.more-graves {
+  color: #6b7280;
+  font-size: 12px;
+  font-style: italic;
+}
 
 /* Мобильные стили */
 @media (max-width: 768px) {
