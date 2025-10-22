@@ -53,13 +53,6 @@ const getAllGraves = (burial) => {
     })
   }
   
-  // Если есть только ID дополнительных мест
-  if (burial.adjacent_grave_ids && burial.adjacent_grave_ids.length > 0) {
-    burial.adjacent_grave_ids.forEach(graveId => {
-      places.push(graveId)
-    })
-  }
-  
   return places.join(', ')
 }
 

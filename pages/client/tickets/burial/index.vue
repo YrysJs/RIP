@@ -182,8 +182,12 @@ const shareGraveData = async (grave_id) => {
                 <p class="black-16">{{ request.sector_number }}</p>
               </div>
               <div class="flex text-base">
+                <p class="min-w-[150px] grey-14">Ряд</p>
+                <p class="black-16">{{ request.row_number }}</p>
+              </div>
+              <div class="flex text-base">
                 <p class="min-w-[150px] grey-14">Место:</p>
-                <p class="black-16">{{ request.grave_id }}</p>
+                <p class="black-16">{{ request.grave_number }}</p>
               </div>
             </div>
           </div>
@@ -288,9 +292,13 @@ const shareGraveData = async (grave_id) => {
                 <p class="min-w-[150px] grey-14">Сектор</p>
                 <p class="black-16">{{ request.sector_number }}</p>
               </div>
+              <div class="flex text-base">
+                <p class="min-w-[150px] grey-14">Ряд</p>
+                <p class="black-16">{{ request.row_number }}</p>
+              </div>
               <div class="flex text-base h-[38px] items-center max-sm:h-[26px]">
                 <p class="min-w-[150px] grey-14">Место:</p>
-                <p class="black-16">{{ request.grave_id }}</p>
+                <p class="black-16">{{ request.grave_number }}</p>
               </div>
             </div>
             <!-- <button
