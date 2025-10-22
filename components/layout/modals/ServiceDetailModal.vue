@@ -92,76 +92,74 @@ function formatPhoneNumber(phone) {
       <!-- Content -->
       <div class="pt-2 pl-3 xs:pl-4 sm:pl-6 pr-3 xs:pr-4 sm:pr-6 pb-3 xs:pb-4 sm:pb-6">
         <!-- Service Image -->
-        <div class="flex flex-col lg:flex-row gap-2 xs:gap-3 sm:gap-[12px]">
-            <div v-if="service?.image_urls" class="mb-3 xs:mb-4 sm:mb-6">
-                <!-- Карусель изображений -->
-                <div v-if="service.image_urls.length > 1" class="relative">
-                    <!-- Основное изображение -->
-                    <div class="w-full lg:min-w-[330px] lg:max-w-[330px] h-[150px] xs:h-[200px] sm:h-[221px] rounded-lg overflow-hidden bg-gray-100 relative">
-                        <img 
-                            :src="service.image_urls[currentImageIndex]"
-                            :alt="service.title"
-                            class="w-full h-full object-cover"
-                        />
-                        
-                        <!-- Кнопки навигации -->
-                        <button 
-                            @click="prevImage"
-                            class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-opacity-70 transition-all"
-                        >
-                            ‹
-                        </button>
-                        <button 
-                            @click="nextImage"
-                            class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-opacity-70 transition-all"
-                        >
-                            ›
-                        </button>
-                        
-                        <!-- Индикатор текущего изображения -->
-                        <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
-                            {{ currentImageIndex + 1 }} / {{ service.image_urls.length }}
-                        </div>
-                    </div>
-                    
-                    <!-- Миниатюры -->
-                    <div class="flex gap-2 mt-2 overflow-x-auto carousel-thumbnails">
-                        <button 
-                            v-for="(image, index) in service.image_urls" 
-                            :key="index"
-                            @click="goToImage(index)"
-                            :class="[
-                                'flex-shrink-0 w-12 h-12 rounded overflow-hidden border-2 transition-all',
-                                currentImageIndex === index 
-                                    ? 'border-blue-500' 
-                                    : 'border-gray-300 hover:border-gray-400'
-                            ]"
-                        >
-                            <img 
-                                :src="image"
-                                :alt="`${service.title} ${index + 1}`"
-                                class="w-full h-full object-cover"
-                            />
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Одно изображение -->
-                <div v-else class="w-full lg:min-w-[330px] lg:max-w-[330px] h-[150px] xs:h-[200px] sm:h-[221px] rounded-lg overflow-hidden bg-gray-100">
+        <div v-if="service?.image_urls" class="mb-3 xs:mb-4 sm:mb-6">
+            <!-- Карусель изображений -->
+            <div v-if="service.image_urls.length > 1" class="relative">
+                <!-- Основное изображение -->
+                <div class="w-full h-[200px] xs:h-[250px] sm:h-[300px] lg:h-[350px] rounded-lg overflow-hidden bg-gray-100 relative">
                     <img 
-                        :src="service.image_urls[0]"
+                        :src="service.image_urls[currentImageIndex]"
                         :alt="service.title"
                         class="w-full h-full object-cover"
                     />
+                    
+                    <!-- Кнопки навигации -->
+                    <button 
+                        @click="prevImage"
+                        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-opacity-70 transition-all"
+                    >
+                        ‹
+                    </button>
+                    <button 
+                        @click="nextImage"
+                        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-opacity-70 transition-all"
+                    >
+                        ›
+                    </button>
+                    
+                    <!-- Индикатор текущего изображения -->
+                    <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+                        {{ currentImageIndex + 1 }} / {{ service.image_urls.length }}
+                    </div>
+                </div>
+                
+                <!-- Миниатюры -->
+                <div class="flex gap-2 mt-2 overflow-x-auto carousel-thumbnails">
+                    <button 
+                        v-for="(image, index) in service.image_urls" 
+                        :key="index"
+                        @click="goToImage(index)"
+                        :class="[
+                            'flex-shrink-0 w-12 h-12 rounded overflow-hidden border-2 transition-all',
+                            currentImageIndex === index 
+                                ? 'border-blue-500' 
+                                : 'border-gray-300 hover:border-gray-400'
+                        ]"
+                    >
+                        <img 
+                            :src="image"
+                            :alt="`${service.title} ${index + 1}`"
+                            class="w-full h-full object-cover"
+                        />
+                    </button>
                 </div>
             </div>
-
-            <!-- Description -->
-            <div class="mb-3 xs:mb-4 sm:mb-6 flex-1">
-                <p class="text-xs xs:text-sm sm:text-base leading-relaxed">
-                    {{ service?.description || 'Профессиональная транспортировка покойного осуществляется с соблюдением всех санитарных и этических норм. Мы обеспечиваем бережное отношение к усопшему на всех этапах перевозки для вас период. Услуга включает транспортировку тела в специализированном автомобиле, оформление сопроводительной документации и при необходимости, сопровождение близких.' }}
-                </p>
+            
+            <!-- Одно изображение -->
+            <div v-else class="w-full h-[200px] xs:h-[250px] sm:h-[300px] lg:h-[350px] rounded-lg overflow-hidden bg-gray-100">
+                <img 
+                    :src="service.image_urls[0]"
+                    :alt="service.title"
+                    class="w-full h-full object-cover"
+                />
             </div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3 xs:mb-4 sm:mb-6">
+            <p class="text-xs xs:text-sm sm:text-base leading-relaxed">
+                {{ service?.description || 'Профессиональная транспортировка покойного осуществляется с соблюдением всех санитарных и этических норм. Мы обеспечиваем бережное отношение к усопшему на всех этапах перевозки для вас период. Услуга включает транспортировку тела в специализированном автомобиле, оформление сопроводительной документации и при необходимости, сопровождение близких.' }}
+            </p>
         </div>
 
         <!-- Provider Info -->
@@ -248,8 +246,20 @@ function formatPhoneNumber(phone) {
   }
   
   // Уменьшаем размеры изображений
-  .modal img {
+  .modal .h-\[200px\] {
     height: 120px !important;
+  }
+  
+  .modal .h-\[250px\] {
+    height: 140px !important;
+  }
+  
+  .modal .h-\[300px\] {
+    height: 160px !important;
+  }
+  
+  .modal .h-\[350px\] {
+    height: 180px !important;
   }
   
   // Уменьшаем размеры текста
