@@ -203,7 +203,7 @@ useHead({
           <!-- image -->
           <div class="min-w-[400px] max-w-[400px] shrink-0 mx-auto">
             <img
-                :src="o.items[0]?.product?.image_urls[0]"
+                :src="o.items[0]?.product?.image_urls?.[0] || '/images/placeholder.jpg'"
                 alt=""
                 class="w-full h-full object-cover rounded-xl"
             />
@@ -335,7 +335,7 @@ useHead({
                 <!-- Image -->
                 <div class="w-20 h-20 flex-shrink-0">
                   <img 
-                    :src="item.product?.image_urls?.[0]" 
+                    :src="item.product?.image_urls?.[0] || '/images/placeholder.jpg'" 
                     :alt="item.product?.name"
                     class="w-full h-full object-cover rounded-lg"
                   />

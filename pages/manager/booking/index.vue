@@ -36,6 +36,34 @@ const fetchCemeteries = async () => {
   }
 }
 
+/* Функция для объединения всех мест */
+const getAllGraves = (booking) => {
+  const places = []
+  
+  // Основное место
+  if (booking.grave_id) {
+    places.push(booking.grave_id)
+  }
+  
+  // Дополнительные места
+  if (booking.adjacent_graves && booking.adjacent_graves.length > 0) {
+    booking.adjacent_graves.forEach(grave => {
+      if (grave.grave_number) {
+        places.push(grave.grave_number)
+      }
+    })
+  }
+  
+  // Если есть только ID дополнительных мест
+  if (booking.adjacent_grave_ids && booking.adjacent_grave_ids.length > 0) {
+    booking.adjacent_grave_ids.forEach(graveId => {
+      places.push(graveId)
+    })
+  }
+  
+  return places.join(', ')
+}
+
 onMounted(() => {
   fetchBurials()
   fetchCemeteries()
@@ -136,7 +164,7 @@ watch(cemeteryId, () => {
           <div class="booking-info">
             <span class="badge"><span class="font-medium">{{ booking.cemetery_name }}</span></span>
             <span class="badge">Сектор: <span class="font-medium ml-1">{{ booking.sector_number }}</span></span>
-            <span class="badge">Место: <span class="font-medium ml-1">{{ booking.grave_id }}</span> </span>
+            <span class="badge">Место: <span class="font-medium ml-1">{{ getAllGraves(booking) }}</span> </span>
           </div>
           <button class="details-btn" @click="router.push(`/manager/booking/${booking.id}`)">Подробнее</button>
         </div>

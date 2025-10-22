@@ -35,6 +35,34 @@ const toIsoDate = (dateStr) => (dateStr ? `${dateStr}T00:00:00Z` : undefined)
 /* Проверка на пустые данные */
 const isEmpty = computed(() => !burials.value || burials.value.length === 0)
 
+/* Функция для объединения всех мест */
+const getAllGraves = (burial) => {
+  const places = []
+  
+  // Основное место
+  if (burial.grave_number) {
+    places.push(burial.grave_number)
+  }
+  
+  // Дополнительные места
+  if (burial.adjacent_graves && burial.adjacent_graves.length > 0) {
+    burial.adjacent_graves.forEach(grave => {
+      if (grave.grave_number) {
+        places.push(grave.grave_number)
+      }
+    })
+  }
+  
+  // Если есть только ID дополнительных мест
+  if (burial.adjacent_grave_ids && burial.adjacent_grave_ids.length > 0) {
+    burial.adjacent_grave_ids.forEach(graveId => {
+      places.push(graveId)
+    })
+  }
+  
+  return places.join(', ')
+}
+
 /* Загрузка */
 const fetchBurials = async (params = {  }) => {
   try {
@@ -229,47 +257,13 @@ watch([dateFrom, dateTo, cemeteryId], () => {
           </div>
         </div>
 
-        <!-- Дополнительные могилы -->
-        <div
-          v-if="b.adjacent_graves_count > 0"
-          class="adjacent-graves-section"
-        >
-          <h4 class="adjacent-graves-title">
-            Дополнительные могилы: {{ b.adjacent_graves_count }} мест
-            <span v-if="b.reservation_type === 'adjacent'" class="adjacent-type">(соседние)</span>
-          </h4>
-          <div v-if="b.adjacent_graves && b.adjacent_graves.length > 0" class="graves-preview">
-            <span 
-              v-for="(grave, index) in b.adjacent_graves.slice(0, 2)" 
-              :key="grave.grave_id || index"
-              class="grave-chip"
-            >
-              {{ grave.sector_number }}-{{ grave.grave_number }}
-            </span>
-            <span v-if="b.adjacent_graves.length > 2" class="more-graves">
-              +{{ b.adjacent_graves.length - 2 }} еще
-            </span>
-          </div>
-          <div v-else-if="b.adjacent_grave_ids && b.adjacent_grave_ids.length > 0" class="graves-preview">
-            <span 
-              v-for="(graveId, index) in b.adjacent_grave_ids.slice(0, 2)" 
-              :key="graveId"
-              class="grave-chip"
-            >
-              ID: {{ graveId }}
-            </span>
-            <span v-if="b.adjacent_grave_ids.length > 2" class="more-graves">
-              +{{ b.adjacent_grave_ids.length - 2 }} еще
-            </span>
-          </div>
-        </div>
 
         <!-- Чипы + кнопка -->
         <div class="card__row card__row--bottom">
           <div class="chips">
             <span class="chip chip--gray">{{ b.cemetery || 'Северное кладбище' }}</span>
             <span v-if="b.sector" class="chip chip--gray">Сектор: {{ b.sector }}</span>
-            <span class="chip chip--gray">Место: {{ b.grave_number }}</span>
+            <span class="chip chip--gray">Место: {{ getAllGraves(b) }}</span>
           </div>
           <button class="btn-more" :disabled="!b.id" @click="fetchBurialDetails(b.id)">Подробнее</button>
         </div>
