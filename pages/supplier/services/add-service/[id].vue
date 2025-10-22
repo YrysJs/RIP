@@ -1,11 +1,16 @@
 <script setup>
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { updateProduct, getProductById, getCategories } from '~/services/supplier'
+import { updateProduct, getProductById, getCategories, loadProductFiles } from '~/services/supplier'
+import { useUserStore } from '~/store/user'
+import { useLoadingStore } from '~/store/loading'
+import AppLoader from '~/components/loader/AppLoader.vue'
 
 const route = useRoute()
 const router = useRouter()
 const productId = route.params.id
+const userStore = useUserStore()
+const loadingStore = useLoadingStore()
 
 // --- форма ---
 const form = reactive({
@@ -60,6 +65,75 @@ function handleDrop(e){
 function removePhoto(i){ photos.value.splice(i, 1) }
 function removeExistingPhoto(i){ existingPhotos.value.splice(i, 1) }
 
+// --- функции для загрузки файлов ---
+// Функция для разделения файлов на мелкие массивы
+const chunkFiles = (files, chunkSize = 3) => {
+  const chunks = []
+  for (let i = 0; i < files.length; i += chunkSize) {
+    chunks.push(files.slice(i, i + chunkSize))
+  }
+  return chunks
+}
+
+// Функция для загрузки файлов
+const uploadFiles = async (files) => {
+  const phone = userStore.user?.phone
+  if (!phone) {
+    throw new Error('Номер телефона не найден')
+  }
+
+  console.log('Начинаем загрузку файлов:', files.length, 'файлов')
+  console.log('Номер телефона:', phone)
+
+  const fileChunks = chunkFiles(files)
+  const uploadedUrls = []
+
+  for (const chunk of fileChunks) {
+    try {
+      console.log('Загружаем чанк файлов:', chunk.length, 'файлов')
+      const response = await loadProductFiles(phone, chunk)
+      console.log('Ответ от сервера:', response.data)
+      console.log('Полный ответ:', response)
+      console.log('Есть ли массив files?', !!response.data?.files)
+      console.log('Количество файлов в ответе:', response.data?.files?.length || 0)
+      
+      // Обрабатываем ответ API - URL находятся в fileUrl внутри объектов файлов
+      let urls = []
+      
+      if (response.data?.files && Array.isArray(response.data.files)) {
+        // Извлекаем URL из массива files
+        urls = response.data.files
+          .map(file => file.fileUrl)
+          .filter(url => url) // убираем пустые URL
+        console.log('URL из массива files:', urls)
+      } else {
+        // Попробуем извлечь URL из числовых ключей (0, 1, 2, ...)
+        const numericKeys = Object.keys(response.data).filter(key => !isNaN(key))
+        if (numericKeys.length > 0) {
+          urls = numericKeys
+            .map(key => response.data[key]?.fileUrl)
+            .filter(url => url) // убираем пустые URL
+          console.log('URL из числовых ключей:', urls)
+        }
+      }
+      
+      if (urls.length > 0) {
+        uploadedUrls.push(...urls)
+        console.log('Добавлены URL:', urls)
+      } else {
+        console.warn('URL не найдены в ответе')
+        console.log('Структура ответа:', response.data)
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки файлов:', error)
+      throw error
+    }
+  }
+
+  console.log('Всего загружено URL:', uploadedUrls.length)
+  return uploadedUrls
+}
+
 // --- helpers ---
 function showPreview(){
   const { $toast } = useNuxtApp()
@@ -111,6 +185,38 @@ async function submitForm(){
     }
 
     loading.value = true
+    loadingStore.startLoading()
+
+    let imageUrls = []
+    
+    // Загружаем новые файлы, если они есть
+    if (photos.value.length > 0) {
+      const files = photos.value.map(p => p.file).filter(Boolean)
+      console.log('Файлы для загрузки:', files.length)
+      console.log('Детали файлов:', files.map(f => ({ name: f.name, size: f.size, type: f.type })))
+      
+      if (files.length > 0) {
+        try {
+          const newUrls = await uploadFiles(files)
+          console.log('Получены URL новых файлов:', newUrls)
+          imageUrls.push(...newUrls)
+        } catch (error) {
+          console.error('Ошибка при загрузке файлов:', error)
+          $toast.error('Ошибка при загрузке файлов')
+          return
+        }
+      }
+    } else {
+      console.log('Нет новых файлов для загрузки')
+    }
+
+    // Добавляем существующие URL (если пользователь их не удалил)
+    const existingUrls = existingPhotos.value.map(p => p.url).filter(Boolean)
+    if (existingUrls.length > 0) {
+      console.log('Сохраняем существующие URL:', existingUrls)
+      imageUrls.push(...existingUrls)
+    }
+
     const productData = {
       name: form.name.trim(),
       description: form.description.trim(),
@@ -121,10 +227,10 @@ async function submitForm(){
       country: form.country,
       city: form.city,
       service_time: form.service_time,
-      images: photos.value.map(p => p.file).filter(Boolean),
-      // если бек ждёт список оставшихся картинок — раскомментируй:
-      // existing_image_urls: existingPhotos.value.map(p => p.url)
+      image_urls: imageUrls
     }
+
+    console.log('Отправляем payload:', productData)
 
     await updateProduct(productId, productData)
     openSuccess({ title: 'Изменения сохранены', text: 'на рассмотрение!' })
@@ -135,6 +241,7 @@ async function submitForm(){
     $toast.error(msg)
   } finally {
     loading.value = false
+    loadingStore.stopLoading()
   }
 }
 
@@ -183,6 +290,7 @@ onMounted(async () => {
 
 <template>
   <NuxtLayout name="form">
+    <AppLoader v-if="loadingStore.loading" />
     <!-- Индикатор загрузки -->
     <div v-if="isLoadingProduct" class="flex items-center justify-center bg-white p-8 rounded-2xl mb-4">
       <div class="text-center">

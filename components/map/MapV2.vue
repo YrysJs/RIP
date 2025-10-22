@@ -16,7 +16,11 @@ const props = defineProps({
   cemeteryBoundary: { type: Object, default: null },
   centerCoords: { type: Array, default: null },
 })
-const emit = defineEmits(['update:modelValue', 'update:neighborGrave'])
+const emit = defineEmits([
+  'update:modelValue',
+  'update:neighborGrave',
+  'mapBoundsChanged' // <== добавили новый emit
+])
 
 /* ========== Local refs/state ========== */
 const mapEl = ref(null)
@@ -56,7 +60,8 @@ function getNeighborGraves(selectedGrave) {
 
 /* ======== Цвета и стили ======== */
 function getFillColor(item, isSelected, isNeighbor) {
-  if (isNeighbor) return '#007BFFAA' // синий для соседей (подсветка, но не выбор)
+  if (isNeighbor && item.status === 'free') return '#007BFFAA' // синий только для свободных соседей
+  if (isNeighbor) return '#FFA500AA' // оранжевый для занятых/зарезервированных соседей
   if (isSelected && item.status === 'free') return '#43DC49CC'
   if (isSelected) {
     if (item.status === 'reserved') return '#FFD700'
@@ -70,7 +75,8 @@ function getFillColor(item, isSelected, isNeighbor) {
 }
 
 function getStrokeColor(item, isSelected, isNeighbor) {
-  if (isNeighbor) return '#007BFF' // синие границы для соседних могил
+  if (isNeighbor && item.status === 'free') return '#007BFF' // синие границы для свободных соседних могил
+  if (isNeighbor) return '#FF8C00' // оранжевые границы для занятых/зарезервированных соседних могил
   if (!isSelected) return '#006600'
   return item.status === 'free' ? '#38949B' : 'gray'
 }
@@ -323,6 +329,13 @@ async function initMap() {
 
   try { map.container.fitToViewport() } catch (e) { console.warn('fitToViewport failed', e) }
 
+  emitBounds() // после инициализации карты
+
+// слушаем зум и движение
+  map.events.add('boundschange', () => {
+    emitBounds()
+  })
+
   _resizeHandler = () => { try { if (map) map.container.fitToViewport() } catch {} }
   window.addEventListener('resize', _resizeHandler)
   try {
@@ -342,6 +355,26 @@ async function initMap() {
         }
       })
   )
+}
+
+/* ========== Emit map bounds ========== */
+function emitBounds() {
+  if (!map) return
+  try {
+    const bounds = map.getBounds() // [[southWestLat, southWestLng], [northEastLat, northEastLng]]
+    if (Array.isArray(bounds) && bounds.length === 2) {
+      const [sw, ne] = bounds
+      const payload = {
+        southWest: { lat: sw[0], lng: sw[1] },
+        northEast: { lat: ne[0], lng: ne[1] },
+        northWest: { lat: ne[0], lng: sw[1] },
+        southEast: { lat: sw[0], lng: ne[1] },
+      }
+      emit('mapBoundsChanged', payload)
+    }
+  } catch (e) {
+    console.warn('emitBounds error', e)
+  }
 }
 
 /* ========== Cemetery boundary ========== */

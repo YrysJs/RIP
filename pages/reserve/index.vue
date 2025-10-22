@@ -2,7 +2,7 @@
 import { useRouter } from "vue-router";
 import MapSecond from "~/components/map/MapV2.vue";
 import { useCemeteryStore } from "~/store/cemetery.js";
-import { getCemeteries, getGraves } from "~/services/cemetery";
+import { getCemeteries, getGraves, getGravesByCoords } from "~/services/cemetery";
 import ShareCoordModal from "~/components/layout/modals/ShareCoordModal.vue";
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
@@ -52,7 +52,7 @@ const showInfoMobile = ref(false);
 const neighborGrave = ref(null);
 
 
-const showList = computed(() => !(isMobile.value && showInfoMobile.value));
+const showList = computed(() => !(isMobile.value && showInfoMobile.value && !showGraveDetails.value));
 
 const religionIconMap = {
   ислам: "/icons/islam.svg",
@@ -136,16 +136,17 @@ async function getCemeteriesReq() {
   }
 }
 
-async function getGravesReq(cemetery_id) {
-  try {
-    if (!cemetery_id) return;
+// Старый запрос на могилы - закомментирован
+// async function getGravesReq(cemetery_id) {
+//   try {
+//     if (!cemetery_id) return;
 
-    const response = await getGraves({ cemetery_id });
-    gravesList.value = response.data.data || [];
-  } catch (error) {
-    gravesList.value = [];
-  }
-}
+//     const response = await getGraves({ cemetery_id });
+//     gravesList.value = response.data.data || [];
+//   } catch (error) {
+//     gravesList.value = [];
+//   }
+// }
 
 watch(selectedCity, () => {
   getCemeteriesReq();
@@ -157,13 +158,15 @@ watch(selectedReligios, () => {
 
 watch(selectedCemetery, (newCemetery) => {
   if (newCemetery && newCemetery.id) {
-    getGravesReq(newCemetery.id);
+    // getGravesReq(newCemetery.id); // Старый запрос - закомментирован
     // Сохраняем выбранное кладбище в store
     cemeteryStore.setSelected(newCemetery);
     // Очищаем предыдущий выбор могилы при смене кладбища
     if (selectedGrave.value) {
       cancelGraveSelection();
     }
+    // Очищаем список могил - теперь он будет загружаться через mapMoved
+    gravesList.value = [];
   }
 });
 
@@ -180,10 +183,56 @@ watch(selected, (newSelected) => {
 });
 
 watch([isMobile, selectedCemetery], ([mobile, cem]) => {
-  if (mobile && cem?.id && !showInfoMobile.value && !showGraveDetails.value) {
+  if (mobile && cem?.id && !showInfoMobile.value) {
     showInfoMobile.value = true; // чтобы крестик точно появился
   }
 });
+
+// Добавляем watcher для показа мобильной информации при выборе могилы
+watch([isMobile, selected], ([mobile, grave]) => {
+  if (mobile && grave && !showInfoMobile.value) {
+    showInfoMobile.value = true;
+  }
+});
+
+const mapMoved = async (coords) => {
+  console.log('Координаты карты:', coords)
+  
+  try {
+    // Извлекаем параметры из объекта координат
+    const min_x = coords.southWest.lng; // минимальная долгота
+    const max_x = coords.northEast.lng; // максимальная долгота
+    const min_y = coords.southWest.lat; // минимальная широта
+    const max_y = coords.northEast.lat; // максимальная широта
+    
+    // Параметры для запроса
+    const params = {
+      min_x,
+      max_x,
+      min_y,
+      max_y
+    };
+    
+    // Добавляем cemetery_id если кладбище выбрано
+    if (selectedCemetery.value?.id) {
+      params.cemetery_id = selectedCemetery.value.id;
+    }
+    
+    console.log('Параметры для запроса:', params);
+    
+    // Вызываем запрос
+    const response = await getGravesByCoords(params);
+    console.log('Ответ от getGravesByCoords:', response);
+    
+    // Обновляем список могил с новыми данными
+    if (response?.data) {
+      gravesList.value = response.data;
+    }
+    
+  } catch (error) {
+    console.error('Ошибка при загрузке могил по координатам:', error);
+  }
+}
 
 onMounted(async () => {
   await getCemeteriesReq();
@@ -196,6 +245,10 @@ const cancelGraveSelection = () => {
   neighborGrave.value = null;
   // Очищаем выбранную могилу из store
   cemeteryStore.clearSelectedGrave();
+  // На мобиле скрываем информацию если нет выбранного кладбища
+  if (isMobile.value && !selectedCemetery.value?.id) {
+    showInfoMobile.value = false;
+  }
 };
 
 const getGraveStatusText = (status) => {
@@ -409,6 +462,7 @@ function getReligionIcon(item) {
                   :center-coords="selectedCemetery.location_coords"
                   v-model="selected"
                   @update:neighbor-grave="neighborGrave = $event"
+                  @map-bounds-changed="mapMoved"
                 />
                 <template #fallback>
                   <div
@@ -427,7 +481,6 @@ function getReligionIcon(item) {
               v-if="
                 isMobile &&
                 selectedCemetery?.id &&
-                !showGraveDetails &&
                 showInfoMobile
               "
             >
@@ -435,7 +488,7 @@ function getReligionIcon(item) {
                 <div
                   :key="selectedCemetery?.id"
                   class="bg-[#FFF] py-6 px-[18px] rounded-lg"
-                  v-if="selectedCemetery?.id && !showGraveDetails"
+                  v-if="selectedCemetery?.id"
                 >
                   <div
                     class="relative flex justify-between items-start max-sm:flex-col"

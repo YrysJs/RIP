@@ -284,7 +284,7 @@ const canPay = computed(() => {
                 <div class="flex items-center gap-[11px]">
                   <h4 class="text-base text-[#050202]">Место:</h4>
                   <span class="text-sm text-[#999]">{{
-                    burialData?.grave_id || "Не указано"
+                    burialData?.grave_number || "Не указано"
                   }}</span>
                 </div>
               </div>
@@ -346,6 +346,65 @@ const canPay = computed(() => {
                 <span class="text-base font-bold text-[#222222]">{{
                   burialData?.cemetery_phone || "Не указано"
                 }}</span>
+              </div>
+
+              <!-- Дополнительные могилы -->
+              <div
+                v-if="burialData?.adjacent_graves_count > 0"
+                class="border-b border-[#EEEEEE] pb-[16px] pt-[16px]"
+              >
+                <h4 class="text-base font-medium text-[#222222] mb-3">
+                  Дополнительные могилы:
+                </h4>
+                <div class="adjacent-graves">
+                  <div class="grave-info mb-3">
+                    <span class="text-sm text-[#1e40af] font-semibold">
+                      {{ burialData.adjacent_graves_count }} дополнительных мест
+                    </span>
+                    <span v-if="burialData.reservation_type === 'adjacent'" class="text-sm text-[#6b7280] ml-2">
+                      (соседние места)
+                    </span>
+                  </div>
+                  
+                  <!-- Список дополнительных могил -->
+                  <div v-if="burialData.adjacent_graves && burialData.adjacent_graves.length > 0" class="graves-list">
+                    <div 
+                      v-for="(grave, index) in burialData.adjacent_graves" 
+                      :key="grave.grave_id || index"
+                      class="grave-item mb-2"
+                    >
+                      <div class="grave-details">
+                        <span class="text-sm font-medium text-[#1e40af]">Место {{ index + 1 }}:</span>
+                        <span class="text-sm text-[#374151] ml-2">{{ burialData.cemetery_name || "Кладбище" }}</span>
+                        <span v-if="grave.sector_number" class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-2">
+                          Сектор {{ grave.sector_number }}
+                        </span>
+                        <span v-if="grave.grave_number" class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-1">
+                          Номер {{ grave.grave_number }}
+                        </span>
+                        <span v-if="grave.row_number" class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-1">
+                          Ряд {{ grave.row_number }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Если есть только ID могил без деталей -->
+                  <div v-else-if="burialData.adjacent_grave_ids && burialData.adjacent_grave_ids.length > 0" class="graves-list">
+                    <div 
+                      v-for="(graveId, index) in burialData.adjacent_grave_ids" 
+                      :key="graveId"
+                      class="grave-item mb-2"
+                    >
+                      <div class="grave-details">
+                        <span class="text-sm font-medium text-[#1e40af]">Место {{ index + 1 }}:</span>
+                        <span class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-2 font-mono">
+                          ID: {{ graveId }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -648,6 +707,44 @@ const canPay = computed(() => {
   @media (max-width: 640px) {
     padding-bottom: 16px;
     border-bottom: 1px solid #eee;
+  }
+}
+
+/* Стили для дополнительных могил */
+.adjacent-graves {
+  margin-top: 8px;
+}
+
+.grave-info {
+  margin-bottom: 12px;
+}
+
+.graves-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.grave-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.grave-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Адаптив для мобильных устройств */
+@media (max-width: 640px) {
+  .grave-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 }
 </style>
