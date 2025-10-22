@@ -129,57 +129,6 @@ const statusConfig = computed(() => {
           </div>
         </div>
 
-        <!-- Дополнительные могилы -->
-        <div
-          v-if="booking?.adjacent_graves_count > 0"
-          class="mb-6 p-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-lg"
-        >
-          <h4 class="text-base font-medium text-[#1e40af] mb-3">
-            Дополнительные могилы: {{ booking.adjacent_graves_count }} мест
-            <span v-if="booking.reservation_type === 'adjacent'" class="text-sm text-[#6b7280] ml-2">
-              (соседние места)
-            </span>
-          </h4>
-          
-          <!-- Список дополнительных могил -->
-          <div v-if="booking.adjacent_graves && booking.adjacent_graves.length > 0" class="graves-list">
-            <div 
-              v-for="(grave, index) in booking.adjacent_graves" 
-              :key="grave.grave_id || index"
-              class="grave-item mb-2"
-            >
-              <div class="grave-details">
-                <span class="text-sm font-medium text-[#1e40af]">Место {{ index + 1 }}:</span>
-                <span class="text-sm text-[#374151] ml-2">{{ booking.cemetery_name || "Кладбище" }}</span>
-                <span v-if="grave.sector_number" class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-2">
-                  Сектор {{ grave.sector_number }}
-                </span>
-                <span v-if="grave.grave_number" class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-1">
-                  Номер {{ grave.grave_number }}
-                </span>
-                <span v-if="grave.row_number" class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-1">
-                  Ряд {{ grave.row_number }}
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Если есть только ID могил без деталей -->
-          <div v-else-if="booking.adjacent_grave_ids && booking.adjacent_grave_ids.length > 0" class="graves-list">
-            <div 
-              v-for="(graveId, index) in booking.adjacent_grave_ids" 
-              :key="graveId"
-              class="grave-item mb-2"
-            >
-              <div class="grave-details">
-                <span class="text-sm font-medium text-[#1e40af]">Место {{ index + 1 }}:</span>
-                <span class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-2 font-mono">
-                  ID: {{ graveId }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <!-- Images Gallery -->
         <div v-if="images?.photos_urls?.length" class="mb-6">

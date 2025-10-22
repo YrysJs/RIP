@@ -228,64 +228,6 @@ const shareGraveData = async (grave_id) => {
               </div>
             </div>
           </div>
-          <!-- Дополнительные могилы -->
-          <div
-            v-if="request.adjacent_graves_count > 0"
-            class="border-b border-[#EEEEEE] pb-[16px] pt-[16px]"
-          >
-            <h4 class="text-base font-medium text-[#222222] mb-3">
-              Дополнительные могилы:
-            </h4>
-            <div class="adjacent-graves">
-              <div class="grave-info mb-3">
-                <span class="text-sm text-[#1e40af] font-semibold">
-                  {{ request.adjacent_graves_count }} дополнительных мест
-                </span>
-                <span v-if="request.reservation_type === 'adjacent'" class="text-sm text-[#6b7280] ml-2">
-                  (соседние места)
-                </span>
-              </div>
-              
-              <!-- Список дополнительных могил -->
-              <div v-if="request.adjacent_graves && request.adjacent_graves.length > 0" class="graves-list">
-                <div 
-                  v-for="(grave, index) in request.adjacent_graves" 
-                  :key="grave.grave_id || index"
-                  class="grave-item mb-2"
-                >
-                  <div class="grave-details">
-                    <span class="text-sm font-medium text-[#1e40af]">Место {{ index + 1 }}:</span>
-                    <span class="text-sm text-[#374151] ml-2">{{ request.cemetery_name || "Кладбище" }}</span>
-                    <span v-if="grave.sector_number" class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-2">
-                      Сектор {{ grave.sector_number }}
-                    </span>
-                    <span v-if="grave.grave_number" class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-1">
-                      Номер {{ grave.grave_number }}
-                    </span>
-                    <span v-if="grave.row_number" class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-1">
-                      Ряд {{ grave.row_number }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Если есть только ID могил без деталей -->
-              <div v-else-if="request.adjacent_grave_ids && request.adjacent_grave_ids.length > 0" class="graves-list">
-                <div 
-                  v-for="(graveId, index) in request.adjacent_grave_ids" 
-                  :key="graveId"
-                  class="grave-item mb-2"
-                >
-                  <div class="grave-details">
-                    <span class="text-sm font-medium text-[#1e40af]">Место {{ index + 1 }}:</span>
-                    <span class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-2 font-mono">
-                      ID: {{ graveId }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <div class="flex justify-between items-start mt-[16px] max-sm:mt-3">
             <div class="flex text-base">
@@ -407,64 +349,6 @@ const shareGraveData = async (grave_id) => {
               <p class="font-bold">
                 {{ request.is_complete ? 'Да' : 'Нет' }}
               </p>
-            </div>
-          </div>
-          <!-- Дополнительные могилы -->
-          <div
-            v-if="request.adjacent_graves_count > 0"
-            class="border-b border-[#EEEEEE] pb-[16px] pt-[16px]"
-          >
-            <h4 class="text-base font-medium text-[#222222] mb-3">
-              Дополнительные могилы:
-            </h4>
-            <div class="adjacent-graves">
-              <div class="grave-info mb-3">
-                <span class="text-sm text-[#1e40af] font-semibold">
-                  {{ request.adjacent_graves_count }} дополнительных мест
-                </span>
-                <span v-if="request.reservation_type === 'adjacent'" class="text-sm text-[#6b7280] ml-2">
-                  (соседние места)
-                </span>
-              </div>
-              
-              <!-- Список дополнительных могил -->
-              <div v-if="request.adjacent_graves && request.adjacent_graves.length > 0" class="graves-list">
-                <div 
-                  v-for="(grave, index) in request.adjacent_graves" 
-                  :key="grave.grave_id || index"
-                  class="grave-item mb-2"
-                >
-                  <div class="grave-details">
-                    <span class="text-sm font-medium text-[#1e40af]">Место {{ index + 1 }}:</span>
-                    <span class="text-sm text-[#374151] ml-2">{{ request.cemetery_name || "Кладбище" }}</span>
-                    <span v-if="grave.sector_number" class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-2">
-                      Сектор {{ grave.sector_number }}
-                    </span>
-                    <span v-if="grave.grave_number" class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-1">
-                      Номер {{ grave.grave_number }}
-                    </span>
-                    <span v-if="grave.row_number" class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-1">
-                      Ряд {{ grave.row_number }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Если есть только ID могил без деталей -->
-              <div v-else-if="request.adjacent_grave_ids && request.adjacent_grave_ids.length > 0" class="graves-list">
-                <div 
-                  v-for="(graveId, index) in request.adjacent_grave_ids" 
-                  :key="graveId"
-                  class="grave-item mb-2"
-                >
-                  <div class="grave-details">
-                    <span class="text-sm font-medium text-[#1e40af]">Место {{ index + 1 }}:</span>
-                    <span class="text-xs text-[#6b7280] bg-[#f1f5f9] px-2 py-1 rounded ml-2 font-mono">
-                      ID: {{ graveId }}
-                    </span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
