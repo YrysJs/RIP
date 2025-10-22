@@ -3,6 +3,22 @@
     <div class="modal-content" @click.stop>
       <div class="payment-form">
         <h2 class="title">Оплата картой</h2>
+        
+        <!-- Информация о сумме и количестве могил -->
+        <div class="payment-info">
+          <div class="info-row">
+            <span class="info-label">Количество могил:</span>
+            <span class="info-value">{{ gravesCount }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Стоимость за могилу:</span>
+            <span class="info-value">{{ burialData.burial_price || 100 }} ₸</span>
+          </div>
+          <div class="info-row total">
+            <span class="info-label">Итого к оплате:</span>
+            <span class="info-value">{{ totalAmount }} ₸</span>
+          </div>
+        </div>
 
         <div class="form-group">
           <label class="label">Номер карты</label>
@@ -100,6 +116,30 @@ export default {
       isProcessing: false,
     };
   },
+  computed: {
+    // Подсчет количества могил (основная + дополнительные)
+    gravesCount() {
+      let count = 1; // Основная могила всегда есть
+      
+      // Добавляем дополнительные могилы
+      if (this.burialData?.adjacent_graves && this.burialData.adjacent_graves.length > 0) {
+        count += this.burialData.adjacent_graves.length;
+      }
+      
+      // Если есть только ID дополнительных мест
+      if (this.burialData?.adjacent_grave_ids && this.burialData.adjacent_grave_ids.length > 0) {
+        count += this.burialData.adjacent_grave_ids.length;
+      }
+      
+      return count;
+    },
+    
+    // Расчет итоговой стоимости с учетом количества могил
+    totalAmount() {
+      const basePrice = this.burialData.burial_price || 100;
+      return basePrice * this.gravesCount;
+    }
+  },
   methods: {
     closeModal() {
       if (!this.isProcessing) {
@@ -161,7 +201,7 @@ export default {
       try {
         // Подготавливаем данные для оплаты
         const paymentData = {
-          amount: this.burialData.burial_price || 100, // Госпошлина
+          amount: this.totalAmount, // Госпошлина с учетом количества могил
           cardNumber: this.cardNumber.replace(/\s/g, ""),
           currency: "KZT",
           cvc: this.cvcCode,
@@ -317,6 +357,49 @@ export default {
 
 .pay-button:active {
   background-color: #3d8b40;
+}
+
+.payment-info {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-row.total {
+  border-top: 1px solid #dee2e6;
+  padding-top: 8px;
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.info-label {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.info-value {
+  color: #212529;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.info-row.total .info-value {
+  color: #28a745;
+  font-size: 16px;
 }
 
 .pay-button:disabled {

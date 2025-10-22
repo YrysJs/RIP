@@ -15,6 +15,7 @@ const deceased = ref(null);
 const grave = ref(null);
 const images = ref([]);
 const videos = ref([]);
+const achievements = ref([]);
 const epitaph = ref("");
 const aboutPerson = ref("");
 
@@ -118,6 +119,13 @@ onMounted(async () => {
           : null;
       })
       .filter(Boolean);
+
+    // достижения
+    achievements.value = (data.achievement_urls || []).map((url, i) => ({
+      id: i,
+      url: url,
+      filename: url.split('/').pop() || `Достижение ${i + 1}`
+    }));
   } catch (e) {
     console.error(e);
     const errorMessage = e?.response?.data?.error || e?.response?.data?.message || e.message;
@@ -166,6 +174,30 @@ async function shareMemorial() {
   } catch (error) {
     console.error("Ошибка при копировании ссылки:", error);
     $toast.error("Не удалось скопировать ссылку");
+  }
+}
+
+// Функция для скачивания файла достижения
+async function downloadAchievement(url, filename) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Ошибка загрузки файла');
+    
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    window.URL.revokeObjectURL(downloadUrl);
+    $toast.success("Файл скачан");
+  } catch (error) {
+    console.error("Ошибка при скачивании файла:", error);
+    $toast.error("Не удалось скачать файл");
   }
 }
 </script>
@@ -375,6 +407,43 @@ async function shareMemorial() {
             </div>
             <p v-else class="text-sm text-[#6B7280]">Видео не добавлены.</p>
           </section>
+
+          <!-- Достижения -->
+          <section v-if="achievements.length > 0" class="py-4">
+            <h3 class="text-[18px] mb-1">Достижения</h3>
+
+            <div class="achievements-list">
+              <div class="achievements-header mb-4">
+                <h4 class="text-base font-medium">
+                  Документы и награды ({{ achievements.length }})
+                </h4>
+              </div>
+
+              <div class="achievements-grid">
+                <div
+                  v-for="achievement in achievements"
+                  :key="achievement.id"
+                  class="achievement-item"
+                >
+                  <div class="achievement-content">
+                    <div class="achievement-icon">
+                      <img src="/icons/file.svg" alt="Файл" class="w-6 h-6" />
+                    </div>
+                    <div class="achievement-info">
+                      <h5 class="achievement-title">{{ achievement.filename }}</h5>
+                      <p class="achievement-description">Документ или награда</p>
+                    </div>
+                    <button
+                      @click="downloadAchievement(achievement.url, achievement.filename)"
+                      class="achievement-download-btn"
+                    >
+                      Скачать
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </template>
       </div>
     </div>
@@ -452,5 +521,93 @@ async function shareMemorial() {
   margin-left: 8px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Стили для блока достижений */
+.achievements-list {
+  margin-top: 16px;
+}
+
+.achievements-header h4 {
+  color: #374151;
+  margin: 0;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.achievement-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  background-color: #f9fafb;
+  transition: all 0.3s ease;
+}
+
+.achievement-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
+}
+
+.achievement-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.achievement-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achievement-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.achievement-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.achievement-description {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.achievement-download-btn {
+  flex-shrink: 0;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.achievement-download-btn:hover {
+  background-color: #2563eb;
+}
+
+.achievement-download-btn:active {
+  background-color: #1d4ed8;
 }
 </style>

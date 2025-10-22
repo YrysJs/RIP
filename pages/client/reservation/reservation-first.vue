@@ -196,6 +196,23 @@ const handleFullNameInput = (event) => {
     event.target.value = filteredValue;
   }
 };
+
+// Функция для получения всех мест (основное + дополнительные)
+const getAllGraves = () => {
+  const places = []
+  
+  // Основное место
+  if (cemeteryStore.selectedGrave?.grave_number) {
+    places.push(cemeteryStore.selectedGrave.grave_number)
+  }
+  
+  // Дополнительное место (соседняя могила)
+  if (cemeteryStore.neighborGrave?.grave_number) {
+    places.push(cemeteryStore.neighborGrave.grave_number)
+  }
+  
+  return places.join(', ')
+};
 </script>
 
 <template>
@@ -257,32 +274,8 @@ const handleFullNameInput = (event) => {
               <div class="flex items-center gap-[11px]">
                 <h4 class="text-base text-[#050202]">Место:</h4>
                 <span class="text-sm text-[#999]">{{
-                  cemeteryStore.selectedGrave?.grave_number ?? "—"
+                  getAllGraves() || "—"
                 }}</span>
-              </div>
-            </div>
-            
-            <!-- Информация о соседней могиле -->
-            <div
-              v-if="cemeteryStore.neighborGrave"
-              class="bg-[#E3F2FD] p-4 rounded-lg my-4 border border-[#2196F3]"
-            >
-              <h4 class="text-base font-medium text-[#1976D2] mb-2">
-                Дополнительно выбрана соседняя могила
-              </h4>
-              <div class="flex gap-4 text-sm">
-                <div class="flex items-center gap-2">
-                  <span class="text-[#666]">Сектор:</span>
-                  <span class="font-medium text-[#1976D2]">{{ cemeteryStore.neighborGrave.sector_number }}</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="text-[#666]">Место:</span>
-                  <span class="font-medium text-[#1976D2]">{{ cemeteryStore.neighborGrave.grave_number }}</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="text-[#666]">Ряд:</span>
-                  <span class="font-medium text-[#1976D2]">{{ cemeteryStore.neighborGrave.row_number }}</span>
-                </div>
               </div>
             </div>
             <div

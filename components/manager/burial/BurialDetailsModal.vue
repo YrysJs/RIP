@@ -68,6 +68,27 @@ function closeReceiptModal() {
   receiptLoading.value = false;
 }
 
+// Получение всех мест (основное + дополнительные) - как на странице
+const getAllGraves = () => {
+  const places = []
+  
+  // Основное место
+  if (props.grave?.grave_number) {
+    places.push(props.grave.grave_number)
+  }
+  
+  // Дополнительные места
+  if (props.booking?.adjacent_graves && props.booking.adjacent_graves.length > 0) {
+    props.booking.adjacent_graves.forEach(grave => {
+      if (grave.grave_number) {
+        places.push(grave.grave_number)
+      }
+    })
+  }
+  
+  return places.join(', ')
+}
+
 // Обработчик статусов
 const statusConfig = computed(() => {
   const status = props.booking?.status;
@@ -122,9 +143,9 @@ const statusConfig = computed(() => {
       <div class="pt-2 px-6 pb-6">
         <!-- Location info -->
         <div class="mb-6">
-          <div class="flex gap-1 items-center mb-2">
+          <div class="flex gap-1 items-center mb-2 flex-wrap">
             <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Сектор <span class="font-bold">{{ grave?.sector_number }}</span></span>
-            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Место <span class="font-bold">{{ grave?.grave_number }}</span></span>
+            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Место <span class="font-bold">{{ getAllGraves() }}</span></span>
             <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Площадь: <span class="font-bold">{{ grave?.area || '2.5 x 1.5 м' }}</span></span>
           </div>
         </div>
@@ -267,33 +288,4 @@ const statusConfig = computed(() => {
   backdrop-filter: blur(2px);
 }
 
-/* Стили для дополнительных могил в модальном окне */
-.graves-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.grave-item {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 12px;
-}
-
-.grave-details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-/* Адаптив для мобильных устройств */
-@media (max-width: 640px) {
-  .grave-details {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-}
 </style>
