@@ -48,7 +48,7 @@ const formatPhoneNumber = (phone) => {
 
 <template>
   <NuxtLayout name="client">
-    <div class="h-[50vh]">
+    <div class="min-h-[50vh]">
       <!-- заголовок -->
       <h2 class="page-title">Запрос на перезахоронение</h2>
 

@@ -51,7 +51,26 @@ const graveDataModalState = ref(false);
 const graveData = ref(null);
 const cemeteryData = ref(null);
 
-const localePath = useLocalePath();
+/* Функция для объединения всех мест */
+const getAllGraves = (request) => {
+  const places = []
+  
+  // Основное место
+  if (request.grave_number) {
+    places.push(request.grave_number)
+  }
+  
+  // Дополнительные места
+  if (request.adjacent_graves && request.adjacent_graves.length > 0) {
+    request.adjacent_graves.forEach(grave => {
+      if (grave.grave_number) {
+        places.push(grave.grave_number)
+      }
+    })
+  }
+  
+  return places.join(', ')
+}
 
 const fetchGraveData = async (id) => {
   const response = await getGraveById(id);
@@ -187,7 +206,7 @@ const shareGraveData = async (grave_id) => {
               </div>
               <div class="flex text-base">
                 <p class="min-w-[150px] grey-14">Место:</p>
-                <p class="black-16">{{ request.grave_number }}</p>
+                <p class="black-16">{{ getAllGraves(request) }}</p>
               </div>
             </div>
           </div>
@@ -298,7 +317,7 @@ const shareGraveData = async (grave_id) => {
               </div>
               <div class="flex text-base h-[38px] items-center max-sm:h-[26px]">
                 <p class="min-w-[150px] grey-14">Место:</p>
-                <p class="black-16">{{ request.grave_number }}</p>
+                <p class="black-16">{{ getAllGraves(request) }}</p>
               </div>
             </div>
             <!-- <button

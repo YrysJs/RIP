@@ -70,6 +70,14 @@ const photos = ref([])      // [{url, file}]
 const fileInput = ref(null)
 const selectFile = () => fileInput.value?.click()
 const addFile = (file) => {
+  // Проверяем размер файла (максимум 10MB)
+  const maxSize = 10 * 1024 * 1024 // 10MB в байтах
+  if (file.size > maxSize) {
+    const { $toast } = useNuxtApp()
+    $toast.error(`Файл "${file.name}" слишком большой. Максимальный размер: 10MB`)
+    return
+  }
+  
   const r = new FileReader()
   r.onload = e => e.target?.result && photos.value.push({ url: e.target.result, file })
   r.readAsDataURL(file)
@@ -79,7 +87,7 @@ const handleDrop = e => { Array.from(e.dataTransfer?.files || []).forEach(addFil
 const removePhoto = i => photos.value.splice(i, 1)
 
 // Функция для разделения файлов на мелкие массивы
-const chunkFiles = (files, chunkSize = 3) => {
+const chunkFiles = (files, chunkSize = 2) => {
   const chunks = []
   for (let i = 0; i < files.length; i += chunkSize) {
     chunks.push(files.slice(i, i + chunkSize))

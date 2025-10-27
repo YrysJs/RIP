@@ -15,7 +15,7 @@ function formatPhoneNumber(phone) {
 
 <template>
   <NuxtLayout name="client">
-    <div class="max-sm:h-[50vh]">
+    <div class="max-sm:min-h-[50vh]">
       <div
         class="flex items-center justify-between border-b border-b-[#2010011F] pb-4 flex-wrap-reverse gap-3"
       >

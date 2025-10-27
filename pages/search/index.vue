@@ -3,9 +3,12 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { searchDeceased } from '~/services/client'
 import SearchSuccessModal from "~/components/search/SearchSuccessModal.vue";
+import AppLoader from "~/components/loader/AppLoader.vue";
+import { useLoadingStore } from "~/store/loading.js";
 
 const router = useRouter();
 const showSuccessModal = ref(false)
+const loadingStore = useLoadingStore()
 
 const closeSuccessModal = () => {
   showSuccessModal.value = false
@@ -36,25 +39,36 @@ function extractDigits(phone) {
 }
 
 const onSubmit = async () => {
-  await searchDeceased({
-    deceased_name: form.targetFirstName,
-    deceased_surname: form.targetLastName,
-    deceased_patronym: form.targetMiddleName,
-    birth_date: formatDate(form.birthDate),
-    death_date: formatDate(form.deathDate),
-    additional_info: form.extraInfo,
-    applicant_email: form.email,
-    applicant_phone: extractDigits(form.phone),
-    applicant_name: form.fullName,
+  try {
+    loadingStore.startLoading();
+    await searchDeceased({
+      deceased_name: form.targetFirstName,
+      deceased_surname: form.targetLastName,
+      deceased_patronym: form.targetMiddleName,
+      birth_date: formatDate(form.birthDate),
+      death_date: formatDate(form.deathDate),
+      additional_info: form.extraInfo,
+      applicant_email: form.email,
+      applicant_phone: extractDigits(form.phone),
+      applicant_name: form.fullName,
       request_type: 'search'
-  });
-  showSuccessModal.value = true
+    });
+    showSuccessModal.value = true;
+  } catch (error) {
+    console.error('Ошибка при отправке заявки:', error);
+    const { $toast } = useNuxtApp();
+    $toast.error('Ошибка при отправке заявки');
+  } finally {
+    loadingStore.stopLoading();
+  }
 };
 
 </script>
 
 <template>
   <NuxtLayout name="form">
+    <AppLoader v-if="loadingStore.loading" />
+    
     <div class="flex items-center bg-white p-5 rounded-2xl mb-4">
       <button class="btn btn-back mr-4" @click="router.back()">
         <img class="w-4 h-4 mr-[10px]" src="/icons/arrow-left-primary.svg" alt="">
@@ -122,7 +136,12 @@ const onSubmit = async () => {
     </div>
 
     <div class="bg-white p-5 rounded-2xl mb-4 flex justify-end">
-      <button class="btn btn-submit w-full " @click="onSubmit">Отправить заявку</button>
+      <button 
+        class="btn btn-submit w-full" 
+        @click="onSubmit"
+      >
+        Отправить заявку
+      </button>
     </div>
     <Teleport to="body">
       <SearchSuccessModal

@@ -15,11 +15,15 @@ const props = defineProps({
   neighborGrave: { type: Object, default: null },
   cemeteryBoundary: { type: Object, default: null },
   centerCoords: { type: Array, default: null },
+  cemeteries: { type: Array, default: () => [] }, // список всех кладбищ для маркеров
 })
 const emit = defineEmits([
   'update:modelValue',
   'update:neighborGrave',
   'mapBoundsChanged', // добавили для передачи координат карты
+  'cemeterySelected', // событие выбора кладбища
+  'cemeteryDeselected', // событие сброса выбора кладбища
+  'occupiedGraveClicked', // событие клика по занятой могиле
 ])
 
 /* ========== Local refs/state ========== */
@@ -27,6 +31,9 @@ const mapEl = ref(null)
 let map = null
 let cemeteryPolygon = null
 let plotObjects = []
+let cemeteryMarkers = [] // маркеры кладбищ
+let wasShowingMarkers = false // отслеживаем показ маркеров
+let occupiedGraveClickCounts = {} // счетчики кликов по занятым могилам
 const selected = ref(props.modelValue || null)
 const neighborSelected = ref(props.neighborGrave || null)
 const unwatchers = []
@@ -118,18 +125,37 @@ async function loadYMaps21(apiKey, lang = 'ru_RU') {
 
 /* ========== Center calculation ========== */
 function initialCenter() {
-  const items = getItems()
+  // Если есть конкретные координаты центра (выбранное кладбище)
   if (Array.isArray(props.centerCoords) && props.centerCoords.length === 2) {
     const [lat, lng] = props.centerCoords
     return [lat, lng]
   }
+  
+  // Если есть границы кладбища
   const ring = props.cemeteryBoundary?.polygon_data?.coordinates
   if (isRing(ring)) {
     const s = ring.reduce((a, [L, A]) => ({ lng: a.lng + L, lat: a.lat + A }), { lng: 0, lat: 0 })
     return [s.lat / ring.length, s.lng / ring.length]
   }
-  const first = items?.[0]?.polygon_data?.coordinates?.[0]
-  if (Array.isArray(first)) return [first[1], first[0]]
+  
+  // Если есть кладбища, центрируем карту чтобы показать все кладбища
+  if (props.cemeteries && props.cemeteries.length > 0) {
+    const coords = props.cemeteries.map(cemetery => {
+      if (cemetery.location_coords && Array.isArray(cemetery.location_coords) && cemetery.location_coords.length === 2) {
+        return cemetery.location_coords
+      }
+      return null
+    }).filter(Boolean)
+    
+    if (coords.length > 0) {
+      // Вычисляем центр всех кладбищ
+      const centerLat = coords.reduce((sum, coord) => sum + coord[0], 0) / coords.length
+      const centerLng = coords.reduce((sum, coord) => sum + coord[1], 0) / coords.length
+      return [centerLat, centerLng]
+    }
+  }
+  
+  // Дефолтный центр (Алматы)
   return [43.238949, 76.889709]
 }
 
@@ -168,7 +194,7 @@ async function initMap() {
   const el = mapEl.value
   map = new ymaps.Map(el, {
     center: initialCenter(),
-    zoom: props.centerCoords ? 18 : (props.cemeteryBoundary ? 20 : 18),
+    zoom: props.cemeteryBoundary?.id ? 18 : 12, // зум 12 для общего обзора, 18 для выбранного кладбища
     controls: [],
   }, { suppressMapOpenBlock: true })
 
@@ -181,33 +207,129 @@ async function initMap() {
     _resizeObserver.observe(mapEl.value)
   } catch {}
 
-  drawCemetery()
-  drawPlots()
+  drawCemeteryMarkers()
+  // Рисуем границы и могилы только если кладбище выбрано
+  if (props.cemeteryBoundary?.id) {
+    drawCemetery()
+    drawPlots()
+  }
 
   emitBounds()
-  map.events.add('boundschange', () => emitBounds())
+  map.events.add('boundschange', () => {
+    emitBounds()
+    // Перерисовываем маркеры при изменении зума
+    redrawCemeteryMarkers()
+  })
 
   unwatchers.push(
-      watch(() => props.cemeteryBoundary, () => redrawCemetery(), { deep: true }),
-      watch(() => props.polygons, () => redrawPlots(), { deep: true }),
+      watch(() => props.cemeteryBoundary, (newBoundary) => {
+        if (newBoundary?.id) {
+          redrawCemetery()
+          redrawPlots()
+        } else {
+          // Очищаем границы и могилы при сбросе выбора
+          if (cemeteryPolygon) {
+            try { map.geoObjects.remove(cemeteryPolygon) } catch {}
+            cemeteryPolygon = null
+          }
+          clearPlots()
+        }
+        redrawCemeteryMarkers() // перерисовываем маркеры
+      }, { deep: true }),
+      watch(() => props.polygons, () => {
+        if (props.cemeteryBoundary?.id) {
+          redrawPlots()
+        }
+      }, { deep: true }),
+      watch(() => props.cemeteries, () => redrawCemeteryMarkers(), { deep: true }),
       watch(() => props.centerCoords, v => {
         if (Array.isArray(v) && v.length === 2 && map) {
-          try { map.setCenter([v[0], v[1]], 15) } catch {}
+          try { map.setCenter([v[0], v[1]], 18) } catch {}
         }
       })
   )
+}
+
+/* ========== Cemetery markers ========== */
+function clearCemeteryMarkers() {
+  if (!map) return
+  cemeteryMarkers.forEach(marker => {
+    try { if (marker?.marker) map.geoObjects.remove(marker.marker) } catch {}
+  })
+  cemeteryMarkers = []
+  wasShowingMarkers = false
+}
+
+function drawCemeteryMarkers() {
+  const ymaps = window.ymaps
+  if (!map || !ymaps) return
+  
+  // Показываем маркеры если нет выбранного кладбища или зум меньше 16
+  const currentZoom = map.getZoom()
+  const shouldShowMarkers = !props.cemeteryBoundary?.id || currentZoom < 16
+  
+  // Если маркеры начинают показываться и есть выбранное кладбище, сбрасываем выбор
+  if (shouldShowMarkers && !wasShowingMarkers && props.cemeteryBoundary?.id) {
+    emit('cemeteryDeselected')
+  }
+  
+  // Обновляем состояние
+  wasShowingMarkers = shouldShowMarkers
+  
+  if (!shouldShowMarkers) return
+  
+  props.cemeteries.forEach(cemetery => {
+    if (!cemetery.location_coords || !Array.isArray(cemetery.location_coords) || cemetery.location_coords.length !== 2) {
+      return
+    }
+    
+    const [lat, lng] = cemetery.location_coords
+    const marker = new ymaps.Placemark([lat, lng], {
+      balloonContentHeader: cemetery.name,
+      balloonContentBody: `${cemetery.type}<br/>${cemetery.street_name}, ${cemetery.city}`,
+      balloonContentFooter: `Свободных мест: ${cemetery.free_spaces || 0}`,
+    }, {
+      preset: 'islands#circleDotIcon',
+      iconColor: '#d1a53f',
+      cursor: 'pointer',
+    })
+    
+    marker.events.add('click', () => {
+      emit('cemeterySelected', cemetery)
+    })
+    
+    try { map.geoObjects.add(marker) } catch (e) { console.warn('Failed to add cemetery marker', e) }
+    cemeteryMarkers.push({ id: cemetery.id, marker, data: cemetery })
+  })
+}
+
+function redrawCemeteryMarkers() {
+  if (!map || !window.ymaps) return
+  try {
+    clearCemeteryMarkers()
+    drawCemeteryMarkers()
+  } catch (e) {
+    console.warn('Ошибка при перерисовке маркеров кладбищ:', e)
+  }
 }
 
 /* ========== Cemetery boundary ========== */
 function drawCemetery() {
   const ymaps = window.ymaps
   if (!map || !ymaps) return
+  
+  // Очищаем предыдущие границы
   if (cemeteryPolygon) {
     try { map.geoObjects.remove(cemeteryPolygon) } catch {}
     cemeteryPolygon = null
   }
+  
+  // Рисуем границы только если кладбище выбрано
+  if (!props.cemeteryBoundary?.id) return
+  
   const ring = props.cemeteryBoundary?.polygon_data?.coordinates
   if (!isRing(ring)) return
+  
   cemeteryPolygon = new ymaps.Polygon([toLatLng(ring)], {}, {
     fillColor: 'rgba(0,0,0,0)',
     strokeColor: '#FF0000',
@@ -226,11 +348,16 @@ function clearPlots() {
     try { if (p?.polygon) map.geoObjects.remove(p.polygon) } catch {}
   })
   plotObjects = []
+  // Очищаем счетчики кликов при очистке могил
+  occupiedGraveClickCounts = {}
 }
 
 function drawPlots() {
   const ymaps = window.ymaps
   if (!map || !ymaps) return
+
+  // Рисуем могилы только если кладбище выбрано
+  if (!props.cemeteryBoundary?.id) return
 
   const items = getItems()
   const neighbors = getNeighborGraves(selected.value)
@@ -272,10 +399,19 @@ function redrawPlots() {
 
 /* ========== Selection logic ========== */
 function selectPlot(item) {
-  if (!item || item.status !== 'free') {
-    // нельзя выбрать занятую или зарезервированную
+  if (!item) return
+  
+  if (item.status === 'occupied') {
+    // Обрабатываем клик по занятой могиле
+    handleOccupiedGraveClick(item)
     return
   }
+  
+  if (item.status !== 'free') {
+    // нельзя выбрать зарезервированную
+    return
+  }
+  
   if (!map) return
   try {
     selected.value = item
@@ -286,6 +422,20 @@ function selectPlot(item) {
   } catch (e) {
     console.warn('Ошибка при выборе могилы:', e)
   }
+}
+
+function handleOccupiedGraveClick(item) {
+  // Увеличиваем счетчик кликов для этой могилы
+  if (!occupiedGraveClickCounts[item.id]) {
+    occupiedGraveClickCounts[item.id] = 0
+  }
+  occupiedGraveClickCounts[item.id]++
+  
+  // Отправляем событие с данными могилы и количеством кликов
+  emit('occupiedGraveClicked', {
+    grave: item,
+    clickCount: occupiedGraveClickCounts[item.id]
+  })
 }
 
 function selectNeighbor(item) {
@@ -317,5 +467,6 @@ onBeforeUnmount(() => {
   map = null
   cemeteryPolygon = null
   plotObjects = []
+  cemeteryMarkers = []
 })
 </script>
