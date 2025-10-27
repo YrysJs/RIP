@@ -57,7 +57,7 @@ const statusMeta = (s) => {
 
 <template>
   <NuxtLayout name="client">
-    <div class="max-sm:h-[50vh]">
+    <div class="max-sm:h-min-[50vh]">
       <!-- Шапка -->
       <div class="page-head">
         <h2 class="page-title">Обращение в акимат</h2>

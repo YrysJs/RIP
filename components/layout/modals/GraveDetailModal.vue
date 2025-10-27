@@ -71,6 +71,39 @@ const closeModal = () => {
           </div>
         </div>
 
+        <!-- Deceased Information -->
+        <div v-if="grave?.deceased && grave.deceased.length > 0" class="mb-6 p-4 bg-gray-50 rounded-lg">
+          <h3 class="text-lg font-semibold mb-3 text-gray-800">Информация об умершем</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm text-gray-600 mb-1">ФИО</p>
+              <p class="font-medium text-gray-900">{{ grave.deceased[0].full_name }}</p>
+            </div>
+            <div v-if="grave.deceased[0].death_date">
+              <p class="text-sm text-gray-600 mb-1">Дата смерти</p>
+              <p class="font-medium text-gray-900">{{ new Date(grave.deceased[0].death_date).toLocaleDateString('ru-RU') }}</p>
+            </div>
+            <div v-if="grave.deceased[0].inn">
+              <p class="text-sm text-gray-600 mb-1">ИИН</p>
+              <p class="font-medium text-gray-900">{{ grave.deceased[0].inn }}</p>
+            </div>
+            <div v-if="grave.deceased[0].is_reburial !== undefined">
+              <p class="text-sm text-gray-600 mb-1">Перезахоронение</p>
+              <p class="font-medium text-gray-900">{{ grave.deceased[0].is_reburial ? 'Да' : 'Нет' }}</p>
+            </div>
+          </div>
+          <div v-if="grave.deceased[0].death_cert_url" class="mt-3">
+            <p class="text-sm text-gray-600 mb-1">Свидетельство о смерти</p>
+            <a 
+              :href="grave.deceased[0].death_cert_url" 
+              target="_blank" 
+              class="text-blue-600 hover:text-blue-800 underline text-sm"
+            >
+              Открыть документ
+            </a>
+          </div>
+        </div>
+
         <!-- Description -->
         <div class="mb-6">
           <p>

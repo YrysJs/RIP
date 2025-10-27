@@ -177,27 +177,14 @@ async function shareMemorial() {
   }
 }
 
-// Функция для скачивания файла достижения
-async function downloadAchievement(url, filename) {
+// Функция для открытия файла достижения в новой вкладке
+function openAchievement(url, filename) {
   try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Ошибка загрузки файла');
-    
-    const blob = await response.blob();
-    const downloadUrl = window.URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    window.URL.revokeObjectURL(downloadUrl);
-    $toast.success("Файл скачан");
+    window.open(url, '_blank');
+    $toast.success("Файл открыт в новой вкладке");
   } catch (error) {
-    console.error("Ошибка при скачивании файла:", error);
-    $toast.error("Не удалось скачать файл");
+    console.error("Ошибка при открытии файла:", error);
+    $toast.error("Не удалось открыть файл");
   }
 }
 </script>
@@ -434,10 +421,10 @@ async function downloadAchievement(url, filename) {
                       <p class="achievement-description">Документ или награда</p>
                     </div>
                     <button
-                      @click="downloadAchievement(achievement.url, achievement.filename)"
+                      @click="openAchievement(achievement.url, achievement.filename)"
                       class="achievement-download-btn"
                     >
-                      Скачать
+                      Открыть
                     </button>
                   </div>
                 </div>

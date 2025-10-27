@@ -3,7 +3,9 @@ import { useRouter } from "vue-router";
 import MapSecond from "~/components/map/MapV2.vue";
 import { useCemeteryStore } from "~/store/cemetery.js";
 import { getCemeteries, getGraves, getGravesByCoords } from "~/services/cemetery";
+import { getGraveById, getGraveImages } from "~/services/client";
 import ShareCoordModal from "~/components/layout/modals/ShareCoordModal.vue";
+import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
 import AppHeaderClient from "~/components/layout/AppHeaderClient.vue";
@@ -51,6 +53,24 @@ const showInfoMobile = ref(false);
 // Переменная для соседней могилы (приходит с карты)
 const neighborGrave = ref(null);
 
+// Переменные для кэширования данных могил
+const graveDataCache = ref({}); // кэш данных могил
+const graveImagesCache = ref({}); // кэш изображений могил
+
+// Переменные для тултипа с информацией об умершем
+const showDeceasedTooltip = ref(false);
+const deceasedTooltipData = ref(null);
+const tooltipPosition = ref({ x: 0, y: 0 });
+
+// Переменные для второго тултипа (больший)
+const showSecondTooltip = ref(false);
+const secondTooltipData = ref(null);
+let tooltipTimeout = null;
+
+// Переменные для модального окна
+const showGraveModal = ref(false);
+const graveModalData = ref(null);
+
 
 const showList = computed(() => !(isMobile.value && showInfoMobile.value && !showGraveDetails.value));
 
@@ -81,6 +101,7 @@ const pickCity = (item) => {
   selectedCity.value = item;
   cityListState.value = false;
   selectedCemetery.value = {};
+  gravesList.value = []; // очищаем список могил
   showInfoMobile.value = false;
 };
 
@@ -99,32 +120,8 @@ async function getCemeteriesReq() {
     const response = await getCemeteries(params);
     cemetriessList.value = response?.data?.data ?? [];
 
-    // 🔽 Автовыбор первого кладбища
-    if (cemetriessList.value.length) {
-      const first = cemetriessList.value[0];
-
-      // если текущее не из нового списка или пусто — выбираем первое
-      const stillExists = !!cemetriessList.value.find(
-        (c) => c.id === selectedCemetery.value?.id
-      );
-
-      if (!stillExists) {
-        // тихо выставляем (без мобильного showInfo)
-        selectedCemetery.value = first; // триггерит watch(selectedCemetery)
-        await nextTick();
-
-        // 👇 Главное изменение: на мобиле сразу показываем карточку, чтобы был крестик
-        if (isMobile.value) {
-          showInfoMobile.value = true;
-          const anchor = document.querySelector("#mobile-info-anchor");
-          if (anchor) {
-            window.scrollTo({ top: anchor.offsetTop - 12, behavior: "smooth" });
-          }
-        } else {
-          showInfoMobile.value = false;
-        }
-      }
-    } else {
+    // 🔽 Убираем автовыбор первого кладбища
+    if (!cemetriessList.value.length) {
       // Пустой результат — сбрасываем выбор
       selectedCemetery.value = {};
       gravesList.value = [];
@@ -167,6 +164,9 @@ watch(selectedCemetery, (newCemetery) => {
     }
     // Очищаем список могил - теперь он будет загружаться через mapMoved
     gravesList.value = [];
+    // Очищаем кэш данных могил при смене кладбища
+    graveDataCache.value = {};
+    graveImagesCache.value = {};
   }
 });
 
@@ -196,6 +196,10 @@ watch([isMobile, selected], ([mobile, grave]) => {
 });
 
 const mapMoved = async (coords) => {
+  // Не делаем запрос могил пока не выбрано кладбище
+  if (!selectedCemetery.value?.id) {
+    return;
+  }
   
   try {
     // Извлекаем параметры из объекта координат
@@ -317,6 +321,168 @@ function getReligionIcon(item) {
 
   // Фолбэк
   return "/icons/cemetery-generic.svg";
+}
+
+// Обработка выбора кладбища с карты
+function onCemeterySelected(cemetery) {
+  selectedCemetery.value = cemetery;
+  if (isMobile.value) {
+    showInfoMobile.value = true;
+    // плавный скролл к вставке
+    const anchor = document.querySelector("#mobile-info-anchor");
+    if (anchor) {
+      window.scrollTo({ top: anchor.offsetTop - 12, behavior: "smooth" });
+    }
+  }
+}
+
+// Обработка сброса выбора кладбища при отдалении карты
+function onCemeteryDeselected() {
+  selectedCemetery.value = {};
+  gravesList.value = [];
+  selectedGrave.value = null;
+  neighborGrave.value = null;
+  showInfoMobile.value = false;
+  // Очищаем выбранную могилу из store
+  cemeteryStore.clearSelectedGrave();
+  // Очищаем кэш данных могил
+  graveDataCache.value = {};
+  graveImagesCache.value = {};
+}
+
+// Обработка клика по занятой могиле
+async function onOccupiedGraveClicked(data) {
+  // Используем реальный ID могилы
+  const graveId = data.grave.id;
+  
+  try {
+    let graveData = null;
+    let imagesData = null;
+    
+    // Проверяем, есть ли уже данные в кэше
+    if (!graveDataCache.value[graveId]) {
+      // Вызываем запрос getGraveById с реальным ID могилы
+      const graveResponse = await getGraveById(graveId);
+      graveDataCache.value[graveId] = graveResponse.data;
+      graveData = graveResponse.data;
+    } else {
+      graveData = graveDataCache.value[graveId];
+    }
+    
+    // Проверяем, есть ли уже изображения в кэше
+    if (!graveImagesCache.value[graveId]) {
+      // Вызываем запрос getGraveImages с реальным ID могилы
+      const imagesResponse = await getGraveImages(graveId);
+      graveImagesCache.value[graveId] = imagesResponse.data;
+      imagesData = imagesResponse.data;
+    } else {
+      imagesData = graveImagesCache.value[graveId];
+    }
+    
+    // Проверяем наличие данных об умершем
+    if (graveData && graveData.deceased && graveData.deceased.length > 0) {
+      // Очищаем предыдущий таймер
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
+        tooltipTimeout = null;
+      }
+      
+      // Проверяем количество кликов
+      if (data.clickCount === 1) {
+        // Первый клик - показываем маленький тултип
+        showDeceasedTooltip.value = true;
+        showSecondTooltip.value = false;
+        showGraveModal.value = false;
+        deceasedTooltipData.value = {
+          grave: graveData,
+          deceased: graveData.deceased[0], // берем первого умершего
+          images: imagesData?.photos_urls || []
+        };
+      } else if (data.clickCount === 2) {
+        // Второй клик - показываем большой тултип и закрываем маленький
+        showDeceasedTooltip.value = false;
+        showSecondTooltip.value = true;
+        showGraveModal.value = false;
+        secondTooltipData.value = {
+          grave: graveData,
+          deceased: graveData.deceased[0], // берем первого умершего
+          images: imagesData?.photos_urls || []
+        };
+      } else if (data.clickCount >= 3) {
+        // Третий клик и далее - показываем модальное окно и закрываем тултипы
+        showDeceasedTooltip.value = false;
+        showSecondTooltip.value = false;
+        showGraveModal.value = true;
+        graveModalData.value = {
+          grave: graveData,
+          deceased: graveData.deceased[0], // берем первого умершего
+          images: imagesData?.photos_urls || []
+        };
+        // Очищаем таймер, так как модальное окно не закрывается автоматически
+        if (tooltipTimeout) {
+          clearTimeout(tooltipTimeout);
+          tooltipTimeout = null;
+        }
+        return; // Не устанавливаем новый таймер для модального окна
+      }
+      
+      // Устанавливаем таймер на 5 секунд для автоматического закрытия
+      tooltipTimeout = setTimeout(() => {
+        showDeceasedTooltip.value = false;
+        showSecondTooltip.value = false;
+        deceasedTooltipData.value = null;
+        secondTooltipData.value = null;
+        tooltipTimeout = null;
+      }, 5000);
+      
+    } else {
+      // Показываем toast с сообщением об отсутствии данных
+      const { $toast } = useNuxtApp();
+      $toast.error('Нет данных об умершем');
+    }
+    
+  } catch (error) {
+    console.error('Ошибка при получении данных могилы:', error);
+    const { $toast } = useNuxtApp();
+    $toast.error('Ошибка при загрузке данных могилы');
+  }
+}
+
+// Функция для закрытия тултипа
+function closeDeceasedTooltip() {
+  showDeceasedTooltip.value = false;
+  showSecondTooltip.value = false;
+  showGraveModal.value = false;
+  deceasedTooltipData.value = null;
+  secondTooltipData.value = null;
+  graveModalData.value = null;
+  
+  // Очищаем таймер
+  if (tooltipTimeout) {
+    clearTimeout(tooltipTimeout);
+    tooltipTimeout = null;
+  }
+}
+
+// Функция для открытия маршрута в Яндекс.Картах
+function openRoute() {
+  const tooltipData = deceasedTooltipData.value || secondTooltipData.value;
+  
+  if (!tooltipData?.grave?.polygon_data?.coordinates) {
+    const { $toast } = useNuxtApp();
+    $toast.error('Координаты могилы не найдены');
+    return;
+  }
+  
+  // Берем первую координату из полигона могилы
+  const coordinates = tooltipData.grave.polygon_data.coordinates[0];
+  const [lng, lat] = coordinates; // координаты в формате [долгота, широта]
+  
+  // Формируем ссылку на Яндекс.Карты с пином
+  const yandexMapsUrl = `https://yandex.ru/maps/?pt=${lng},${lat}&z=18&l=map`;
+  
+  // Открываем ссылку в новой вкладке
+  window.open(yandexMapsUrl, '_blank');
 }
 </script>
 
@@ -448,7 +614,7 @@ function getReligionIcon(item) {
 
           <div class="w-full">
             <div
-              class="w-full h-[50vh] rounded-xl overflow-hidden max-sm:rounded-none"
+              class="w-full min-h-[50vh] rounded-xl overflow-hidden max-sm:rounded-none"
             >
               <ClientOnly>
                 <MapSecond
@@ -457,9 +623,13 @@ function getReligionIcon(item) {
                   :neighbor-grave="neighborGrave"
                   :cemetery-boundary="selectedCemetery"
                   :center-coords="selectedCemetery.location_coords"
+                  :cemeteries="cemetriessList"
                   v-model="selected"
                   @update:neighbor-grave="neighborGrave = $event"
                   @map-bounds-changed="mapMoved"
+                  @cemetery-selected="onCemeterySelected"
+                  @cemetery-deselected="onCemeteryDeselected"
+                  @occupied-grave-clicked="onOccupiedGraveClicked"
                 />
                 <template #fallback>
                   <div
@@ -470,6 +640,7 @@ function getReligionIcon(item) {
                 </template>
               </ClientOnly>
             </div>
+
 
             <div id="mobile-info-anchor" class="hidden max-sm:block"></div>
 
@@ -495,6 +666,7 @@ function getReligionIcon(item) {
                       @click="
                         showInfoMobile = false;
                         selectedCemetery = {};
+                        gravesList = [];
                       "
                     >
                       <img src="/icons/x.svg" alt="Exit button" />
@@ -667,7 +839,7 @@ function getReligionIcon(item) {
 
             <!-- Инфо по кладбищу -->
             <div
-              class="bg-[#FFF] py-6 px-[18px] mt-2 rounded-lg"
+              class="bg-[#FFF] py-6 px-[18px] mt-2 rounded-lg relative"
               v-if="selectedCemetery?.id && !(isMobile && showInfoMobile)"
             >
               <div class="flex justify-between items-start flex-wrap">
@@ -743,15 +915,6 @@ function getReligionIcon(item) {
                 </div>
               </div>
 
-              <!-- <div class="flex gap-[24px] mt-[16px] mb-[32px]">
-          <span class="text-base font-medium"
-            >Вместимость: {{ selectedCemetery?.capacity }}</span
-          >
-          <span class="text-base font-medium"
-            >Cвободных мест: {{ selectedCemetery?.free_spaces }}</span
-          >
-          <span class="text-base font-medium">Стоимость брони: 10 000₸</span>
-        </div> -->
               <p class="text-base text-[#222] py-4">
                 {{ selectedCemetery?.description }}
               </p>
@@ -829,6 +992,10 @@ function getReligionIcon(item) {
                 </div>
               </div>
 
+              <div v-if="selectedGrave" class="flex gap-[24px] mt-[16px] mb-[32px]">
+                <span class="text-base font-medium">Стоимость брони: {{ neighborGrave ? selectedCemetery?.burial_price*2 : selectedCemetery?.burial_price }} ₸</span>
+              </div>
+
               <button
                 v-if="showGraveDetails"
                 class="reserve__btn"
@@ -842,6 +1009,130 @@ function getReligionIcon(item) {
                 />
                 Забронировать место
               </button>
+              
+              <!-- Тултип с информацией об умершем -->
+              <div
+                v-if="showDeceasedTooltip && deceasedTooltipData"
+                class="absolute bottom-4 right-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm"
+              >
+                <button
+                  @click="closeDeceasedTooltip"
+                  class="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+                
+                <div class="flex flex-col gap-3">
+                  <!-- Фото умершего или заглушка -->
+                  <div class="w-full h-32 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                    <img
+                      v-if="deceasedTooltipData.images && deceasedTooltipData.images.length > 0"
+                      :src="deceasedTooltipData.images[0]"
+                      :alt="deceasedTooltipData.deceased.full_name"
+                      class="w-full h-full object-cover"
+                    />
+                    <div v-else class="text-gray-400 text-center">
+                      <svg class="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
+                      </svg>
+                      <p class="text-sm">Нет фото</p>
+                    </div>
+                  </div>
+                  
+                  <!-- Информация об умершем -->
+                  <div>
+                    <h4 class="font-semibold text-gray-900 text-lg">
+                      {{ deceasedTooltipData.deceased.full_name }}
+                    </h4>
+                    <div class="text-sm text-gray-600 mt-1">
+                      <p v-if="deceasedTooltipData.deceased.death_date">
+                        Дата смерти: {{ new Date(deceasedTooltipData.deceased.death_date).toLocaleDateString('ru-RU') }}
+                      </p>
+                      <p v-if="deceasedTooltipData.grave.sector_number && deceasedTooltipData.grave.grave_number">
+                        Место: {{ deceasedTooltipData.grave.sector_number }}-{{ deceasedTooltipData.grave.grave_number }}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <!-- Кнопка маршрута -->
+                  <button 
+                    @click="openRoute"
+                    class="w-full text-white py-2 px-4 rounded-lg transition-colors"
+                    style="background-color: #d1a53f;"
+                    :style="{ 'background-color': '#d1a53f' }"
+                    @mouseover="$event.target.style.backgroundColor = '#b88f34'"
+                    @mouseout="$event.target.style.backgroundColor = '#d1a53f'"
+                  >
+                    Маршрут
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Второй тултип (больший) с информацией об умершем -->
+              <div
+                v-if="showSecondTooltip && secondTooltipData"
+                class="absolute bg-white rounded-lg shadow-lg border border-gray-200 p-6 max-w-md"
+                style="top: -300px; right: -200px;"
+              >
+                <button
+                  @click="closeDeceasedTooltip"
+                  class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+                
+                <div class="flex flex-col gap-4">
+                  <!-- Фото умершего или заглушка -->
+                  <div class="w-full h-48 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                    <img
+                      v-if="secondTooltipData.images && secondTooltipData.images.length > 0"
+                      :src="secondTooltipData.images[0]"
+                      :alt="secondTooltipData.deceased.full_name"
+                      class="w-full h-full object-cover"
+                    />
+                    <div v-else class="text-gray-400 text-center">
+                      <svg class="w-16 h-16 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
+                      </svg>
+                      <p class="text-base">Нет фото</p>
+                    </div>
+                  </div>
+                  
+                  <!-- Информация об умершем -->
+                  <div>
+                    <h4 class="font-semibold text-gray-900 text-xl mb-2">
+                      {{ secondTooltipData.deceased.full_name }}
+                    </h4>
+                    <div class="text-base text-gray-600 space-y-1">
+                      <p v-if="secondTooltipData.deceased.death_date">
+                        <span class="font-medium">Дата смерти:</span> {{ new Date(secondTooltipData.deceased.death_date).toLocaleDateString('ru-RU') }}
+                      </p>
+                      <p v-if="secondTooltipData.grave.sector_number && secondTooltipData.grave.grave_number">
+                        <span class="font-medium">Место:</span> {{ secondTooltipData.grave.sector_number }}-{{ secondTooltipData.grave.grave_number }}
+                      </p>
+                      <p v-if="secondTooltipData.grave.cemetery_name">
+                        <span class="font-medium">Кладбище:</span> {{ secondTooltipData.grave.cemetery_name }}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <!-- Кнопка маршрута -->
+                  <button 
+                    @click="openRoute"
+                    class="w-full text-white py-3 px-6 rounded-lg transition-colors text-lg font-medium"
+                    style="background-color: #d1a53f;"
+                    :style="{ 'background-color': '#d1a53f' }"
+                    @mouseover="$event.target.style.backgroundColor = '#b88f34'"
+                    @mouseout="$event.target.style.backgroundColor = '#d1a53f'"
+                  >
+                    Маршрут
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Блок информации о выбранной могиле -->
@@ -965,6 +1256,14 @@ function getReligionIcon(item) {
       :lat="graveLat"
       :lng="graveLng"
       @close="shareCoordModalState = false"
+    />
+    
+    <!-- Модальное окно с детальной информацией о могиле -->
+    <GraveDetailModal 
+      :visible="showGraveModal" 
+      :grave="graveModalData?.grave" 
+      :images="graveModalData?.images" 
+      @close="showGraveModal = false" 
     />
   </main>
 </template>
