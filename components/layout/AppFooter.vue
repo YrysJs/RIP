@@ -16,10 +16,10 @@
       </ul>
       <div class="footer__links">
         <ul class="links__left">
-          <li><a href="#main" class="underlined">Главная</a></li>
-          <li><a href="#about" class="underlined">О компании</a></li>
-          <li><a href="#services" class="underlined">Услуги</a></li>
-          <li><a href="#contact" class="underlined">Контакты</a></li>
+          <li><a :href="getLinkHref('main')" class="underlined">Главная</a></li>
+          <li><a :href="getLinkHref('about')" class="underlined">О компании</a></li>
+          <li><a :href="getLinkHref('services')" class="underlined">Услуги</a></li>
+          <li><a :href="getLinkHref('contact')" class="underlined">Контакты</a></li>
         </ul>
         <div class="links__middle">
           <RouterLink to="/instructions" class="underlined"
@@ -72,9 +72,20 @@ import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import { RouterLink } from "#vue-router";
 
 const showSuccessModal = ref(false);
+const route = useRoute(); // useRoute доступен через автоимпорт в Nuxt 3
 
 const closeSuccessModal = () => {
   showSuccessModal.value = false;
+};
+
+// Функция для формирования правильной ссылки
+const getLinkHref = (anchor) => {
+  // Если мы на главной странице, используем якорь
+  if (route.path === '/') {
+    return `#${anchor}`;
+  }
+  // На других страницах ведем на главную с якорем
+  return `/#${anchor}`;
 };
 </script>
 

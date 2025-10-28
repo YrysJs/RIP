@@ -265,12 +265,7 @@ const shareGraveData = async (grave_id) => {
           </div>
           <NuxtLink
             class="block w-fit py-[15px] px-5 rounded-lg bg-[#E9B949] text-black text-sm font-medium mt-[16px] max-sm:w-full text-center hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
-            :to="
-              localePath({
-                name: 'client-tickets-active-id',
-                params: { id: request.id },
-              })
-            "
+            :to="`/client/tickets/active/${request.id}`"
           >
             Завершить оформление
           </NuxtLink>
