@@ -408,7 +408,7 @@ function selectPlot(item) {
   }
   
   if (item.status !== 'free') {
-    // нельзя выбрать зарезервированную
+    // нельзя выбрать зарезервированную или занятую
     return
   }
   
@@ -439,6 +439,10 @@ function handleOccupiedGraveClick(item) {
 }
 
 function selectNeighbor(item) {
+  if (!item || item.status !== 'free') {
+    // Можно выбрать только свободную соседнюю могилу
+    return
+  }
   if (!map) return
   try {
     neighborSelected.value = item
