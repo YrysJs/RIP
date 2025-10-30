@@ -28,8 +28,25 @@
       </ClientOnly>
 
       <button @click="toggleMenu">
-        <img src="/icons/menu-new.svg" alt="Меню" class="w-6 h-6" />
+        <img src="/icons/menu-new.svg" :alt="$t('common.close')" class="w-6 h-6" />
       </button>
+
+      <!-- Переключатель языков -->
+      <div class="language-switcher">
+        <button
+          :class="{ active: currentLocale === 'ru' }"
+          @click="switchLanguage('ru')"
+        >
+          РУ
+        </button>
+        <span class="divider">|</span>
+        <button
+          :class="{ active: currentLocale === 'kk' }"
+          @click="switchLanguage('kk')"
+        >
+          ҚАЗ
+        </button>
+      </div>
     </div>
 
     <!-- Выпадающее меню -->
@@ -44,42 +61,42 @@
         >
           <template v-if="!token">
             <div class="p-4">
-              <div class="text-gray-400 text-sm mb-2">Клиентам</div>
+              <div class="text-gray-400 text-sm mb-2">{{ $t('header.loginAs.clients') }}</div>
               <div
                 class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]"
                 @click="login('client')"
               >
                 <img src="/icons/user.svg" class="w-5 h-5" />
-                <span class="font-medium">Войти/Зарегистрироваться</span>
+                <span class="font-medium">{{ $t('header.loginAs.client') }}</span>
               </div>
             </div>
 
             <div class="p-4 border-b border-b-[#f2f2f2]">
-              <div class="text-gray-400 text-sm mb-2">Партнерам</div>
+              <div class="text-gray-400 text-sm mb-2">{{ $t('header.loginAs.partners') }}</div>
               <div
                 class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]"
                 @click="login('supplier')"
               >
                 <img src="/icons/shop.svg" class="w-5 h-5" />
-                <span class="font-medium">Войти как поставщик услуг</span>
+                <span class="font-medium">{{ $t('header.loginAs.supplier') }}</span>
               </div>
             </div>
           </template>
 
           <template v-if="token">
             <NuxtLink to="/client/profile" class="m-link"
-              >Профиль</NuxtLink
+              >{{ $t('header.profile') }}</NuxtLink
             ></template
           >
 
-          <NuxtLink to="/" class="m-link">Главная</NuxtLink>
-          <NuxtLink to="/services" class="m-link">Услуги</NuxtLink>
+          <NuxtLink to="/" class="m-link">{{ $t('header.main') }}</NuxtLink>
+          <NuxtLink to="/services" class="m-link">{{ $t('header.services') }}</NuxtLink>
           <button class="m-link" @click="router.push('/reserve')">
-            Забронировать место
+            {{ $t('header.reservePlace') }}
           </button>
 
           <template v-if="token">
-            <button class="m-link text-[#D63C3C]" @click="logout">Выйти</button>
+            <button class="m-link text-[#D63C3C]" @click="logout">{{ $t('header.logout') }}</button>
           </template>
         </div>
       </div>
@@ -112,9 +129,25 @@ import SupplierLogin from "../auth/SupplierLogin.vue";
 import { useUserStore } from "~/store/user";
 import { getCurrentUser } from "~/services/login";
 import { NuxtLink } from "#components";
+import { useI18n } from 'vue-i18n';
 
+const { locale } = useI18n();
 const router = useRouter();
 const authModalStore = useAuthModalStore();
+
+// Текущая локаль
+const currentLocale = computed(() => locale.value);
+
+// Функция переключения языка
+const switchLanguage = async (lang) => {
+  const i18n = useNuxtApp().$i18n;
+  if (i18n && typeof i18n.setLocale === 'function') {
+    await i18n.setLocale(lang);
+  } else {
+    locale.value = lang;
+  }
+  localStorage.setItem('locale', lang);
+};
 
 const showAuthModal = computed(() => {
   return authModalStore.activeModal && authModalStore.activeModal !== "";
@@ -199,6 +232,12 @@ async function loadUser() {
 }
 
 onMounted(() => {
+  // Восстанавливаем сохраненный язык
+  const savedLocale = localStorage.getItem('locale');
+  if (savedLocale && (savedLocale === 'ru' || savedLocale === 'kk')) {
+    locale.value = savedLocale;
+  }
+
   handleScroll();
   window.addEventListener("scroll", handleScroll, { passive: true });
   loadUser();
@@ -254,4 +293,44 @@ onUnmounted(() => {
   transform: translateY(-20px);
   opacity: 0;
 } */
+
+/* Переключатель языков */
+.language-switcher {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  margin-right: 8px;
+}
+
+.language-switcher button {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.language-switcher button:hover {
+  color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.language-switcher button.active {
+  color: #ffffff;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.language-switcher .divider {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  line-height: 1;
+}
 </style>

@@ -2,66 +2,66 @@
   <div v-if="visible" class="modal-overlay" @click="closeModal">
     <div class="modal-content" @click.stop>
       <div class="payment-form">
-        <h2 class="title">Оплата картой</h2>
+        <h2 class="title">{{ $t('payment.cardPayment') }}</h2>
         
         <!-- Информация о сумме и количестве могил -->
         <div class="payment-info">
           <div class="info-row">
-            <span class="info-label">Количество могил:</span>
+            <span class="info-label">{{ $t('payment.gravesCount') }}</span>
             <span class="info-value">{{ gravesCount }}</span>
           </div>
           <div class="info-row">
-            <span class="info-label">Стоимость за могилу:</span>
+            <span class="info-label">{{ $t('payment.pricePerGrave') }}</span>
             <span class="info-value">{{ burialData.burial_price || 100 }} ₸</span>
           </div>
           <div class="info-row total">
-            <span class="info-label">Итого к оплате:</span>
+            <span class="info-label">{{ $t('payment.totalToPay') }}</span>
             <span class="info-value">{{ totalAmount }} ₸</span>
           </div>
         </div>
 
         <div class="form-group">
-          <label class="label">Номер карты</label>
+          <label class="label">{{ $t('payment.cardNumber') }}</label>
           <input
             v-model="cardNumber"
             type="text"
             class="input"
-            placeholder="2340 0330 0022 1331"
+            :placeholder="$t('payment.cardNumberPlaceholder')"
             maxlength="19"
             @input="formatCardNumber"
           />
         </div>
 
         <div class="form-group">
-          <label class="label">Email</label>
+          <label class="label">{{ $t('payment.email') }}</label>
           <input
             v-model="email"
             type="email"
             class="input"
-            placeholder="example@test.com"
+            :placeholder="$t('payment.emailPlaceholder')"
           />
         </div>
 
         <div class="form-row">
           <div class="form-group half">
-            <label class="label">Срок действия</label>
+            <label class="label">{{ $t('payment.expiryDate') }}</label>
             <input
               v-model="expiryDate"
               type="text"
               class="input"
-              placeholder="01/25"
+              :placeholder="$t('payment.expiryPlaceholder')"
               maxlength="5"
               @input="formatExpiryDate"
             />
           </div>
 
           <div class="form-group half">
-            <label class="label">CVC код</label>
+            <label class="label">{{ $t('payment.cvv') }}</label>
             <input
               v-model="cvcCode"
               type="password"
               class="input"
-              placeholder="234"
+              :placeholder="$t('payment.cvvPlaceholder')"
               maxlength="3"
             />
           </div>
@@ -72,7 +72,7 @@
           @click="processPayment"
           :disabled="isProcessing"
         >
-          {{ isProcessing ? "Обработка..." : "Оплатить" }}
+          {{ isProcessing ? $t('payment.processing') : $t('payment.pay') }}
         </button>
       </div>
     </div>

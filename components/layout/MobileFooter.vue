@@ -38,7 +38,7 @@
             </svg>
           </div>
 
-          <span>Заявки</span>
+          <span>{{ $t('mobileFooter.requests') }}</span>
         </button>
       </li>
 
@@ -74,7 +74,7 @@
             </svg>
           </div>
 
-          <span>Доп. услуги</span>
+          <span>{{ $t('mobileFooter.additionalServices') }}</span>
         </button>
       </li>
 
@@ -112,7 +112,7 @@
             </svg>
           </div>
 
-          <span>История</span>
+          <span>{{ $t('mobileFooter.history') }}</span>
         </button>
       </li>
 
@@ -168,7 +168,7 @@
             </svg>
           </div>
 
-          <span>Мемориал</span>
+          <span>{{ $t('mobileFooter.memorial') }}</span>
         </button>
       </li>
 
@@ -204,7 +204,7 @@
             </svg>
           </div>
 
-          <span>Ещё</span>
+          <span>{{ $t('mobileFooter.more') }}</span>
         </button>
       </li>
     </ul>
@@ -238,7 +238,7 @@
           role="menuitem"
           @click="go('/client/profile')"
         >
-          Личный кабинет
+          {{ $t('mobileFooter.profile') }}
         </button>
 
         <!-- <button
@@ -266,7 +266,7 @@
           role="menuitem"
           @click="go('/client/burial')"
         >
-          Запрос на перезахоронение
+          {{ $t('mobileFooter.reburialRequest') }}
         </button>
 
         <button
@@ -279,7 +279,7 @@
           role="menuitem"
           @click="go('/client/government')"
         >
-          Обращение в акимат
+          {{ $t('mobileFooter.akimatAppeal') }}
         </button>
 
         <button
@@ -292,7 +292,7 @@
           role="menuitem"
           @click="go('/client/notifications')"
         >
-          Уведомления
+          {{ $t('mobileFooter.notifications') }}
           <span
             v-if="unreadCount > 0"
             class="inline-flex items-center justify-center min-w-[20px] h-[20px] px-[6px] rounded-full bg-[#E9B949] text-white text-[12px]"
@@ -307,7 +307,7 @@
             @click="go('/reserve')"
           >
             <img src="/icons/pencil.svg" alt="Reserve icon" class="w-5 h-5" />
-            Забронировать место
+            {{ $t('mobileFooter.reservePlace') }}
           </button>
         </div>
       </div>
@@ -319,7 +319,9 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { getUnreadNotifications } from "~/services/notifications";
+import { useI18n } from 'vue-i18n';
 
+const { t: $t } = useI18n();
 const router = useRouter();
 const route = useRoute();
 const open = ref(false);
@@ -345,7 +347,7 @@ const fetchUnreadCount = async () => {
     const response = await getUnreadNotifications();
     unreadCount.value = response.data?.total || 0;
   } catch (error) {
-    console.error("Ошибка загрузки непрочитанных уведомлений:", error);
+    console.error($t('mobileFooter.notificationLoadError'), error);
   }
 };
 

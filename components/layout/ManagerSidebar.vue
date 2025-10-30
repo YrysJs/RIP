@@ -4,9 +4,15 @@ import { computed, onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { getUnreadNotifications } from "~/services/notifications";
 
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
 const props = withDefaults(defineProps<{ title?: string }>(), {
-  title: 'ЛИЧНЫЙ КАБИНЕТ'
+  title: ''
 });
+
+const displayTitle = computed(() => props.title || t('manager.sidebar.title'));
 
 type MenuItem = {
   title: string
@@ -16,11 +22,11 @@ type MenuItem = {
 
 const unreadCount = ref(0);
 
-const menu: MenuItem[] = [
-  { title: 'Заявки на захоронение', path: '/manager/burial' },
-  { title: 'Управление кладбищами', path: '/manager/cemetery' },
-  { title: 'Уведомления', path: '/manager/notifications', count: computed(() => unreadCount.value > 0 ? unreadCount.value : null) },
-];
+const menu = computed(() => [
+  { title: t('manager.sidebar.burialRequests'), path: '/manager/burial' },
+  { title: t('manager.sidebar.cemeteriesManagement'), path: '/manager/cemetery' },
+  { title: t('manager.sidebar.notifications'), path: '/manager/notifications', count: computed(() => unreadCount.value > 0 ? unreadCount.value : null) },
+]);
 
 const route = useRoute();
 const isActive = (path: string) => computed(() => route.path.startsWith(path));
@@ -30,7 +36,7 @@ const fetchUnreadCount = async () => {
     const response = await getUnreadNotifications();
     unreadCount.value = response.data?.total || 0;
   } catch (error) {
-    console.error('Ошибка загрузки непрочитанных уведомлений:', error);
+    console.error(t('errors.fetchError'), error);
   }
 };
 
@@ -41,7 +47,7 @@ onMounted(() => {
 
 <template>
   <div class="sidebar">
-    <div class="sidebar__title">{{ title }}</div>
+    <div class="sidebar__title">{{ displayTitle }}</div>
 
     <nav class="sidebar__nav">
       <RouterLink

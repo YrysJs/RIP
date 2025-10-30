@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from "vue";
 import { createMemorial, getBurialRequestById } from "~/services/client";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
@@ -33,7 +35,7 @@ const loadBurialData = async () => {
       burial.value = response.data.data;
     }
   } catch (error) {
-    console.error("Ошибка при загрузке данных захоронения:", error);
+    console.error(t('errors.fetchError'), error);
   }
 };
 
@@ -205,7 +207,7 @@ const submitMemorial = async () => {
       <div class="bg-white py-6 px-[18px] rounded-2xl max-sm:p-0">
         <div class="flex justify-between items-center gap-2">
           <div>
-            <p class="text-sm text-[#999] max-sm:hidden">Мемориал</p>
+            <p class="text-sm text-[#999] max-sm:hidden">{{ $t('memorialPage.memorial') }}</p>
             <h3 class="text-fluid font-medium font-foglihten">
               {{
                 isEditMode
@@ -218,7 +220,7 @@ const submitMemorial = async () => {
             class="flex items-center gap-2 bg-[#00000014] py-[10px] px-4 rounded-[10px] hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition max-sm:bg-transparent"
           >
             <img src="/icons/share.svg" alt="" class="max-sm:w-5 max-sm:h-5" />
-            <span class="max-sm:hidden">Поделиться</span>
+            <span class="max-sm:hidden">{{ $t('memorialPage.share') }}</span>
           </button>
         </div>
 
@@ -236,7 +238,7 @@ const submitMemorial = async () => {
                 <div class="flex justify-center mb-[20px]">
                   <img src="/icons/upload.svg" alt="" class="upload-icon" />
                 </div>
-                <p class="upload-text">Загрузите фотографии</p>
+                <p class="upload-text">{{ $t('memorialCreate.uploadPhotos') }}</p>
                 <p class="upload-hint">
                   Перетащите файлы или загрузите файлы до N мб в формате: .png,
                   .jpeg

@@ -16,13 +16,13 @@ const handleClose = () => {
       class="bg-white text-center rounded-xl max-w-[400px] w-full p-6 shadow-lg mx-4"
     >
       <img src="/icons/success-modal.svg" alt="success" class="mx-auto block" />
-      <h3 class="mt-6 font-medium text-xl">Заявка принята</h3>
+      <h3 class="mt-6 font-medium text-xl">{{ $t('completedModal.requestAccepted') }}</h3>
 
       <NuxtLink
         class="block rounded-lg text-black text-sm font-medium bg-[#E9B949] py-[15px] w-full mt-6"
         @click="handleClose"
       >
-        Закрыть
+        {{ $t('common.close') }}
       </NuxtLink>
     </div>
   </div>

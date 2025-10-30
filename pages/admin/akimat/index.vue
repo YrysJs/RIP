@@ -2,10 +2,10 @@
   <NuxtLayout name="admin">
     <div class="w-full mt-[20px] booking-list">
       <div class="flex justify-between items-center mb-[16px] bg-white rounded-[16px] p-[20px]">
-        <h2 class="text-2xl font-semibold">Список Акиматов</h2>
+        <h2 class="text-2xl font-semibold">{{ $t('akimatList.title') }}</h2>
         <button class="invite-btn" @click="router.push('/admin/akimat/form')">
           <img src="/icons/plus.svg" alt="Пригласить" class="w-4 h-4 mr-2" />
-          Создать
+          {{ $t('akimatList.create') }}
         </button>
       </div>
       <div v-for="akimat in akimats" :key="akimat.id" class="booking-card">
@@ -14,11 +14,11 @@
         </div>
         <div class="flex justify-between items-center mt-4">
           <div class="booking-info">
-            <span class="badge">Телефон: <span class="font-medium">{{ formatPhoneNumber(akimat.phone) }}</span></span>
-            <span class="badge">Адрес: <span class="font-medium ml-1">{{ cities[akimat.cityId - 1] }}, {{ akimat.address }}</span></span>
+            <span class="badge">{{ $t('akimatList.phoneLabel') }}: <span class="font-medium">{{ formatPhoneNumber(akimat.phone) }}</span></span>
+            <span class="badge">{{ $t('akimatList.addressLabel') }}: <span class="font-medium ml-1">{{ cities[akimat.cityId - 1] }}, {{ akimat.address }}</span></span>
           </div>
           <a :href="akimat.mapUrl" target="_blank">
-            <button class="details-btn">На карте</button>
+            <button class="details-btn">{{ $t('akimatList.onMap') }}</button>
           </a>
         </div>
 

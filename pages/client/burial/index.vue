@@ -2,7 +2,9 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { getMyRequests } from "~/services/akimat";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 const appeals = ref([]);
 const loading = ref(true);
@@ -38,7 +40,7 @@ const fmtDate = (iso) => {
 };
 const formatPhoneNumber = (phone) => {
   const p = String(phone || "");
-  if (!/^\d{11}$/.test(p)) return "Не указан";
+  if (!/^\d{11}$/.test(p)) return t('errors.invalidPhone');
   return `+${p[0]} (${p.slice(1, 4)}) ${p.slice(4, 7)} ${p.slice(
     7,
     9
@@ -50,12 +52,12 @@ const formatPhoneNumber = (phone) => {
   <NuxtLayout name="client">
     <div class="min-h-[50vh]">
       <!-- заголовок -->
-      <h2 class="page-title">Запрос на перезахоронение</h2>
+      <h2 class="page-title">{{ $t('client.burial.reburialRequest') }}</h2>
 
       <!-- загрузка -->
       <div v-if="loading" class="state-card">
         <div class="spinner" />
-        <p class="muted">Загружаем ваши заявки…</p>
+        <p class="muted">{{ $t('client.burial.loadingRequests') }}</p>
       </div>
 
       <!-- пустое состояние -->
@@ -63,16 +65,16 @@ const formatPhoneNumber = (phone) => {
         <div class="empty__card">
           <img src="/icons/search-request.svg" alt="" class="mx-auto" />
 
-          <div class="empty__title">Ничего не найдено</div>
+          <div class="empty__title">{{ $t('client.burial.nothingFound') }}</div>
           <div class="empty__subtitle">
-            У вас пока нет<br />созданных заявок
+            {{ $t('client.burial.noRequestsYet') }}
           </div>
 
           <button
             class="btn btn--yellow empty__btn"
             @click="router.push('/client/burial/create')"
           >
-            Создать заявку
+            {{ $t('client.burial.createRequest') }}
           </button>
         </div>
       </div>
@@ -82,7 +84,7 @@ const formatPhoneNumber = (phone) => {
               class="btn btn--yellow"
               @click="router.push('/client/burial/create')"
           >
-            Создать заявку
+            {{ $t('client.burial.createRequest') }}
           </button>
         </div>
 
@@ -90,7 +92,7 @@ const formatPhoneNumber = (phone) => {
           <div v-for="req in appeals" :key="req.id" class="card">
             <div class="card__row">
               <div class="head-left">
-                <span class="title">ЗАЯВКА:</span>
+                <span class="title">{{ $t('client.burial.request') }}</span>
                 <span class="num-badge">{{
                     String(req.id).padStart(3, "0")
                   }}</span>
@@ -104,7 +106,7 @@ const formatPhoneNumber = (phone) => {
 
             <div class="info">
               <div class="info-line">
-                <span class="label">Заявитель:</span>
+                <span class="label">{{ $t('client.burial.applicant') }}</span>
                 <span class="value value--bold">
                 <template v-if="req.user">
                   {{ req.user.surname }} {{ req.user.name }}
@@ -117,7 +119,7 @@ const formatPhoneNumber = (phone) => {
               </div>
 
               <div class="info-line">
-                <span class="label">Причина:</span>
+                <span class="label">{{ $t('client.burial.reason') }}</span>
                 <span class="value">{{ req.reason || "—" }}</span>
               </div>
             </div>
@@ -128,7 +130,7 @@ const formatPhoneNumber = (phone) => {
                     class="btn btn--ghost"
                     @click="router.push(`/client/burial/${req.id}`)"
                 >
-                  Подробнее
+                  {{ $t('common.more') }}
                 </button>
               </div>
             </div>

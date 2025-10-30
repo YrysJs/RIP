@@ -13,7 +13,9 @@ import "swiper/css/pagination";
 import AppLoader from "~/components/loader/AppLoader.vue";
 import { useLoadingStore } from "~/store/loading.js";
 import AppHeaderClient from "~/components/layout/AppHeaderClient.vue";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const dataId = ref(0);
 const mainPageModalState = ref(false);
 const loadingStore = useLoadingStore();
@@ -23,81 +25,61 @@ const showDetail = (id) => {
   mainPageModalState.value = true;
 };
 
-const slides = ref([
+const slides = computed(() => [
   {
     id: 1,
-    title: "Электронная база захоронений города Алматы",
+    title: t('mainPage.title'),
     subtitle: "",
     background: "/images/client/intro-desk.jpg",
     backgroundMobile: "/images/client/intro-mob.jpg",
     buttons: [
       {
-        text: "Поиск захоронения",
+        text: t('mainPage.searchBurial'),
         action: "search",
         icon: "search",
       },
-      { text: "Забронировать место", action: "reserve", icon: "pencil" },
+      { text: t('mainPage.reservePlace'), action: "reserve", icon: "pencil" },
     ],
   },
-  // {
-  //   id: 2,
-  //   title: "Общедоступная база захоронений",
-  //   subtitle: "Социальный проект по поиску захоронений и уходу за ними",
-  //   background: "/images/client/intro-desk.jpg",
-  //   backgroundMobile: "/images/client/intro-mob.jpg",
-  //   buttons: [
-  //     {
-  //       text: "Поиск захоронения",
-  //       action: "search",
-  //       icon: "search",
-  //     },
-  //     { text: "Забронировать место", action: "reserve", icon: "pencil" },
-  //   ],
-  // },
 ]);
 
-const services = [
+const services = computed(() => [
   {
     id: 0,
-    title: "Поиск захоронения",
+    title: t('mainPage.services.searchBurial.title'),
     img: "/images/main_service/f1.jpg",
-    description:
-      "Вы можете заказать у нас точные координаты захоронения на цифровой карте кладбища с подробным описанием маршрута.",
+    description: t('mainPage.services.searchBurial.description'),
     link: "",
   },
   {
     id: 1,
-    title: "Благо-устройство",
+    title: t('mainPage.services.improvement.title'),
     img: "/images/main_service/f2.jpg",
-    description:
-      "Мы предоставляем комплексный спектр услуг по благоустройству и уходу за захоронениями Ваших родственников и друзей.",
+    description: t('mainPage.services.improvement.description'),
     link: "",
   },
   {
     id: 2,
-    title: "Цифровой мемориал и древо памяти",
+    title: t('mainPage.services.digitalMemorial.title'),
     img: "/images/main_service/f3.jpg",
-    description:
-      "Создайте виртуальный памятник, в котором будет собрана вся информация о Вашем близком человеке и кто с ним связан.",
+    description: t('mainPage.services.digitalMemorial.description'),
     link: "",
   },
   {
     id: 3,
-    title: "Ритуальные услуги",
+    title: t('mainPage.services.ritualServices.title'),
     img: "/images/main_service/f4.jpg",
-    description:
-      "Полный комплекс мероприятий, включая оформление документов, подготовку церемонии и сопровождение. Обеспечиваем соблюдение всех традиций и пожеланий семьи. Гарантируем профессиональный подход и внимание к деталям.",
+    description: t('mainPage.services.ritualServices.description'),
     link: "",
   },
   {
     id: 4,
-    title: "Ритуальные товары",
+    title: t('mainPage.services.ritualGoods.title'),
     img: "/images/main_service/f5.jpg",
-    description:
-      "Мы предлагаем широкий ассортимент ритуальных товаров, необходимых для организации похорон с учетом всех традиций и пожеланий.",
+    description: t('mainPage.services.ritualGoods.description'),
     link: "",
   },
-];
+]);
 
 const router = useRouter();
 
@@ -111,9 +93,9 @@ const fetchNews = async () => {
     });
     newsList.value = response.data;
   } catch (error) {
-    console.error("Ошибка при получении новостей:", error);
+    console.error(t('client.tickets.burial.errorFetchingRequests'), error);
     const { $toast } = useNuxtApp();
-    $toast.error("Сервер не доступен");
+    $toast.error(t('common.serverUnavailable'));
   }
 };
 
@@ -241,17 +223,13 @@ onMounted(() => {
     <div class="container" id="about">
       <section class="about">
         <div class="about__inner">
-          <h3 class="about__title">О проекте</h3>
+          <h3 class="about__title">{{ $t('mainPage.aboutProject') }}</h3>
           <p class="about__paragraph">
-            Мы компания RIP - первая в&nbsp;Казахстане единая база захоронений,
-            с&nbsp;помощью которой вы сможете удалённо найти захоронение своих
-            близких и&nbsp;родных, посмотреть в&nbsp;каком состоянии оно сейчас
-            находится и&nbsp;организовать дальнейшее сопровождение
-            по&nbsp;уходу, где бы вы не&nbsp;находились.
+            {{ $t('mainPage.aboutText') }}
           </p>
           <a href="#services" class="about__link">
             <img src="/icons/arrow.svg" alt="" aria-hidden="true" />
-            Подробнее
+            {{ $t('common.more') }}
           </a>
 
           <div class="about__media">
@@ -267,15 +245,14 @@ onMounted(() => {
     </div>
     <div class="container">
       <div class="mission">
-        <h3>Наша миссия</h3>
+        <h3>{{ $t('mainPage.ourMission') }}</h3>
         <p>
-          Создать единую базу для поиска, организации и&nbsp;услуг по&nbsp;уходу
-          за&nbsp;захоронениями и&nbsp;сделать её доступной для&nbsp;населения.
+          {{ $t('mainPage.missionText') }}
         </p>
       </div>
     </div>
     <div class="container services" id="services">
-      <h3 class="services__title">Услуги</h3>
+      <h3 class="services__title">{{ $t('mainPage.servicesTitle') }}</h3>
       <ul>
         <li
           v-for="service in services"
@@ -291,24 +268,24 @@ onMounted(() => {
           />
           <p class="service__description">{{ service.description }}</p>
           <button @click="showDetail(service.id)" class="service__btn">
-            Подробнее
+            {{ $t('common.more') }}
           </button>
         </li>
       </ul>
     </div>
     <section class="questions">
       <div class="questions__inner">
-        <p>Можете связаться с нами в любое время!</p>
+        <p>{{ $t('mainPage.contactUs') }}</p>
         <a href="http://wa.me/77758100110" target="_blank">
           <button>
             <img src="/icons/whatsapp.svg" alt="Whatsapp icon" />
-            Написать на WhatsApp
+            {{ $t('mainPage.writeWhatsApp') }}
           </button>
         </a>
       </div>
     </section>
     <div v-if="newsList.length" class="container news">
-      <h3 class="news__title">Новости</h3>
+      <h3 class="news__title">{{ $t('mainPage.news') }}</h3>
       <ul>
         <li
             v-for="service in newsList"
@@ -323,7 +300,7 @@ onMounted(() => {
           />
           <p class="news__description"><b>{{service.title}}</b><br/>{{ service.content }}</p>
           <button @click="router.push('/news/' + service.id)" class="news__btn">
-            Подробнее
+            {{ $t('common.more') }}
           </button>
         </li>
       </ul>

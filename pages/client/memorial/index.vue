@@ -1,6 +1,8 @@
 <script setup>
 import { getMemorials } from "~/services/client";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const memorials = ref([]);
 const loading = ref(true);
 
@@ -37,7 +39,9 @@ const loadMemorials = async () => {
     // const response = await getMemorials();
     memorials.value = response?.data || [];
   } catch (error) {
-    console.error("Ошибка при загрузке мемориалов:", error);
+    console.error(t('errors.fetchError'), error);
+    const { $toast } = useNuxtApp();
+    $toast.error(t('common.serverUnavailable'));
     memorials.value = [];
   } finally {
     loading.value = false;
@@ -64,16 +68,16 @@ function truncateText(text, maxLength = 45) {
           v-if="loading"
           class="flex justify-center items-center bg-white rounded-[16px] py-[20px] px-[12px]"
         >
-          <p>Загрузка...</p>
+          <p>{{ $t('common.loading') }}</p>
         </div>
         <div
           v-else-if="memorials.length === 0"
           class="flex justify-center items-center bg-white rounded-[16px] py-[20px] px-[12px]"
         >
-          <p>Мемориалы не найдены</p>
+          <p>{{ $t('client.memorial.notFound') }}</p>
         </div>
         <div v-else>
-          <h3 class="text-fluid font-foglihten mb-6">Цифровой мемориал</h3>
+          <h3 class="text-fluid font-foglihten mb-6">{{ $t('client.sidebar.digitalMemorial') }}</h3>
           <div class="flex flex-col gap-4">
             <div
               v-for="memorial in memorials"
@@ -88,8 +92,8 @@ function truncateText(text, maxLength = 45) {
                 <p class="text-sm text-[#999] max-sm:text-[13px]">
                   {{
                     memorial.is_public
-                      ? "Публичный"
-                      : "Доступен только по ссылке"
+                      ? $t('client.memorial.public')
+                      : $t('client.memorial.privateLink')
                   }}
                 </p>
               </div>
@@ -112,7 +116,7 @@ function truncateText(text, maxLength = 45) {
           <div
             class="flex justify-center items-center bg-white rounded-[16px] py-[20px] px-[12px]"
           >
-            <p>Загрузка...</p>
+            <p>{{ $t('common.loading') }}</p>
           </div>
         </template>
       </ClientOnly>

@@ -9,7 +9,7 @@
       @click.stop
     >
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold">Детали продукта</h2>
+        <h2 class="text-xl font-semibold">{{ $t('productDetailModal.title') }}</h2>
         <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
           <img src="/icons/close.svg" alt="Закрыть" class="w-6 h-6" />
         </button>
@@ -18,7 +18,7 @@
       <div v-if="product" class="space-y-4">
         <!-- Изображения -->
         <div v-if="product.image_urls && product.image_urls.length > 0" class="mb-4">
-          <h3 class="text-lg font-medium mb-2">Изображения</h3>
+          <h3 class="text-lg font-medium mb-2">{{ $t('productDetail.images') }}</h3>
           <div class="grid grid-cols-2 gap-4">
             <img
               v-for="(image, index) in product.image_urls"
@@ -37,19 +37,19 @@
             <p class="text-sm text-gray-900">{{ product.id }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Название</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('common.name') }}</label>
             <p class="text-sm text-gray-900">{{ product.name }}</p>
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Описание</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('common.description') }}</label>
           <p class="text-sm text-gray-900">{{ product.description }}</p>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Цена</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('productDetailModal.price') }}</label>
             <p class="text-sm text-gray-900">{{ product.price }} ₸</p>
           </div>
           <div>
@@ -60,7 +60,7 @@
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Статус</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('common.status') }}</label>
             <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full" :class="getStatusClass(product.status)">
               {{ getStatusText(product.status) }}
             </span>
@@ -73,19 +73,19 @@
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Страна</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('common.country') }}</label>
             <p class="text-sm text-gray-900">{{ product.country }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Город</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('common.city') }}</label>
             <p class="text-sm text-gray-900">{{ product.city }}</p>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Доступность</label>
-            <p class="text-sm text-gray-900">{{ product.availability ? 'Доступен' : 'Недоступен' }}</p>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('common.availability') }}</label>
+            <p class="text-sm text-gray-900">{{ product.availability ? $t('productDetail.available') : $t('productDetail.unavailable') }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Время обслуживания</label>
@@ -106,7 +106,7 @@
 
         <!-- Модерация -->
         <div class="border-t pt-4">
-          <h3 class="text-lg font-medium mb-3">Модерация</h3>
+          <h3 class="text-lg font-medium mb-3">{{ $t('productDetail.moderation') }}</h3>
           
           <div class="mb-4">
             <label for="moderationComment" class="block text-sm font-medium text-gray-700 mb-1">

@@ -10,7 +10,9 @@ import BurialDetailsModal from '~/components/manager/burial/BurialDetailsModal.v
 import { getGraveById, getGraveImages } from '~/services/client'
 import { getCemeteries } from '~/services/cemetery'
 import CancelModal from '~/components/manager/booking/CancelModal.vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 // const router = useRouter()
 
 const burials = ref([])
@@ -63,9 +65,9 @@ const fetchBurials = async (params = {  }) => {
     const response = await getManagerBurialRequests(params)
     burials.value = response.data?.data?.data ?? []
   } catch (e) {
-    console.error('Ошибка при получении заявок:', e)
+    console.error(t('errors.fetchError'), e)
     const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    $toast.error(t('common.serverUnavailable'))
   } finally {
     loading.value = false
   }
@@ -81,9 +83,9 @@ const fetchBurialDetails = async (id) => {
     graveImages.value = images.data
     burialDetailModalVisible.value = true
   } catch (e) {
-    console.error('Ошибка при услуги:', e)
+    console.error(t('errors.fetchError'), e)
     const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    $toast.error(t('common.serverUnavailable'))
   }
 }
 
@@ -93,9 +95,9 @@ const cancelRequest = async (comment) => {
     isCancelModalVisible.value = false
     fetchBurials()
   } catch (error) {
-    console.error('Ошибка при отмене заявки:', error)
+    console.error(t('errors.fetchError'), error)
     const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    $toast.error(t('common.serverUnavailable'))
   }
 }
 const approveRequest = async () => {
@@ -104,9 +106,9 @@ const approveRequest = async () => {
     burialDetailModalVisible.value = false
     fetchBurials()
   } catch (error) {
-    console.error('Ошибка при подтверждении заявки:', error)
+    console.error(t('errors.fetchError'), error)
     const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    $toast.error(t('common.serverUnavailable'))
   }
 }
 
@@ -116,9 +118,9 @@ const completeRequest = async () => {
     burialDetailModalVisible.value = false
     fetchBurials()
   } catch (error) {
-    console.error('Ошибка при подтверждении заявки:', error)
+    console.error(t('errors.fetchError'), error)
     const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    $toast.error(t('common.serverUnavailable'))
   }
 }
 const selectRequest = () => { isCancelModalVisible.value = true }
@@ -135,9 +137,9 @@ const fetchCemeteries = async () => {
     const response = await getCemeteries()
     cemeteries.value = response.data
   } catch (e) {
-    console.error('Ошибка при получении кладбищ:', e)
+    console.error(t('errors.fetchError'), e)
     const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    $toast.error(t('common.serverUnavailable'))
   }
 }
 
@@ -155,10 +157,10 @@ const fmtDate = (iso) => {
   return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' })
 }
 const statusChip = (status) => {
-  if (status === 'pending')   return { text:'Ожидает оплаты', class:'chip chip--orange' }
-  if (status === 'paid')      return { text:'Оплачено',       class:'chip chip--blue' }
-  if (status === 'cancelled') return { text:'Отменено',       class:'chip chip--red' }
-  if (status === 'confirmed') return { text:'Подтверждено',   class:'chip chip--green' }
+  if (status === 'pending')   return { text: t('statuses.pending'), class:'chip chip--orange' }
+  if (status === 'paid')      return { text: t('statuses.paid'),    class:'chip chip--blue' }
+  if (status === 'cancelled') return { text: t('statuses.cancelled'), class:'chip chip--red' }
+  if (status === 'confirmed') return { text: t('statuses.confirmed'), class:'chip chip--green' }
   return { text: status ?? '—', class:'chip chip--gray' }
 }
 
@@ -193,7 +195,7 @@ watch([dateFrom, dateTo, cemeteryId], () => {
       <!-- Поиск -->
       <div class="mgr__search">
         <div class="search">
-          <input v-model="search" class="search__input" type="text" placeholder="Поиск по бронированиям">
+          <input v-model="search" class="search__input" type="text" :placeholder="$t('common.search')">
           <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none"/>
             <path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -208,8 +210,8 @@ watch([dateFrom, dateTo, cemeteryId], () => {
             <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
           </svg>
-          <h3 class="empty-state__title">Заявок пока нет</h3>
-          <p class="empty-state__text">Когда появятся новые заявки на захоронение, они отобразятся здесь</p>
+          <h3 class="empty-state__title">{{ $t('manager.burial.noRequests') }}</h3>
+          <p class="empty-state__text">{{ $t('manager.burial.noRequestsText') }}</p>
         </div>
       </div>
 
@@ -225,7 +227,7 @@ watch([dateFrom, dateTo, cemeteryId], () => {
         <!-- Заголовок + номер + статус + стрелка -->
         <div class="card__row card__row--header">
           <div class="head-left">
-            <span class="title">ЗАХОРОНЕНИЕ:</span>
+            <span class="title">{{ $t('manager.burial.burialTitle') }}</span>
             <span class="num-badge">{{ String(b.request_number).padStart(3,'0') }}</span>
           </div>
           <div class="header-right">
@@ -238,14 +240,14 @@ watch([dateFrom, dateTo, cemeteryId], () => {
 
         <!-- Даты -->
         <div class="card__dates">
-          <div class="date-line">Дата брони: <strong>{{ fmtDateTime(b.created_at) }}</strong></div>
-          <div class="date-line">Дата похорон: <strong>{{ fmtDate(b.burial_date) }}<span v-if="b.burial_time">&nbsp;{{ b.burial_time }}</span></strong></div>
+        <div class="date-line">{{ $t('manager.burial.bookingDate') }} <strong>{{ fmtDateTime(b.created_at) }}</strong></div>
+        <div class="date-line">{{ $t('manager.burial.burialDate') }} <strong>{{ fmtDate(b.burial_date) }}<span v-if="b.burial_time">&nbsp;{{ b.burial_time }}</span></strong></div>
         </div>
 
         <!-- Блок информации: ФИО -->
         <div class="info">
           <div class="info-line">
-            <span class="label">ФИО покойного:</span>
+            <span class="label">{{ $t('manager.burial.deceasedFullName') }}</span>
             <span class="value value--bold">{{ b.deceased?.full_name || '—' }}</span>
           </div>
         </div>
@@ -255,10 +257,10 @@ watch([dateFrom, dateTo, cemeteryId], () => {
         <div class="card__row card__row--bottom">
           <div class="chips">
             <span class="chip chip--gray">{{ b.cemetery || 'Северное кладбище' }}</span>
-            <span v-if="b.sector" class="chip chip--gray">Сектор: {{ b.sector }}</span>
-            <span class="chip chip--gray">Место: {{ getAllGraves(b) }}</span>
+            <span v-if="b.sector" class="chip chip--gray">{{ $t('manager.burial.sector') }} {{ b.sector }}</span>
+            <span class="chip chip--gray">{{ $t('manager.burial.place') }} {{ getAllGraves(b) }}</span>
           </div>
-          <button class="btn-more" :disabled="!b.id" @click="fetchBurialDetails(b.id)">Подробнее</button>
+          <button class="btn-more" :disabled="!b.id" @click="fetchBurialDetails(b.id)">{{ $t('manager.burial.details') }}</button>
         </div>
       </div>
     </div>

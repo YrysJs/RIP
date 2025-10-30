@@ -52,6 +52,9 @@ import SetCemeteryModal from "~/components/admin/managers/SetCemeteryModal.vue";
 import { getManagers, setCemeteryManager } from '~/services/admin'
 import {ref} from "vue";
 import {getCemeteries} from "~/services/cemetery/index.js";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 definePageMeta({
   middleware: ['auth', 'admin'],
@@ -67,7 +70,7 @@ const roles = ref([])
 const cemeteries = ref([])
 
 function formatPhoneNumber(phone) {
-  if (!/^\d{11}$/.test(phone)) return 'Неверный формат номера';
+  if (!/^\d{11}$/.test(phone)) return t('errors.invalidPhone');
 
   return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(4, 7)} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
 }
@@ -89,7 +92,7 @@ const setCemetery = async (id) => {
     isSetCemeteryModal.value = false
     showSuccessModal.value = true
   } catch (error) {
-    console.error('Ошибка при получении пользователей:', error)
+    console.error(t('errors.fetchError'), error)
   } finally {
   }
 }
@@ -115,9 +118,8 @@ onMounted((async () => {
     const res = await getCemeteries()
     cemeteries.value = res.data.data
   } catch (error) {
-    console.error('Ошибка при получении пользователей:', error)
+    console.error(t('errors.fetchError'), error)
   } finally {
-    console.log('finally')
   }
 }))
 

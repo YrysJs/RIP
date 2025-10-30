@@ -5,38 +5,38 @@
       <!-- ===== СЕКЦИЯ: Количество заявок ===== -->
       <section class="section kpi-section">
         <div class="section__head">
-          <h2 class="h-title">Количество заявок всего: {{ burialStats?.statistics?.confirmed + burialStats?.statistics?.cancelled + burialStats?.statistics?.pending + burialStats?.statistics?.paid }}</h2>
+          <h2 class="h-title">{{ $t('reports.totalRequests') }}: {{ burialStats?.statistics?.confirmed + burialStats?.statistics?.cancelled + burialStats?.statistics?.pending + burialStats?.statistics?.paid }}</h2>
 
           <!-- период: неделя / месяц / всё время -->
           <select v-model="reqPeriod" class="period" @change="onPeriodChange('requests')">
-            <option value="week">За неделю</option>
-            <option value="month">За месяц</option>
-            <option value="all">За всё время</option>
+            <option value="week">{{ $t('reports.week') }}</option>
+            <option value="month">{{ $t('reports.month') }}</option>
+            <option value="all">{{ $t('reports.allTime') }}</option>
           </select>
         </div>
 
         <div class="kpi-grid">
           <div class="kpi kpi--green">
-            <div class="kpi__label">Согласовано</div>
+            <div class="kpi__label">{{ $t('reports.approved') }}</div>
             <div class="kpi__value">{{ burialStats?.statistics?.confirmed }}</div>
           </div>
           <div class="kpi kpi--peach">
-            <div class="kpi__label">Отказано</div>
+            <div class="kpi__label">{{ $t('reports.rejected') }}</div>
             <div class="kpi__value">{{ burialStats?.statistics?.cancelled }}</div>
           </div>
           <div class="kpi kpi--blue">
-            <div class="kpi__label">В работе</div>
+            <div class="kpi__label">{{ $t('reports.inProgress') }}</div>
             <div class="kpi__value">{{ burialStats?.statistics?.pending }}</div>
           </div>
           <div class="kpi kpi--sand">
-            <div class="kpi__label">Оплачено</div>
+            <div class="kpi__label">{{ $t('reports.paid') }}</div>
             <div class="kpi__value">{{ burialStats?.statistics?.paid }}</div>
           </div>
         </div>
 
         <div class="section__actions">
-          <button class="btn" type="button" @click="exportRequests">Отчет по заявкам</button>
-          <button class="btn" type="button" @click="exportAppeals">Отчет по обращениям</button>
+          <button class="btn" type="button" @click="exportRequests">{{ $t('reports.requestsReport') }}</button>
+          <button class="btn" type="button" @click="exportAppeals">{{ $t('reports.appealsReport') }}</button>
         </div>
       </section>
 
@@ -45,7 +45,7 @@
         <!-- Сейчас в работе -->
         <div class="card work-section">
           <div class="card__head">
-            <h3 class="card__title card__title--muted">Сейчас в работе</h3>
+            <h3 class="card__title card__title--muted">{{ $t('reports.currentlyInProgress') }}</h3>
           </div>
 
           <div v-if="requestStats?.inWork?.length" class="worklist">
@@ -57,17 +57,17 @@
               </svg>
             </div>
           </div>
-          <div v-else class="worklist__empty">В работе ничего нет</div>
+          <div v-else class="worklist__empty">{{ $t('reports.nothingInProgress') }}</div>
         </div>
 
         <!-- Типы обращения -->
         <div class="card types-section">
           <div class="card__head">
-            <h3 class="card__title">Типы обращения</h3>
+            <h3 class="card__title">{{ $t('reports.appealTypes') }}</h3>
             <select v-model="typesPeriod" class="period period--sm" @change="onPeriodChange('types')">
-              <option value="week">За неделю</option>
-              <option value="month">За месяц</option>
-              <option value="all">За всё время</option>
+              <option value="week">{{ $t('reports.week') }}</option>
+              <option value="month">{{ $t('reports.month') }}</option>
+              <option value="all">{{ $t('reports.allTime') }}</option>
             </select>
           </div>
           <div class="types-wrap">

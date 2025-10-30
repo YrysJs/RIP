@@ -5,29 +5,29 @@
     <main class="main-content">
       <div class="container">
         <div class="login-section">
-          <h1 class="page-title">Вход для администрации</h1>
-          <p class="page-description">Выберите тип входа для административного доступа</p>
+          <h1 class="page-title">{{ $t('admin.loginTitle') }}</h1>
+          <p class="page-description">{{ $t('admin.loginDescription') }}</p>
           
           <!-- Административная модалка -->
           <div class="admin-modal-container">
             <div class="admin-modal">
-              <h2 class="modal-title">Администрация</h2>
+              <h2 class="modal-title">{{ $t('admin.administration') }}</h2>
               
               <div class="login-options">
                 <div class="login-option" @click="login('manager')">
                   <img src="/icons/home.svg" class="option-icon" />
-                  <span class="option-text">Войти как менеджер кладбища</span>
+                  <span class="option-text">{{ $t('admin.loginAsManager') }}</span>
                 </div>
                 
                 <div class="login-option" @click="login('akimat')">
                   <img src="/icons/building.svg" class="option-icon" />
-                  <span class="option-text">Кабинет Акимата</span>
+                  <span class="option-text">{{ $t('admin.akimatCabinet') }}</span>
                 </div>
               </div>
               
               <div class="back-link">
                 <NuxtLink to="/" class="back-button">
-                  ← Вернуться на главную
+                  ← {{ $t('common.back') }}
                 </NuxtLink>
               </div>
             </div>
@@ -229,6 +229,7 @@ function login(type) {
   }
 }
 </style>
+
 
 
 

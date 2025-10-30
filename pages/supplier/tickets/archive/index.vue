@@ -1,7 +1,9 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { getOrders } from "~/services/supplier";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const ARCHIVE_STATUSES = ["completed", "cancelled"];
 
 const orders = ref([]);
@@ -10,8 +12,8 @@ const error = ref(null);
 
 function statusChip(status) {
   const map = {
-    cancelled: { text: "Отменен", kind: "red" },
-    completed: { text: "Завершен", kind: "green" },
+    cancelled: { text: t('statuses.cancelled'), kind: "red" },
+    completed: { text: t('statuses.completed'), kind: "green" },
   };
   const m = map[status] || { text: status || "—", kind: "red" };
   return { text: m.text, class: `chip chip--${m.kind}` };
@@ -52,8 +54,8 @@ const fetchOrders = async () => {
     const response = await getOrders();
     orders.value = response?.data?.items || [];
   } catch (err) {
-    console.error("Ошибка при получении заказов:", err);
-    error.value = "Ошибка при загрузке заказов";
+    console.error(t('errors.fetchError'), err);
+    error.value = t('errors.fetchError');
   } finally {
     loading.value = false;
   }

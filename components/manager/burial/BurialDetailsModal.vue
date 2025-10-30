@@ -2,7 +2,9 @@
 import { defineProps, computed, ref } from 'vue';
 import { getPaymentReceipt } from "~/services/payments";
 import ReceiptModal from "~/components/layout/modals/ReceiptModal.vue";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const props = defineProps(['grave', 'visible', 'booking', 'images'])
 
 const emit = defineEmits(['close', 'confirm', 'cancel', 'complete'])
@@ -17,7 +19,7 @@ function removeEscapedQuotes(str) {
 }
 
 function formatPhoneNumber(phone) {
-  if (!/^\d{11}$/.test(phone)) return 'Неверный формат номера';
+  if (!/^\d{11}$/.test(phone)) return t('errors.invalidPhone');
 
   return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(4, 7)} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
 }
@@ -96,7 +98,7 @@ const statusConfig = computed(() => {
   switch (status) {
     case 'pending':
       return {
-        text: 'Ожидает',
+        text: t('statuses.pending'),
         bgColor: 'bg-[#FEF3C7]',
         textColor: 'text-[#D97706]'
       };

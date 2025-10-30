@@ -3,13 +3,13 @@
     <div class="page">
       <!-- Шапка -->
       <div class="page-head">
-        <h1 class="page-title">Пользователи акимата</h1>
+        <h1 class="page-title">{{ $t('akimat.users.title') }}</h1>
 
         <button class="add-btn" @click="isCreateModal = true">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          Пригласить пользователя
+          {{ $t('akimat.users.inviteUser') }}
         </button>
       </div>
 
@@ -55,8 +55,8 @@
                   class="dropdown"
                   @click.stop
                 >
-                  <button class="dropdown__item" @click="openUpdateModal(user)">Редактировать</button>
-                  <button class="dropdown__item dropdown__item--danger" @click="showConfirmModal(user)">Удалить</button>
+                  <button class="dropdown__item" @click="openUpdateModal(user)">{{ $t('common.edit') }}</button>
+                  <button class="dropdown__item dropdown__item--danger" @click="showConfirmModal(user)">{{ $t('common.delete') }}</button>
                 </div>
               </div>
             </div>

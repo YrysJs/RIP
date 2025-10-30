@@ -1,7 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import {getMyAppeals} from '~/services/client'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const appeals = ref([])
 const isLoading = ref(true)
@@ -29,7 +31,9 @@ async function fetchAppeals() {
     })
     appeals.value = response.data?.items ?? response.data ?? []
   } catch (error) {
-    console.error('Ошибка при загрузке обращений:', error)
+    console.error(t('errors.fetchError'), error)
+    const { $toast } = useNuxtApp()
+    $toast.error(t('common.serverUnavailable'))
   } finally {
     isLoading.value = false
   }
@@ -82,19 +86,19 @@ onMounted(async () => {
     <div class="w-full rounded-[16px]">
       <!-- Заголовок -->
       <div class="page-header">
-        <h2 class="page-title">Обращения в Акимат</h2>
+        <h2 class="page-title">{{ $t('supplier.appeals.pageTitle') }}</h2>
         <button 
           @click="router.push('/supplier/goverment/create')" 
           class="create-btn"
         >
-          Создать обращение
+          {{ $t('common.add') }}
         </button>
       </div>
 
       <!-- Загрузка -->
       <div v-if="isLoading" class="loading-state">
         <div class="spinner"></div>
-        <p class="loading-text">Загрузка обращений...</p>
+        <p class="loading-text">{{ $t('supplier.appeals.loading') }}</p>
       </div>
 
       <!-- Пустое состояние -->
@@ -109,15 +113,15 @@ onMounted(async () => {
               <path d="M10 9H8"/>
             </svg>
           </div>
-          <h3 class="empty-state__title">Пока нет обращений</h3>
+          <h3 class="empty-state__title">{{ $t('supplier.appeals.noAppeals') }}</h3>
           <p class="empty-state__description">
-            Создайте первое обращение в Акимат для решения ваших вопросов
+            {{ $t('supplier.appeals.noAppeals') }}
           </p>
           <button 
             @click="router.push('/supplier/goverment/create')" 
             class="empty-state__button"
           >
-            Создать обращение
+            {{ $t('common.add') }}
           </button>
         </div>
       </div>
@@ -130,28 +134,28 @@ onMounted(async () => {
           class="appeal-card"
         >
           <div class="appeal-card__header">
-            <h3 class="appeal-card__title">Обращение №{{ appeal.id }}</h3>
+            <h3 class="appeal-card__title">{{ $t('supplier.appeals.pageTitle') }} №{{ appeal.id }}</h3>
             <div class="appeal-card__date">
-              Дата обращения: {{ formatDate(appeal.createTime || appeal.createdAt) }}
+              {{ $t('common.date') }}: {{ formatDate(appeal.createTime || appeal.createdAt) }}
             </div>
           </div>
 
           <div class="appeal-card__row">
-            <span class="appeal-card__label">Заявитель:</span>
+            <span class="appeal-card__label">{{ $t('supplier.appeals.applicant') }}</span>
             <span class="appeal-card__value">
               {{ getApplicantName(appeal) }}
             </span>
           </div>
 
           <div class="appeal-card__row">
-            <span class="appeal-card__label">Тип обращения:</span>
+            <span class="appeal-card__label">{{ $t('supplier.appeals.appealType') }}</span>
             <span class="appeal-card__type" :class="getTypeClass(appeal.type?.value)">
               {{ appeal.type?.nameRu || appeal.type?.name || '—' }}
             </span>
           </div>
 
           <div class="appeal-card__row" v-if="appeal.document?.url || appeal.documentUrl">
-            <span class="appeal-card__label">Документ:</span>
+            <span class="appeal-card__label">{{ $t('supplier.appeals.document') }}</span>
             <a class="appeal-card__file" :href="appeal.document?.url || appeal.documentUrl" target="_blank" rel="noopener">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z" stroke="#297D85" stroke-width="1.6"/>
@@ -162,7 +166,7 @@ onMounted(async () => {
           </div>
 
           <div class="appeal-card__row">
-            <span class="appeal-card__label">Обращение:</span>
+            <span class="appeal-card__label">{{ $t('supplier.appeals.appeal') }}</span>
             <p class="appeal-card__text">{{ appeal.content || appeal.text }}</p>
           </div>
         </div>

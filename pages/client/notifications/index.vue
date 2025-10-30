@@ -5,6 +5,9 @@ import {
   markAsRead,
 } from "~/services/notifications";
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const notifications = ref([]);
 const loading = ref(false);
@@ -51,7 +54,9 @@ const fetchNotifications = async (reset = false) => {
     hasMore.value = newNotifications.length === limit.value;
   } catch (err) {
     error.value = err.message;
-    console.error("Ошибка при загрузке уведомлений:", err);
+    console.error(t('errors.fetchError'), err);
+    const { $toast } = useNuxtApp();
+    $toast.error(t('common.serverUnavailable'));
   } finally {
     loading.value = false;
     loadingMore.value = false;
@@ -118,8 +123,8 @@ const handleMarkAllAsRead = async () => {
       is_read: true,
     }));
   } catch (err) {
-    console.error("Ошибка при пометке всех уведомлений как прочитанные:", err);
-    error.value = "Не удалось пометить все уведомления как прочитанные";
+    console.error(t('client.notifications.markAllError'), err);
+    error.value = t('client.notifications.markAllError');
   } finally {
     markingAllAsRead.value = false;
   }
@@ -153,7 +158,7 @@ const handleNotificationClick = async (notification) => {
       <div
         class="w-full flex items-center flex-wrap justify-between bg-white rounded-[16px] text-lg font-semibold px-4 gap-4"
       >
-        <h2 class="page-title">Уведомления</h2>
+        <h2 class="page-title">{{ $t('client.notifications.title') }}</h2>
 
         <div class="flex flex-wrap items-center gap-4">
           <button
@@ -167,26 +172,26 @@ const handleNotificationClick = async (notification) => {
             />
             {{
               markingAllAsRead
-                ? "Обновление..."
-                : "Пометить все как прочитанные"
+                ? $t('common.loading')
+                : $t('client.notifications.markAllAsRead')
             }}
           </button>
 
           <div class="flex items-center gap-2">
-            <label class="text-sm text-gray-600">Тип сервиса:</label>
+            <label class="text-sm text-gray-600">{{ $t('client.notifications.serviceType') }}</label>
             <select
               v-model="serviceType"
               @change="onServiceTypeChange"
               class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#38949B]"
             >
-              <option value="">Все</option>
-              <option value="burial-request-service">Заявки захоронений</option>
-              <option value="supplier-service">Заявки услуг</option>
+              <option value="">{{ $t('common.all') }}</option>
+              <option value="burial-request-service">{{ $t('client.notifications.filterBurialRequests') }}</option>
+              <option value="supplier-service">{{ $t('client.notifications.filterSupplierServices') }}</option>
             </select>
           </div>
 
           <div class="flex items-center gap-2">
-            <label class="text-sm text-gray-600">Показать по:</label>
+            <label class="text-sm text-gray-600">{{ $t('client.notifications.showBy') }}</label>
             <select
               v-model="limit"
               @change="onLimitChange"
@@ -276,13 +281,13 @@ const handleNotificationClick = async (notification) => {
             v-else-if="!hasMore && notifications.length > 0"
             class="text-center py-4"
           >
-            <p class="text-gray-500 text-sm">Все уведомления загружены</p>
+            <p class="text-gray-500 text-sm">{{ $t('client.notifications.allLoaded') }}</p>
           </div>
         </div>
 
         <!-- Пустое состояние -->
         <div v-else class="text-center py-8">
-          <p class="text-gray-500">Уведомлений пока нет</p>
+          <p class="text-gray-500">{{ $t('client.notifications.noNotifications') }}</p>
         </div>
       </div>
     </div>

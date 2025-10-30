@@ -1,7 +1,9 @@
 <script setup>
 import { getNotifications, markAsReadAll, markAsRead } from '~/services/notifications'
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const notifications = ref([])
 const loading = ref(false)
 const loadingMore = ref(false)
@@ -43,8 +45,8 @@ const fetchNotifications = async (reset = false) => {
     
   } catch (err) {
     error.value = err.message
-    console.error('Ошибка при загрузке уведомлений:', err)
-  } finally {
+    console.error(t('errors.fetchError'), err)
+  } finally{
     loading.value = false
     loadingMore.value = false
   }

@@ -17,13 +17,13 @@
     </div>
 
     <div class="cemetery-card__stats">
-      <span> <strong>Вместимость: {{ cemetery.capacity }}</strong></span>
-      <span> <strong>Свободных мест: {{ cemetery.free_spaces }}</strong></span>
+      <span> <strong>{{ $t('cemetery.capacity') }}: {{ cemetery.capacity }}</strong></span>
+      <span> <strong>{{ $t('cemetery.freeSpaces') }}: {{ cemetery.free_spaces }}</strong></span>
     </div>
 
     <div class="cemetery-card__footer flex justify-end gap-3">
-      <button class="btn cemetery-card__edit-button" @click="emit('open-map', cemetery)">На карте</button>
-      <button class="btn cemetery-card__edit-button" @click="triggerFileSelect">Загрузить захоронения</button>
+      <button class="btn cemetery-card__edit-button" @click="emit('open-map', cemetery)">{{ $t('cemetery.onMap') }}</button>
+      <button class="btn cemetery-card__edit-button" @click="triggerFileSelect">{{ $t('cemetery.uploadBurials') }}</button>
       <input
           ref="fileInput"
           type="file"
@@ -31,7 +31,7 @@
           class="hidden"
           @change="onFileChange"
       />
-      <button class="btn cemetery-card__edit-button" @click="router.push('/admin/cemetery/' + cemetery.id)">Редактировать</button>
+      <button class="btn cemetery-card__edit-button" @click="router.push('/admin/cemetery/' + cemetery.id)">{{ $t('common.edit') }}</button>
     </div>
   </div>
 </template>
@@ -41,10 +41,12 @@ const props = defineProps(['cemetery'])
 const router = useRouter();
 const emit = defineEmits(['open-map', 'upload'])
 
+const { t } = useI18n()
+
 const types = {
-  muslim: 'Мусульманское кладбище',
-  christ: 'Християнское кладбище',
-  slavic: 'Провославное кладбище'
+  muslim: t('cemetery.types.muslim'),
+  christ: t('cemetery.types.christ'),
+  slavic: t('cemetery.types.slavic')
 }
 const fileInput = ref(null)
 

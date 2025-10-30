@@ -4,6 +4,9 @@ import {getManagerCemeteries, getGraves} from "~/services/cemetery"
 import CemeteryMap from "~/components/map/CemeteryMap.vue";
 import {getGraveById, getGraveImages} from "~/services/client/index.js";
 import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 // import ManagerProfileCard from '@/components/manager/ManagerProfileCard.vue'
 
 const cemeteries = ref([])
@@ -45,7 +48,9 @@ const fetchGraveDetails = async (id) => {
     graveDetailModalVisible.value = true
 
   } catch (error) {
-    console.error('Ошибка при услуги:', error)
+    console.error(t('errors.fetchError'), error)
+    const { $toast } = useNuxtApp()
+    $toast.error(t('common.serverUnavailable'))
   }
 
 }
@@ -55,7 +60,9 @@ onMounted((async () => {
     const response = await getManagerCemeteries()
     cemeteries.value = response.data.data
   } catch (error) {
-    console.error('Ошибка при получении заявок:', error)
+    console.error(t('errors.fetchError'), error)
+    const { $toast } = useNuxtApp()
+    $toast.error(t('common.serverUnavailable'))
   } finally {
     console.log('finally')
   }
@@ -75,8 +82,8 @@ onMounted((async () => {
     <div v-if="cemeteries.length === 0" class="text-center py-8">
       <div class="bg-white rounded-lg p-6 shadow-sm">
 <!--        <img src="/icons/cemetery-empty.svg" alt="Нет кладбищ" class="w-16 h-16 mx-auto mb-4 opacity-50" />-->
-        <h3 class="text-lg font-medium text-gray-600 mb-2">Вы пока не назначены</h3>
-        <p class="text-gray-500">Обратитесь к администратору для назначения на кладбища</p>
+        <h3 class="text-lg font-medium text-gray-600 mb-2">{{ $t('manager.cemetery.notAssigned') }}</h3>
+        <p class="text-gray-500">{{ $t('manager.cemetery.contactAdmin') }}</p>
       </div>
     </div>
     

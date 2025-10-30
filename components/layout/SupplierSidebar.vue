@@ -8,7 +8,7 @@
           <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" stroke="currentColor" stroke-width="2"/>
         </svg>
       </div>
-      <span class="nav-text">Заявки</span>
+      <span class="nav-text">{{ $t('supplier.sidebar.requests') }}</span>
     </RouterLink>
 
     <RouterLink to="/supplier/services/active" class="nav-item" :class="{ 'nav-item--active': $route.path.startsWith('/supplier/services') }">
@@ -17,7 +17,7 @@
           <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <span class="nav-text">Товары и услуги</span>
+      <span class="nav-text">{{ $t('supplier.sidebar.productsAndServices') }}</span>
     </RouterLink>
 
     <RouterLink to="/supplier/services/add-service" class="nav-item nav-item--add">
@@ -26,7 +26,7 @@
           <path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <span class="nav-text">Добавить</span>
+      <span class="nav-text">{{ $t('supplier.sidebar.add') }}</span>
     </RouterLink>
 
     <RouterLink to="/supplier/reviews" class="nav-item" :class="{ 'nav-item--active': $route.path.startsWith('/supplier/reviews') }">
@@ -35,7 +35,7 @@
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <span class="nav-text">Отзывы</span>
+      <span class="nav-text">{{ $t('supplier.sidebar.reviews') }}</span>
     </RouterLink>
 
     <div class="nav-item nav-item--more" @click="toggleMoreMenu">
@@ -46,17 +46,17 @@
           <circle cx="5" cy="12" r="1" fill="currentColor"/>
         </svg>
       </div>
-      <span class="nav-text">Еще</span>
+      <span class="nav-text">{{ $t('supplier.sidebar.more') }}</span>
     </div>
 
     <!-- Dropdown меню -->
     <div v-if="showMoreMenu" class="more-menu" @click.stop>
       <RouterLink to="/supplier/notifications" class="more-menu__item">
-        <span>Уведомления</span>
+        <span>{{ $t('supplier.sidebar.notifications') }}</span>
         <span class="notification-badge">3</span>
       </RouterLink>
       <RouterLink to="/supplier/reports" class="more-menu__item">
-        <span>Отчеты</span>
+        <span>{{ $t('supplier.sidebar.reports') }}</span>
       </RouterLink>
     </div>
   </div>

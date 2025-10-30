@@ -2,7 +2,7 @@
   <NuxtLayout name="user" class="tickets-page">
     <div class="w-full rounded-[16px]">
       <!-- Заголовок -->
-      <h2 class="page-title">Новые заявки</h2>
+      <h2 class="page-title">{{ $t('akimat.tickets.newRequests') }}</h2>
 
       <!-- Табы -->
       <div class="tabs-wrapper">
@@ -12,7 +12,7 @@
             :class="{ 'tab--active': activeTab === 'relocation' }"
             @click="activeTab = 'relocation'"
           >
-            Заявки на перезахоронение
+            {{ $t('akimat.tickets.reburialRequests') }}
             <span class="tab-count" :class="{ 'tab-count--active': activeTab === 'relocation' }">
               {{ relocationCount }}
             </span>
@@ -23,7 +23,7 @@
             :class="{ 'tab--active': activeTab === 'akimat' }"
             @click="activeTab = 'akimat'"
           >
-            Обращение в акимат
+            {{ $t('akimat.tickets.akimatAppeal') }}
             <span class="tab-count" :class="{ 'tab-count--active': activeTab === 'akimat' }">
               {{ akimatCount }}
             </span>
@@ -605,10 +605,9 @@ async function fetchRequests(params) {
 const fetchUsers = async () => {
   try {
     const response = await getUsersByRole({ roleIds: '8' });
-    console.log(response)
     roles.value = response.data[0].users;
   } catch (e) {
-    console.error('Ошибка при получении пользователей:', e);
+    console.error(t('errors.fetchError'), e);
   }
 };
 

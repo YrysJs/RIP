@@ -8,7 +8,9 @@ import { setAkimatFile } from "~/services/akimat";
 import { getCemeteries } from "~/services/cemetery";
 import { getUser } from "~/services/login";
 import { parseJwt } from "~/utils/parseJwt";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 
 /* ---- state ---- */
@@ -76,7 +78,7 @@ async function userCreateAppeal() {
 
     router.push("/client/burial");
   } catch (e) {
-    console.error(e);
+    console.error(t('errors.fetchError'), e);
   }
 }
 

@@ -31,7 +31,7 @@
           }"
             @click="showConfirmModal(user)"
         >
-          {{ user.isActive ? 'Активен' : 'Не активен' }}
+          {{ user.isActive ? t('admin.active') : t('admin.inactive') }}
 
         </span>
           </div>
@@ -63,6 +63,9 @@ import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import { getSuppliers, activateSupplier } from '~/services/login'
 import {ref} from "vue";
 import ConfirmModal from "~/components/layout/modals/ConfirmModal.vue";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 
 
@@ -90,9 +93,8 @@ const activate = async () => {
       supplierId: selectedUser.value.id
     })
     } catch (error) {
-      console.error('Ошибка при получении пользователей:', error)
+      console.error(t('errors.fetchError'), error)
     } finally {
-      console.log('finally')
       isConfirmModal.value = false;
       const response = await getSuppliers()
       suppliers.value = response.data

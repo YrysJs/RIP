@@ -5,6 +5,8 @@ import { CreateCemetery } from '~/services/admin'
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import {ref} from "vue";
 
+const { t } = useI18n();
+
 const showSuccessModal = ref(false)
 
 const cities = [
@@ -34,14 +36,14 @@ definePageMeta({
 });
 
 const form = reactive({
-  name: 'Северное кладбище',
-  description: 'Просторная и ухоженная, разделена на секции по типу захоронений: семейные, одиночные, мемориальные участки и колумбарий.',
-  street_name: 'Северное кладбище',
+  name: t('cemeteryDefaults.northernCemetery'),
+  description: t('cemeteryDefaults.description'),
+  street_name: t('cemeteryDefaults.northernCemetery'),
   religion: 'all',
   phone: '',
   status: 'active',
   city: '',
-  country: 'Казахстан',
+  country: t('cities.kazakhstan'),
   polygon_data: {
     color: '',
     coordinates: []

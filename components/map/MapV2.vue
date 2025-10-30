@@ -53,9 +53,11 @@ function getNeighborGraves(selectedGrave) {
   if (!selectedGrave) return []
   const items = getItems()
   const row = selectedGrave.row_number
+  const sector = selectedGrave.sector
   const num = parseInt(selectedGrave.grave_number)
   if (!row || isNaN(num)) return []
   return items.filter(item =>
+      item.sector === sector &&
       item.row_number === row &&
       (parseInt(item.grave_number) === num + 1 || parseInt(item.grave_number) === num - 1)
   )
@@ -215,33 +217,44 @@ async function initMap() {
   }
 
   emitBounds()
+  
+  // Debounce для плавного переключения маркеров
+  let boundsChangeTimeout = null
   map.events.add('boundschange', () => {
     emitBounds()
-    // Перерисовываем маркеры при изменении зума
-    redrawCemeteryMarkers()
+    // Дебаунсим перерисовку маркеров для плавности
+    if (boundsChangeTimeout) clearTimeout(boundsChangeTimeout)
+    boundsChangeTimeout = setTimeout(() => {
+      redrawCemeteryMarkers()
+    }, 150) // задержка 150мс для плавности
   })
 
   unwatchers.push(
       watch(() => props.cemeteryBoundary, (newBoundary) => {
-        if (newBoundary?.id) {
-          redrawCemetery()
-          redrawPlots()
-        } else {
-          // Очищаем границы и могилы при сбросе выбора
-          if (cemeteryPolygon) {
-            try { map.geoObjects.remove(cemeteryPolygon) } catch {}
-            cemeteryPolygon = null
+        // Плавная перерисовка с небольшой задержкой
+        setTimeout(() => {
+          if (newBoundary?.id) {
+            redrawCemetery()
+            redrawPlots()
+          } else {
+            // Очищаем границы и могилы при сбросе выбора
+            if (cemeteryPolygon) {
+              try { map.geoObjects.remove(cemeteryPolygon) } catch {}
+              cemeteryPolygon = null
+            }
+            clearPlots()
           }
-          clearPlots()
-        }
-        redrawCemeteryMarkers() // перерисовываем маркеры
+          redrawCemeteryMarkers() // перерисовываем маркеры
+        }, 100)
       }, { deep: true }),
       watch(() => props.polygons, () => {
         if (props.cemeteryBoundary?.id) {
-          redrawPlots()
+          setTimeout(() => redrawPlots(), 50)
         }
       }, { deep: true }),
-      watch(() => props.cemeteries, () => redrawCemeteryMarkers(), { deep: true }),
+      watch(() => props.cemeteries, () => {
+        setTimeout(() => redrawCemeteryMarkers(), 50)
+      }, { deep: true }),
       watch(() => props.centerCoords, v => {
         if (Array.isArray(v) && v.length === 2 && map) {
           try { map.setCenter([v[0], v[1]], 18) } catch {}
@@ -251,6 +264,11 @@ async function initMap() {
 }
 
 /* ========== Cemetery markers ========== */
+// Настройка порога зума для переключения между маркерами и полигонами
+// При зуме < 18: показываются маркеры кладбищ (общий обзор)
+// При зуме >= 18: показываются полигоны границ и могил (детальный вид)
+const MARKER_VISIBILITY_ZOOM = 18  // порог зума для показа маркеров (ниже этого зума показываем маркеры)
+
 function clearCemeteryMarkers() {
   if (!map) return
   cemeteryMarkers.forEach(marker => {
@@ -264,9 +282,9 @@ function drawCemeteryMarkers() {
   const ymaps = window.ymaps
   if (!map || !ymaps) return
   
-  // Показываем маркеры если нет выбранного кладбища или зум меньше 16
+  // Показываем маркеры если нет выбранного кладбища или зум меньше порогового значения
   const currentZoom = map.getZoom()
-  const shouldShowMarkers = !props.cemeteryBoundary?.id || currentZoom < 16
+  const shouldShowMarkers = !props.cemeteryBoundary?.id || currentZoom < MARKER_VISIBILITY_ZOOM
   
   // Если маркеры начинают показываться и есть выбранное кладбище, сбрасываем выбор
   if (shouldShowMarkers && !wasShowingMarkers && props.cemeteryBoundary?.id) {
@@ -324,8 +342,9 @@ function drawCemetery() {
     cemeteryPolygon = null
   }
   
-  // Рисуем границы только если кладбище выбрано
-  if (!props.cemeteryBoundary?.id) return
+  // Рисуем границы только если кладбище выбрано и зум достаточно большой
+  const currentZoom = map.getZoom()
+  if (!props.cemeteryBoundary?.id || currentZoom < MARKER_VISIBILITY_ZOOM) return
   
   const ring = props.cemeteryBoundary?.polygon_data?.coordinates
   if (!isRing(ring)) return
@@ -336,6 +355,7 @@ function drawCemetery() {
     strokeWidth: 3,
     zIndex: 1,
     cursor: 'default',
+    opacity: 1,
   })
   try { map.geoObjects.add(cemeteryPolygon) } catch {}
 }
@@ -356,8 +376,9 @@ function drawPlots() {
   const ymaps = window.ymaps
   if (!map || !ymaps) return
 
-  // Рисуем могилы только если кладбище выбрано
-  if (!props.cemeteryBoundary?.id) return
+  // Рисуем могилы только если кладбище выбрано и зум достаточно большой
+  const currentZoom = map.getZoom()
+  if (!props.cemeteryBoundary?.id || currentZoom < MARKER_VISIBILITY_ZOOM) return
 
   const items = getItems()
   const neighbors = getNeighborGraves(selected.value)

@@ -10,6 +10,9 @@ import ClientLogin from "~/components/auth/ClientLogin.vue";
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
 import Cookies from "js-cookie";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const router = useRouter();
 const cemeteryStore = useCemeteryStore();
@@ -68,9 +71,9 @@ watch(inn, async (newValue) => {
     
     loadingStore.stopLoading();
   } catch (err) {
-    console.error("Ошибка при запросе:", err);
+    console.error(t('errors.fetchError'), err);
     const { $toast } = useNuxtApp()
-    $toast.error('Не удалось получить данные усопшего.')
+    $toast.error(t('errors.fetchDeceasedData'))
     loadingStore.stopLoading();
   }
 });

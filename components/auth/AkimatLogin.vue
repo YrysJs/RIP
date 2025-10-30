@@ -2,6 +2,9 @@
 import { getOtp, checkOtp, getWhatsappOtp, checkWhatsappOtp } from '~/services/login/index.js'
 import Cookies from 'js-cookie';
 import {useAuthModalStore} from "~/store/authModal.js";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const emit = defineEmits()
 const router = useRouter()
 
@@ -93,7 +96,7 @@ const otpCheck = async () => {
     router.push('/user/tickets')
     emit('close');
   } catch (error) {
-    console.error('Ошибка при логине:', error)
+    console.error(t('errors.fetchError'), error)
     
     const { $toast } = useNuxtApp();
     

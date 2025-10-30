@@ -31,10 +31,11 @@ const fetchOrderData = async () => {
     //   await getCemetryInfoById(response.data.items[0].product.id);
     // }
   } catch (err) {
-    error.value = err.message || "Ошибка при загрузке данных заказа";
+    const { t } = useI18n();
+    error.value = err.message || t('errors.orderLoadError');
     console.error("Error fetching order:", err);
     const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    $toast.error(t('common.serverUnavailable'))
   } finally {
     loading.value = false;
   }
@@ -68,39 +69,42 @@ const handleStatusUpdate = async (orderId, newStatus, itemId) => {
     // Обновить данные заказа после успешного изменения статуса
     await fetchOrderData();
   } catch (error) {
-    console.error("Ошибка при обновлении статуса:", error);
+    const { t } = useI18n();
+    console.error(t('errors.statusUpdateError'), error);
     const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    $toast.error(t('common.serverUnavailable'))
   }
 };
 
-const orderStatuses = [
+const { t } = useI18n();
+
+const orderStatuses = computed(() => [
   {
     current: "new",
     next: "processing",
-    title: "Принять заказ",
-    status: "Новый",
+    title: t('orders.acceptOrder'),
+    status: t('orders.newStatus'),
   },
   {
     current: "processing",
     next: "in_progress",
-    title: "Подтвердить исполнение",
-    status: "В обработке",
+    title: t('orders.confirmExecution'),
+    status: t('orders.processingStatus'),
   },
   {
     current: "in_progress",
     next: "completed",
-    title: "Заказ выполнен",
-    status: "В процессе",
+    title: t('orders.orderCompleted'),
+    status: t('orders.inProgressStatus'),
   },
   // completed / cancelled — финальные, без next
-];
+]);
 
 // Computed свойство для определения текущего действия
 const currentStatusAction = computed(() => {
   if (!orderData.value?.status) return null;
 
-  return orderStatuses.find(
+  return orderStatuses.value.find(
     (status) => status.current === orderData.value.status
   );
 });
@@ -109,17 +113,17 @@ const currentStatusAction = computed(() => {
 const getItemStatusAction = (itemStatus) => {
   if (!itemStatus) return null;
   
-  return orderStatuses.find(
+  return orderStatuses.value.find(
     (status) => status.current === itemStatus
   );
 };
 
 // Функция для получения текста статуса элемента
 const getItemStatusText = (itemStatus) => {
-  const found = orderStatuses.find((x) => x.current === itemStatus)?.status;
+  const found = orderStatuses.value.find((x) => x.current === itemStatus)?.status;
   if (found) return found;
-  if (itemStatus === "completed") return "Завершен";
-  if (itemStatus === "cancelled") return "Отменен";
+  if (itemStatus === "completed") return t('statuses.completed');
+  if (itemStatus === "cancelled") return t('statuses.cancelled');
   return "—";
 };
 

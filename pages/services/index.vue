@@ -16,6 +16,9 @@ import { useAuthModalStore } from "~/store/authModal";
 import Cookies from "js-cookie";
 import AppHeaderClient from "~/components/layout/AppHeaderClient.vue";
 import MobileFooter from "~/components/layout/MobileFooter.vue";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const serviceDetailModalVisible = ref(false);
 const deliveryModalVisible = ref(false);
@@ -43,7 +46,7 @@ const filters = ref({
   type: null,
   min_price: null,
   max_price: 0,
-  city: "Алматы",
+  city: t('cities.almaty'),
   search: "",
 });
 
@@ -81,9 +84,9 @@ const fetchProduct = async (id) => {
     });
     serviceSupplier.value = supplierRes.data;
   } catch (error) {
-    console.error("Ошибка при услуги:", error);
+    console.error(t('errors.fetchError'), error);
     const { $toast } = useNuxtApp();
-    $toast.error("Сервер не доступен");
+    $toast.error(t('common.serverUnavailable'));
   } finally {
     serviceDetailModalVisible.value = true;
   }
