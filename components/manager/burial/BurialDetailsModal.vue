@@ -172,7 +172,7 @@ const statusConfig = computed(() => {
 
         <div class="flex justify-between items-start mt-[16px] border-b border-[#EEEEEE] pb-[16px]">
           <div class="flex text-base">
-ё            <p class="min-w-[150px] font-medium">ФИО покойного:</p>
+            <p class="min-w-[150px] font-medium">ФИО покойного:</p>
             <p class="font-bold">{{ booking?.deceased?.full_name }}</p>
           </div>
 

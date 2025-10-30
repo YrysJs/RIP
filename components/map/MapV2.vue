@@ -52,15 +52,14 @@ const isRing = (ring) => Array.isArray(ring) && ring.length >= 3 && ring.every(p
 function getNeighborGraves(selectedGrave) {
   if (!selectedGrave) return []
   const items = getItems()
-  const row = selectedGrave.row_number
-  const sector = selectedGrave.sector
-  const num = parseInt(selectedGrave.grave_number)
-  if (!row || isNaN(num)) return []
-  return items.filter(item =>
-      item.sector === sector &&
-      item.row_number === row &&
-      (parseInt(item.grave_number) === num + 1 || parseInt(item.grave_number) === num - 1)
-  )
+  const selectedGraveNumber = parseInt(selectedGrave.grave_number, 10) || 0
+  
+  return items.filter(item => {
+    return item.row_number === selectedGrave.row_number &&
+           (item.sector_number === selectedGrave.sector_number || item.sector === selectedGrave.sector) &&
+           Math.abs(parseInt(item.grave_number, 10) - selectedGraveNumber) === 1 &&
+           item.status === 'free'
+  })
 }
 
 /* ======== Цвета и стили ======== */
