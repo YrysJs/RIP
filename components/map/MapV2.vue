@@ -54,10 +54,20 @@ function getNeighborGraves(selectedGrave) {
   const items = getItems()
   const selectedGraveNumber = parseInt(selectedGrave.grave_number, 10) || 0
   
+  // Проверяем наличие необходимых полей у выбранной могилы
+  if (!selectedGrave.sector_number || !selectedGrave.row_number) return []
+  
   return items.filter(item => {
-    return item.row_number === selectedGrave.row_number &&
-           (item.sector_number === selectedGrave.sector_number || item.sector === selectedGrave.sector) &&
-           Math.abs(parseInt(item.grave_number, 10) - selectedGraveNumber) === 1 &&
+    // Строгая проверка: все поля должны существовать и совпадать
+    if (!item.sector_number || !item.row_number || !item.grave_number) return false
+    
+    const itemGraveNumber = parseInt(item.grave_number, 10)
+    if (isNaN(itemGraveNumber)) return false
+    
+    // Строгое совпадение сектора и ряда, разница в номере ровно 1
+    return item.sector_number === selectedGrave.sector_number &&
+           item.row_number === selectedGrave.row_number &&
+           Math.abs(itemGraveNumber - selectedGraveNumber) === 1 &&
            item.status === 'free'
   })
 }
@@ -263,11 +273,6 @@ async function initMap() {
 }
 
 /* ========== Cemetery markers ========== */
-// Настройка порога зума для переключения между маркерами и полигонами
-// При зуме < 18: показываются маркеры кладбищ (общий обзор)
-// При зуме >= 18: показываются полигоны границ и могил (детальный вид)
-const MARKER_VISIBILITY_ZOOM = 18  // порог зума для показа маркеров (ниже этого зума показываем маркеры)
-
 function clearCemeteryMarkers() {
   if (!map) return
   cemeteryMarkers.forEach(marker => {
@@ -281,14 +286,8 @@ function drawCemeteryMarkers() {
   const ymaps = window.ymaps
   if (!map || !ymaps) return
   
-  // Показываем маркеры если нет выбранного кладбища или зум меньше порогового значения
-  const currentZoom = map.getZoom()
-  const shouldShowMarkers = !props.cemeteryBoundary?.id || currentZoom < MARKER_VISIBILITY_ZOOM
-  
-  // Если маркеры начинают показываться и есть выбранное кладбище, сбрасываем выбор
-  if (shouldShowMarkers && !wasShowingMarkers && props.cemeteryBoundary?.id) {
-    emit('cemeteryDeselected')
-  }
+  // Показываем маркеры только если нет выбранного кладбища
+  const shouldShowMarkers = !props.cemeteryBoundary?.id
   
   // Обновляем состояние
   wasShowingMarkers = shouldShowMarkers
@@ -306,8 +305,7 @@ function drawCemeteryMarkers() {
       balloonContentBody: `${cemetery.type}<br/>${cemetery.street_name}, ${cemetery.city}`,
       balloonContentFooter: `Свободных мест: ${cemetery.free_spaces || 0}`,
     }, {
-      preset: 'islands#circleDotIcon',
-      iconColor: '#d1a53f',
+      preset: 'islands#blueDotIcon',
       cursor: 'pointer',
     })
     
@@ -341,9 +339,8 @@ function drawCemetery() {
     cemeteryPolygon = null
   }
   
-  // Рисуем границы только если кладбище выбрано и зум достаточно большой
-  const currentZoom = map.getZoom()
-  if (!props.cemeteryBoundary?.id || currentZoom < MARKER_VISIBILITY_ZOOM) return
+  // Рисуем границы только если кладбище выбрано
+  if (!props.cemeteryBoundary?.id) return
   
   const ring = props.cemeteryBoundary?.polygon_data?.coordinates
   if (!isRing(ring)) return
@@ -375,9 +372,8 @@ function drawPlots() {
   const ymaps = window.ymaps
   if (!map || !ymaps) return
 
-  // Рисуем могилы только если кладбище выбрано и зум достаточно большой
-  const currentZoom = map.getZoom()
-  if (!props.cemeteryBoundary?.id || currentZoom < MARKER_VISIBILITY_ZOOM) return
+  // Рисуем могилы только если кладбище выбрано
+  if (!props.cemeteryBoundary?.id) return
 
   const items = getItems()
   const neighbors = getNeighborGraves(selected.value)
