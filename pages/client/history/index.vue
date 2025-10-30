@@ -5,9 +5,11 @@ import { getOrders } from "~/services/client/index.js";
 import { getPaymentReceipt } from "~/services/payments/index.js";
 import ReceiptModal from "~/components/layout/modals/ReceiptModal.vue";
 import AddComment from "~/components/layout/modals/AddComment.vue";
+import { useI18n } from 'vue-i18n';
 
-const tabs = ["Активные", "Завершенные"];
-const activeTab = ref("Активные");
+const { t } = useI18n();
+const tabs = computed(() => [t('client.history.active'), t('client.history.completed')]);
+const activeTab = ref(t('client.history.active'));
 const showReview = ref(false);
 
 const showReceiptModal = ref(false);
@@ -25,38 +27,38 @@ const selectedOrderItems = ref(null);
 // Моки
 const orders = ref([]);
 
-const statusView = {
+const statusView = computed(() => ({
   pending_payment: {
-    label: "Ожидает оплаты",
+    label: t('client.tickets.history.status_pending'),
     dot: "bg-[#F19024]",
     wrap: "bg-[#E37E141F] text-[#E37E14]",
   },
   new: {
-    label: "Новый",
+    label: t('client.tickets.history.status_new'),
     dot: "bg-[#3498DB]",
     wrap: "bg-[#3498DB1F] text-[#3498DB]",
   },
   processing: {
-    label: "В обработке",
+    label: t('client.tickets.history.status_processing'),
     dot: "bg-[#F39C12]",
     wrap: "bg-[#F39C121F] text-[#F39C12]",
   },
   in_progress: {
-    label: "Выполняется",
+    label: t('client.tickets.history.status_inProgress'),
     dot: "bg-[#F19024]",
     wrap: "bg-[#E37E141F] text-[#E37E14]",
   },
   completed: {
-    label: "Завершён",
+    label: t('client.tickets.history.status_completed'),
     dot: "bg-[#59A12D]",
     wrap: "bg-[#4E93211F] text-[#4E9321]",
   },
   cancelled: {
-    label: "Отменён",
+    label: t('client.tickets.history.status_cancelled'),
     dot: "bg-[#9AA0A6]",
     wrap: "bg-[#F1F2F4] text-[#3F4A56]",
   },
-};
+}));
 
 async function fetchOrders(page = 1, limit = 10) {
   try {
@@ -66,13 +68,15 @@ async function fetchOrders(page = 1, limit = 10) {
     // openItems.value = response?.items?.map(() => false) || [];
     // console.log("Данные заказов загружены:", response);
   } catch (error) {
-    console.error("Ошибка загрузки заказов:", error);
+    console.error(t('errors.fetchError'), error);
+    const { $toast } = useNuxtApp();
+    $toast.error(t('common.serverUnavailable'));
     // openItems.value = [];
   }
 }
 
 function formatPhoneNumber(phone) {
-  if (!/^\d{11}$/.test(phone)) return "Неверный формат номера";
+  if (!/^\d{11}$/.test(phone)) return t('errors.invalidPhone');
 
   return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(
       4,
@@ -81,7 +85,7 @@ function formatPhoneNumber(phone) {
 }
 
 const filtered = computed(() =>
-    activeTab.value === "Активные"
+    activeTab.value === t('client.history.active')
         ? orders.value.filter((o) => o.status !== "done")
         : orders.value.filter((o) => o.status === "done")
 );

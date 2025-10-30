@@ -12,6 +12,8 @@ const productId = route.params.id
 const userStore = useUserStore()
 const loadingStore = useLoadingStore()
 
+const { t } = useI18n()
+
 // --- форма ---
 const form = reactive({
   name: '',
@@ -20,9 +22,9 @@ const form = reactive({
   category_id: '1',
   type: 'service',
   availability: true,
-  country: 'Казахстан',
-  city: 'Алматы',
-  service_time: '1 день'
+  country: t('cities.kazakhstan'),
+  city: t('cities.almaty'),
+  service_time: t('serviceAdd.oneDay')
 })
 
 const photos = ref([])            // новые [{ url, file }]
@@ -36,8 +38,8 @@ const product = ref(null)
 // --- модалка успеха ---
 const success = reactive({
   open: false,
-  title: 'Изменения сохранены',
-  text: 'на рассмотрение!',
+  title: t('productEdit.changesSaved'),
+  text: t('serviceAdd.underReview'),
 })
 const lockScroll = (v) => { document.body.style.overflow = v ? 'hidden' : '' }
 function openSuccess(custom = {}) { Object.assign(success, custom, { open: true }); lockScroll(true) }
@@ -79,10 +81,10 @@ const chunkFiles = (files, chunkSize = 3) => {
 const uploadFiles = async (files) => {
   const phone = userStore.user?.phone
   if (!phone) {
-    throw new Error('Номер телефона не найден')
+    throw new Error(t('productEdit.phoneNotFound'))
   }
 
-  console.log('Начинаем загрузку файлов:', files.length, 'файлов')
+  console.log(t('productEdit.uploadingFiles'), files.length, 'файлов')
   console.log('Номер телефона:', phone)
 
   const fileChunks = chunkFiles(files)
@@ -90,7 +92,7 @@ const uploadFiles = async (files) => {
 
   for (const chunk of fileChunks) {
     try {
-      console.log('Загружаем чанк файлов:', chunk.length, 'файлов')
+      console.log(t('productEdit.uploadingChunk'), chunk.length, 'файлов')
       const response = await loadProductFiles(phone, chunk)
       console.log('Ответ от сервера:', response.data)
       console.log('Полный ответ:', response)

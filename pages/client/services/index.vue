@@ -4,7 +4,9 @@ import { getOrders } from "~/services/client";
 import { getPaymentReceipt } from "~/services/payments";
 import AddComment from "~/components/layout/modals/AddComment.vue";
 import ReceiptModal from "~/components/layout/modals/ReceiptModal.vue";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const orders = ref(null);
 const loading = ref(false);
 const currentPage = ref(1);
@@ -38,7 +40,7 @@ function makeMockOrders(total = 23) {
           product_id: 5000 + i,
           product: {
             id: 5000 + i,
-            name: `Услуга №${i + 1}`,
+            name: `${t('clientServices.mockServiceName')} №${i + 1}`,
             supplier_phone: `7701${(1234567 + i).toString().slice(-7)}`,
           },
         },
@@ -116,7 +118,9 @@ async function fetchOrders(page = 1, limit = 10) {
     orders.value = response.data;
     openItems.value = response.data?.items?.map(() => false) || [];
   } catch (error) {
-    console.error("Ошибка загрузки заказов:", error);
+    console.error(t('errors.fetchError'), error);
+    const { $toast } = useNuxtApp();
+    $toast.error(t('common.serverUnavailable'));
     orders.value = { total_count: 0, total_pages: 0, items: [] };
     openItems.value = [];
   } finally {

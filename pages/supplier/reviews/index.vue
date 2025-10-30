@@ -40,25 +40,28 @@ const sendingAppeal = ref({}) // Объект для отслеживания о
 // Реактивные данные для отзывов
 const reviews = ref({ items: [], total_pages: 0, total_count: 0, page: 1, limit: 10 })
 
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+
 // Функция загрузки отзывов
 const loadReviews = async () => {
     pending.value = true
-    console.log('Загрузка отзывов поставщика...')
+    console.log(t('supplier.reviews.loading'))
     
     try {
 
         const response = await getReviews(currentPage.value)
-        console.log('Отзывы получены:', response)
+        console.log(t('supplier.reviews.loaded'), response)
         
         if (!response?.data) {
-            console.warn('Пустой ответ от сервера отзывов')
+            console.warn(t('supplier.reviews.emptyResponse'))
             reviews.value = { items: [], total_pages: 0, total_count: 0, page: 1, limit: 10 }
         } else {
             reviews.value = response.data
         }
         
     } catch (error) {
-        console.error('Ошибка загрузки отзывов:', error)
+        console.error(t('errors.fetchError'), error)
         // Показываем пользователю более информативную ошибку
         if (error.response?.status === 401) {
             console.error('Ошибка авторизации - перенаправление на главную')

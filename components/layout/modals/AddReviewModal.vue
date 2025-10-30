@@ -92,10 +92,10 @@ function submit() {
       >
         <!-- header -->
         <div class="flex items-start justify-between gap-4 mb-8">
-          <h3 class="text-2xl font-extrabold">Добавить отзыв</h3>
+          <h3 class="text-2xl font-extrabold">{{ $t('modals.addReview.title') }}</h3>
           <button
             type="button"
-            aria-label="Закрыть"
+            :aria-label="$t('common.close')"
             class="shrink-0 text-2xl font-semibold grid place-items-center rounded-lg hover:bg-black/5"
             @click="close"
           >

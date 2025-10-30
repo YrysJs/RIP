@@ -17,30 +17,34 @@ const props = defineProps({
   },
 });
 
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
 // Динамический заголовок страницы
 const pageTitle = computed(() => {
   const path = route.path;
 
   if (path.includes("/supplier/tickets/")) {
-    if (path.includes("/active")) return "АКТИВНЫЕ ЗАЯВКИ";
-    if (path.includes("/archive")) return "АРХИВНЫЕ ЗАЯВКИ";
+    if (path.includes("/active")) return t('supplier.layout.activeRequests');
+    if (path.includes("/archive")) return t('supplier.layout.archivedRequests');
   }
 
   if (path.includes("/supplier/services")) {
-    if (path === "/supplier/services") return "ТОВАРЫ И УСЛУГИ";
-    if (path.includes("/active")) return "АКТИВНЫЕ УСЛУГИ";
-    if (path.includes("/consideration")) return "НА РАССМОТРЕНИИ";
-    if (path.includes("/improvement")) return "ТРЕБУЕТ ДОРАБОТКИ";
-    if (path.includes("/inactive")) return "НЕ АКТИВНЫЕ";
-    if (path.includes("/add")) return "ДОБАВИТЬ УСЛУГУ";
+    if (path === "/supplier/services") return t('supplier.layout.productsAndServices');
+    if (path.includes("/active")) return t('supplier.layout.activeServices');
+    if (path.includes("/consideration")) return t('supplier.layout.underReview');
+    if (path.includes("/improvement")) return t('supplier.layout.needsImprovement');
+    if (path.includes("/inactive")) return t('supplier.layout.inactive');
+    if (path.includes("/add")) return t('supplier.layout.addService');
   }
 
-  if (path.includes("/supplier/reviews")) return "ОТЗЫВЫ";
-  if (path.includes("/supplier/reports")) return "ОТЧЕТЫ";
+  if (path.includes("/supplier/reviews")) return t('supplier.layout.reviews');
+  if (path.includes("/supplier/reports")) return t('supplier.layout.reports');
   if (path.includes("/supplier/goverment/requests"))
-    return "ОБРАЩЕНИЕ В АКИМАТ";
+    return t('supplier.layout.governmentAppeal');
 
-  return "КАБИНЕТ ПОСТАВЩИКА УСЛУГ";
+  return t('supplier.layout.cabinet');
 });
 
 onMounted(async () => {
@@ -60,7 +64,7 @@ onMounted(async () => {
 
     <div class="supplier__wrap">
       <aside class="supplier__sidebar">
-        <LayoutSidebar title="Кабинет поставщика услуг" />
+        <LayoutSidebar :title="$t('supplier.layout.cabinet')" />
       </aside>
 
       <main

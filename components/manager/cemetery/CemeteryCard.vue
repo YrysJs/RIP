@@ -17,13 +17,13 @@
 
       <div class="cem-card__legend">
         <span v-if="freeDisp !== null" class="legend">
-          <i class="legend__dot legend__dot--free" /> Свободные места: {{ freeDisp }}
+          <i class="legend__dot legend__dot--free" /> {{ $t('cemetery.freeSpacesLegend') }}: {{ freeDisp }}
         </span>
         <span v-if="reservedDisp !== null" class="legend">
-          <i class="legend__dot legend__dot--reserved" /> Зарезервировано: {{ reservedDisp }}
+          <i class="legend__dot legend__dot--reserved" /> {{ $t('cemetery.reservedLegend') }}: {{ reservedDisp }}
         </span>
         <span v-if="occupiedDisp !== null" class="legend">
-          <i class="legend__dot legend__dot--occupied" /> Занято: {{ occupiedDisp }}
+          <i class="legend__dot legend__dot--occupied" /> {{ $t('cemetery.occupiedLegend') }}: {{ occupiedDisp }}
         </span>
       </div>
     </div>
@@ -59,7 +59,7 @@
 
     <!-- Кнопка -->
     <div class="cem-card__footer">
-      <button class="cem-card__btn" @click="emit('open-map', cemetery)">Смотреть на карте</button>
+      <button class="cem-card__btn" @click="emit('open-map', cemetery)">{{ $t('cemetery.viewOnMap') }}</button>
     </div>
   </div>
 </template>
@@ -70,13 +70,15 @@ import { computed } from 'vue'
 const emit = defineEmits(['open-map'])
 const props = defineProps({ cemetery: { type: Object, required: true } })
 
+const { t } = useI18n()
+
 /* Текст типа по ключу религии */
 const typeMap = {
-  muslim: 'Мусульманское кладбище',
-  islam: 'Мусульманское кладбище',
-  christ: 'Христианское кладбище',
-  christian: 'Христианское кладбище',
-  slavic: 'Православное кладбище'
+  muslim: t('cemetery.types.muslim'),
+  islam: t('cemetery.types.islam'),
+  christ: t('cemetery.types.christian'),
+  christian: t('cemetery.types.christian'),
+  slavic: t('cemetery.types.slavic')
 }
 const typeName = computed(
   () => typeMap[(props.cemetery?.religion || '').toLowerCase()] || props.cemetery?.religion || ''

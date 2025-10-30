@@ -13,7 +13,7 @@ import ManagerBottomNav from "~/components/layout/ManagerBottomNav.vue";
 
     <div class="manager__wrap">
       <aside class="manager__sidebar">
-        <ManagerSidebar title="ЛИЧНЫЙ КАБИНЕТ" />
+        <ManagerSidebar :title="$t('manager.sidebar.title')" />
       </aside>
 
       <main class="manager__content">

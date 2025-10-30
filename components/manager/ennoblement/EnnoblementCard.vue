@@ -2,19 +2,19 @@
   <div class="request-card">
     <div class="request-header">
       <div class="flex items-center gap-4">
-        <span>Запрос № {{ request.id }}</span>
-        <span class="request-date">Дата заявки: {{ request.date }}</span>
+        <span>{{ $t('ennoblementRequest.requestNumber') }} {{ request.id }}</span>
+        <span class="request-date">{{ $t('ennoblementRequest.requestDate') }}: {{ request.date }}</span>
       </div>
     </div>
 
     <div class="request-info">
-      <div class="info-row"><p>Заказчик:</p> <p class="font-bold">{{ request.client }}</p></div>
-      <div class="info-row"><p>Контакты:</p> <p class="font-bold">{{ request.phone }}</p></div>
-      <div class="info-row"><p>ФИО покойного:</p> <p class="font-bold">{{ request.deceased }}</p></div>
+      <div class="info-row"><p>{{ $t('ennoblementRequest.customer') }}:</p> <p class="font-bold">{{ request.client }}</p></div>
+      <div class="info-row"><p>{{ $t('ennoblementRequest.contacts') }}:</p> <p class="font-bold">{{ request.phone }}</p></div>
+      <div class="info-row"><p>{{ $t('ennoblementRequest.deceasedName') }}:</p> <p class="font-bold">{{ request.deceased }}</p></div>
     </div>
 
     <div class="request-services">
-      <p class="font-medium mb-1">Услуги:</p>
+      <p class="font-medium mb-1">{{ $t('ennoblementRequest.services') }}:</p>
 
       <ul class="flex flex-col gap-1">
         <li v-for="(service, index) in request.services" :key="index" class="flex items-center gap-2">
@@ -27,8 +27,8 @@
     <div class="flex justify-between items-center flex-wrap gap-2 mt-4">
       <div class="request-tags">
         <span class="badge">{{ request.cemetery }}</span>
-        <span class="badge">Сектор {{ request.sector }}</span>
-        <span class="badge">Место: {{ request.place }}</span>
+        <span class="badge">{{ $t('client.tickets.active.sector') }} {{ request.sector }}</span>
+        <span class="badge">{{ $t('memorialDetails.place') }}: {{ request.place }}</span>
       </div>
       <div class="flex items-center gap-4">
         <span
@@ -40,7 +40,7 @@
         >
           {{ request.status === 'pending' ? 'Ожидает исполнения' : 'Завершена' }}
         </span>
-        <button class="details-btn" @click="router.push('/manager/ennoblement/' + request.id)">Подробнее</button>
+        <button class="details-btn" @click="router.push('/manager/ennoblement/' + request.id)">{{ $t('common.details') }}</button>
       </div>
     </div>
   </div>

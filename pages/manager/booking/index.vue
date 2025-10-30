@@ -2,7 +2,9 @@
 import { useRouter } from 'vue-router'
 import { getBurialRequests } from '~/services/manager'
 import { getCemeteries } from '~/services/cemetery'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 
 const bookings = ref([])
@@ -23,7 +25,9 @@ const fetchBurials = async (params = { status: 'pending' }) => {
     const response = await getBurialRequests(params)
     bookings.value = response.data.data.data
   } catch (error) {
-    console.error('Ошибка при получении заявок:', error)
+    console.error(t('errors.fetchError'), error)
+    const { $toast } = useNuxtApp()
+    $toast.error(t('common.serverUnavailable'))
   }
 }
 
@@ -32,7 +36,9 @@ const fetchCemeteries = async () => {
     const response = await getCemeteries()
     cemeteries.value = response.data
   } catch (error) {
-    console.error('Ошибка при получении кладбищ:', error)
+    console.error(t('errors.fetchError'), error)
+    const { $toast } = useNuxtApp()
+    $toast.error(t('common.serverUnavailable'))
   }
 }
 
@@ -131,20 +137,20 @@ watch(cemeteryId, () => {
       <div class="bg-white p-4 rounded-[8px] flex justify-between items-center flex-wrap gap-4">
         <div class="flex gap-4 flex-wrap">
           <div>
-            <p>Кладбище</p>
+            <p>{{ $t('manager.booking.cemetery') }}</p>
             <select class="filter-select" v-model="cemeteryId">
-              <option :value="null">Все</option>
+              <option :value="null">{{ $t('manager.booking.all') }}</option>
               <option v-for="cemetery in cemeteries" :key="cemetery.id" :value="cemetery.id">
                 {{ cemetery.name }}
               </option>
             </select>
           </div>
           <div>
-            <p>Дата с</p>
+            <p>{{ $t('manager.booking.dateFrom') }}</p>
             <input class="filter-select date" type="date" v-model="dateFrom" />
           </div>
           <div>
-            <p>Дата по</p>
+            <p>{{ $t('manager.booking.dateTo') }}</p>
             <input class="filter-select date" type="date" v-model="dateTo" />
           </div>
         </div>
@@ -152,21 +158,21 @@ watch(cemeteryId, () => {
       <div class="search-wrapper">
         <div class="search-box">
           <img src="/icons/search.svg" alt="Поиск" />
-          <input type="text" v-model="search" placeholder="Поиск по пользователю" />
+          <input type="text" v-model="search" :placeholder="$t('common.search')" />
         </div>
       </div>
       <div v-for="booking in bookings" :key="booking.id" class="booking-card">
         <div class="booking-header">
-          <span>Бронирование: <a href="#">{{ booking.request_number }}</a></span>
-          <span class="booking-date">Дата брони: {{ new Date(booking.created_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</span>
+          <span>{{ $t('manager.booking.bookingNumber') }} <a href="#">{{ booking.request_number }}</a></span>
+          <span class="booking-date">{{ $t('manager.burial.bookingDate') }} {{ new Date(booking.created_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</span>
         </div>
         <div class="flex justify-between items-center mt-4">
           <div class="booking-info">
             <span class="badge"><span class="font-medium">{{ booking.cemetery_name }}</span></span>
-            <span class="badge">Сектор: <span class="font-medium ml-1">{{ booking.sector_number }}</span></span>
-            <span class="badge">Место: <span class="font-medium ml-1">{{ getAllGraves(booking) }}</span> </span>
-          </div>
-          <button class="details-btn" @click="router.push(`/manager/booking/${booking.id}`)">Подробнее</button>
+          <span class="badge">{{ $t('manager.booking.sector') }} <span class="font-medium ml-1">{{ booking.sector_number }}</span></span>
+          <span class="badge">{{ $t('manager.booking.place') }} <span class="font-medium ml-1">{{ getAllGraves(booking) }}</span> </span>
+        </div>
+        <button class="details-btn" @click="router.push(`/manager/booking/${booking.id}`)">{{ $t('manager.booking.details') }}</button>
         </div>
 
       </div>

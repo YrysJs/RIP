@@ -11,7 +11,7 @@
           <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <span class="nav-text">Заявки</span>
+      <span class="nav-text">{{ $t('user.bottomNav.requests') }}</span>
     </NuxtLink>
 
     <NuxtLink 
@@ -27,7 +27,7 @@
           <path d="M8 17v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <span class="nav-text">Отчеты</span>
+      <span class="nav-text">{{ $t('user.bottomNav.reports') }}</span>
     </NuxtLink>
 
     <NuxtLink 
@@ -42,7 +42,7 @@
           <path d="M15 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <span class="nav-text">Новости</span>
+      <span class="nav-text">{{ $t('user.bottomNav.news') }}</span>
     </NuxtLink>
 
     <NuxtLink 
@@ -58,7 +58,7 @@
           <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <span class="nav-text">Пользователи</span>
+      <span class="nav-text">{{ $t('user.bottomNav.users') }}</span>
     </NuxtLink>
   </div>
 </template>

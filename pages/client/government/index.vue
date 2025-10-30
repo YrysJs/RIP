@@ -2,7 +2,9 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { getMyAppeals } from "~/services/akimat";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 const loading = ref(true);
 const appeals = ref([]);
@@ -31,25 +33,25 @@ const statusMeta = (s) => {
 
   // Новые статусы из таблицы (приходят в UPPERCASE)
   if (v.includes("rejected") || v.includes("отказано"))
-    return { kind: "rejected", text: "Отказано" };
+    return { kind: "rejected", text: t('client.government.status_rejected') };
   if (v.includes("confirmed") || v.includes("подтверждено"))
-    return { kind: "accepted", text: "Подтверждено" };
+    return { kind: "accepted", text: t('client.government.status_confirmed') };
   if (v.includes("closed") || v.includes("закрыто"))
-    return { kind: "accepted", text: "Закрыто" };
+    return { kind: "accepted", text: t('client.government.status_closed') };
   if (v.includes("new") || v.includes("новый запрос"))
-    return { kind: "pending", text: "Новый запрос" };
+    return { kind: "pending", text: t('client.government.status_new') };
   if (v.includes("in_process") || v.includes("в работе"))
-    return { kind: "pending", text: "В работе" };
+    return { kind: "pending", text: t('client.government.status_inProcess') };
   if (v.includes("pending") || v.includes("ожидание"))
-    return { kind: "pending", text: "Ожидание" };
+    return { kind: "pending", text: t('client.government.status_pending') };
 
   // Прямые проверки для UPPERCASE статусов
-  if (raw === "REJECTED") return { kind: "rejected", text: "Отказано" };
-  if (raw === "CONFIRMED") return { kind: "accepted", text: "Подтверждено" };
-  if (raw === "CLOSED") return { kind: "accepted", text: "Закрыто" };
-  if (raw === "NEW") return { kind: "pending", text: "Новый запрос" };
-  if (raw === "IN_PROCESS") return { kind: "pending", text: "В работе" };
-  if (raw === "PENDING") return { kind: "pending", text: "Ожидание" };
+  if (raw === "REJECTED") return { kind: "rejected", text: t('client.government.status_rejected') };
+  if (raw === "CONFIRMED") return { kind: "accepted", text: t('client.government.status_confirmed') };
+  if (raw === "CLOSED") return { kind: "accepted", text: t('client.government.status_closed') };
+  if (raw === "NEW") return { kind: "pending", text: t('client.government.status_new') };
+  if (raw === "IN_PROCESS") return { kind: "pending", text: t('client.government.status_inProcess') };
+  if (raw === "PENDING") return { kind: "pending", text: t('client.government.status_pending') };
 
   return { kind: "default", text: raw || "—" };
 };
@@ -60,26 +62,26 @@ const statusMeta = (s) => {
     <div class="max-sm:h-min-[50vh]">
       <!-- Шапка -->
       <div class="page-head">
-        <h2 class="page-title">Обращение в акимат</h2>
+        <h2 class="page-title">{{ $t('client.sidebar.governmentAppeal') }}</h2>
       </div>
 
       <!-- Загрузка -->
       <div v-if="loading" class="state-card">
         <div class="spinner" />
-        <p class="muted">Загружаем ваши обращения…</p>
+        <p class="muted">{{ $t('client.government.loadingAppeals') }}</p>
       </div>
 
       <!-- Пусто -->
       <div v-else-if="isEmpty" class="empty">
         <div class="empty__card">
           <img src="/icons/search-request.svg" alt="" class="mx-auto" />
-          <div class="empty__title">Ничего не найдено</div>
-          <div class="empty__subtitle">У вас пока нет созданных обращений</div>
+          <div class="empty__title">{{ $t('client.government.nothingFound') }}</div>
+          <div class="empty__subtitle">{{ $t('client.government.noAppealsYet') }}</div>
           <button
             class="btn btn--yellow"
             @click="router.push('/client/government/create')"
           >
-            Создать обращение
+            {{ $t('client.government.createAppeal') }}
           </button>
         </div>
       </div>
@@ -91,24 +93,24 @@ const statusMeta = (s) => {
               class="btn btn--yellow !m-0"
               @click="router.push('/client/government/create')"
           >
-            Создать обращение
+            {{ $t('client.government.createAppeal') }}
           </button>
         </div>
         <div v-for="a in appeals" :key="a.id" class="details-card">
           <div class="details-head">
             <div class="right-note">
-              Обращение №{{ String(a.id).padStart(5, "0") }}
+              {{ $t('client.government.appealNumber') }} №{{ String(a.id).padStart(5, "0") }}
             </div>
           </div>
 
           <div class="rows">
             <div class="row">
-              <div class="label">Тип обращения:</div>
+              <div class="label">{{ $t('client.government.appealType') }}</div>
               <div class="value">{{ a?.type?.nameRu || "—" }}</div>
             </div>
 
             <div class="row">
-              <div class="label">Статус:</div>
+              <div class="label">{{ $t('common.status') }}</div>
               <div class="value">
                 <span
                   class="status-chip"
@@ -121,7 +123,7 @@ const statusMeta = (s) => {
             </div>
 
             <div class="row">
-              <div class="label">Обращение:</div>
+              <div class="label">{{ $t('client.government.appealContent') }}</div>
               <div class="value">{{ a.content || "—" }}</div>
             </div>
           </div>

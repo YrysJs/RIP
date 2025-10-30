@@ -1,8 +1,10 @@
 <script setup>
 import { onMounted } from "vue";
+import { useI18n } from 'vue-i18n';
 // import { getBurialRequests } from "~/services/client";
 // import { useUserStore } from "~/store/user";
 
+const { t } = useI18n();
 // const userStore = useUserStore();
 
 const burialRequests = ref([]);
@@ -56,7 +58,9 @@ onMounted(async () => {
       },
     ];
   } catch (error) {
-    console.error("Ошибка при подстановке тестовых данных:", error);
+    console.error(t('errors.fetchError'), error);
+    const { $toast } = useNuxtApp();
+    $toast.error(t('common.serverUnavailable'));
     burialRequests.value = [];
   } finally {
     loading.value = false;
@@ -78,7 +82,7 @@ onMounted(async () => {
           <h3
             class="font-foglihten text-fluid font-medium text-[#201001] leading-[48px]"
           >
-            Бронирование:
+            {{ $t('client.tickets.active.reservation') }}
             <span class="text-[#B88F34]">{{ request.request_number }}</span>
           </h3>
           <p class="text-sm text-[#999]">
@@ -97,7 +101,7 @@ onMounted(async () => {
           class="border-b-2 border-[#EEEEEE] pt-4 pb-[14px] max-sm:pt-0 max-sm:pb-0"
         >
           <div class="h-10 flex items-center text-base font-medium">
-            <p class="min-w-[150px] black-16">Срок брони:</p>
+            <p class="min-w-[150px] black-16">{{ $t('client.tickets.active.reservationPeriod') }}</p>
             <div class="flex items-center gap-[5px]">
               <p class="grey-14">
                 {{
@@ -124,15 +128,15 @@ onMounted(async () => {
             class="min-w-[580px] font-medium flex flex-col gap-[10px] max-sm:gap-0"
           >
             <div class="flex text-base">
-              <p class="min-w-[150px] grey-14">Кладбище:</p>
+              <p class="min-w-[150px] grey-14">{{ $t('client.tickets.active.cemetery') }}</p>
               <p class="black-16">{{ request.cemetery_name }}</p>
             </div>
             <div class="flex text-base">
-              <p class="min-w-[150px] grey-14">Сектор</p>
+              <p class="min-w-[150px] grey-14">{{ $t('client.tickets.active.sector') }}</p>
               <p class="black-16">{{ request.sector_number }}</p>
             </div>
             <div class="flex text-base">
-              <p class="min-w-[150px] grey-14">Место:</p>
+              <p class="min-w-[150px] grey-14">{{ $t('client.tickets.active.place') }}</p>
               <p class="black-16">{{ request.grave_id }}</p>
             </div>
           </div>
@@ -142,7 +146,7 @@ onMounted(async () => {
         >
           <div class="font-medium flex flex-col gap-[10px]">
             <div class="flex text-base">
-              <p class="min-w-[150px] max-w-[150px] grey-14">ФИО покойного:</p>
+              <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('client.tickets.active.deceasedFullName') }}</p>
               <p class="black-16">{{ request.deceased?.full_name }}</p>
             </div>
           </div>

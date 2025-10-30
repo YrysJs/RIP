@@ -1,7 +1,7 @@
 <template>
   <footer class="app-footer" id="contact">
     <div class="container">
-      <h3>Контакты</h3>
+      <h3>{{ $t('footer.contacts') }}</h3>
       <p>Мы проводим консультации ежедневно с 09:00 до 18:00</p>
       <ul class="contacts__list">
         <li>г. Алматы, Республики площадь, 4</li>
@@ -16,14 +16,14 @@
       </ul>
       <div class="footer__links">
         <ul class="links__left">
-          <li><a :href="getLinkHref('main')" class="underlined">Главная</a></li>
-          <li><a :href="getLinkHref('about')" class="underlined">О компании</a></li>
-          <li><a :href="getLinkHref('services')" class="underlined">Услуги</a></li>
-          <li><a :href="getLinkHref('contact')" class="underlined">Контакты</a></li>
+          <li><a :href="getLinkHref('main')" class="underlined">{{ $t('footer.main') }}</a></li>
+          <li><a :href="getLinkHref('about')" class="underlined">{{ $t('footer.about') }}</a></li>
+          <li><a :href="getLinkHref('services')" class="underlined">{{ $t('footer.services') }}</a></li>
+          <li><a :href="getLinkHref('contact')" class="underlined">{{ $t('footer.contact') }}</a></li>
         </ul>
         <div class="links__middle">
           <RouterLink to="/instructions" class="underlined"
-            >Политика конфиденциальности</RouterLink
+            >{{ $t('footer.privacyPolicy') }}</RouterLink
           >
           <ul>
             <li>
@@ -51,7 +51,7 @@
           </li>
           <li>
             <img src="/icons/pin.svg" alt="Pin icon" />
-            <span>Алматы, Казахстан</span>
+            <span>{{ $t('footer.location') }}</span>
           </li>
         </ul>
       </div>
@@ -59,7 +59,7 @@
     <Teleport to="body">
       <SuccessModal
         v-if="showSuccessModal"
-        title="Цена бронирования 10.000 тенге"
+        :title="$t('footer.bookingPrice')"
         :show-button="true"
         @close="closeSuccessModal"
       />
@@ -70,7 +70,9 @@
 <script setup>
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import { RouterLink } from "#vue-router";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const showSuccessModal = ref(false);
 const route = useRoute(); // useRoute доступен через автоимпорт в Nuxt 3
 

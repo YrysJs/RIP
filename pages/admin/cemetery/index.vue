@@ -5,6 +5,9 @@ import { importXlsx } from '~/services/admin'
 import CemeteryMap from "~/components/map/CemeteryMap.vue";
 import {getGraveById, getGraveImages} from "~/services/client/index.js";
 import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const cemeteries = ref([])
 const selectedCemetery = ref({})
@@ -41,7 +44,7 @@ const fetchGraveDetails = async (id) => {
     graveDetailModalVisible.value = true
 
   } catch (error) {
-    console.error('Ошибка при услуги:', error)
+    console.error(t('errors.fetchError'), error)
   }
 
 }
@@ -56,9 +59,8 @@ onMounted((async () => {
     const response = await getCemeteries()
     cemeteries.value = response.data.data
   } catch (error) {
-    console.error('Ошибка при получении заявок:', error)
+    console.error(t('errors.fetchError'), error)
   } finally {
-    console.log('finally')
   }
 }))
 </script>

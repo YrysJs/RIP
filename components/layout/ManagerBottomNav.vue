@@ -4,7 +4,7 @@
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
         <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span class="nav-label">Заявки</span>
+      <span class="nav-label">{{ $t('manager.bottomNav.requests') }}</span>
     </NuxtLink>
 
     <NuxtLink to="/manager/cemetery" class="nav-item" :class="{ active: $route.path === '/manager/cemetery' }">
@@ -12,7 +12,7 @@
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke="currentColor" stroke-width="2"/>
         <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
       </svg>
-      <span class="nav-label">Кладбища</span>
+      <span class="nav-label">{{ $t('manager.bottomNav.cemeteries') }}</span>
     </NuxtLink>
 
     <NuxtLink to="/manager/notifications" class="nav-item" :class="{ active: $route.path === '/manager/notifications' }">
@@ -20,7 +20,7 @@
         <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span class="nav-label">Уведомления</span>
+      <span class="nav-label">{{ $t('manager.bottomNav.notifications') }}</span>
     </NuxtLink>
   </div>
 </template>

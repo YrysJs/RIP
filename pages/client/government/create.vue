@@ -244,7 +244,7 @@ const cnt = computed(() => `${appeal_content.value.length}/${maxLen}`);
             "
             @click="userCreateAppeal"
           >
-            {{ loading ? "Создаём..." : "Создать обращение" }}
+            {{ loading ? $t('common.creating') : $t('client.government.createAppeal') }}
           </button>
         </div>
       </div>

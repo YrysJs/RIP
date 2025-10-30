@@ -25,15 +25,17 @@ const form = reactive({
 })
 const isProduct = computed(() => form.type === 'product')
 
+const { t } = useI18n()
+
 // справочники
-const unitOptions = [
-  { value: 'Штука', label: 'Штука' },
-  { value: 'Комплект', label: 'Комплект' },
-  { value: 'Упаковка', label: 'Упаковка' },
-  { value: 'Килограмм', label: 'Килограмм' },
-  { value: 'Литр', label: 'Литр' },
-  { value: 'Метр', label: 'Метр' }
-]
+const unitOptions = computed(() => [
+  { value: 'Штука', label: t('productUnits.piece') },
+  { value: 'Комплект', label: t('productUnits.set') },
+  { value: 'Упаковка', label: t('productUnits.package') },
+  { value: 'Килограмм', label: t('productUnits.kg') },
+  { value: 'Литр', label: t('productUnits.liter') },
+  { value: 'Метр', label: t('productUnits.meter') }
+])
 const categories = ref([])
 onMounted(async () => {
   try {
@@ -42,10 +44,10 @@ onMounted(async () => {
     if (categories.value.length) form.category_id = String(categories.value[0].id)
   } catch {
     categories.value = [
-      { id: 1, name: 'Ритуальные услуги' },
-      { id: 2, name: 'Памятники и мемориалы' },
-      { id: 3, name: 'Цветы и венки' },
-      { id: 4, name: 'Прочие услуги' }
+      { id: 1, name: t('productCategories.ritualServices') },
+      { id: 2, name: t('productCategories.monuments') },
+      { id: 3, name: t('productCategories.flowers') },
+      { id: 4, name: t('productCategories.other') }
     ]
   }
 })
@@ -53,8 +55,8 @@ onMounted(async () => {
 // ---- success modal (UI) ----
 const success = reactive({
   open: false,
-  title: 'Заявка отправлена',
-  text: 'на рассмотрение!',
+  title: t('serviceAdd.requestSent'),
+  text: t('serviceAdd.underReview'),
 })
 function lockScroll(v) { document.body.style.overflow = v ? 'hidden' : '' }
 function openSuccess(custom = {}) { Object.assign(success, custom, { open: true }); lockScroll(true) }
@@ -74,7 +76,7 @@ const addFile = (file) => {
   const maxSize = 10 * 1024 * 1024 // 10MB в байтах
   if (file.size > maxSize) {
     const { $toast } = useNuxtApp()
-    $toast.error(`Файл "${file.name}" слишком большой. Максимальный размер: 10MB`)
+    $toast.error(`${t('common.file')} "${file.name}" ${t('serviceAdd.fileTooLarge')}`)
     return
   }
   

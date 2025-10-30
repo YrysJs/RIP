@@ -3,7 +3,9 @@ import { useNewsStore } from '~/store/news.js'
 import {getNews} from "~/services/akimat/index.js";
 import AppHeader from '~/components/layout/AppHeader.vue';
 import AppFooter from '~/components/layout/AppFooter.vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const newsStore = useNewsStore()
 const newsList = ref([])
 
@@ -45,7 +47,9 @@ const fetchNews = async () => {
       newsStore.setSelected(selectedNews)
     }
   } catch (error) {
-    console.error('Ошибка при получении новостей:', error)
+    console.error(t('errors.fetchError'), error);
+    const { $toast } = useNuxtApp();
+    $toast.error(t('common.serverUnavailable'));
   }
 }
 

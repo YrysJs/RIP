@@ -32,11 +32,29 @@ export default defineNuxtConfig({
   },
   css: ["~/css/main.scss", "~/assets/styles/fonts.scss"],
   i18n: {
+    vueI18n: './i18n.config.ts',
     locales: [
-      { code: "ru", language: "ru-RU", file: "ru.json" },
-      { code: "kk", language: "kk-KK", file: "kk.json" },
+      {
+        code: 'ru',
+        iso: 'ru-RU',
+        name: 'Русский',
+        file: 'ru.json'
+      },
+      {
+        code: 'kk',
+        iso: 'kk-KZ',
+        name: 'Қазақша',
+        file: 'kk.json'
+      }
     ],
-    defaultLocale: "ru",
+    lazy: true,
+    langDir: 'locales',
+    defaultLocale: 'ru',
+    strategy: 'no_prefix',
+    compilation: {
+      strictMessage: false,
+      escapeHtml: false
+    }
   },
   runtimeConfig: {
     public: {

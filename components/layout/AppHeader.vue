@@ -17,24 +17,24 @@
       <!-- Правый блок -->
       <div class="right-actions">
         <nav class="nav-links">
-          <NuxtLink to="/">Главная</NuxtLink>
-          <NuxtLink to="/services">Услуги</NuxtLink>
+          <NuxtLink to="/">{{ $t('header.main') }}</NuxtLink>
+          <NuxtLink to="/services">{{ $t('header.services') }}</NuxtLink>
         </nav>
 
-        <div class="flex gap-4 ml-[100px]">
+        <div class="flex gap-4 ml-[50px]">
           <button class="reserve__btn" @click="router.push('/reserve')">
             <img src="/icons/pencil.svg" alt="Reserve icon" class="w-5 h-5" />
-            Забронировать место
+            {{ $t('header.reservePlace') }}
           </button>
           <template v-if="token">
             <button v-if="isAkimat" class="profile__btn" @click="router.push('/user/tickets')">
-              Кабинет Акимата
+              {{ $t('header.akimatCabinet') }}
             </button>
             <button v-if="isManager" class="profile__btn" @click="router.push('/manager/burial')">
-              Кабинет Менеджера
+              {{ $t('header.managerCabinet') }}
             </button>
             <button v-if="isAdmin" class="profile__btn" @click="router.push('/admin/cemetery')">
-              Кабинет Админа
+              {{ $t('header.adminCabinet') }}
             </button>
             <button class="profile__btn" @click="profileClick">
               <img src="/icons/person.svg" alt="Reserve icon" class="w-5 h-5" />
@@ -52,7 +52,7 @@
                   class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                   @click="logout"
                 >
-                  Выйти
+                  {{ $t('header.logout') }}
                 </button>
               </div>
             </div>
@@ -63,9 +63,26 @@
               @click="authModalStore.toggleLoginMenu"
             >
               <img src="/icons/person.svg" alt="Reserve icon" class="w-5 h-5" />
-              Войти
+              {{ $t('header.login') }}
             </button>
           </template>
+        </div>
+
+        <!-- Переключатель языков -->
+        <div class="language-switcher">
+          <button
+            :class="{ active: currentLocale === 'ru' }"
+            @click="switchLanguage('ru')"
+          >
+            РУ
+          </button>
+          <span class="divider">|</span>
+          <button
+            :class="{ active: currentLocale === 'kk' }"
+            @click="switchLanguage('kk')"
+          >
+            ҚАЗ
+          </button>
         </div>
       </div>
     </div>
@@ -94,27 +111,27 @@
     >
       <div class="bg-white rounded-xl w-[340px] p-6 shadow-xl">
         <div class="flex justify-between items-center mb-4">
-          <span class="text-lg font-semibold">Войти</span>
+          <span class="text-lg font-semibold">{{ $t('header.login') }}</span>
           <button @click="authModalStore.closeLoginMenu">
-            <img src="/icons/close.svg" alt="Закрыть" class="w-6 h-6" />
+            <img src="/icons/close.svg" :alt="$t('common.close')" class="w-6 h-6" />
           </button>
         </div>
-        <div class="text-gray-400 text-sm mb-2">Клиентам</div>
+        <div class="text-gray-400 text-sm mb-2">{{ $t('header.loginAs.clients') }}</div>
         <div
           class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]"
           @click="login('client')"
         >
           <img src="/icons/user.svg" class="w-5 h-5" />
-          <span class="font-medium">Войти/Зарегистрироваться</span>
+          <span class="font-medium">{{ $t('header.loginAs.client') }}</span>
         </div>
 
-        <div class="text-gray-400 text-sm mt-4 mb-2">Партнерам</div>
+        <div class="text-gray-400 text-sm mt-4 mb-2">{{ $t('header.loginAs.partners') }}</div>
         <div
           class="flex items-center gap-2 py-2 cursor-pointer hover:text-[#224C4F]"
           @click="login('supplier')"
         >
           <img src="/icons/shop.svg" class="w-5 h-5" />
-          <span class="font-medium">Войти как поставщик услуг</span>
+          <span class="font-medium">{{ $t('header.loginAs.supplier') }}</span>
         </div>
       </div>
     </div>
@@ -129,9 +146,26 @@ import SupplierLogin from "~/components/auth/SupplierLogin.vue";
 import Cookies from "js-cookie";
 import { parseJwt } from "~/utils/parseJwt";
 import { getCurrentUser } from "~/services/login/index.js";
+import { useI18n } from 'vue-i18n';
 
+const { t, locale } = useI18n();
 const token = ref(Cookies.get("token"));
 const router = useRouter();
+
+// Текущая локаль
+const currentLocale = computed(() => locale.value);
+
+// Функция переключения языка
+const switchLanguage = async (lang) => {
+  const i18n = useNuxtApp().$i18n;
+  if (i18n && typeof i18n.setLocale === 'function') {
+    await i18n.setLocale(lang);
+  } else {
+    locale.value = lang;
+  }
+  // Сохраняем выбранный язык в localStorage
+  localStorage.setItem('locale', lang);
+};
 
 const userStore = useUserStore();
 const authModalStore = useAuthModalStore();
@@ -156,12 +190,12 @@ const props = defineProps({
   style: String,
 });
 
-const types = {
-  manager: "Менеджер Кладбища",
-  suppliar: "Поставщик услуг",
-  akimat: "Кабинет Aкимата",
-  admin: "Админ панель",
-};
+const types = computed(() => ({
+  manager: t('header.types.manager'),
+  suppliar: t('header.types.supplier'),
+  akimat: t('header.types.akimat'),
+  admin: t('header.types.admin'),
+}));
 
 const showDropdownMenu = ref(false);
 
@@ -231,6 +265,12 @@ const handleScroll = () => {
 };
 
 onMounted(async () => {
+  // Восстанавливаем сохраненный язык
+  const savedLocale = localStorage.getItem('locale');
+  if (savedLocale && (savedLocale === 'ru' || savedLocale === 'kk')) {
+    locale.value = savedLocale;
+  }
+
   // навешиваем слушатель сразу
   handleScroll();
   window.addEventListener("scroll", handleScroll, { passive: true });
@@ -243,7 +283,7 @@ onMounted(async () => {
     userInfo.value = response.data;
     userStore.setUser(userInfo.value);
   } catch (error) {
-    console.error("Ошибка при получении данных пользователя:", error);
+    console.error(t('errors.fetchError'), error);
   }
 });
 
@@ -397,5 +437,45 @@ onUnmounted(() => {
 .profile__btn:hover,
 .profile__btn:active {
   filter: brightness(0.5);
+}
+
+/* Переключатель языков */
+.language-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.language-switcher button {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.language-switcher button:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.language-switcher button.active {
+  color: #ffffff;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.language-switcher .divider {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 14px;
+  line-height: 1;
 }
 </style>

@@ -1,48 +1,50 @@
 <script setup>
 import LayoutSidebarDropDown from './LayoutSidebarDropDown.vue';
 
-const managerMenu = [
+const { t } = useI18n();
+
+const managerMenu = computed(() => [
   {
-    title: "Акиматы",
+    title: t('adminMenu.akimats'),
     path: '/admin/akimat',
     childs: []
   },
   {
-    title: "Управление поставщиками",
+    title: t('adminMenu.suppliersManagement'),
     path: '/admin/suppliers',
     childs: []
   },
   {
-    title: "Управление менеджерами",
+    title: t('adminMenu.managersManagement'),
     path: '/admin/managers',
     childs: []
   },
   {
-    title: "Управление кладбищами",
+    title: t('adminMenu.cemeteriesManagement'),
     path: "/admin/cemetery",
     childs: []
   },
   {
-    title: "Модерация комментариев",
+    title: t('adminMenu.commentsModeration'),
     path: "/admin/comments",
     childs: []
   },
   {
-    title: "Модерация обжалований",
+    title: t('adminMenu.appealsModeration'),
     path: "/admin/comment-appeals",
     childs: []
   },
   {
-    title: "Модерация товаров/услуг",
+    title: t('adminMenu.productsModeration'),
     path: "/admin/products",
     childs: []
   },
   {
-    title: "Поиск захоронении",
+    title: t('adminMenu.burialSearch'),
     path: "/admin/burial",
     childs: []
   },
-]
+])
 
 </script>
 

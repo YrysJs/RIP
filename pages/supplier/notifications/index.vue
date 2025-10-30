@@ -1,7 +1,9 @@
 <script setup>
 import { getNotifications, markAsReadAll, markAsRead } from '~/services/notifications'
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const notifications = ref([])
 const loading = ref(false)
 const loadingMore = ref(false)
@@ -43,7 +45,7 @@ const fetchNotifications = async (reset = false) => {
     
   } catch (err) {
     error.value = err.message
-    console.error('Ошибка при загрузке уведомлений:', err)
+    console.error(t('errors.fetchError'), err)
   } finally {
     loading.value = false
     loadingMore.value = false
@@ -139,7 +141,7 @@ const handleNotificationClick = async (notification) => {
   <NuxtLayout name="supplier" class="supplier-notifications-page">
     <!-- Заголовок страницы -->
     <div class="page-head">
-      <h2 class="page-title">Уведомления</h2>
+      <h2 class="page-title">{{ $t('common.notifications') }}</h2>
       
       <div class="page-actions">
         <button 
@@ -153,7 +155,7 @@ const handleNotificationClick = async (notification) => {
         </button>
         
         <div class="page-controls">
-          <label class="page-controls__label">Показать по:</label>
+          <label class="page-controls__label">{{ $t('notificationsPage.showBy') }}:</label>
           <select 
             v-model="limit" 
             @change="onLimitChange"

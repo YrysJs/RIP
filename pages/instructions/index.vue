@@ -6,7 +6,7 @@
     <div
       class="container py-[100px] px-[20px] flex flex-col gap-5 mb-[56px] max-md:pt-5"
     >
-      <h1 class="text-2xl font-bold mb-2">Пользователям</h1>
+      <h1 class="text-2xl font-bold mb-2">{{ $t('instructions.pageTitle') }}</h1>
 
       <a
         v-for="(doc, i) in docs"
@@ -36,30 +36,32 @@
 import AppFooter from "~/components/layout/AppFooter.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
 import AppHeaderClient from "~/components/layout/AppHeaderClient.vue";
+import { useI18n } from 'vue-i18n';
 
-const docs = [
+const { t } = useI18n();
+
+const docs = computed(() => [
   {
     href: "/docs/Лицензионное_соглашение (1)-2.pdf",
-    title: "Лицензионное соглашение",
+    title: t('instructions.licenseAgreement'),
   },
   {
     href: "/docs/Политика конфиденциальности (1)-2.pdf",
-    title: "Политика конфиденциальности",
+    title: t('instructions.privacyPolicy'),
   },
   {
     href: "/docs/Политика обработка ПД (1).pdf",
-    title: "Политика обработки ПД",
+    title: t('instructions.pdPolicy'),
   },
   {
     href: "/docs/Пользовательское соглашение-2.pdf",
-    title: "Пользовательское соглашение",
+    title: t('instructions.userAgreement'),
   },
   {
     href: "/docs/СОГЛАСИЕ_на_обработку_персональных_данных_при_регистрации_на_платформе.pdf",
-    title:
-      "Согласие на обработку персональных данных при регистрации на платформе",
+    title: t('instructions.pdConsent'),
   },
-];
+]);
 </script>
 
 <style lang="scss" scoped>

@@ -1,5 +1,8 @@
 <script setup>
 import { defineProps } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 defineProps(['grave', 'visible', 'images'])
 
 const emit = defineEmits(['close'])
@@ -30,9 +33,9 @@ const closeModal = () => {
         <!-- Location info -->
         <div class="mb-6">
           <div class="flex gap-1 items-center mb-2">
-            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Сектор <span class="font-bold">{{ grave?.sector_number }}</span></span>
-            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Место <span class="font-bold">{{ grave?.grave_number }}</span></span>
-            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Периметр: <span class="font-bold">{{ grave?.area || '2.5 x 1.5 м' }}</span></span>
+            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">{{ $t('modalsGrave.graveDetail.sector') }} <span class="font-bold">{{ grave?.sector_number }}</span></span>
+            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">{{ $t('modalsGrave.graveDetail.place') }} <span class="font-bold">{{ grave?.grave_number }}</span></span>
+            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">{{ $t('modalsGrave.graveDetail.perimeter') }} <span class="font-bold">{{ grave?.area || '2.5 x 1.5 м' }}</span></span>
           </div>
         </div>
 
@@ -73,33 +76,33 @@ const closeModal = () => {
 
         <!-- Deceased Information -->
         <div v-if="grave?.deceased && grave.deceased.length > 0" class="mb-6 p-4 bg-gray-50 rounded-lg">
-          <h3 class="text-lg font-semibold mb-3 text-gray-800">Информация об умершем</h3>
+          <h3 class="text-lg font-semibold mb-3 text-gray-800">{{ $t('modalsGrave.graveDetail.deceasedInfo') }}</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p class="text-sm text-gray-600 mb-1">ФИО</p>
+              <p class="text-sm text-gray-600 mb-1">{{ $t('modalsGrave.graveDetail.fullName') }}</p>
               <p class="font-medium text-gray-900">{{ grave.deceased[0].full_name }}</p>
             </div>
             <div v-if="grave.deceased[0].death_date">
-              <p class="text-sm text-gray-600 mb-1">Дата смерти</p>
+              <p class="text-sm text-gray-600 mb-1">{{ $t('modalsGrave.graveDetail.deathDate') }}</p>
               <p class="font-medium text-gray-900">{{ new Date(grave.deceased[0].death_date).toLocaleDateString('ru-RU') }}</p>
             </div>
             <div v-if="grave.deceased[0].inn">
-              <p class="text-sm text-gray-600 mb-1">ИИН</p>
+              <p class="text-sm text-gray-600 mb-1">{{ $t('modalsGrave.graveDetail.iin') }}</p>
               <p class="font-medium text-gray-900">{{ grave.deceased[0].inn }}</p>
             </div>
             <div v-if="grave.deceased[0].is_reburial !== undefined">
-              <p class="text-sm text-gray-600 mb-1">Перезахоронение</p>
-              <p class="font-medium text-gray-900">{{ grave.deceased[0].is_reburial ? 'Да' : 'Нет' }}</p>
+              <p class="text-sm text-gray-600 mb-1">{{ $t('modalsGrave.graveDetail.reburial') }}</p>
+              <p class="font-medium text-gray-900">{{ grave.deceased[0].is_reburial ? $t('common.yes') : $t('common.no') }}</p>
             </div>
           </div>
           <div v-if="grave.deceased[0].death_cert_url" class="mt-3">
-            <p class="text-sm text-gray-600 mb-1">Свидетельство о смерти</p>
+            <p class="text-sm text-gray-600 mb-1">{{ $t('modalsGrave.graveDetail.deathCertificate') }}</p>
             <a 
               :href="grave.deceased[0].death_cert_url" 
               target="_blank" 
               class="text-blue-600 hover:text-blue-800 underline text-sm"
             >
-              Открыть документ
+              {{ $t('modalsGrave.graveDetail.openDocument') }}
             </a>
           </div>
         </div>
@@ -113,7 +116,7 @@ const closeModal = () => {
 
         <!-- Additional info -->
         <div class="mb-6">
-          <h3 class="text-lg font-semibold">Примечание</h3>
+          <h3 class="text-lg font-semibold">{{ $t('modalsGrave.graveDetail.note') }}</h3>
           <p class="text-sm text-gray-600">
             {{ grave?.notes }}
           </p>
@@ -127,7 +130,7 @@ const closeModal = () => {
             class="flex items-center gap-1 text-sm font-semibold"
           >
             <img src="/icons/share.svg" alt="share" class="w-4 h-4 mr-1">
-            Поделиться координатами
+            {{ $t('modals.shareCoord.shareCoordinates') }}
           </button>
           
         </div>

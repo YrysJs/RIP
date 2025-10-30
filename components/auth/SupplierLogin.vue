@@ -15,6 +15,9 @@ import {
 import Cookies from 'js-cookie';
 import {ref, defineEmits, watch, onBeforeUnmount} from "vue";
 import {useLoadingStore} from "~/store/loading.js";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const emit = defineEmits()
 const router = useRouter()
 
@@ -102,7 +105,8 @@ watch(bin, async (newValue) => {
         loadingStore.stopLoading();
         
       } catch (err) {
-        console.error('Ошибка при запросе:', err);
+        const { t } = useI18n();
+        console.error(t('errors.requestError'), err);
         loadingStore.stopLoading();
         isFcb.value = true;
       }
@@ -113,9 +117,10 @@ watch(bin, async (newValue) => {
 
   } catch (error) {
     loadingStore.stopLoading()
-    console.error('Ошибка при получении токена:', error);
+    const { t } = useI18n();
+    console.error(t('errors.tokenError'), error);
     const { $toast } = useNuxtApp();
-    $toast.error("Не удалось получить данные, проверьте БИН.");
+    $toast.error(t('errors.dataNotFound'));
   }
 });
 
@@ -185,7 +190,8 @@ async function run () {
     await router.push('/supplier/tickets/active')
     emit('close');
   } catch (error) {
-    console.error('Ошибка при логине:', error)
+    const { t } = useI18n();
+    console.error(t('errors.loginError'), error)
     
     const { $toast } = useNuxtApp();
     
@@ -197,7 +203,7 @@ async function run () {
       error?.response?.data?.description?.includes("Invalid") ||
       error?.response?.data?.description?.includes("код")
     ) {
-      $toast.error("Неверный код подтверждения");
+      $toast.error(t('errors.invalidCode'));
       return;
     }
 
@@ -207,7 +213,7 @@ async function run () {
     ) {
       step.value++;
     } else {
-      $toast.error("Произошла ошибка при регистрации");
+      $toast.error(t('errors.registrationError'));
     }
   } finally {
     console.log('login')
@@ -229,7 +235,7 @@ const login = async () => {
     loginId.value = response.data
     isWhatsappLogin.value = false
   } catch (error) {
-    console.error('Ошибка при логине:', error)
+    console.error(t('clientLogin.loginError'), error)
   } finally {
     step.value++
     fakeTimer.value = 60
@@ -315,7 +321,7 @@ const otpCheck = async () => {
     emit('close');
     await router.push('/supplier/tickets/active')
   } catch (error) {
-    console.error('Ошибка при логине:', error)
+    console.error(t('clientLogin.loginError'), error)
     
     const { $toast } = useNuxtApp();
     
@@ -360,9 +366,9 @@ const otpCheck = async () => {
         <p class="text-lg max-lg:text-base">
           Введите номер мобильного телефона:
         </p>
-        <input v-model="phone_number" v-mask="'+7 (###) ###-##-##'" class="border-2 border-[#AFB5C166] mb-[32px] px-3 py-[18px] text-base rounded-lg h-14 max-lg:py-[14px] max-lg:mb-6" type="text" placeholder="Введите номер телефона">
-        <button class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#000] font-medium max-lg:py-[15px]" :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }" @click="loginWhatsapp">Получить код в WhatsApp</button>
-        <button class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#17212A] font-medium my-4 max-lg:py-[15px] max-lg:mt-2 max-lg:mb-4" :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }" @click="login">Получить код по СМС</button>
+        <input v-model="phone_number" v-mask="'+7 (###) ###-##-##'" class="border-2 border-[#AFB5C166] mb-[32px] px-3 py-[18px] text-base rounded-lg h-14 max-lg:py-[14px] max-lg:mb-6" type="text" :placeholder="$t('auth.enterPhone')">
+        <button class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#000] font-medium max-lg:py-[15px]" :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }" @click="loginWhatsapp">{{ $t('auth.getCodeWhatsApp') }}</button>
+        <button class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#17212A] font-medium my-4 max-lg:py-[15px] max-lg:mt-2 max-lg:mb-4" :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }" @click="login">{{ $t('auth.getCodeSMS') }}</button>
       </div>
       <div v-if="step === 1" class="flex flex-col">
         <h3 class="text-2xl font-bold text-left text-[#222222] mb-[8px]">
@@ -374,8 +380,8 @@ const otpCheck = async () => {
         </p>
         <input v-model="code" class="border-2 border-[#939393] mt-[24px] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите код">
         <div class="mt-[24px] mb-[18px]">
-          <p v-if="true" class="text-base font-semibold text-[#939393]">Отправить код повторно: через {{ fakeTimer }}</p>
-          <button v-else>Отправить еще раз</button>
+          <p v-if="true" class="text-base font-semibold text-[#939393]">{{ $t('auth.resendCodeIn') }} {{ fakeTimer }}</p>
+          <button v-else>{{ $t('auth.resendAgain') }}</button>
         </div>
         <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold" :class="{ '!bg-[#E9B949] text-white': code >= 4 }" @click="otpCheck">Подтвердить</button>
       </div>

@@ -1,40 +1,33 @@
 <script setup lang="ts">
 import { useRoute, RouterLink } from 'vue-router';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 type NavItem = {
-  label: string;
+  labelKey: string;
+  shortLabelKey: string;
   to: string;
   icon: string;
   active: string;
 };
 
 const items: NavItem[] = [
-  { label: 'Запросы в Акимат',       to: '/user/tickets',  icon: '/icons/tickets.svg',  active: '/icons/tickets-active.svg' },
-  { label: 'Отчеты, статистика',    to: '/user/reports',  icon: '/icons/reports.svg',  active: '/icons/reports-active.svg' },
-  { label: 'Новости',               to: '/user/news',     icon: '/icons/news.svg',     active: '/icons/news-active.svg' },
-  { label: 'Пользователи и роли',   to: '/user/users',    icon: '/icons/users.svg',    active: '/icons/users-active.svg' }
+  { labelKey: 'akimat.sidebar.requests',      shortLabelKey: 'akimat.sidebar.shortRequests',  to: '/user/tickets',  icon: '/icons/tickets.svg',  active: '/icons/tickets-active.svg' },
+  { labelKey: 'akimat.sidebar.reports',       shortLabelKey: 'akimat.sidebar.shortReports',   to: '/user/reports',  icon: '/icons/reports.svg',  active: '/icons/reports-active.svg' },
+  { labelKey: 'akimat.sidebar.news',          shortLabelKey: 'akimat.sidebar.shortNews',      to: '/user/news',     icon: '/icons/news.svg',     active: '/icons/news-active.svg' },
+  { labelKey: 'akimat.sidebar.usersAndRoles', shortLabelKey: 'akimat.sidebar.shortUsers',     to: '/user/users',    icon: '/icons/users.svg',    active: '/icons/users-active.svg' }
 ];
 
 const route = useRoute();
 const isActive = (p: string) => computed(() => route.path.startsWith(p));
-
-// Функция для сокращения названий для мобильной версии
-const getShortLabel = (label: string) => {
-  const shortLabels: Record<string, string> = {
-    'Запросы в Акимат': 'Заявки',
-    'Отчеты, статистика': 'Отчеты',
-    'Новости': 'Новости',
-    'Пользователи и роли': 'Пользователи'
-  };
-  return shortLabels[label] || label;
-};
 </script>
 
 <template>
   <div>
     <div class="sidebar">
-      <div class="sidebar__title">Кабинет Акимата</div>
+      <div class="sidebar__title">{{ t('akimat.cabinet') }}</div>
 
       <nav class="sidebar__list">
         <RouterLink
@@ -47,11 +40,11 @@ const getShortLabel = (label: string) => {
           <img
               class="sidebar__icon"
               :src="isActive(it.to).value ? it.active : it.icon"
-              :alt="it.label"
+              :alt="t(it.labelKey)"
               width="18"
               height="18"
           >
-          <span class="sidebar__text">{{ it.label }}</span>
+          <span class="sidebar__text">{{ t(it.labelKey) }}</span>
         </RouterLink>
       </nav>
     </div>
@@ -66,29 +59,29 @@ const getShortLabel = (label: string) => {
         :class="{ 'nav-item--active': isActive(it.to).value }"
       >
         <div class="nav-icon-wrapper">
-          <svg v-if="getShortLabel(it.label) === 'Заявки'" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <svg v-if="it.shortLabelKey === 'akimat.sidebar.shortRequests'" width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M12 19l7-7 3 3-7 7-3-3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <svg v-else-if="getShortLabel(it.label) === 'Отчеты'" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <svg v-else-if="it.shortLabelKey === 'akimat.sidebar.shortReports'" width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M3 3v18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M18 17V9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M13 17V5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M8 17v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <svg v-else-if="getShortLabel(it.label) === 'Новости'" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <svg v-else-if="it.shortLabelKey === 'akimat.sidebar.shortNews'" width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M18 14h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M15 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <svg v-else-if="getShortLabel(it.label) === 'Пользователи'" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <svg v-else-if="it.shortLabelKey === 'akimat.sidebar.shortUsers'" width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <span class="nav-text">{{ getShortLabel(it.label) }}</span>
+        <span class="nav-text">{{ t(it.shortLabelKey) }}</span>
         <div v-if="isActive(it.to).value" class="nav-indicator" />
       </RouterLink>
     </div>

@@ -16,7 +16,7 @@ const router = useRouter();
         src="/icons/arrow-left-orange.svg"
         alt=""
       />
-      Вернуться
+      {{ $t('common.back') }}
     </button>
     <SupplierDetail :ticket-id="route.params.id" />
   </NuxtLayout>

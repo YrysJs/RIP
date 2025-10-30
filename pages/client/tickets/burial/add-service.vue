@@ -5,6 +5,9 @@ import { getSupplier } from '~/services/login'
 import PaymentModalProducts from '~/components/layout/modals/PaymentModalProducts.vue'
 import DeliveryModal from '~/components/layout/modals/DeliveryModal.vue'
 import ServiceDetailModal from '~/components/layout/modals/ServiceDetailModal.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const products = ref([])
 const cartItems = ref([])
@@ -92,14 +95,14 @@ const handleDeliveryConfirm = async (deliveryData) => {
     }
     
     await addToCart(cartData)
-    cartMessage.value = 'Товар добавлен в корзину'
+    cartMessage.value = t('cart.itemAdded')
     await loadCart() // Перезагружаем корзину
     setTimeout(() => {
       cartMessage.value = ''
     }, 3000)
   } catch (err) {
-    cartMessage.value = 'Ошибка при добавлении товара'
-    console.error('Ошибка при добавлении в корзину:', err)
+    cartMessage.value = t('cart.addError')
+    console.error(t('errors.fetchError'), err)
     const { $toast } = useNuxtApp()
     $toast.error('Сервер не доступен')
   } finally {
@@ -121,7 +124,7 @@ const removeProductFromCart = async (productId) => {
   try {
     await removeFromCart(productId)
     await loadCart() // Перезагружаем корзину
-    cartMessage.value = 'Товар удален из корзины'
+    cartMessage.value = t('cart.itemRemoved')
     setTimeout(() => {
       cartMessage.value = ''
     }, 3000)
@@ -152,7 +155,7 @@ const handlePaymentSuccess = async () => {
   try {
     // Перезагружаем корзину (она должна быть пустой после заказа)
     await loadCart()
-    cartMessage.value = 'Заказ успешно оформлен!'
+    cartMessage.value = t('cart.orderSuccess')
     setTimeout(() => {
       cartMessage.value = ''
     }, 5000)

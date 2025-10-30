@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed, defineProps, defineEmits } from 'vue'
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -54,21 +56,21 @@ const isFormValid = computed(() => {
       
       <div class="flex flex-col">
         <h3 class="text-2xl font-extrabold text-left text-[#222222] mb-[32px] max-lg:text-[22px] max-lg:mb-6">
-          Укажите данные
+          {{ $t('modals.delivery.title') }}
         </h3>
         
         <p class="text-lg max-lg:text-base mb-4">
-          Введите адрес:
+          {{ $t('modals.delivery.enterAddress') }}
         </p>
         <input 
           v-model="deliveryAddress" 
           class="border-2 border-[#AFB5C166] mb-[24px] px-3 py-[18px] text-base rounded-lg h-14 max-lg:py-[14px] max-lg:mb-6" 
           type="text" 
-          placeholder="Тауғұл 1, дом 48"
+          :placeholder="$t('modals.delivery.addressPlaceholder')"
         />
         
         <p class="text-lg max-lg:text-base mb-4">
-          Выберите дату:
+          {{ $t('modals.delivery.selectDate') }}
         </p>
         <input 
           v-model="deliveryDate" 
@@ -77,7 +79,7 @@ const isFormValid = computed(() => {
         />
         
         <p class="text-lg max-lg:text-base mb-4">
-          Выберите время:
+          {{ $t('modals.delivery.selectTime') }}
         </p>
         <input 
           v-model="deliveryTime" 
@@ -91,7 +93,7 @@ const isFormValid = computed(() => {
           :disabled="!isFormValid || loading"
           @click="confirmDelivery"
         >
-          {{ loading ? 'Добавление...' : 'Подтвердить' }}
+          {{ loading ? $t('modals.delivery.adding') : $t('modals.delivery.confirm') }}
         </button>
       </div>
     </div>

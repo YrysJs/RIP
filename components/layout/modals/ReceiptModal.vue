@@ -2,60 +2,60 @@
     <div v-if="visible" class="modal-overlay" @click="closeModal">
         <div class="modal-content" @click.stop>
             <div class="modal-header">
-                <h2 class="modal-title">ЧЕК ОБ ОПЛАТЕ</h2>
+                <h2 class="modal-title">{{ $t('receiptPayment.title') }}</h2>
                 <button @click="closeModal" class="close-button">
-                    <img src="/icons/close.svg" alt="Закрыть" class="w-6 h-6">
+                    <img src="/icons/close.svg" :alt="$t('common.close')" class="w-6 h-6">
                 </button>
             </div>
             
             <div v-if="loading" class="loading">
-                <div class="text-center">Загрузка данных чека...</div>
+                <div class="text-center">{{ $t('receiptPayment.loading') }}</div>
             </div>
             
             <div v-else-if="receiptData" class="modal-body">
                 <!-- Информация о транзакции -->
                 <div class="section">
-                    <h3 class="section-title">ИНФОРМАЦИЯ О ТРАНЗАКЦИИ</h3>
+                    <h3 class="section-title">{{ $t('receiptPayment.transactionInfo') }}</h3>
                     <div class="info-row">
-                        <span class="label">Номер операции:</span>
+                        <span class="label">{{ $t('receiptPayment.operationNumber') }}:</span>
                         <span class="value">{{ receiptData.operationReference }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Дата транзакции:</span>
+                        <span class="label">{{ $t('receiptPayment.transactionDate') }}:</span>
                         <span class="value">{{ formatDate(receiptData.transactionDate) }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">3D Secure:</span>
-                        <span class="value">{{ receiptData.is3DSecure ? 'Да' : 'Нет' }}</span>
+                        <span class="label">{{ $t('receiptPayment.secure3D') }}:</span>
+                        <span class="value">{{ receiptData.is3DSecure ? $t('receiptPayment.yes') : $t('receiptPayment.no') }}</span>
                     </div>
                 </div>
                 
                 <!-- Информация о заказе -->
                 <div class="section">
-                    <h3 class="section-title">ИНФОРМАЦИЯ О ЗАКАЗЕ</h3>
+                    <h3 class="section-title">{{ $t('receiptPayment.orderInfo') }}</h3>
                     <div class="info-row">
-                        <span class="label">Номер счета:</span>
+                        <span class="label">{{ $t('receiptPayment.invoiceNumber') }}:</span>
                         <span class="value">{{ receiptData.order.invoiceId }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Сумма:</span>
+                        <span class="label">{{ $t('receiptDetails.amount') }}:</span>
                         <span class="value font-bold">{{ formatAmount(receiptData.order.amount) }} {{ receiptData.order.currency }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Комиссия:</span>
+                        <span class="label">{{ $t('receiptDetails.fee') }}:</span>
                         <span class="value">{{ formatAmount(receiptData.order.fee) }} {{ receiptData.order.currency }}</span>
                     </div>
                 </div>
                 
                 <!-- Информация о плательщике -->
                 <div class="section">
-                    <h3 class="section-title">ИНФОРМАЦИЯ О ПЛАТЕЛЬЩИКЕ</h3>
+                    <h3 class="section-title">{{ $t('receiptDetails.payerInfo') }}</h3>
                     <div class="info-row">
-                        <span class="label">Имя:</span>
+                        <span class="label">{{ $t('common.name') }}:</span>
                         <span class="value">{{ receiptData.payer.name }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Номер карты:</span>
+                        <span class="label">{{ $t('receiptDetails.cardNumber') }}:</span>
                         <span class="value">{{ receiptData.payer.cardNumber }}</span>
                     </div>
                     <div class="info-row">
@@ -97,7 +97,7 @@
             
             <div v-else class="error">
                 <div class="text-center text-red-600">
-                    Ошибка загрузки данных чека
+                    {{ $t('common.error') }}
                 </div>
             </div>
         </div>

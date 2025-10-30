@@ -41,7 +41,7 @@ onMounted(async () => {
         <aside
           class="mob-hidden bg-white p-[20px] max-w-[408px] min-w-[305px] relative rounded-lg"
         >
-          <ClientSidebar title="ЛИЧНЫЙ КАБИНЕТ" />
+          <ClientSidebar :title="$t('client.sidebar.title')" />
         </aside>
 
         <div

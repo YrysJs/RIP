@@ -30,7 +30,7 @@
               {{ getStatusText(product.status) }}
             </span>
           </div>
-          <div class="col-span-1">{{ product.category?.name || 'Не указана' }}</div>
+          <div class="col-span-1">{{ product.category?.name || t('admin.notSpecified') }}</div>
           <div class="col-span-1 flex justify-end">
             <img src="/icons/arrow-right.svg" class="w-4 h-4" />
           </div>
@@ -60,6 +60,9 @@
   
   import { getProducts } from '~/services/admin'
   import {ref} from "vue";
+  import { useI18n } from 'vue-i18n';
+  
+  const { t } = useI18n();
   
   definePageMeta({
     middleware: ['auth', 'admin'],
@@ -93,7 +96,7 @@
       const response = await getProducts({status: 'pending'})
       products.value = response.data?.items || response.data || []
     } catch (error) {
-      console.error('Ошибка при получении продуктов:', error)
+      console.error(t('errors.fetchError'), error)
     }
   }
   
@@ -109,11 +112,11 @@
   
   const getStatusText = (status) => {
     switch(status) {
-      case 'active': return 'Активен'
-      case 'pending': return 'На рассмотрении'
-      case 'requires_fix': return 'Требует доработки'
-      case 'blocked': return 'Заблокирован'
-      default: return 'Неизвестно'
+      case 'active': return t('admin.active')
+      case 'pending': return t('admin.pending')
+      case 'requires_fix': return t('admin.requiresFix')
+      case 'blocked': return t('admin.blocked')
+      default: return t('admin.unknown')
     }
   }
   

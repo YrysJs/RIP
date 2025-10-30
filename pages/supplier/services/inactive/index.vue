@@ -22,19 +22,22 @@ const fetchProducts = async () => {
     const resp = await getProducts({ status: 'inactive' })
     products.value = resp?.data ?? []
   } catch (e) {
-    console.error('Ошибка при загрузке неактивных продуктов:', e)
-    error.value = 'Ошибка при загрузке данных'
+    const { t } = useI18n();
+    console.error(t('supplierInactive.loadError'), e)
+    error.value = t('supplierInactive.dataLoadError')
   } finally {
     loading.value = false
   }
 }
 onMounted(fetchProducts)
 
+const { t } = useI18n();
+
 // -------- success modal --------
 const success = reactive({
   open: false,
-  title: 'Товар активирован',
-  text: 'перемещён в «Активные».'
+  title: t('supplierInactive.activated'),
+  text: t('supplierInactive.movedToActive')
 })
 function lockScroll(v){ document.body.style.overflow = v ? 'hidden' : '' }
 function openSuccess(custom = {}) {

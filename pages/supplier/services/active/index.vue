@@ -23,8 +23,8 @@ const fetchProducts = async () => {
     const resp = await getProducts({ status: 'active' })
     products.value = resp?.data ?? []
   } catch (e) {
-    console.error('Ошибка при загрузке активных товаров и услуг:', e)
-    error.value = 'Ошибка при загрузке данных'
+    console.error($t('errors.fetchError'), e)
+    error.value = $t('errors.fetchError')
   } finally {
     loading.value = false
   }
@@ -32,10 +32,13 @@ const fetchProducts = async () => {
 onMounted(fetchProducts)
 
 // -------- success modal (UI) --------
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+
 const success = reactive({
   open: false,
-  title: 'Товар деактивирован',
-  text: 'перемещён в «Неактивные».',
+  title: t('supplier.servicesActive.deactivated'),
+  text: t('supplier.servicesActive.movedToInactive'),
 })
 function lockScroll(v){ document.body.style.overflow = v ? 'hidden' : '' }
 function openSuccess(custom = {}){ Object.assign(success, custom, { open: true }); lockScroll(true) }

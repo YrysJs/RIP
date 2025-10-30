@@ -1,6 +1,8 @@
 <script setup>
 import { defineProps, computed } from "vue";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const props = defineProps({
   visible: { type: Boolean, default: false },
   lat: { type: Number, default: null },
@@ -26,13 +28,13 @@ const copyToClipboard = async (type) => {
   try {
     if (type === "link") {
       await navigator.clipboard.writeText(link.value);
-      console.log("Ссылка скопирована!");
+      console.log(t('modals.shareCoordinates.linkCopied'));
     } else if (type === "coords") {
       await navigator.clipboard.writeText(`${props.lat}, ${props.lng}`);
-      console.log("Координаты скопированы!");
+      console.log(t('modals.shareCoordinates.coordinatesCopied'));
     }
   } catch (err) {
-    console.error("Не удалось скопировать ссылку:", err);
+    console.error(t('modals.shareCoordinates.copyError'), err);
   }
 };
 </script>
@@ -61,23 +63,23 @@ const copyToClipboard = async (type) => {
             class="mb-6 w-full flex justify-between items-center gap-[10px] flex-wrap"
           >
             <div class="flex flex-col gap-[10px] w-fluid">
-              <p class="text-base text-[#939393]">Ссылка</p>
+              <p class="text-base text-[#939393]">{{ $t('modals.shareCoordinates.link') }}</p>
               <p class="font-bold truncate-middle">
-                {{ hasCoords ? link : "Координаты недоступны" }}
+                {{ hasCoords ? link : $t('modals.shareCoordinates.coordinatesUnavailable') }}
               </p>
             </div>
             <button
               class="bg-[#EEEEEE] text-[#224C4F] px-[16px] py-[8px] rounded-[8px] font-semibold"
               @click="copyToClipboard('link')"
             >
-              Скопировать
+              {{ $t('modals.shareCoordinates.copy') }}
             </button>
           </div>
           <div
             class="mb-6 w-full flex justify-between items-center gap-[10px] flex-wrap"
           >
             <div class="flex flex-col gap-[10px] w-fluid">
-              <p class="text-base text-[#939393]">Координаты места</p>
+              <p class="text-base text-[#939393]">{{ $t('modals.shareCoordinates.coordinates') }}</p>
               <p class="font-bold truncate-middle">
                 {{ hasCoords ? `${props.lat}, ${props.lng}` : "—" }}
               </p>
@@ -86,7 +88,7 @@ const copyToClipboard = async (type) => {
               class="bg-[#EEEEEE] text-[#224C4F] px-[16px] py-[8px] rounded-[8px] font-semibold"
               @click="copyToClipboard('coords')"
             >
-              Скопировать
+              {{ $t('modals.shareCoordinates.copy') }}
             </button>
           </div>
         </div>

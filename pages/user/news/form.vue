@@ -3,23 +3,23 @@
     <!-- back -->
     <button class="btn-back mb-[16px]" @click="router.push('/user/news')">
       <img src="/icons/arrow-left-primary.svg" class="w-4 h-4 mr-[10px]" />
-      Вернуться
+      {{ $t('newsForm.back') }}
     </button>
 
     <div class="news-create ">
       <h1 class="page-title">
-        {{ isEdit ? 'РЕДАКТИРОВАНИЕ НОВОСТИ' : 'СОЗДАНИЕ НОВОСТИ' }}
+        {{ isEdit ? $t('newsForm.editTitle') : $t('newsForm.createTitle') }}
       </h1>
 
       <!-- Категория -->
       <div class="form-group form-group--select mb-[12px]">
-        <label class="label">Выберите категорию:</label>
+        <label class="label">{{ $t('newsForm.selectCategory') }}:</label>
         <div class="select-shell">
           <select class="form-select form-select--narrow" v-model="newsCategory" required>
-            <option value="" disabled hidden>Категория</option>
-            <option :value="1">Объявления</option>
-            <option :value="2">Социальная поддержка</option>
-            <option :value="3">Изменения в законодательстве</option>
+            <option value="" disabled hidden>{{ $t('common.category') }}</option>
+            <option :value="1">{{ $t('user.news.announcements') }}</option>
+            <option :value="2">{{ $t('user.news.socialSupport') }}</option>
+            <option :value="3">{{ $t('user.news.legislationChanges') }}</option>
           </select>
         </div>
       </div>
@@ -28,8 +28,8 @@
 
       <!-- Название -->
       <div class="form-group mb-[20px]">
-        <label class="label label--dark">Название новости:</label>
-        <input type="text" class="form-input" placeholder="Введите название" v-model="newsTitle" />
+        <label class="label label--dark">{{ $t('newsForm.newsTitle') }}:</label>
+        <input type="text" class="form-input" :placeholder="$t('newsForm.enterTitle')" v-model="newsTitle" />
       </div>
 
       <!-- Обложка -->
@@ -37,7 +37,7 @@
         v-model="file"
         :accept="['image/jpeg', 'image/png']"
         class="w-full upload-area mb-[20px] cursor-pointer"
-        label="Выбрать файл"
+        :label="$t('newsForm.selectFile')"
       >
         <template #default>
           <div class="upload-placeholder">
@@ -54,18 +54,18 @@
                       stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <p class="upload-title">Загрузить фото для обложки</p>
+            <p class="upload-title">{{ $t('newsForm.uploadCoverPhoto') }}</p>
             <p class="upload-hint">
-              Перетащите файл или загрузите файл до N МБ в формате: <b>.png, .jpeg</b>
+              {{ $t('newsForm.dragOrUpload') }}: <b>.png, .jpeg</b>
             </p>
-            <button type="button" class="upload-btn">Загрузить</button>
+            <button type="button" class="upload-btn">{{ $t('newsFormDetails.upload') }}</button>
           </div>
         </template>
       </SixDropzone>
 
       <!-- Текст -->
       <div class="form-group mb-[12px]">
-        <label class="label">Заполните основной текст:</label>
+        <label class="label">{{ $t('newsFormDetails.fillMainText') }}:</label>
 
         <div class="editor-toolbar flex gap-2 mb-2">
           <button class="editor-btn">B</button>

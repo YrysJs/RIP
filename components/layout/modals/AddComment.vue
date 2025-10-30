@@ -56,13 +56,17 @@ const resetForm = () => {
   errors.value = {}
 }
 
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
 // Обработка загрузки файлов
 const handleFileUpload = (event) => {
   const files = Array.from(event.target.files)
   
   // Ограничиваем количество файлов (например, максимум 5)
   if (files.length > 5) {
-    errors.value.images = 'Максимум 5 изображений'
+    errors.value.images = t('modals.addComment.maxImages')
     return
   }
   
@@ -70,7 +74,7 @@ const handleFileUpload = (event) => {
   const maxSize = 5 * 1024 * 1024 // 5MB
   const validFiles = files.filter(file => {
     if (file.size > maxSize) {
-      errors.value.images = 'Размер файла не должен превышать 5MB'
+      errors.value.images = t('modals.addComment.maxFileSize')
       return false
     }
     return true

@@ -9,7 +9,9 @@ import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
 import AppHeaderClient from "~/components/layout/AppHeaderClient.vue";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 
 const shareCoordModalState = ref(false);
@@ -35,7 +37,13 @@ const sities = [
   "Костанай",
   "Кызылорда",
 ];
-const religios = ["Ислам", "Христианство", "Иудаизм", "Католицизм", "Буддизм"];
+const religios = computed(() => [
+  t('religions.islam'),
+  t('religions.christianity'),
+  t('religions.judaism'),
+  t('religions.catholicism'),
+  t('religions.buddhism')
+]);
 
 const selectedCity = ref("");
 const cityListState = ref(false);
@@ -502,11 +510,11 @@ function openRoute() {
               v-show="showList"
               class="max-w-fluid w-full bg-white p-5 max-sm:py-6 max-sm:px-4 rounded-lg"
             >
-              <h3 class="font-foglihten text-fluid">Забронировать место</h3>
+              <h3 class="font-foglihten text-fluid">{{ $t('reserve.pageTitle') }}</h3>
 
               <div class="reserve__city flex justify-between items-center">
                 <div class="flex justify-between items-center">
-                  <span class="text-base text-[#050202] mr-[15px]">Город:</span>
+                  <span class="text-base text-[#050202] mr-[15px]">{{ $t('reserve.city') }}</span>
                   <template v-if="selectedCity">
                     <img
                       src="/icons/pin.svg"
@@ -517,13 +525,13 @@ function openRoute() {
                       {{ selectedCity }}</span
                     >
                   </template>
-                  <template v-else> Не выбрано </template>
+                  <template v-else> {{ $t('reserve.notSelected') }} </template>
                 </div>
                 <button
                   class="bg-[#224C4F26] text-[#224C4F] font-bold py-[8px] px-[12px] rounded-lg"
                   @click="cityListState = true"
                 >
-                  Выбрать
+                  {{ $t('common.select') }}
                 </button>
               </div>
 
@@ -545,10 +553,10 @@ function openRoute() {
                 id=""
                 v-model="selectedReligios"
                 name=""
-                placeholder="Религия"
+                :placeholder="$t('reserve.religion')"
                 class="w-full border border-[#EEEEEE] rounded-lg py-[8px] px-[12px] input select"
               >
-                <option value="" disabled>Религия</option>
+                <option value="" disabled>{{ $t('reserve.religion') }}</option>
                 <option v-for="item of religios" :key="item" :value="item">
                   {{ item }}
                 </option>
@@ -1037,7 +1045,7 @@ function openRoute() {
                       <svg class="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
                       </svg>
-                      <p class="text-sm">Нет фото</p>
+                      <p class="text-sm">{{ $t('reserve.noPhoto') }}</p>
                     </div>
                   </div>
                   
@@ -1098,7 +1106,7 @@ function openRoute() {
                       <svg class="w-16 h-16 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
                       </svg>
-                      <p class="text-base">Нет фото</p>
+                      <p class="text-base">{{ $t('reserve.noPhoto') }}</p>
                     </div>
                   </div>
                   

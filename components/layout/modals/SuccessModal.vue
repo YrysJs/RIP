@@ -1,10 +1,12 @@
 <script setup>
 import { NuxtLink } from "#components";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const props = defineProps({
   title: {
     type: String,
-    default: "Успешно!",
+    default: "",
   },
   text: {
     type: String,
@@ -16,7 +18,7 @@ const props = defineProps({
   },
   buttonText: {
     type: String,
-    default: "В личный кабинет",
+    default: "",
   },
   buttonLink: {
     type: String,
@@ -44,7 +46,7 @@ const handleClose = () => {
     >
       <img src="/icons/success-modal.svg" alt="" class="w-fit mx-auto block" />
       <h3 class="mt-[32px] font-medium text-xl max-sm:mt-4">
-        {{ props.title }}
+        {{ props.title || $t('modals.success.title') }}
       </h3>
       <p v-if="props.text && showButton" class="mt-4 mb-6 text-base text-[#17212A] max-sm:mt-2 max-sm:mb-4">
         {{ props.text }}
@@ -57,14 +59,14 @@ const handleClose = () => {
         @click="handleClose"
         class="block rounded-lg text-black text-sm font-medium bg-[#E9B949] py-[15px] w-full mt-6"
       >
-        Закрыть
+        {{ $t('modals.success.close') }}
       </button>
       <NuxtLink
         v-else
         :to="buttonLink"
         class="block rounded-lg text-black text-sm font-medium bg-[#E9B949] py-[15px] w-full"
       >
-        {{ props.buttonText }}
+        {{ props.buttonText || $t('modals.success.buttonText') }}
       </NuxtLink>
     </div>
   </div>

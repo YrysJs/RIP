@@ -19,6 +19,23 @@
           <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
+
+      <!-- Переключатель языков -->
+      <div class="language-switcher">
+        <button
+          :class="{ active: currentLocale === 'ru' }"
+          @click="switchLanguage('ru')"
+        >
+          РУ
+        </button>
+        <span class="divider">|</span>
+        <button
+          :class="{ active: currentLocale === 'kk' }"
+          @click="switchLanguage('kk')"
+        >
+          ҚАЗ
+        </button>
+      </div>
     </div>
 
     <!-- Dropdown Menu -->
@@ -34,7 +51,7 @@
                 :class="{ active: $route.path === '/manager/burial' }"
                 @click="closeMenu"
               >
-                Заявки на захоронение
+                {{ $t('manager.sidebar.burialRequests') }}
               </NuxtLink>
             </li>
             <li>
@@ -44,7 +61,7 @@
                 :class="{ active: $route.path === '/manager/cemetery' }"
                 @click="closeMenu"
               >
-                Управление кладбищами
+                {{ $t('manager.sidebar.cemeteriesManagement') }}
               </NuxtLink>
             </li>
             <li>
@@ -54,7 +71,7 @@
                 :class="{ active: $route.path === '/manager/notifications' }"
                 @click="closeMenu"
               >
-                Уведомления
+                {{ $t('manager.sidebar.notifications') }}
               </NuxtLink>
             </li>
           </ul>
@@ -67,9 +84,25 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { getCurrentUser } from '~/services/login/index.js'
+import { useI18n } from 'vue-i18n'
 
+const { locale } = useI18n()
 const isMenuOpen = ref(false)
 const userInfo = ref(null)
+
+// Текущая локаль
+const currentLocale = computed(() => locale.value)
+
+// Функция переключения языка
+const switchLanguage = async (lang) => {
+  const i18n = useNuxtApp().$i18n;
+  if (i18n && typeof i18n.setLocale === 'function') {
+    await i18n.setLocale(lang);
+  } else {
+    locale.value = lang;
+  }
+  localStorage.setItem('locale', lang)
+}
 
 // Формируем имя пользователя как в AppHeader
 const userName = computed(() => {
@@ -90,6 +123,12 @@ const closeMenu = () => {
 
 // Загружаем данные пользователя как в AppHeader
 onMounted(async () => {
+  // Восстанавливаем сохраненный язык
+  const savedLocale = localStorage.getItem('locale')
+  if (savedLocale && (savedLocale === 'ru' || savedLocale === 'kk')) {
+    locale.value = savedLocale
+  }
+
   try {
     const response = await getCurrentUser({ id: localStorage.getItem("user_id") })
     userInfo.value = response.data
@@ -325,5 +364,45 @@ onMounted(() => {
     width: 20px;
     height: 20px;
   }
+}
+
+/* Переключатель языков */
+.language-switcher {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  margin-right: 8px;
+}
+
+.language-switcher button {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.language-switcher button:hover {
+  color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.language-switcher button.active {
+  color: #ffffff;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.language-switcher .divider {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  line-height: 1;
 }
 </style>

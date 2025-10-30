@@ -5,39 +5,41 @@ import ShareCoordModal from "~/components/layout/modals/ShareCoordModal.vue";
 import GraveDataModal from "~/components/layout/modals/GraveDetailModal.vue";
 // import { getCemeteryById } from "~/services/cemetery";
 import { useUserStore } from "~/store/user";
+import { useI18n } from 'vue-i18n';
 
 const userStore = useUserStore();
+const { t } = useI18n();
 
 // Функция для получения конфигурации статуса
 const getStatusConfig = (status) => {
   switch (status) {
     case 'pending':
       return {
-        text: 'Ожидает оплаты',
+        text: t('client.tickets.burial.status_pending'),
         icon: '/icons/warning.svg',
         color: 'text-[#D97706]'
       };
     case 'paid':
       return {
-        text: 'Оплачено',
+        text: t('client.tickets.burial.status_paid'),
         icon: '/icons/paid-tick.svg',
         color: 'text-[#1EB676]'
       };
     case 'cancelled':
       return {
-        text: 'Отменено',
+        text: t('client.tickets.burial.status_cancelled'),
         icon: '/icons/warning.svg',
         color: 'text-[#DC2626]'
       };
     case 'confirmed':
       return {
-        text: 'Подтверждено',
+        text: t('client.tickets.burial.status_confirmed'),
         icon: '/icons/paid-tick.svg',
         color: 'text-[#059669]'
       };
     default:
       return {
-        text: 'Неизвестный статус',
+        text: t('client.tickets.burial.status_unknown'),
         icon: '/icons/warning.svg',
         color: 'text-[#6B7280]'
       };
@@ -91,9 +93,9 @@ onMounted(async () => {
     });
     burialRequests.value = response.data.data.data;
   } catch (error) {
-    console.error("Ошибка при получении заявок:", error);
+    console.error(t('client.tickets.burial.errorFetchingRequests'), error);
     const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    $toast.error(t('client.tickets.burial.serverUnavailable'))
   } finally {
     loading.value = false;
   }
@@ -107,7 +109,7 @@ const shareGraveData = async (grave_id) => {
 
   const poly = grave?.polygon_data;
   if (!poly || !Array.isArray(poly.coordinates)) {
-    console.error("Нет координат у polygon_data", poly);
+    console.error(t('client.tickets.burial.noCoordinates'), poly);
     return;
   }
 
@@ -132,7 +134,7 @@ const shareGraveData = async (grave_id) => {
       v-if="!burialRequests || burialRequests?.length === 0"
       class="flex justify-center items-center p-10"
     >
-      <p class="text-xl">Нет оплаченных заявок на захоронение</p>
+      <p class="text-xl">{{ $t('client.tickets.burial.noRequests') }}</p>
     </div>
     <template v-else>
       <div
@@ -147,7 +149,7 @@ const shareGraveData = async (grave_id) => {
             <h3
               class="font-foglihten text-fluid font-medium text-[#201001] leading-[48px]"
             >
-              Бронирование:
+              {{ $t('client.tickets.burial.reservation') }}
               <span class="text-[#B88F34]">{{ request.request_number }}</span>
             </h3>
             <p class="text-sm text-[#999]">
@@ -166,7 +168,7 @@ const shareGraveData = async (grave_id) => {
             class="border-b-2 border-[#EEEEEE] pt-4 pb-[14px] max-sm:pt-0 max-sm:pb-0"
           >
             <div class="h-10 flex items-center text-base font-medium">
-              <p class="min-w-[150px] black-16">Срок брони:</p>
+              <p class="min-w-[150px] black-16">{{ $t('client.tickets.burial.reservationPeriod') }}</p>
               <div class="flex items-center gap-[5px]">
                 <p class="grey-14">
                   {{
@@ -193,19 +195,19 @@ const shareGraveData = async (grave_id) => {
               class="min-w-[580px] font-medium flex flex-col gap-[10px] max-sm:gap-0"
             >
               <div class="flex text-base">
-                <p class="min-w-[150px] grey-14">Кладбище:</p>
+                <p class="min-w-[150px] grey-14">{{ $t('client.tickets.burial.cemetery') }}</p>
                 <p class="black-16">{{ request.cemetery_name }}</p>
               </div>
               <div class="flex text-base">
-                <p class="min-w-[150px] grey-14">Сектор</p>
+                <p class="min-w-[150px] grey-14">{{ $t('client.tickets.burial.sector') }}</p>
                 <p class="black-16">{{ request.sector_number }}</p>
               </div>
               <div class="flex text-base">
-                <p class="min-w-[150px] grey-14">Ряд</p>
+                <p class="min-w-[150px] grey-14">{{ $t('client.tickets.burial.row') }}</p>
                 <p class="black-16">{{ request.row_number }}</p>
               </div>
               <div class="flex text-base">
-                <p class="min-w-[150px] grey-14">Место:</p>
+                <p class="min-w-[150px] grey-14">{{ $t('client.tickets.burial.place') }}</p>
                 <p class="black-16">{{ getAllGraves(request) }}</p>
               </div>
             </div>
@@ -216,7 +218,7 @@ const shareGraveData = async (grave_id) => {
             <div class="font-medium flex flex-col gap-[10px]">
               <div class="flex text-base">
                 <p class="min-w-[150px] max-w-[150px] grey-14">
-                  ФИО покойного:
+                  {{ $t('client.tickets.burial.deceasedFullName') }}
                 </p>
                 <p class="black-16">{{ request.deceased?.full_name }}</p>
               </div>
@@ -226,13 +228,13 @@ const shareGraveData = async (grave_id) => {
             class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
           >
             <div class="flex text-base">
-              <p class="min-w-[150px] max-w-[150px] grey-14">Дата похорон:</p>
+              <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('client.tickets.burial.burialDate') }}</p>
               <p v-if="request.burial_date">
                 {{ new Date(request.burial_date).toLocaleDateString("ru-RU") }},
                 {{ request.burial_time }}
               </p>
               <p v-else class="text-base text-[#DB1414]">
-                Необходимо указать даты похорон
+                {{ $t('client.tickets.burial.needBurialDate') }}
               </p>
             </div>
           </div>
@@ -241,7 +243,7 @@ const shareGraveData = async (grave_id) => {
           >
             <div class="font-medium flex flex-col gap-[10px]">
               <div class="flex text-base">
-                <p class="min-w-[150px] max-w-[150px] grey-14">Cтатус:</p>
+                <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('client.tickets.burial.status') }}</p>
                 <div class="flex items-center gap-[10px]">
                   <img :src="getStatusConfig(request.status).icon" alt="" />
                   <p class="text-sm" :class="getStatusConfig(request.status).color">
@@ -255,19 +257,19 @@ const shareGraveData = async (grave_id) => {
           <div class="flex justify-between items-start mt-[16px] max-sm:mt-3">
             <div class="flex text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">
-                Дополнительные услуги:
+                {{ $t('client.tickets.burial.additionalServices') }}
               </p>
               <div v-if="request.products && request.products.length > 0">
                 <p v-for="product in request.products" :key="product.id" class="p-[4px] block rounded-md black-16 mr-4">{{ product.items[0]?.name }}</p>
               </div>
-              <p v-else class="p-[4px] block rounded-md black-16 mr-4">Отсутствуют</p>
+              <p v-else class="p-[4px] block rounded-md black-16 mr-4">{{ $t('client.tickets.burial.noAdditionalServices') }}</p>
             </div>
           </div>
           <NuxtLink
             class="block w-fit py-[15px] px-5 rounded-lg bg-[#E9B949] text-black text-sm font-medium mt-[16px] max-sm:w-full text-center hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
             :to="`/client/tickets/active/${request.id}`"
           >
-            Завершить оформление
+            {{ $t('client.tickets.burial.completeRegistration') }}
           </NuxtLink>
         </template>
         <template v-else>
@@ -277,7 +279,7 @@ const shareGraveData = async (grave_id) => {
             <h3
               class="flex flex-wrap font-foglihten text-fluid font-medium text-[#201001]"
             >
-              <span class="mr-2">Заявка на захоронение:</span>
+              <span class="mr-2">{{ $t('client.tickets.burial.burialRequest') }}</span>
               <span class="text-[#B88F34]">{{ request.request_number }}</span>
             </h3>
             <p class="text-sm text-[#999]">
@@ -299,19 +301,19 @@ const shareGraveData = async (grave_id) => {
               class="min-w-[580px] font-medium flex flex-col gap-[8px] max-sm:gap-0"
             >
               <div class="flex text-base h-[38px] items-center max-sm:h-[26px]">
-                <p class="min-w-[150px] grey-14">Кладбище:</p>
+                <p class="min-w-[150px] grey-14">{{ $t('client.tickets.burial.cemetery') }}</p>
                 <p class="black-16">{{ request.cemetery_name }}</p>
               </div>
               <div class="flex text-base h-[38px] items-center max-sm:h-[26px]">
-                <p class="min-w-[150px] grey-14">Сектор</p>
+                <p class="min-w-[150px] grey-14">{{ $t('client.tickets.burial.sector') }}</p>
                 <p class="black-16">{{ request.sector_number }}</p>
               </div>
               <div class="flex text-base">
-                <p class="min-w-[150px] grey-14">Ряд</p>
+                <p class="min-w-[150px] grey-14">{{ $t('client.tickets.burial.row') }}</p>
                 <p class="black-16">{{ request.row_number }}</p>
               </div>
               <div class="flex text-base h-[38px] items-center max-sm:h-[26px]">
-                <p class="min-w-[150px] grey-14">Место:</p>
+                <p class="min-w-[150px] grey-14">{{ $t('client.tickets.burial.place') }}</p>
                 <p class="black-16">{{ getAllGraves(request) }}</p>
               </div>
             </div>
@@ -328,7 +330,7 @@ const shareGraveData = async (grave_id) => {
             <div class="font-medium flex flex-col gap-[10px]">
               <div class="flex text-base">
                 <p class="min-w-[150px] max-w-[150px] grey-14">
-                  ФИО покойного:
+                  {{ $t('client.tickets.burial.deceasedFullName') }}
                 </p>
                 <p class="black-16">{{ request.deceased?.full_name }}</p>
               </div>
@@ -338,13 +340,13 @@ const shareGraveData = async (grave_id) => {
             class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
           >
             <div class="flex text-base">
-              <p class="min-w-[150px] max-w-[150px] grey-14">Дата похорон:</p>
+              <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('client.tickets.burial.burialDate') }}</p>
               <p v-if="request.burial_date">
                 {{ new Date(request.burial_date).toLocaleDateString("ru-RU") }},
                 {{ request.burial_time }}
               </p>
               <p v-else class="text-[#DB1414]">
-                Необходимо указать даты похорон
+                {{ $t('client.tickets.burial.needBurialDate') }}
               </p>
             </div>
           </div>
@@ -353,7 +355,7 @@ const shareGraveData = async (grave_id) => {
           >
             <div class="font-medium flex flex-col gap-[10px]">
               <div class="flex text-base">
-                <p class="min-w-[150px] max-w-[150px] grey-14">Cтатус:</p>
+                <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('client.tickets.burial.status') }}</p>
                 <div class="flex items-center gap-[10px]">
                   <img :src="getStatusConfig(request.status).icon" alt="" />
                   <p class="p-[4px] rounded-md text-sm mr-4" :class="getStatusConfig(request.status).color">
@@ -367,9 +369,9 @@ const shareGraveData = async (grave_id) => {
               class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
           >
             <div class="flex text-base">
-              <p class="min-w-[150px] max-w-[150px] grey-14">Завершено:</p>
+              <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('client.tickets.burial.completed') }}</p>
               <p class="font-bold">
-                {{ request.is_complete ? 'Да' : 'Нет' }}
+                {{ request.is_complete ? $t('client.tickets.burial.yes') : $t('client.tickets.burial.no') }}
               </p>
             </div>
           </div>
@@ -377,12 +379,12 @@ const shareGraveData = async (grave_id) => {
           <div class="flex justify-between items-start mt-[16px] max-sm:mt-3">
             <div class="flex text-base">
               <p class="min-w-[150px] max-w-[150px] grey-14">
-                Дополнительные услуги:
+                {{ $t('client.tickets.burial.additionalServices') }}
               </p>
               <div v-if="request.products && request.products.length > 0">
                 <p v-for="product in request.products" :key="product.id" class="p-[4px] block rounded-md black-16 mr-4">{{ product.items[0]?.product.name }}</p>
               </div>
-              <p v-else class="p-[4px] block rounded-md black-16 mr-4">Отсутствуют</p>
+              <p v-else class="p-[4px] block rounded-md black-16 mr-4">{{ $t('client.tickets.burial.noAdditionalServices') }}</p>
             </div>
           </div>
           <div v-if="request.status !== 'cancelled'" class="flex gap-4 mt-[16px] max-lg:flex-col">
@@ -391,7 +393,7 @@ const shareGraveData = async (grave_id) => {
               class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-sm font-medium hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
               @click="$router.push(`/client/memorial/create?id=${request.id}`)"
             >
-              Создать мемориал
+              {{ $t('client.tickets.burial.createMemorial') }}
             </button>
             <button
               v-if="!request.is_complete && request.status !== 'confirmed'"
@@ -402,13 +404,13 @@ const shareGraveData = async (grave_id) => {
                 )
               "
             >
-              Добавить услуги и товары
+              {{ $t('client.tickets.burial.addServicesAndProducts') }}
             </button>
             <button
               class="py-[15px] px-[20px] rounded-lg text-[#17212A] bg-white text-sm font-medium flex items-center justify-center gap-[8px] hover:bg-[#F1F1F2] active:bg-[#C6C9CC] transition"
               @click="shareGraveData(request.grave_id)"
             >
-              <img src="/icons/share.svg" alt="" /> Поделиться координатами
+              <img src="/icons/share.svg" alt="" /> {{ $t('client.tickets.burial.shareCoordinates') }}
             </button>
           </div>
         </template>

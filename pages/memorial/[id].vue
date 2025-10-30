@@ -5,7 +5,9 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { getMemorialById, getDeceasedById, getGraveById } from "~/services/client";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 const route = useRoute();
 
@@ -55,7 +57,7 @@ const loadDeceasedData = async (deceasedId) => {
     const response = await getDeceasedById(deceasedId);
     deceased.value = response.data.data;
   } catch (error) {
-    console.error("Ошибка при загрузке данных покойного:", error);
+    console.error(t('errors.fetchError'), error);
   }
 };
 
@@ -65,7 +67,7 @@ const loadGraveData = async (graveId) => {
     const response = await getGraveById(graveId);
     grave.value = response.data;
   } catch (error) {
-    console.error("Ошибка при загрузке данных могилы:", error);
+    console.error(t('errors.fetchError'), error);
   }
 };
 
@@ -73,7 +75,7 @@ const loadGraveData = async (graveId) => {
 onMounted(async () => {
   try {
     const id = route.params.id;
-    if (!id) throw new Error("Нет id мемориала в URL");
+    if (!id) throw new Error(t('memorialPage.noIdInUrl'));
 
     const { data } = await getMemorialById(id);
     memorial.value = data;
@@ -197,14 +199,14 @@ function openAchievement(url, filename) {
     <div class="max-w-[1200px] mx-auto">
 
       <div class="bg-white py-6 px-[18px] rounded-2xl max-sm:p-0">
-        <div v-if="isLoading" class="p-4">Загрузка...</div>
+        <div v-if="isLoading" class="p-4">{{ $t('common.loading') }}</div>
         <div v-else-if="errorMsg" class="p-4 text-red-600">{{ errorMsg }}</div>
 
         <template v-else>
           <!-- Заголовок + Поделиться -->
           <div class="flex justify-between items-center gap-2">
             <div>
-              <p class="text-sm text-[#999] max-sm:hidden">Мемориал</p>
+              <p class="text-sm text-[#999] max-sm:hidden">{{ $t('memorialPage.memorial') }}</p>
               <h1
                 class="font-medium font-foglihten text-[clamp(24px,3vw,32px)]"
               >
@@ -221,7 +223,7 @@ function openAchievement(url, filename) {
                 alt=""
                 class="max-sm:w-5 max-sm:h-5"
               />
-              <span class="max-sm:hidden">Поделиться</span>
+              <span class="max-sm:hidden">{{ $t('memorialPage.share') }}</span>
             </button>
           </div>
 
@@ -301,7 +303,7 @@ function openAchievement(url, filename) {
                   <div
                     class="h-[30px] flex items-center text-base font-medium gap-[11px] mr-2"
                   >
-                    <div class="w-[100px] text-base text-[#050202]">Сектор</div>
+                    <div class="w-[100px] text-base text-[#050202]">{{ $t('client.tickets.active.sector') }}</div>
                     <div class="text-sm text-[#999]">
                       {{ grave?.sector_number || burial?.sector_number }}
                     </div>
@@ -309,7 +311,7 @@ function openAchievement(url, filename) {
                   <div
                     class="h-[30px] flex items-center text-base font-medium gap-[11px]"
                   >
-                    <div class="w-[100px] text-base text-[#050202]">Место:</div>
+                    <div class="w-[100px] text-base text-[#050202]">{{ $t('memorialDetails.place') }}:</div>
                     <div class="text-sm text-[#999]">
                       {{ grave?.grave_number || burial?.grave_id }}
                     </div>
@@ -355,7 +357,7 @@ function openAchievement(url, filename) {
 
           <!-- Видеоматериалы -->
           <section class="py-4">
-            <h3 class="text-[18px] mb-1">Видеоматериалы</h3>
+            <h3 class="text-[18px] mb-1">{{ $t('memorialPage.videos') }}</h3>
 
             <!-- Список видео плееров -->
             <div v-if="videos.length > 0" class="videos-list">
@@ -376,7 +378,7 @@ function openAchievement(url, filename) {
                     <h5 class="text-sm font-medium text-gray-700">
                       {{ video.title }}
                       <span v-if="video.isExisting" class="existing-badge-inline"
-                        >Существующее</span
+                        >{{ $t('memorialPage.existing') }}</span
                       >
                     </h5>
                   </div>
@@ -392,12 +394,12 @@ function openAchievement(url, filename) {
                 </div>
               </div>
             </div>
-            <p v-else class="text-sm text-[#6B7280]">Видео не добавлены.</p>
+            <p v-else class="text-sm text-[#6B7280]">{{ $t('memorialDetails.videosNotAdded') }}</p>
           </section>
 
           <!-- Достижения -->
           <section v-if="achievements.length > 0" class="py-4">
-            <h3 class="text-[18px] mb-1">Достижения</h3>
+            <h3 class="text-[18px] mb-1">{{ $t('memorialPage.achievements') }}</h3>
 
             <div class="achievements-list">
               <div class="achievements-header mb-4">
@@ -418,7 +420,7 @@ function openAchievement(url, filename) {
                     </div>
                     <div class="achievement-info">
                       <h5 class="achievement-title">{{ achievement.filename }}</h5>
-                      <p class="achievement-description">Документ или награда</p>
+                      <p class="achievement-description">{{ $t('memorialDetails.documentOrAward') }}</p>
                     </div>
                     <button
                       @click="openAchievement(achievement.url, achievement.filename)"

@@ -1,6 +1,9 @@
 <script setup>
 import { getOrders } from "~/services/supplier";
 import { ref, onMounted, computed } from "vue";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const displayRows = computed(() =>
   (orders.value ?? [])
@@ -21,12 +24,12 @@ const displayRows = computed(() =>
 // Чип статуса (текст + класс под цвет бейджа)
 function statusChip(status) {
   const map = {
-    new: { text: "Новый", kind: "orange" },
-    processing: { text: "В обработке", kind: "orange" },
-    in_progress: { text: "В процессе", kind: "orange" },
-    completed: { text: "Завершен", kind: "green" },
-    pending_payment: { text: "Ожидает оплаты", kind: "green" },
-    cancelled: { text: "Отменен", kind: "red" },
+    new: { text: t('supplier.orders.status_new'), kind: "orange" },
+    processing: { text: t('statuses.processing'), kind: "orange" },
+    in_progress: { text: t('statuses.inProgress'), kind: "orange" },
+    completed: { text: t('statuses.completed'), kind: "green" },
+    pending_payment: { text: t('statuses.waitingPayment'), kind: "green" },
+    cancelled: { text: t('statuses.cancelled'), kind: "red" },
   }[status] ?? { text: "—", kind: "orange" };
   return { text: map.text, class: `chip chip--${map.kind}` };
 }
@@ -47,20 +50,20 @@ const filters = ref({
 });
 
 // Опции для фильтров
-const typeOptions = [
-  { value: "", text: "Все типы" },
-  { value: "product", text: "Товар" },
-  { value: "service", text: "Услуга" },
-];
+const typeOptions = computed(() => [
+  { value: "", text: t('filterOptions.allTypes') },
+  { value: "product", text: t('filterOptions.product') },
+  { value: "service", text: t('filterOptions.service') },
+]);
 
-const statusOptions = [
-  { value: "", text: "Все статусы" },
-  { value: "new", text: "Новый" },
-  { value: "processing", text: "В обработке" },
-  { value: "in_progress", text: "В процессе" },
-  { value: "completed", text: "Завершен" },
-  { value: "cancelled", text: "Отменен" },
-];
+const statusOptions = computed(() => [
+  { value: "", text: t('supplier.tickets.allStatuses') },
+  { value: "new", text: t('statuses.new') },
+  { value: "processing", text: t('statuses.processing') },
+  { value: "in_progress", text: t('statuses.inProgress') },
+  { value: "completed", text: t('statuses.completed') },
+  { value: "cancelled", text: t('statuses.cancelled') },
+]);
 
 // Функция для получения заказов
 const fetchOrders = async () => {
@@ -94,10 +97,10 @@ const fetchOrders = async () => {
     const response = await getOrders(params);
     orders.value = response.data?.items || [];
   } catch (err) {
-    console.error("Ошибка при получении заказов:", err);
-    error.value = "Ошибка при загрузке заказов";
+    console.error(t('errors.fetchError'), err);
+    error.value = t('errors.fetchError');
     const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    $toast.error(t('common.serverUnavailable'))
   } finally {
     loading.value = false;
   }

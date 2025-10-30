@@ -1,5 +1,8 @@
 <script setup>
 import { defineProps, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const props = defineProps(['service', 'visible', 'reviews', 'supplier'])
 
 const emit = defineEmits(['close', 'order'])
@@ -60,7 +63,7 @@ const formatPrice = (price) => {
 }
 
 function formatPhoneNumber(phone) {
-  if (!/^\d{11}$/.test(phone)) return 'Неверный формат номера';
+  if (!/^\d{11}$/.test(phone)) return t('errors.invalidPhone');
 
   return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(4, 7)} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
 }

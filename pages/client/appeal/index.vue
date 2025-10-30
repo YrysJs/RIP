@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from "vue";
 import {getAppeals, getMyAppeals} from "~/services/client";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 const appeals = ref([]);
 
@@ -20,12 +22,12 @@ onMounted(async () => {
     <div
       class="w-full py-4 pl-[20px] flex items-center bg-white rounded-[16px] text-lg font-semibold flex justify-between items-center"
     >
-      <h1>Обращения</h1>
+      <h1>{{ $t('client.appeal.title') }}</h1>
       <button
         @click="router.push('/client/goverment/create')"
         class="bg-[#38949B] text-white px-[16px] py-[8px] rounded-[8px]"
       >
-        Создать обращение
+        {{ $t('client.appeal.createAppeal') }}
       </button>
     </div>
     <div
@@ -36,7 +38,7 @@ onMounted(async () => {
       <div class="flex flex-col gap-[10px]">
         <div class="flex flex-col gap-[10px] text-lg font-semibold">
           <h3>
-            Тип обращения:
+            {{ $t('client.appeal.appealType') }}
             <span
               class="ml-6 px-3 py-1 rounded-lg text-white"
               :class="
@@ -50,13 +52,13 @@ onMounted(async () => {
             >
           </h3>
           <h3 class="my-2">
-            Дата создания:
+            {{ $t('client.appeal.createdAt') }}
             <span>{{
               new Date(appeal.createTime).toLocaleString("ru-RU")
             }}</span>
           </h3>
           <div class="flex flex-col gap-[0px]">
-            <h3>Обращение:</h3>
+            <h3>{{ $t('client.appeal.appeal') }}</h3>
             <p class="text-gray-500">
               {{ appeal.content }}
             </p>

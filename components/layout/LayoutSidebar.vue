@@ -2,7 +2,9 @@
 import { useRoute, RouterLink  } from 'vue-router';
 import { computed, ref, onMounted } from 'vue';
 import { getUnreadNotifications } from "~/services/notifications";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const props = withDefaults(defineProps<{ title?: string }>(), {
   title: 'Кабинет поставщика услуг'
 });
@@ -14,24 +16,24 @@ const openA = ref(true);
 const openB = ref(true);
 const unreadCount = ref(0);
 
-const sectionA = [
-  { title: 'Активные', path: '/supplier/tickets/active', count: 0 },
-  { title: 'Архив',    path: '/supplier/tickets/archive' }
-];
+const sectionA = computed(() => [
+  { title: t('supplier.layoutSidebar.active'), path: '/supplier/tickets/active', count: 0 },
+  { title: t('supplier.layoutSidebar.archive'),    path: '/supplier/tickets/archive' }
+]);
 
-const sectionB = [
-  { title: 'Активные',          path: '/supplier/services/active' },
-  { title: 'На рассмотрении',   path: '/supplier/services/consideration' },
-  { title: 'Требует доработки', path: '/supplier/services/improvement' },
-  { title: 'Не активные',       path: '/supplier/services/inactive' }
-];
+const sectionB = computed(() => [
+  { title: t('supplier.layoutSidebar.active'),          path: '/supplier/services/active' },
+  { title: t('supplier.layoutSidebar.underReview'),   path: '/supplier/services/consideration' },
+  { title: t('supplier.layoutSidebar.needsImprovement'), path: '/supplier/services/improvement' },
+  { title: t('supplier.layoutSidebar.inactive'),       path: '/supplier/services/inactive' }
+]);
 
 const singles = computed(() => [
-  { title: 'Добавить товар или услугу', path: '/supplier/services/add-service', kind: 'add' },
-  { title: 'Отзывы',                     path: '/supplier/reviews' },
-  { title: 'Отчеты',                     path: '/supplier/reports' },
-  { title: 'Обращение в Акимат',         path: '/supplier/goverment/requests' },
-  { title: 'Уведомления', path: '/supplier/notifications', count: unreadCount.value > 0 ? unreadCount.value : null },
+  { title: t('supplier.layoutSidebar.addProductOrService'), path: '/supplier/services/add-service', kind: 'add' },
+  { title: t('supplier.layoutSidebar.reviews'),                     path: '/supplier/reviews' },
+  { title: t('supplier.layoutSidebar.reports'),                     path: '/supplier/reports' },
+  { title: t('supplier.layoutSidebar.governmentAppeal'),         path: '/supplier/goverment/requests' },
+  { title: t('supplier.layoutSidebar.notifications'), path: '/supplier/notifications', count: unreadCount.value > 0 ? unreadCount.value : null },
 ]);
 
 const fetchUnreadCount = async () => {
@@ -39,7 +41,7 @@ const fetchUnreadCount = async () => {
     const response = await getUnreadNotifications();
     unreadCount.value = response.data?.total || 0;
   } catch (error) {
-    console.error('Ошибка загрузки непрочитанных уведомлений:', error);
+    console.error(t('errors.fetchError'), error);
   }
 };
 
@@ -54,7 +56,7 @@ onMounted(() => {
 
     <div class="sidebar__block">
       <button class="sidebar__head" @click="openA = !openA">
-        <span>Мои заявки</span>
+        <span>{{ $t('supplier.layoutSidebar.myRequests') }}</span>
         <i class="sidebar__chev" :class="{ 'is-open': openA }"/>
       </button>
       <div v-show="openA" class="sidebar__list">
@@ -72,7 +74,7 @@ onMounted(() => {
 
     <div class="sidebar__block">
       <button class="sidebar__head" @click="openB = !openB">
-        <span>Мои товары и услуги</span>
+        <span>{{ $t('supplier.layoutSidebar.myProductsAndServices') }}</span>
         <i class="sidebar__chev" :class="{ 'is-open': openB }"/>
       </button>
       <div v-show="openB" class="sidebar__list">

@@ -3,9 +3,15 @@ import { useRoute, RouterLink  } from "vue-router";
 import { computed, onMounted, ref } from "vue";
 import { getUnreadNotifications } from "~/services/notifications";
 
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
 const props = withDefaults(defineProps<{ title?: string }>(), {
-  title: "ЛИЧНЫЙ КАБИНЕТ",
+  title: "",
 });
+
+const displayTitle = computed(() => props.title || t('client.sidebar.title'));
 
 type MenuItem = {
   title: string;
@@ -15,15 +21,15 @@ type MenuItem = {
 
 const unreadCount = ref(0);
 
-const menu: MenuItem[] = [
-  { title: "Личные данные", path: "/client/profile" },
-  { title: "Заявка на захоронение", path: "/client/tickets/burial" },
-  { title: "История услуг", path: "/client/history" },
-  { title: "Цифровой мемориал", path: "/client/memorial" },
-  { title: "Запрос на перезахоронение", path: "/client/burial" },
-  { title: "Обращение в акимат", path: "/client/government" },
-  { title: 'Уведомления', path: '/client/notifications', count: computed(() => unreadCount.value > 0 ? unreadCount.value : null) },
-];
+const menu = computed(() => [
+  { title: t('client.sidebar.personalData'), path: "/client/profile" },
+  { title: t('client.sidebar.burialRequest'), path: "/client/tickets/burial" },
+  { title: t('client.sidebar.servicesHistory'), path: "/client/history" },
+  { title: t('client.sidebar.digitalMemorial'), path: "/client/memorial" },
+  { title: t('client.sidebar.reburialRequest'), path: "/client/burial" },
+  { title: t('client.sidebar.governmentAppeal'), path: "/client/government" },
+  { title: t('client.sidebar.notifications'), path: '/client/notifications', count: computed(() => unreadCount.value > 0 ? unreadCount.value : null) },
+]);
 
 const route = useRoute();
 const isActive = (path: string) => computed(() => route.path.startsWith(path));
@@ -33,7 +39,7 @@ const fetchUnreadCount = async () => {
     const response = await getUnreadNotifications();
     unreadCount.value = response.data?.total || 0;
   } catch (error) {
-    console.error('Ошибка загрузки непрочитанных уведомлений:', error);
+    console.error(t('errors.fetchError'), error);
   }
 };
 
@@ -44,7 +50,7 @@ onMounted(() => {
 
 <template>
   <div class="sidebar">
-    <div class="sidebar__title">{{ title }}</div>
+    <div class="sidebar__title">{{ displayTitle }}</div>
 
     <nav class="sidebar__nav">
       <RouterLink
