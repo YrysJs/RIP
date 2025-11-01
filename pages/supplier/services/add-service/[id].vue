@@ -141,31 +141,31 @@ function showPreview(){
   const { $toast } = useNuxtApp()
   
   if (!form.name.trim()) {
-    $toast.error('Введите название для предпросмотра')
+    $toast.error(t('serviceEdit.enterNameForPreview'))
     return
   }
   if (!form.description.trim()) {
-    $toast.error('Введите описание для предпросмотра')
+    $toast.error(t('serviceEdit.enterDescriptionForPreview'))
     return
   }
 
-  $toast.info(`Предпросмотр:
+  $toast.info(`${t('serviceEdit.preview')}
 
-Название: ${form.name}
-Описание: ${form.description}
-Цена: ${form.price} ₸
-Тип: ${form.type === 'service' ? 'Услуга' : 'Товар'}
-Категория: ${getCategoryName(form.category_id)}
-Страна: ${form.country}
-Город: ${form.city}
-Срок: ${form.service_time}
-Доступность: ${form.availability ? 'Доступен' : 'Недоступен'}
-Существующих фото: ${existingPhotos.value.length}
-Новых фото: ${photos.value.length}`)
+${t('serviceEdit.previewName')} ${form.name}
+${t('serviceEdit.previewDescription')} ${form.description}
+${t('serviceEdit.previewPrice')} ${form.price} ₸
+${t('serviceEdit.previewType')} ${form.type === 'service' ? t('serviceEdit.service') : t('serviceEdit.product')}
+${t('serviceEdit.previewCategory')} ${getCategoryName(form.category_id)}
+${t('serviceEdit.previewCountry')} ${form.country}
+${t('serviceEdit.previewCity')} ${form.city}
+${t('serviceEdit.previewTerm')} ${form.service_time}
+${t('serviceEdit.previewAvailability')} ${form.availability ? t('serviceEdit.available') : t('serviceEdit.unavailable')}
+${t('serviceEdit.previewExistingPhotos')} ${existingPhotos.value.length}
+${t('serviceEdit.previewNewPhotos')} ${photos.value.length}`)
 }
 function getCategoryName(id){
   const c = categories.value.find(cat => String(cat.id) === String(id))
-  return c ? c.name : 'Неизвестная категория'
+  return c ? c.name : t('serviceEdit.unknownCategory')
 }
 
 // --- submit ---
@@ -174,15 +174,15 @@ async function submitForm(){
     const { $toast } = useNuxtApp()
     
     if (!form.name.trim()) {
-      $toast.error('Пожалуйста, введите название')
+      $toast.error(t('serviceEdit.pleaseEnterName'))
       return
     }
     if (!form.description.trim()) {
-      $toast.error('Пожалуйста, введите описание')
+      $toast.error(t('serviceEdit.pleaseEnterDescription'))
       return
     }
     if (!form.price || parseFloat(form.price) <= 0) {
-      $toast.error('Введите корректную цену')
+      $toast.error(t('serviceEdit.enterCorrectPrice'))
       return
     }
 
@@ -204,7 +204,7 @@ async function submitForm(){
           imageUrls.push(...newUrls)
         } catch (error) {
           console.error('Ошибка при загрузке файлов:', error)
-          $toast.error('Ошибка при загрузке файлов')
+          $toast.error(t('serviceEdit.uploadFilesError'))
           return
         }
       }
@@ -235,11 +235,11 @@ async function submitForm(){
     console.log('Отправляем payload:', productData)
 
     await updateProduct(productId, productData)
-    openSuccess({ title: 'Изменения сохранены', text: 'на рассмотрение!' })
+    openSuccess({ title: t('serviceEdit.changesSaved'), text: t('serviceAdd.underReview') })
   } catch (error){
     console.error('Ошибка при обновлении товара/услуги:', error)
     const { $toast } = useNuxtApp()
-    const msg = error?.response?.data?.message || error?.message || 'Ошибка при обновлении товара/услуги. Попробуйте ещё раз.'
+    const msg = error?.response?.data?.message || error?.message || t('serviceEdit.updateError')
     $toast.error(msg)
   } finally {
     loading.value = false
@@ -297,7 +297,7 @@ onMounted(async () => {
     <div v-if="isLoadingProduct" class="flex items-center justify-center bg-white p-8 rounded-2xl mb-4">
       <div class="text-center">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F7B500] mx-auto mb-4"></div>
-        <p class="text-gray-600">Загрузка данных товара/услуги...</p>
+        <p class="text-gray-600">{{ $t('serviceEdit.loading') }}</p>
       </div>
     </div>
 
@@ -309,17 +309,17 @@ onMounted(async () => {
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden>
             <path d="M15 18l-6-6 6-6" stroke="#1F2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>Назад</span>
+          <span>{{ $t('serviceEdit.back') }}</span>
         </button>
-        <h1 class="title">Редактирование товара/услуги</h1>
+        <h1 class="title">{{ $t('serviceEdit.editTitle') }}</h1>
       </div>
 
       <!-- О товаре/услуге -->
       <div class="card section">
-        <h2 class="section-title">О товаре/услуге</h2>
+        <h2 class="section-title">{{ $t('serviceEdit.aboutProduct') }}</h2>
 
         <div class="field">
-          <label class="label">Категория</label>
+          <label class="label">{{ $t('serviceEdit.category') }}</label>
           <div class="select-shell">
             <select v-model="form.category_id" class="control control--select">
               <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
@@ -330,53 +330,53 @@ onMounted(async () => {
 
         <!-- Тип -->
         <div class="field">
-          <label class="label">Тип</label>
+          <label class="label">{{ $t('serviceEdit.type') }}</label>
           <div class="segmented">
             <button :class="['seg-btn', form.type==='service' && 'is-active']" @click="form.type='service'">
               <svg class="seg-ic" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/>
                 <path d="M8.5 12.5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              Услуга
+              {{ $t('serviceEdit.service') }}
             </button>
             <button :class="['seg-btn', form.type==='product' && 'is-active']" @click="form.type='product'">
               <svg class="seg-ic" viewBox="0 0 24 24" fill="none">
                 <path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              Товар
+              {{ $t('serviceEdit.product') }}
             </button>
           </div>
         </div>
 
         <div class="field">
-          <label class="label">Название</label>
-          <input v-model="form.name" type="text" class="control" placeholder="Введите название" />
+          <label class="label">{{ $t('serviceEdit.name') }}</label>
+          <input v-model="form.name" type="text" class="control" :placeholder="$t('serviceEdit.namePlaceholder')" />
         </div>
 
         <div class="field">
-          <label class="label">Описание</label>
-          <textarea v-model="form.description" rows="3" class="control textarea" placeholder="Введите описание" />
+          <label class="label">{{ $t('serviceEdit.description') }}</label>
+          <textarea v-model="form.description" rows="3" class="control textarea" :placeholder="$t('serviceEdit.descriptionPlaceholder')" />
         </div>
 
         <!-- Цена -->
         <div class="field">
-          <label class="label">Цена (KZT)<span class="req">*</span></label>
+          <label class="label">{{ $t('serviceEdit.price') }}<span class="req">*</span></label>
           <input v-model="form.price" type="number" class="control" placeholder="0" />
         </div>
 
         <!-- Доступность -->
         <div class="field">
-          <label class="label">Доступность</label>
+          <label class="label">{{ $t('serviceEdit.availability') }}</label>
           <div class="segmented">
-            <button :class="['seg-btn', form.availability && 'is-active']" @click="form.availability=true">Доступен</button>
-            <button :class="['seg-btn', !form.availability && 'is-active']" @click="form.availability=false">Недоступен</button>
+            <button :class="['seg-btn', form.availability && 'is-active']" @click="form.availability=true">{{ $t('serviceEdit.available') }}</button>
+            <button :class="['seg-btn', !form.availability && 'is-active']" @click="form.availability=false">{{ $t('serviceEdit.unavailable') }}</button>
           </div>
         </div>
       </div>
 
       <!-- Фото -->
       <div class="card section">
-        <h2 class="section-title">Фото товара</h2>
+        <h2 class="section-title">{{ $t('serviceEdit.productPhoto') }}</h2>
 
         <!-- Существующие -->
         <div v-if="existingPhotos.length" class="mb-3">
@@ -405,9 +405,9 @@ onMounted(async () => {
               <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 10l5-5 5 5M12 5v10"
                     stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <div class="dz__title">Загрузить фото</div>
-            <div class="dz__hint">Перетащите файл или загрузите .png, .jpeg</div>
-            <button type="button" class="btn btn-ghost">Загрузить</button>
+            <div class="dz__title">{{ $t('serviceEdit.uploadPhoto') }}</div>
+            <div class="dz__hint">{{ t('serviceAdd.dragDropHint') }}</div>
+            <button type="button" class="btn btn-ghost">{{ $t('serviceEdit.upload') }}</button>
           </div>
 
           <div v-if="photos.length" class="dz__previews">
@@ -423,22 +423,22 @@ onMounted(async () => {
 
       <!-- Местоположение -->
       <div class="card section">
-        <h2 class="section-title">Местоположение оказания услуг</h2>
+        <h2 class="section-title">{{ $t('serviceEdit.serviceLocation') }}</h2>
 
         <div class="row-2">
           <div class="field">
-            <label class="label">Страна</label>
+            <label class="label">{{ $t('serviceEdit.country') }}</label>
             <div class="select-shell">
               <select v-model="form.country" class="control control--select">
-                <option value="Казахстан">Казахстан</option>
-                <option value="Узбекистан">Узбекистан</option>
+                <option value="Казахстан">{{ $t('serviceEdit.kazakhstan') }}</option>
+                <option value="Узбекистан">{{ $t('serviceEdit.uzbekistan') }}</option>
               </select>
               <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
           </div>
 
           <div class="field">
-            <label class="label">Город</label>
+            <label class="label">{{ $t('services.addService.city') }}</label>
             <div class="select-shell">
               <select v-model="form.city" class="control control--select">
                 <option value="Алматы">Алматы</option>
@@ -451,16 +451,16 @@ onMounted(async () => {
 
       <!-- Доп информация -->
       <div class="card section">
-        <h2 class="section-title">Доп информация</h2>
+        <h2 class="section-title">{{ $t('serviceEdit.additionalInfo') }}</h2>
         <div class="field">
-          <label class="label">Время оказания услуги/товара</label>
+          <label class="label">{{ $t('services.serviceTime') }}</label>
           <div class="select-shell">
             <select v-model="form.service_time" class="control control--select">
-              <option value="Менее 1 дня">Менее 1 дня</option>
-              <option value="1 день">1 день</option>
-              <option value="от 1 до 3 дней">от 1 до 3 дней</option>
-              <option value="неделя">неделя</option>
-              <option value="1 час">1 час</option>
+              <option value="Менее 1 дня">{{ $t('serviceEdit.lessThan1Day') }}</option>
+              <option value="1 день">{{ $t('serviceEdit.oneDay') }}</option>
+              <option value="от 1 до 3 дней">{{ $t('serviceEdit.from1To3Days') }}</option>
+              <option value="неделя">{{ $t('serviceEdit.week') }}</option>
+              <option value="1 час">{{ $t('serviceEdit.oneHour') }}</option>
             </select>
             <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
@@ -469,10 +469,10 @@ onMounted(async () => {
 
       <!-- Кнопки -->
       <div class="card actions">
-        <button class="btn btn-ghost" :disabled="loading" @click="showPreview">Предпросмотр</button>
+        <button class="btn btn-ghost" :disabled="loading" @click="showPreview">{{ $t('serviceEdit.preview') }}</button>
         <button class="btn btn-primary" :disabled="loading" @click="submitForm">
-          <span v-if="loading">Сохранение...</span>
-          <span v-else>Сохранить изменения</span>
+          <span v-if="loading">{{ $t('common.saving') }}</span>
+          <span v-else>{{ $t('serviceEdit.saveChanges') }}</span>
         </button>
       </div>
     </template>
@@ -488,7 +488,7 @@ onMounted(async () => {
         </div>
         <h3 id="su-modal-title" class="su-modal__title">{{ success.title }}</h3>
         <p class="su-modal__text">{{ success.text }}</p>
-        <button type="button" class="btn btn-primary su-modal__btn" @click="closeSuccess">Закрыть</button>
+        <button type="button" class="btn btn-primary su-modal__btn" @click="closeSuccess">{{ $t('serviceEdit.close') }}</button>
       </div>
     </div>
   </NuxtLayout>

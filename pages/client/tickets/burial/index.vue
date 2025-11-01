@@ -387,25 +387,27 @@ const shareGraveData = async (grave_id) => {
               <p v-else class="p-[4px] block rounded-md black-16 mr-4">{{ $t('client.tickets.burial.noAdditionalServices') }}</p>
             </div>
           </div>
-          <div v-if="request.status !== 'cancelled'" class="flex gap-4 mt-[16px] max-lg:flex-col">
-            <button
-                v-if="!request.deceased.has_memorial"
-              class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-sm font-medium hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
-              @click="$router.push(`/client/memorial/create?id=${request.id}`)"
-            >
-              {{ $t('client.tickets.burial.createMemorial') }}
-            </button>
-            <button
-              v-if="!request.is_complete && request.status !== 'confirmed'"
-              class="block py-[15px] px-[20px] rounded-lg bg-[#AFB5C133] text-[#17212A] text-sm font-medium hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition"
-              @click="
+          <div class="flex gap-4 mt-[16px] max-lg:flex-col">
+            <template v-if="request.status !== 'cancelled'">
+              <button
+                  v-if="!request.deceased.has_memorial"
+                  class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-sm font-medium hover:bg-[#D1A53F] active:bg-[#B88F34] transition"
+                  @click="$router.push(`/client/memorial/create?id=${request.id}`)"
+              >
+                {{ $t('client.tickets.burial.createMemorial') }}
+              </button>
+              <button
+                  v-if="!request.is_complete && request.status !== 'confirmed'"
+                  class="block py-[15px] px-[20px] rounded-lg bg-[#AFB5C133] text-[#17212A] text-sm font-medium hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition"
+                  @click="
                 $router.push(
                   `/client/tickets/burial/add-service?burial_id=${request.id}`
                 )
               "
-            >
-              {{ $t('client.tickets.burial.addServicesAndProducts') }}
-            </button>
+              >
+                {{ $t('client.tickets.burial.addServicesAndProducts') }}
+              </button>
+            </template>
             <button
               class="py-[15px] px-[20px] rounded-lg text-[#17212A] bg-white text-sm font-medium flex items-center justify-center gap-[8px] hover:bg-[#F1F1F2] active:bg-[#C6C9CC] transition"
               @click="shareGraveData(request.grave_id)"

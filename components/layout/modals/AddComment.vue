@@ -152,7 +152,7 @@ const getImagePreview = (image) => {
     <div class="bg-white rounded-lg max-w-[600px] w-full max-h-[90vh] overflow-y-auto m-4">
       <!-- Header -->
       <div class="flex justify-between items-center pt-6 px-6 pb-4 border-b">
-        <h2 class="text-2xl font-bold">Добавить отзыв</h2>
+        <h2 class="text-2xl font-bold">{{ $t('review.addReview') }}</h2>
         <button @click="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">
           &times;
         </button>
@@ -163,7 +163,7 @@ const getImagePreview = (image) => {
         <!-- Рейтинг -->
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            Рейтинг *
+            {{ $t('review.ratingLabel') }}
           </label>
           <div class="flex gap-1">
             <button
@@ -177,13 +177,13 @@ const getImagePreview = (image) => {
               ★
             </button>
           </div>
-          <span class="text-sm text-gray-500 mt-1">{{ formData.rating }} из 5 звезд</span>
+          <span class="text-sm text-gray-500 mt-1">{{ formData.rating }} {{ $t('review.starsOutOf') }}</span>
         </div>
 
         <!-- Комментарий -->
         <div class="mb-4">
           <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">
-            Комментарий *
+            {{ $t('review.commentLabel') }}
           </label>
           <textarea
             id="comment"
@@ -191,14 +191,14 @@ const getImagePreview = (image) => {
             required
             rows="4"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Поделитесь вашим мнением о продукте..."
+            :placeholder="$t('review.commentPlaceholderAlt')"
           ></textarea>
         </div>
 
         <!-- Загрузка изображений -->
         <div class="mb-6">
           <label for="images" class="block text-sm font-medium text-gray-700 mb-2">
-            Изображения (необязательно)
+            {{ $t('review.imagesOptional') }}
           </label>
           <input
             id="images"
@@ -208,7 +208,7 @@ const getImagePreview = (image) => {
             @change="handleFileUpload"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
-          <p class="text-xs text-gray-500 mt-1">Максимум 5 изображений, до 5MB каждое</p>
+          <p class="text-xs text-gray-500 mt-1">{{ $t('review.maxImages') }}</p>
           
           <!-- Ошибка загрузки -->
           <p v-if="errors.images" class="text-red-500 text-sm mt-1">{{ errors.images }}</p>
@@ -231,7 +231,7 @@ const getImagePreview = (image) => {
                   v-else
                   class="w-full h-20 bg-gray-200 rounded border flex items-center justify-center"
                 >
-                  <span class="text-gray-500 text-sm">Загрузка...</span>
+                  <span class="text-gray-500 text-sm">{{ $t('review.loading') }}</span>
                 </div>
                 <button
                   type="button"
@@ -258,15 +258,15 @@ const getImagePreview = (image) => {
             class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
             :disabled="isLoading"
           >
-            Отмена
+            {{ $t('common.cancel') }}
           </button>
           <button
             type="submit"
             :disabled="!isFormValid || isLoading"
             class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span v-if="isLoading">Отправляем...</span>
-            <span v-else>Отправить отзыв</span>
+            <span v-if="isLoading">{{ $t('review.sending') }}</span>
+            <span v-else>{{ $t('review.sendReview') }}</span>
           </button>
         </div>
       </form>

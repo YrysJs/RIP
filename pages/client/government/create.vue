@@ -141,17 +141,17 @@ const cnt = computed(() => `${appeal_content.value.length}/${maxLen}`);
   <NuxtLayout name="client">
     <div>
       <div class="page-head">
-        <h1 class="page-title">Создание обращения в акимат</h1>
+        <h1 class="page-title">{{ $t('governmentCreate.title') }}</h1>
       </div>
 
       <div class="form-card">
         <div class="form-grid">
           <!-- Тип обращения -->
           <div class="field">
-            <label class="field__label">Тип обращения:</label>
+            <label class="field__label">{{ $t('governmentCreate.appealType') }}</label>
             <div class="select-wrap">
               <select v-model="selected_appeal_type" class="select">
-                <option :value="null" disabled>Выберите обращение</option>
+                <option :value="null" disabled>{{ $t('governmentCreate.selectAppeal') }}</option>
                 <option v-for="t in appeal_types" :key="t.id" :value="t.id">
                   {{ t.nameRu }}
                 </option>
@@ -161,13 +161,13 @@ const cnt = computed(() => `${appeal_content.value.length}/${maxLen}`);
 
           <!-- Текст обращения -->
           <div class="field">
-            <label class="field__label">Обращение:</label>
+            <label class="field__label">{{ $t('governmentCreate.appeal') }}</label>
             <div class="textarea-wrap">
               <textarea
                 v-model="appeal_content"
                 :maxlength="maxLen"
                 class="textarea"
-                placeholder="Напишите текст вашего обращения ...."
+                :placeholder="$t('governmentCreate.appealPlaceholder')"
               />
               <div class="counter">{{ cnt }}</div>
             </div>

@@ -67,25 +67,25 @@ onMounted(fetchOrders);
 <template>
   <NuxtLayout name="supplier" class="supplier-archive-page">
     <div class="page-head">
-      <h2 class="page-title">Архивные заявки</h2>
+      <h2 class="page-title">{{ $t('supplierArchive.title') }}</h2>
     </div>
 
     <div class="orders-table-wrap">
-      <div v-if="loading" class="orders-empty">Загрузка…</div>
+      <div v-if="loading" class="orders-empty">{{ $t('supplierArchive.loading') }}</div>
 
       <div v-else-if="error" class="orders-empty">
         {{ error }}
-        <button class="retry-btn" @click="fetchOrders">Повторить</button>
+        <button class="retry-btn" @click="fetchOrders">{{ $t('supplierArchive.retry') }}</button>
       </div>
 
       <template v-else>
         <div v-if="displayRows.length" class="orders-table">
           <div class="orders-row orders-head">
-            <div>Товар/услуга</div>
-            <div>Заказчик</div>
-            <div>Захоронение</div>
-            <div>Дата похорон</div>
-            <div>Статус</div>
+            <div>{{ $t('supplierTickets.productService') }}</div>
+            <div>{{ $t('supplierTickets.customer') }}</div>
+            <div>{{ $t('supplierTickets.burial') }}</div>
+            <div>{{ $t('supplierTickets.burialDate') }}</div>
+            <div>{{ $t('supplierTickets.status') }}</div>
           </div>
 
           <NuxtLink
@@ -118,7 +118,7 @@ onMounted(fetchOrders);
           </NuxtLink>
         </div>
 
-        <div v-else class="orders-empty">В архиве пока пусто</div>
+        <div v-else class="orders-empty">{{ $t('supplierArchive.emptyArchive') }}</div>
       </template>
     </div>
   </NuxtLayout>

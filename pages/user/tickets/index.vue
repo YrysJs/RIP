@@ -75,7 +75,7 @@
               @change="refetch()"
             >
               <!-- плейсхолдер: виден в контроле, НО не появляется в списке -->
-              <option value="" disabled hidden>Статус</option>
+              <option value="" disabled hidden>{{ $t('userTickets.status') }}</option>
               <option v-for="item in statuses" :key="item.id" :value="item.id">{{ item.name }}</option>
             </select>
             <span class="field__chevron" aria-hidden>
@@ -100,12 +100,12 @@
               required
               @change="onPeriodChange"
             >
-              <option value="" disabled hidden>Период заявки</option>
-              <option value="7d">Последние 7 дней</option>
-              <option value="30d">Последние 30 дней</option>
-              <option value="thisMonth">Этот месяц</option>
-              <option value="prevMonth">Прошлый месяц</option>
-              <option value="custom">Указать даты</option>
+              <option value="" disabled hidden>{{ $t('userTickets.requestPeriod') }}</option>
+              <option value="7d">{{ $t('userTickets.last7Days') }}</option>
+              <option value="30d">{{ $t('userTickets.last30Days') }}</option>
+              <option value="thisMonth">{{ $t('userTickets.thisMonth') }}</option>
+              <option value="prevMonth">{{ $t('userTickets.prevMonth') }}</option>
+              <option value="custom">{{ $t('userTickets.custom') }}</option>
             </select>
             <span class="field__chevron" aria-hidden>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -124,8 +124,8 @@
               </svg>
             </span>
             <select class="field__control appearance-none w-full pr-[40px]" v-model="sort" @change="refetch()">
-              <option value="newest">Сначала новые</option>
-              <option value="oldest">Сначала старые</option>
+              <option value="newest">{{ $t('userTickets.newest') }}</option>
+              <option value="oldest">{{ $t('userTickets.oldest') }}</option>
             </select>
             <span class="field__chevron" aria-hidden>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -172,7 +172,7 @@
             <input
               class="field__control w-full"
               type="text"
-              placeholder="Дата с (дд.мм.гггг)"
+              :placeholder="$t('userTickets.dateFrom')"
               v-model="dateFromStr"
               @blur="normalizeDateFrom"
             />
@@ -187,7 +187,7 @@
             <input
               class="field__control w-full"
               type="text"
-              placeholder="Дата по (дд.мм.гггг)"
+              :placeholder="$t('userTickets.dateTo')"
               v-model="dateToStr"
               @blur="normalizeDateTo"
             />
@@ -204,7 +204,7 @@
           >
 <div class="card__left">
   <div class="card__header">
-    <h3 class="card__title">Заявка № {{ request.id }}</h3>
+    <h3 class="card__title">{{ $t('userTickets.requestNumber') }} {{ request.id }}</h3>
     <div class="card__status">
       <span class="status" :class="statusClass(request.status?.value)">
         {{ request.status?.nameRu || '—' }}
@@ -214,7 +214,7 @@
 
   <!-- 1) Заявитель -->
   <div class="card__row">
-    <span class="card__label">Заявитель:</span>
+    <span class="card__label">{{ $t('userTickets.applicant') }}</span>
     <span class="card__value">
       <template v-if="request.user">
         {{ request.user.surname }} {{ request.user.name }} {{ request.user.patronymic }}
@@ -227,7 +227,7 @@
 
   <!-- 2) Ответственный + Телефон в одной строке -->
   <div class="card__row card__row--with-phone">
-    <span class="card__label">Ответственный исполнитель:</span>
+    <span class="card__label">{{ $t('userTickets.responsibleExecutor') }}</span>
     <span class="card__value">
       <template v-if="request.responsibleUser?.id">
         {{ request.responsibleUser.surname }} {{ request.responsibleUser.name }} {{ request.responsibleUser.patronymic }}
@@ -237,12 +237,12 @@
         class="card__link"
         @click="openSetResponsibleModal(request.id)"
       >
-        Не назначен
+        {{ $t('userTickets.notAssigned') }}
       </button>
     </span>
 
      <template v-if="request.userPhone">
-       <span class="card__label card__label--muted">Телефон:</span>
+       <span class="card__label card__label--muted">{{ $t('userTickets.phone') }}</span>
       <span class="card__value card__value--nowrap">
         {{ formatPhoneNumber(request.userPhone) }}
       </span>
@@ -256,12 +256,12 @@
             <div class="card__right">
               <div class="card__date">
                 <template v-if="request.createdAt || request.createDate">
-                  Дата заявки : {{ formatDate(request.createdAt || request.createDate) }}
+                  {{ $t('userTickets.requestDate') }} {{ formatDate(request.createdAt || request.createDate) }}
                 </template> 
               </div>
 
               <button class="details-btn" @click="router.push('/user/tickets/' + request.id)">
-                Подробнее
+                {{ $t('userTickets.more') }}
               </button>
 
               <!-- Стрелочка для мобильной версии -->
@@ -292,10 +292,10 @@
         @change="refetchAppeals()"
         required
       >
-        <option value="" disabled hidden>Тип обращения</option>
-        <option :value="1">Жалоба</option>
-        <option :value="2">Предложение</option>
-        <option :value="3">Запрос</option>
+        <option value="" disabled hidden>{{ $t('userTickets.appealType') }}</option>
+        <option :value="1">{{ $t('userTickets.complaint') }}</option>
+        <option :value="2">{{ $t('userTickets.suggestion') }}</option>
+        <option :value="3">{{ $t('userTickets.request') }}</option>
       </select>
       <span class="field__chevron" aria-hidden>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -328,21 +328,21 @@
   <div class="appeal-cards">
     <div class="appeal-card" v-for="a in appeals" :key="a.id">
       <div class="appeal-card__top">
-        <h3 class="appeal-card__title">Обращение №{{ a.id }}</h3>
+        <h3 class="appeal-card__title">{{ $t('userTickets.appealNumber') }}{{ a.id }}</h3>
         <div class="appeal-card__date">
-          Дата обращения : {{ formatDate(a.createTime || a.createdAt) }}
+          {{ $t('userTickets.requestDate') }} {{ formatDate(a.createTime || a.createdAt) }}
         </div>
       </div>
 
       <div class="appeal-card__row">
-        <span class="appeal-card__label">Заявитель:</span>
+        <span class="appeal-card__label">{{ $t('userTickets.applicant') }}</span>
         <span class="appeal-card__value">
           {{ applicantName(a) }}
         </span>
       </div>
 
       <div class="appeal-card__row">
-        <span class="appeal-card__label">Телефон:</span>
+        <span class="appeal-card__label">{{ $t('userTickets.phone') }}</span>
         <span class="appeal-card__value">
           {{ formatPhoneNumber(a.user?.phone) }}
         </span>
@@ -350,14 +350,14 @@
 
 
       <div class="appeal-card__row">
-        <span class="appeal-card__label">Тип обращения:</span>
+        <span class="appeal-card__label">{{ $t('userTickets.appealType') }}:</span>
         <span class="appeal-card__value">
           {{ a.type?.nameRu || a.type?.name || '—' }}
         </span>
       </div>
 
       <div class="appeal-card__row" v-if="a.document?.url || a.documentUrl">
-        <span class="appeal-card__label">Документ:</span>
+        <span class="appeal-card__label">{{ $t('userTickets.document') }}</span>
         <a class="appeal-card__file" :href="a.document?.url || a.documentUrl" target="_blank" rel="noopener">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z" stroke="#297D85" stroke-width="1.6"/>
@@ -368,7 +368,7 @@
       </div>
 
       <div class="appeal-card__row">
-        <span class="appeal-card__label">Обращение:</span>
+        <span class="appeal-card__label">{{ $t('userTickets.appeal') }}</span>
         <p class="appeal-card__text">{{ a.content || a.text }}</p>
       </div>
     </div>

@@ -142,10 +142,10 @@ const getItemStatusColor = (itemStatus) => {
 // Computed свойство для определения текущего статуса
 const currentStatus = computed(() => {
   const s = orderData.value?.status;
-  const found = orderStatuses.find((x) => x.current === s)?.status;
+  const found = orderStatuses.value.find((x) => x.current === s)?.status;
   if (found) return found;
-  if (s === "completed") return "Завершен";
-  if (s === "cancelled") return "Отменен";
+  if (s === "completed") return t('statuses.completed');
+  if (s === "cancelled") return t('statuses.cancelled');
   return "—";
 });
 
@@ -208,7 +208,16 @@ const fullName = computed(() => {
   const u = orderData.value?.user_info;
   return [u?.surname, u?.name, u?.patronymic].filter(Boolean).join(" ") || "—";
 });
-const cemeteryName = computed(() => orderData.value?.grave_info?.cemetery_name || "—");
+const cemeteryName = computed(() => {
+  const cemetery = orderData.value?.grave_info?.cemetery_name
+  if (!cemetery) return "—"
+  // Если это объект с полями name и name_kz
+  if (typeof cemetery === 'object' && (cemetery.name || cemetery.name_kz)) {
+    return locale.value === 'kk' && cemetery.name_kz ? cemetery.name_kz : (cemetery.name || "—")
+  }
+  // Если это просто строка
+  return cemetery || "—"
+});
 const sectorNumber = computed(() => orderData.value?.grave_info?.sector_number ?? "—");
 const graveId = computed(() => orderData.value?.grave_info?.grave_number ?? "—");
 
@@ -224,7 +233,7 @@ const graveId = computed(() => orderData.value?.grave_info?.grave_number ?? "—
 
 const graveModalData = computed(() => ({
   image: "/images/main_service/f1.jpg",
-  title: orderData.value?.grave_info?.cemetery_name || "—",
+  title: cemeteryName.value,
   sector: orderData.value?.grave_info?.sector_number ?? "—",
   place: orderData.value?.grave_info?.grave_number ?? "—",
   description: orderData.value?.grave_info?.description || "",
@@ -242,7 +251,7 @@ function formatToDDMMYYYY(iso) {
   <div
     class="w-full bg-white rounded-[16px] py-[24px] px-[18px] border border-[#ece7da]"
   >
-    <div v-if="loading" class="text-sm text-[#999]">Загрузка…</div>
+    <div v-if="loading" class="text-sm text-[#999]">{{ $t('supplier.loading') }}</div>
     <div v-else-if="error" class="text-sm text-[#DB1414]">{{ error }}</div>
 
     <template v-else-if="orderData">
@@ -250,7 +259,7 @@ function formatToDDMMYYYY(iso) {
         class="flex justify-between items-start pb-4 border-b-2 border-[#EEEEEE]"
       >
         <p class="text-sm text-[#999]">
-          Дата и время заявки:
+          {{ $t('supplier.orderDateTime') }}
           {{
             orderData?.created_at
               ? new Date(orderData.created_at).toLocaleString()
@@ -288,17 +297,17 @@ function formatToDDMMYYYY(iso) {
               class="min-w-[580px] font-medium flex flex-col gap-2 max-sm:gap-0"
             >
               <div class="h-[38px] flex items-center text-base">
-                <p class="min-w-[150px] grey-14">Кладбище:</p>
+                <p class="min-w-[150px] grey-14">{{ $t('supplier.cemetery') }}</p>
                 <p class="black-16">
                   {{ cemeteryName }}
                 </p>
               </div>
               <div class="h-[38px] flex items-center text-base">
-                <p class="min-w-[150px] grey-14">Сектор</p>
+                <p class="min-w-[150px] grey-14">{{ $t('supplier.sector') }}</p>
                 <p class="black-16">{{ sectorNumber }}</p>
               </div>
               <div class="h-[38px] flex items-center text-base">
-                <p class="min-w-[150px] grey-14">Место:</p>
+                <p class="min-w-[150px] grey-14">{{ $t('supplier.place') }}</p>
                 <p class="black-16">{{ graveId }}</p>
               </div>
             </div>
@@ -306,7 +315,7 @@ function formatToDDMMYYYY(iso) {
               class="rounded-md p-2 text-sm text-[#224C4F] font-semibold bg-[#EEEEEE]"
               @click="graveModalOpen = true"
             >
-              Координаты кладбища
+              {{ $t('supplier.cemeteryCoordinates') }}
             </button>
           </div>
           <div
@@ -314,7 +323,7 @@ function formatToDDMMYYYY(iso) {
           >
             <div class="font-medium flex flex-col gap-[10px]">
               <div class="h-[38px] flex items-center text-base">
-                <p class="min-w-[150px] max-w-[150px] grey-14">ФИО покойного:</p>
+                <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('supplier.deceasedFullName') }}</p>
                 <p class="black-16">
                   {{ orderData?.burial_info?.deceased?.full_name || "—" }}
                 </p>
@@ -327,18 +336,18 @@ function formatToDDMMYYYY(iso) {
         >
           <div class="min-w-[580px] font-medium flex flex-col gap-2">
             <div v-if="orderData?.burial_info" class="h-[38px] flex items-center text-base">
-              <p class="min-w-[150px] max-w-[150px] grey-14">Дата похорон:</p>
+              <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('supplier.burialDate') }}</p>
               <p v-if="orderData?.burial_info?.burial_date">
                 {{
                   new Date(orderData?.burial_info?.burial_date).toLocaleDateString("ru-RU")
                 }}, {{ orderData?.burial_info?.burial_time || "—" }}
               </p>
               <p v-else class="text-base text-[#DB1414]">
-                Необходимо указать даты похорон
+                {{ $t('supplier.burialDateRequired') }}
               </p>
             </div>
             <div class="h-[38px] flex items-center text-base">
-              <p class="min-w-[150px] max-w-[150px] grey-14">Заказчик:</p>
+              <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('supplier.customer') }}</p>
               <p class="black-16">
                 {{ fullName }}
               </p>
@@ -347,7 +356,7 @@ function formatToDDMMYYYY(iso) {
               <p
                 class="min-w-[150px] max-w-[150px] grey-14 flex items-center gap-[10px]"
               >
-                Контакты заказчика:
+                {{ $t('supplier.customerContacts') }}
               </p>
               <p class="flex items-center gap-[10px] black-16">
                 {{ orderData?.user_phone ? `+${orderData.user_phone}` : "—" }}
@@ -361,13 +370,13 @@ function formatToDDMMYYYY(iso) {
               </p>
             </div>
             <div class="h-[38px] flex items-center text-base">
-              <p class="min-w-[150px] max-w-[150px] grey-14">Адрес прибытия:</p>
+              <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('supplier.arrivalAddress') }}</p>
               <p class="black-16">
                 {{ it?.delivery_destination_address || "—" }}
               </p>
             </div>
             <div class="h-[38px] flex items-center text-base">
-              <p class="min-w-[150px] max-w-[150px] grey-14">Время прибытия:</p>
+              <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('supplier.arrivalTime') }}</p>
               <p class="black-16">
                 {{ formatToDDMMYYYY(it?.delivery_arrival_time) || "—" }}
               </p>
@@ -383,7 +392,7 @@ function formatToDDMMYYYY(iso) {
             class="block py-[15px] px-[20px] rounded-lg bg-[#E9B949] text-black text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             @click="handleStatusChange(it.id)"
           >
-            {{ loading ? "Обновление..." : getItemStatusAction(it.status)?.title }}
+            {{ loading ? $t('supplier.update') : getItemStatusAction(it.status)?.title }}
           </button>
           <button
             v-if="it.status !== 'cancelled' && it.status !== 'completed'"
@@ -391,7 +400,7 @@ function formatToDDMMYYYY(iso) {
             class="block py-[15px] px-[20px] rounded-lg bg-[#DB1414] text-white text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             @click="cancelStatus(it.id)"
           >
-            Отменить
+            {{ $t('supplier.cancel') }}
           </button>
         </div>
       </div>
@@ -400,7 +409,7 @@ function formatToDDMMYYYY(iso) {
       >
         <div class="font-medium flex flex-col gap-[10px]">
           <div class="h-[48px] flex items-center text-base">
-            <p class="min-w-[150px] max-w-[150px] grey-14">Cтатус:</p>
+            <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('supplier.status') }}</p>
             <div class="flex items-center gap-[10px]">
               <span class="text-sm text-[#17212A]">{{ currentStatus }}</span>
               <span
@@ -411,13 +420,13 @@ function formatToDDMMYYYY(iso) {
               class="flex items-center gap-[10px]"
               v-if="orderData?.status === 'new'"
             >
-              <p class="text-sm text-[#17212A]">Новая</p>
+              <p class="text-sm text-[#17212A]">{{ $t('supplier.new') }}</p>
             </div> 
             <div
               class="flex items-center gap-[10px]"
               v-if="orderData?.status === 'in_progress'"
             >
-              <p class="text-sm text-[#17212A]">В работе</p>
+              <p class="text-sm text-[#17212A]">{{ $t('supplier.inProgress') }}</p>
             </div>
             <div
               class="flex items-center gap-[10px]"
@@ -427,21 +436,21 @@ function formatToDDMMYYYY(iso) {
               "
             >
               <img src="/icons/warning.svg" alt="" />
-              <p class="text-sm text-[#17212A]">В ожидании оплаты</p>
+              <p class="text-sm text-[#17212A]">{{ $t('supplier.waitingPayment') }}</p>
             </div>
             <div
               class="flex items-center gap-[10px]"
               v-if="orderData?.status === 'paid'"
             >
               <img src="/icons/paid-tick.svg" alt="" />
-              <p class="text-sm text-[#17212A]">Оплачено</p>
+              <p class="text-sm text-[#17212A]">{{ $t('supplier.paid') }}</p>
             </div>
             <div
               class="flex items-center gap-[10px]"
               v-if="orderData?.status === 'confirmed'"
             >
               <img src="/icons/paid-tick.svg" alt="" />
-              <p class="text-sm text-[#17212A]">Завершено</p>
+              <p class="text-sm text-[#17212A]">{{ $t('supplier.completedStatus') }}</p>
             </div> -->
             </div>
           </div>
@@ -458,9 +467,9 @@ function formatToDDMMYYYY(iso) {
               <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <h3 class="completed-title">Заявка завершена</h3>
+          <h3 class="completed-title">{{ $t('supplier.completed') }}</h3>
           <button class="completed-close-btn" @click="showCompletedModal = false">
-            Закрыть
+            {{ $t('common.close') }}
           </button>
         </div>
       </div>
@@ -469,7 +478,7 @@ function formatToDDMMYYYY(iso) {
     </template>
 
     <template v-else>
-      <div class="text-sm text-[#999]">Заказ не найден</div>
+      <div class="text-sm text-[#999]">{{ $t('supplier.orderNotFound') }}</div>
     </template>
   </div>
 </template>

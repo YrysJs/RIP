@@ -173,7 +173,7 @@ onMounted(() => {
 <template>
   <NuxtLayout name="supplier" class="supplier-tickets-page">
     <div class="page-head">
-      <h2 class="page-title">Активные заявки</h2>
+      <h2 class="page-title">{{ $t('supplierTickets.activeRequests') }}</h2>
 
       <button class="fbtn" @click="toggleFilters">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -184,7 +184,7 @@ onMounted(() => {
             stroke-linecap="round"
           />
         </svg>
-        Фильтры
+        {{ $t('supplierTickets.filters') }}
       </button>
     </div>
 
@@ -194,19 +194,19 @@ onMounted(() => {
         <!-- Фильтр по ID заказа на похороны -->
         <div class="flex flex-col">
           <label class="text-sm font-medium text-gray-700 mb-2"
-            >ID заказа на похороны</label
+            >{{ $t('supplierTickets.burialOrderId') }}</label
           >
           <input
             v-model="filters.burial_order_id"
             type="text"
-            placeholder="Введите ID заказа"
+            :placeholder="$t('supplierTickets.enterOrderId')"
             class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <!-- Фильтр по дате от -->
         <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700 mb-2">Дата от</label>
+          <label class="text-sm font-medium text-gray-700 mb-2">{{ $t('supplierTickets.dateFrom') }}</label>
           <input
             v-model="filters.date_from"
             type="date"
@@ -216,7 +216,7 @@ onMounted(() => {
 
         <!-- Фильтр по дате до -->
         <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700 mb-2">Дата до</label>
+          <label class="text-sm font-medium text-gray-700 mb-2">{{ $t('supplierTickets.dateTo') }}</label>
           <input
             v-model="filters.date_to"
             type="date"
@@ -226,7 +226,7 @@ onMounted(() => {
 
         <!-- Фильтр по типу -->
         <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700 mb-2">Тип</label>
+          <label class="text-sm font-medium text-gray-700 mb-2">{{ $t('supplierTickets.type') }}</label>
           <select
             v-model="filters.type"
             class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -243,7 +243,7 @@ onMounted(() => {
 
         <!-- Фильтр по статусу -->
         <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700 mb-2">Статус</label>
+          <label class="text-sm font-medium text-gray-700 mb-2">{{ $t('supplierTickets.status') }}</label>
           <select
             v-model="filters.status"
             class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -265,36 +265,36 @@ onMounted(() => {
           class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
           @click="applyFilters"
         >
-          Применить
+          {{ $t('supplierTickets.apply') }}
         </button>
         <button
           class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
           @click="resetFilters"
         >
-          Сбросить
+          {{ $t('supplierTickets.reset') }}
         </button>
       </div>
     </div>
 
     <div class="orders-table-wrap">
       <!-- загрузка -->
-      <div v-if="loading" class="orders-empty">Загрузка…</div>
+      <div v-if="loading" class="orders-empty">{{ $t('supplierTickets.loading') }}</div>
 
       <!-- ошибка -->
       <div v-else-if="error" class="orders-empty">
         {{ error }}
-        <button class="retry-btn" @click="fetchOrders">Повторить</button>
+        <button class="retry-btn" @click="fetchOrders">{{ $t('supplierTickets.retry') }}</button>
       </div>
 
       <!-- данные -->
       <template v-else>
         <div v-if="displayRows.length" class="orders-table">
           <div class="orders-row orders-head">
-            <div>Товар/услуга</div>
-            <div>Заказчик</div>
-            <div>Захоронение</div>
-            <div>Дата похорон</div>
-            <div>Статус</div>
+            <div>{{ $t('supplierTickets.productService') }}</div>
+            <div>{{ $t('supplierTickets.customer') }}</div>
+            <div>{{ $t('supplierTickets.burial') }}</div>
+            <div>{{ $t('supplierTickets.burialDate') }}</div>
+            <div>{{ $t('supplierTickets.status') }}</div>
           </div>
 
           <NuxtLink
@@ -327,7 +327,7 @@ onMounted(() => {
           </NuxtLink>
         </div>
 
-        <div v-else class="orders-empty">Нет активных заявок</div>
+        <div v-else class="orders-empty">{{ $t('supplierTickets.noActiveRequests') }}</div>
       </template>
     </div>
   </NuxtLayout>

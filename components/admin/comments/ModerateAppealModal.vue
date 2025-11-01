@@ -55,32 +55,32 @@ watch(() => props.appeal, (newVal) => {
       <button class="absolute right-[24px] top-[24px]" @click="close">&#10005;</button>
       <div class="flex flex-col">
         <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
-          Модерация обращения
+          {{ $t('moderateAppeal.title') }}
         </h3>
         <div class="mt-[16px] mb-[16px]">
           <p class="text-sm text-gray-600 mb-2">ID: {{ appeal?.id }}</p>
-          <p class="text-sm text-gray-600 mb-2">Поставщик: {{ appeal?.supplier_phone }}</p>
-          <p class="text-sm text-gray-600 mb-2">причина: {{ appeal?.reason }}</p>
+          <p class="text-sm text-gray-600 mb-2">{{ $t('moderateAppeal.supplier') }} {{ appeal?.supplier_phone }}</p>
+          <p class="text-sm text-gray-600 mb-2">{{ $t('moderateAppeal.reason') }} {{ appeal?.reason }}</p>
         </div>
         
         <div v-if="reviewDetails" class="mt-[16px] mb-[16px] p-[16px] bg-gray-50 rounded-lg">
-          <h4 class="text-lg font-semibold mb-[12px]">Детали отзыва</h4>
+          <h4 class="text-lg font-semibold mb-[12px]">{{ $t('moderateAppeal.reviewDetails') }}</h4>
           <div class="mb-[8px]">
-            <span class="text-sm font-medium text-gray-700">Рейтинг: </span>
+            <span class="text-sm font-medium text-gray-700">{{ $t('moderateAppeal.rating') }} </span>
             <span class="text-sm text-gray-600">{{ reviewDetails.rating }}/5</span>
           </div>
           <div class="mb-[8px]">
-            <span class="text-sm font-medium text-gray-700">Комментарий: </span>
+            <span class="text-sm font-medium text-gray-700">{{ $t('moderateAppeal.comment') }} </span>
             <p class="text-sm text-gray-600 mt-1">{{ reviewDetails.comment }}</p>
           </div>
           <div v-if="reviewDetails.image_urls && reviewDetails.image_urls.length > 0" class="mb-[8px]">
-            <span class="text-sm font-medium text-gray-700">Изображения: </span>
+            <span class="text-sm font-medium text-gray-700">{{ $t('moderateAppeal.images') }} </span>
             <div class="flex flex-wrap gap-2 mt-2">
               <img 
                 v-for="(imageUrl, index) in reviewDetails.image_urls" 
                 :key="index"
                 :src="imageUrl"
-                alt="Изображение отзыва"
+                :alt="$t('alts.reviewImage')"
                 class="w-16 h-16 object-cover rounded border cursor-pointer"
                 @click="window.open(imageUrl, '_blank')"
               />
@@ -90,20 +90,20 @@ watch(() => props.appeal, (newVal) => {
         <textarea 
           v-model="adminResponse" 
           class="border-2 border-[#939393] mt-[24px] pl-[16px] pt-[16px] rounded-lg h-[120px] mb-4 resize-none" 
-          placeholder="Ответ администратора"
+          :placeholder="$t('moderateAppeal.adminResponsePlaceholder')"
         ></textarea>
         <div class="flex gap-4">
           <button 
             class="h-[51px] rounded-lg !bg-[#3CBF4A] text-white font-semibold font-roboto flex-1" 
             @click="approve"
           >
-            Одобрить
+            {{ $t('moderateAppeal.approve') }}
           </button>
           <button 
             class="h-[51px] rounded-lg !bg-[#E53935] text-white font-semibold font-roboto flex-1" 
             @click="reject"
           >
-            Отклонить
+            {{ $t('moderateAppeal.reject') }}
           </button>
         </div>
       </div>

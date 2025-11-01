@@ -43,7 +43,8 @@ async function openReceiptModal() {
       props.booking?.id;
 
     if (!transactionId) {
-      alert("Ошибка: Transaction ID не найден.");
+      const { $toast } = useNuxtApp();
+      $toast.error(t('errors.transactionIdNotFound'));
       showReceiptModal.value = false;
       return;
     }
@@ -52,12 +53,14 @@ async function openReceiptModal() {
     if (response.data?.success && response.data?.data) {
       receiptData.value = response.data.data;
     } else {
-      alert("Ошибка получения чека");
+      const { $toast } = useNuxtApp();
+      $toast.error(t('errors.receiptLoadError'));
       showReceiptModal.value = false;
     }
   } catch (e) {
     console.error(e);
-    alert("Ошибка при получении чека");
+    const { $toast } = useNuxtApp();
+    $toast.error(t('errors.receiptLoadError'));
     showReceiptModal.value = false;
   } finally {
     receiptLoading.value = false;
@@ -146,9 +149,9 @@ const statusConfig = computed(() => {
         <!-- Location info -->
         <div class="mb-6">
           <div class="flex gap-1 items-center mb-2 flex-wrap">
-            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Сектор <span class="font-bold">{{ grave?.sector_number }}</span></span>
-            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Место <span class="font-bold">{{ getAllGraves() }}</span></span>
-            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">Площадь: <span class="font-bold">{{ grave?.area || '2.5 x 1.5 м' }}</span></span>
+            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">{{ $t('burial.sectorLabel') }} <span class="font-bold">{{ grave?.sector_number }}</span></span>
+            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">{{ $t('burial.placeLabel') }} <span class="font-bold">{{ getAllGraves() }}</span></span>
+            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">{{ $t('burial.areaLabel') }} <span class="font-bold">{{ grave?.area || '2.5 x 1.5 м' }}</span></span>
           </div>
         </div>
 
@@ -163,7 +166,7 @@ const statusConfig = computed(() => {
             >
               <img
                   :src="removeEscapedQuotes(image)"
-                  :alt="`Фото ${index + 1}`"
+                  :alt="$t('burial.photo') + ' ' + (index + 1)"
                   class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
               />
             </div>
@@ -172,7 +175,7 @@ const statusConfig = computed(() => {
 
         <div class="flex justify-between items-start mt-[16px] border-b border-[#EEEEEE] pb-[16px]">
           <div class="flex text-base">
-            <p class="min-w-[150px] font-medium">ФИО покойного:</p>
+            <p class="min-w-[150px] font-medium">{{ $t('burial.deceasedFullName') }}</p>
             <p class="font-bold">{{ booking?.deceased?.full_name }}</p>
           </div>
 
@@ -181,32 +184,32 @@ const statusConfig = computed(() => {
 <!--         Заключение о смерти-->
 
         <div v-if="booking.deceased.death_cert_url" class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-4">
-          <p class="min-w-[150px] max-w-[150px] font-medium">Заключение о смерти:</p>
+          <p class="min-w-[150px] max-w-[150px] font-medium">{{ $t('burial.deathCertificate') }}</p>
           <a
               :href="booking.deceased.death_cert_url"
               target="_blank"
               class="text-[#007AFF] font-medium hover:underline"
           >
-            Открыть
+            {{ $t('burial.open') }}
           </a>
         </div>
 
         <!-- Дата похорон -->
         <div class="flex text-base mt-2">
-          <p class="min-w-[150px] max-w-[150px] font-medium">Дата похорон:</p>
+          <p class="min-w-[150px] max-w-[150px] font-medium">{{ $t('burial.burialDate') }}</p>
           <p v-if="booking?.burial_date" class="font-bold">{{ new Date(booking.burial_date).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) }} {{booking.burial_time}}</p>
         </div>
 
 
         <!-- Контакты заказчика -->
         <div class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-2">
-          <p class="min-w-[150px] max-w-[150px] font-medium">Контакты заказчика:</p>
+          <p class="min-w-[150px] max-w-[150px] font-medium">{{ $t('burial.customerContacts') }}</p>
           <p class="font-bold">{{ formatPhoneNumber(booking?.user_phone) }}</p>
         </div>
 
         <!-- Статус -->
         <div class="flex text-base mt-4 items-center  border-b border-[#EEEEEE] pb-[16px]">
-          <p class="min-w-[150px] max-w-[150px] font-medium">Статус:</p>
+          <p class="min-w-[150px] max-w-[150px] font-medium">{{ $t('reserve.status') }}</p>
           <div class="flex gap-2 items-center">
             <span 
               :class="[statusConfig.bgColor, statusConfig.textColor]" 
@@ -218,8 +221,8 @@ const statusConfig = computed(() => {
         </div>
 
         <div class="flex text-base mt-2">
-          <p class="min-w-[150px] max-w-[150px] font-medium">Завершено:</p>
-          <p class="font-bold">{{ booking?.is_complete ? 'Да' : 'Нет' }}</p>
+          <p class="min-w-[150px] max-w-[150px] font-medium">{{ $t('burial.completed') }}</p>
+          <p class="font-bold">{{ booking?.is_complete ? $t('common.yes') : $t('common.no') }}</p>
         </div>
 
         <!-- Кнопки -->
@@ -230,8 +233,8 @@ const statusConfig = computed(() => {
             @click="openReceiptModal" 
             class="flex items-center gap-2 px-4 py-2 border rounded-md border-gray-300 hover:bg-gray-100 text-sm"
           >
-            <img src="/icons/file-text.svg" alt="чек" class="w-4 h-4" />
-            Чек об оплате
+            <img src="/icons/file-text.svg" :alt="$t('alts.receipt')" class="w-4 h-4" />
+            {{ $t('burial.receipt') }}
           </button>
           
           <!-- Пустой div для выравнивания, если кнопка чека не показывается -->

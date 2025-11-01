@@ -2,7 +2,7 @@
   <div class="profile">
     <!-- head -->
     <div class="profile__head">
-      <h1 class="profile__title">Профиль менеджера кладбища</h1>
+      <h1 class="profile__title">{{ $t('managerProfile.title') }}</h1>
 
       <button
         v-if="showEdit"
@@ -14,7 +14,7 @@
           <path d="M3 17.3V21h3.7l10.9-10.9-3.7-3.7L3 17.3Z" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M14.6 5.4 17.9 2l4 4-3.3 3.3" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        Редактировать
+        {{ $t('managerProfile.edit') }}
       </button>
     </div>
 
@@ -22,17 +22,17 @@
 
     <!-- rows -->
     <div class="profile__row">
-      <div class="profile__label">ФИО:</div>
+      <div class="profile__label">{{ $t('managerProfile.fullName') }}</div>
       <div class="profile__value">{{ profile.fullName || '—' }}</div>
     </div>
 
     <div class="profile__row">
-      <div class="profile__label">ИИН:</div>
+      <div class="profile__label">{{ $t('managerProfile.iin') }}</div>
       <div class="profile__value">{{ profile.iin || '—' }}</div>
     </div>
 
     <div class="profile__row">
-      <div class="profile__label">Номер телефона:</div>
+      <div class="profile__label">{{ $t('managerProfile.phone') }}</div>
       <div class="profile__value">{{ prettyPhone }}</div>
     </div>
   </div>

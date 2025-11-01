@@ -3,6 +3,7 @@ import { useRoute, RouterLink  } from 'vue-router';
 import { computed, ref, onMounted } from 'vue';
 import { getUnreadNotifications } from "~/services/notifications";
 import { useI18n } from 'vue-i18n';
+import { useUserStore } from '~/store/user';
 
 const { t } = useI18n();
 const props = withDefaults(defineProps<{ title?: string }>(), {
@@ -10,7 +11,17 @@ const props = withDefaults(defineProps<{ title?: string }>(), {
 });
 
 const route = useRoute();
+const userStore = useUserStore();
 const isActive = (p: string) => computed(() => route.path.startsWith(p));
+
+// Проверяем, должна ли ссылка быть отключена
+const isLinkDisabled = (path: string) => {
+  if (userStore.supplierIsActive) return false;
+  
+  // Разрешаем только обращения в акимат (tickets) и уведомления
+  const allowedPaths = ['/supplier/tickets', '/supplier/notifications'];
+  return !allowedPaths.some(allowed => path.startsWith(allowed));
+};
 
 const openA = ref(true);
 const openB = ref(true);
@@ -64,7 +75,8 @@ onMounted(() => {
             v-for="(it, i) in sectionA"
             :key="i" :to="it.path"
             class="sidebar__link"
-            :class="{ 'is-active': isActive(it.path).value }"
+            :class="{ 'is-active': isActive(it.path).value, 'is-disabled': isLinkDisabled(it.path) }"
+            @click.prevent="!isLinkDisabled(it.path) && $router.push(it.path)"
         >
           <span class="sidebar__text">{{ it.title }}</span>
           <span v-if="it.count" class="sidebar__badge">{{ it.count }}</span>
@@ -82,7 +94,8 @@ onMounted(() => {
             v-for="(it, i) in sectionB"
             :key="i" :to="it.path"
             class="sidebar__link"
-            :class="{ 'is-active': isActive(it.path).value }"
+            :class="{ 'is-active': isActive(it.path).value, 'is-disabled': isLinkDisabled(it.path) }"
+            @click.prevent="!isLinkDisabled(it.path) && $router.push(it.path)"
         >
           <span class="sidebar__text">{{ it.title }}</span>
           <span v-if="it.count" class="sidebar__badge">{{ it.count }}</span>
@@ -95,7 +108,8 @@ onMounted(() => {
           v-for="(it, i) in singles"
           :key="i" :to="it.path"
           class="sidebar__link"
-          :class="{ 'is-active': isActive(it.path).value, 'is-add': it.kind === 'add' }"
+          :class="{ 'is-active': isActive(it.path).value, 'is-add': it.kind === 'add', 'is-disabled': isLinkDisabled(it.path) }"
+          @click.prevent="isLinkDisabled(it.path) ? null : $router.push(it.path)"
         >
           <span class="sidebar__text">{{ it.title }}</span>
           <span v-if="it.count" class="sidebar__badge">{{ it.count }}</span>
@@ -135,11 +149,11 @@ onMounted(() => {
 
   &__chev {
     width: 8px; height: 8px;
+    border-top: 2px solid #8b8b8b;
     border-right: 2px solid #8b8b8b;
-    border-bottom: 2px solid #8b8b8b;
-    transform: rotate(-45deg);
+    transform: rotate(135deg);
     transition: transform .15s ease;
-    &.is-open { transform: rotate(135deg); }
+    &.is-open { transform: rotate(-45deg); }
   }
 
   &__list {
@@ -147,6 +161,14 @@ onMounted(() => {
     flex-direction: column;
     gap: 6px;
     padding: 6px 0 8px;
+  }
+
+  &__block &__list {
+    margin-left: 16px;
+  }
+
+  &__block &__link {
+    padding-left: 28px;
   }
 
   &__link {
@@ -172,6 +194,17 @@ onMounted(() => {
 
     &.is-add {
       color: #226c72; /* ссылка «+ Добавить» по макету можно подсветить */
+    }
+
+    &.is-disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+      
+      &:hover {
+        background: transparent;
+        border-color: transparent;
+      }
     }
   }
 

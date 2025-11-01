@@ -1,5 +1,8 @@
 <script setup>
 import { signupGov } from '~/services/login/index.js'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const emit = defineEmits(['close', 'finish'])
 
@@ -39,7 +42,7 @@ async function run () {
     console.error('Ошибка при логине:', error)
     
     const { $toast } = useNuxtApp();
-    $toast.error("Произошла ошибка при регистрации");
+    $toast.error(t('errors.registrationError') || "Произошла ошибка при регистрации");
 
   } finally {
     console.log('login')
@@ -60,35 +63,35 @@ function extractDigits(phone) {
       <button class="absolute right-[32px] top-[32px] text-[22px] leading-5 font-semibold" @click="close">&#10005;</button>
       <div class="flex flex-col">
         <h3 class="text-2xl font-extrabold text-left text-[#222222] mb-[32px] max-lg:text-[22px] max-lg:mb-4">
-          Приглашение на регистрацию
+          {{ $t('managerSignUp.title') }}
         </h3>
         <div class="flex flex-col gap-[10px] max-lg:gap-2">
           <p class="text-lg max-lg:text-base">
-            Укажите данные менеджера кладбища:
+            {{ $t('managerSignUp.specifyManagerData') }}
           </p>
           <input
             v-model="name"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Имя"
+            :placeholder="$t('managerSignUp.namePlaceholder')"
           />
           <input
             v-model="surname"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Фамилия"
+            :placeholder="$t('managerSignUp.surnamePlaceholder')"
           />
           <input
             v-model="patronymic"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Отчество"
+            :placeholder="$t('managerSignUp.patronymicPlaceholder')"
           />
           <input
             v-model="iin"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="ИИН"
+            :placeholder="$t('managerSignUp.iinPlaceholder')"
             maxlength="12"
             pattern="[0-9]*"
             inputmode="numeric"
@@ -99,7 +102,7 @@ function extractDigits(phone) {
             v-mask="'+7 (###) ###-##-##'"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px] mb-[32px]"
             type="text"
-            placeholder="Номер телефона"
+            :placeholder="$t('managerSignUp.phonePlaceholder')"
           />
         </div>
         <button
@@ -108,7 +111,7 @@ function extractDigits(phone) {
           :disabled="!iin.length || !name.length || !surname.length || !phone_number.length"
           @click="run"
         >
-          Отправить
+          {{ $t('managerSignUp.send') }}
         </button>
       </div>
     </div>

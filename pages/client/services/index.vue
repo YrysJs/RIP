@@ -205,7 +205,8 @@ function handleCommentSuccess(message) {
 //       console.log("Данные чека получены:", receiptData.value);
 //     } else {
 //       console.error("Ошибка получения данных чека:", response);
-//       alert("Ошибка получения чека");
+//       const { $toast } = useNuxtApp();
+      $toast.error(t('errors.receiptLoadError'));
 //       showReceiptModal.value = false;
 //     }
 //   } catch (error) {
@@ -231,7 +232,8 @@ async function openReceiptModal(order) {
       order.id;
 
     if (!transactionId) {
-      alert("Ошибка: Transaction ID не найден.");
+      const { $toast } = useNuxtApp();
+      $toast.error(t('errors.transactionIdNotFound'));
       showReceiptModal.value = false;
       return;
     }
@@ -240,12 +242,14 @@ async function openReceiptModal(order) {
     if (response.data?.success && response.data?.data) {
       receiptData.value = response.data.data;
     } else {
-      alert("Ошибка получения чека");
+      const { $toast } = useNuxtApp();
+      $toast.error(t('errors.receiptLoadError'));
       showReceiptModal.value = false;
     }
   } catch (e) {
     console.error(e);
-    alert("Ошибка при получении чека");
+    const { $toast } = useNuxtApp();
+    $toast.error(t('errors.receiptLoadError'));
     showReceiptModal.value = false;
   } finally {
     receiptLoading.value = false;
@@ -253,21 +257,15 @@ async function openReceiptModal(order) {
 }
 
 function computedStatus(status) {
-  if (status === "new") {
-    return "Новый";
-  } else if (status === "processing") {
-    return "В обработке";
-  } else if (status === "in_progress") {
-    return "В процессе";
-  } else if (status === "completed") {
-    return "Выполнен";
-  } else if (status === "cancelled") {
-    return "Отменен";
-  } else if (status === "pending_payment") {
-    return "Ожидается оплата";
-  }
-
-  return status;
+  const statusMap = {
+    new: t('orders.newStatus'),
+    processing: t('orders.processingStatus'),
+    in_progress: t('orders.inProgressStatus'),
+    completed: t('statuses.completed'),
+    cancelled: t('statuses.cancelled'),
+    pending_payment: t('orders.waitingPaymentStatus')
+  };
+  return statusMap[status] || status;
 }
 
 function getStatusColor(status) {
@@ -300,7 +298,7 @@ onMounted(() => {
     >
       <!-- Загрузка -->
       <div v-if="loading" class="flex justify-center items-center py-8">
-        <div class="text-lg text-gray-600">Загрузка заказов...</div>
+        <div class="text-lg text-gray-600">{{ $t('supplierTickets.loadingOrders') }}</div>
       </div>
 
       <!-- Заказы -->
@@ -314,7 +312,7 @@ onMounted(() => {
           class="flex justify-between items-center cursor-pointer select-none"
           @click="toggle(index)"
         >
-          <h3 class="text-2xl font-medium">Заказ № {{ item.id }}</h3>
+          <h3 class="text-2xl font-medium">{{ $t('supplierTickets.orderNumber') }} {{ item.id }}</h3>
           <img
             src="/icons/dropdown.svg"
             alt=""
@@ -329,7 +327,7 @@ onMounted(() => {
           >
             <div class="font-medium flex flex-col gap-[10px]">
               <div class="flex text-base">
-                <p class="min-w-[150px] max-w-[150px]">Статус:</p>
+                <p class="min-w-[150px] max-w-[150px]">{{ $t('supplierTickets.status') }}:</p>
                 <span
                   :class="[
                     'px-3 py-1 rounded-full text-sm font-semibold',
@@ -340,17 +338,17 @@ onMounted(() => {
                 </span>
               </div>
               <div class="flex text-base">
-                <p class="min-w-[150px] max-w-[150px]">Адрес прибытия:</p>
+                <p class="min-w-[150px] max-w-[150px]">{{ $t('supplierTickets.arrivalAddress') }}</p>
                 <p class="p-[4px]">
                   {{ position.delivery_destination_address }}
                 </p>
               </div>
               <div class="flex text-base">
-                <p class="min-w-[150px] max-w-[150px]">Время прибытия:</p>
+                <p class="min-w-[150px] max-w-[150px]">{{ $t('supplierTickets.arrivalTime') }}</p>
                 <p class="p-[4px]">10:00</p>
               </div>
               <div class="flex text-base">
-                <p class="min-w-[150px] max-w-[150px]">Телефон:</p>
+                <p class="min-w-[150px] max-w-[150px]">{{ $t('supplierTickets.phone') }}</p>
                 <p class="p-[4px]">+{{ position.product.supplier_phone }}</p>
               </div>
             </div>
@@ -360,13 +358,13 @@ onMounted(() => {
               @click="openReceiptModal(item)"
               class="h-[51px] text-[#222222] text-base font-semibold flex items-center gap-[10px] hover:bg-gray-100 px-4 rounded transition-colors"
             >
-              <img src="/icons/check-icon.svg" alt="" /> Чек об оплате
+              <img src="/icons/check-icon.svg" alt="" /> {{ $t('supplierTickets.paymentReceipt') }}
             </button>
             <button
               @click="openCommentModal(item)"
               class="block w-[225px] h-[51px] rounded-md bg-[#38949B] text-white text-base font-semibold hover:bg-[#2d7a80] transition-colors"
             >
-              Оставить отзыв
+              {{ $t('supplierTickets.leaveReview') }}
             </button>
           </div>
         </div>
@@ -374,7 +372,7 @@ onMounted(() => {
 
       <!-- Пустое состояние -->
       <div v-else-if="!loading" class="flex justify-center items-center py-8">
-        <div class="text-lg text-gray-600">Заказы не найдены</div>
+        <div class="text-lg text-gray-600">{{ $t('supplierTickets.ordersNotFound') }}</div>
       </div>
 
       <!-- Пагинация -->
@@ -384,20 +382,20 @@ onMounted(() => {
       >
         <div class="flex items-center gap-4">
           <span class="text-sm text-gray-600">
-            Показано
+            {{ $t('clientServices.shown') }}
             {{ totalCount ? (currentPage - 1) * pageSize + 1 : 0 }}–
             {{ totalCount ? Math.min(currentPage * pageSize, totalCount) : 0 }}
-            из {{ totalCount }} заказов
+            {{ $t('clientServices.of') }} {{ totalCount }} {{ $t('clientServices.orders') }}
           </span>
           <select
             v-model="pageSize"
             @change="changePageSize(pageSize)"
             class="px-3 py-1 border rounded text-sm"
           >
-            <option value="5">5 на странице</option>
-            <option value="10">10 на странице</option>
-            <option value="20">20 на странице</option>
-            <option value="50">50 на странице</option>
+            <option value="5">5 {{ $t('clientServices.perPage') }}</option>
+            <option value="10">10 {{ $t('clientServices.perPage') }}</option>
+            <option value="20">20 {{ $t('clientServices.perPage') }}</option>
+            <option value="50">50 {{ $t('clientServices.perPage') }}</option>
           </select>
         </div>
 
@@ -407,7 +405,7 @@ onMounted(() => {
             :disabled="!hasPrevPage"
             class="px-3 py-1 border rounded text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Предыдущая
+            {{ $t('clientServices.previous') }}
           </button>
 
           <div class="flex gap-1">
@@ -446,7 +444,7 @@ onMounted(() => {
             :disabled="!hasNextPage"
             class="px-3 py-1 border rounded text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Следующая
+            {{ $t('clientServices.next') }}
           </button>
         </div>
       </div>

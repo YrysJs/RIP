@@ -78,20 +78,20 @@
       <div class="flex text-base">
         <p class="min-w-[150px] font-medium">{{ $t('common.status') }}:</p>
         <p class="p-[4px] rounded-md bg-[#DC6E29] text-sm font-bold text-white mr-4">
-          {{ booking.status === 'pending' ? 'Ожидает оплаты' : booking.status }}
+          {{ booking.status === 'pending' ? $t('booking.waitingPayment') : booking.status }}
         </p>
       </div>
     </div>
     <div class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px]">
       <div class="flex text-base items-center">
-        <p class="min-w-[150px] max-w-[150px] font-medium">Дополнительные услуги:</p>
-        <p class="text-sm text-[#9CA3AF]">Отсутствуют</p>
+        <p class="min-w-[150px] max-w-[150px] font-medium">{{ $t('booking.additionalServices') }}</p>
+        <p class="text-sm text-[#9CA3AF]">{{ $t('booking.noServices') }}</p>
       </div>
     </div>
 
 
     <button class="block w-[225px] h-[51px] rounded-md bg-[#F1F5F9] text-[#1F2937] text-base font-semibold ml-auto mt-[16px]" @click="$emit('cancel', booking.id)">
-      Отменить бронь
+      {{ $t('booking.cancelBooking') }}
     </button>
   </div>
 </template>

@@ -90,11 +90,12 @@ onMounted(async () => {
   try {
     const response = await getCemeteryById(route.params.id)
     form.status = response.data.status
-    form.description = response.data.description
+    // Используем локализованные поля если доступны, иначе обычные
+    form.description = response.data.description_kz || response.data.description
     form.street_name = response.data.street_name
     form.religion = response.data.religion
     form.phone = response.data.phone
-    form.name = response.data.name
+    form.name = response.data.name_kz || response.data.name
     form.city = response.data.city
     form.country = response.data.country
     form.polygon_data = response.data.polygon_data

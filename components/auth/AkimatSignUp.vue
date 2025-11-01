@@ -53,29 +53,29 @@ function extractDigits(phone) {
       <button class="absolute right-[32px] top-[32px] text-[22px] leading-5 font-semibold" @click="close">&#10005;</button>
       <div class="flex flex-col">
         <h3 class="text-2xl font-extrabold text-left text-[#222222] mb-[32px] max-lg:text-[22px] max-lg:mb-4">
-          Приглашение на регистрацию
+          {{ $t('auth.signup.inviteToRegistration') }}
         </h3>
         <div class="flex flex-col gap-[10px] max-lg:gap-2">
           <p class="text-lg max-lg:text-base">
-            Укажите данные сотрудника:
+            {{ $t('auth.signup.specifyEmployeeData') }}
           </p>
           <input
             v-model="name"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Имя"
+            :placeholder="$t('auth.signup.name')"
           />
           <input
             v-model="surname"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Фамилия"
+            :placeholder="$t('auth.signup.surname')"
           />
           <input
             v-model="patronymic"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Отчество"
+            :placeholder="$t('auth.signup.patronymic')"
           />
           <input
             v-model="iin"
@@ -83,22 +83,22 @@ function extractDigits(phone) {
             maxlength="12"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="ИИН"
+            :placeholder="$t('auth.signup.iin')"
           />
           <input
             v-model="phone_number"
             v-mask="'+7 (###) ###-##-##'"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Номер телефона"
+            :placeholder="$t('auth.login.phoneNumber')"
           />
           <select
             v-model="roleId"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px] mb-[32px]"
           >
-            <option value="0" disabled>Роль</option>
-            <option :value="8">Менеджер</option>
-            <option :value="7">Админ</option>
+            <option value="0" disabled>{{ $t('auth.signup.role') }}</option>
+            <option :value="8">{{ $t('common.types.manager') }}</option>
+            <option :value="7">{{ $t('common.types.admin') }}</option>
           </select>
         </div>
         <button
@@ -107,7 +107,7 @@ function extractDigits(phone) {
           :disabled="!iin.length || !name.length || !surname.length || !phone_number.length || !roleId"
           @click="run"
         >
-          Отправить
+          {{ $t('common.send') }}
         </button>
       </div>
     </div>

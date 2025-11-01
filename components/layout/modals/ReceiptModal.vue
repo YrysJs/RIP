@@ -49,7 +49,7 @@
                 
                 <!-- Информация о плательщике -->
                 <div class="section">
-                    <h3 class="section-title">{{ $t('receiptDetails.payerInfo') }}</h3>
+                    <h3 class="section-title">{{ $t('receipt.payerInfo') }}</h3>
                     <div class="info-row">
                         <span class="label">{{ $t('common.name') }}:</span>
                         <span class="value">{{ receiptData.payer.name }}</span>
@@ -63,20 +63,20 @@
                         <span class="value">{{ receiptData.payer.email }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Телефон:</span>
+                        <span class="label">{{ $t('receipt.phone') }}</span>
                         <span class="value">+{{ receiptData.payer.phone }}</span>
                     </div>
                 </div>
                 
                 <!-- Информация о получателе -->
                 <div class="section">
-                    <h3 class="section-title">ИНФОРМАЦИЯ О ПОЛУЧАТЕЛЕ</h3>
+                    <h3 class="section-title">{{ $t('receipt.recipientInfo') }}</h3>
                     <div class="info-row">
-                        <span class="label">Компания:</span>
+                        <span class="label">{{ $t('receipt.company') }}</span>
                         <span class="value">{{ receiptData.recipient.companyName }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Магазин:</span>
+                        <span class="label">{{ $t('receipt.store') }}</span>
                         <span class="value">{{ receiptData.recipient.storeName }}</span>
                     </div>
                     <div v-if="receiptData.recipient.email" class="info-row">
@@ -84,14 +84,14 @@
                         <span class="value">{{ receiptData.recipient.email }}</span>
                     </div>
                     <div v-if="receiptData.recipient.phone" class="info-row">
-                        <span class="label">Телефон:</span>
+                        <span class="label">{{ $t('receipt.phone') }}</span>
                         <span class="value">{{ receiptData.recipient.phone }}</span>
                     </div>
                 </div>
                 
                 <!-- Дата формирования -->
                 <div class="footer">
-                    <p class="footer-text">Дата формирования чека: {{ formatDate(new Date()) }}</p>
+                    <p class="footer-text">{{ $t('receipt.receiptDate') }} {{ formatDate(new Date()) }}</p>
                 </div>
             </div>
             

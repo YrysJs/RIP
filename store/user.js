@@ -4,7 +4,8 @@ export const useUserStore = defineStore('user', {
     state: () => ({
         token: '',
         user: null,
-        authType: ''
+        authType: '',
+        supplierIsActive: true // по умолчанию активен
     }),
 
     actions: {
@@ -20,9 +21,14 @@ export const useUserStore = defineStore('user', {
             this.authType = type
         },
 
+        setSupplierIsActive(isActive) {
+            this.supplierIsActive = isActive
+        },
+
         logout() {
             this.token = ''
             this.user = null
+            this.supplierIsActive = true
         }
     }
 })

@@ -95,22 +95,22 @@ const pluralDays = (v) => {
   <NuxtLayout name="supplier" class="supplier-services-page">
     <!-- заголовок -->
     <div class="page-head">
-      <h2 class="page-title">Активные товары и услуги</h2>
+      <h2 class="page-title">{{ $t('supplierActive.title') }}</h2>
     </div>
 
     <!-- состояния -->
     <div v-if="loading" class="state-card">
       <div class="spinner" />
-      <p class="muted mt-3">Загрузка активных товаров и услуг…</p>
+      <p class="muted mt-3">{{ $t('supplierActive.loading') }}</p>
     </div>
 
     <div v-else-if="error" class="state-card">
       <p class="error">{{ error }}</p>
-      <button class="btn btn--primary btn--md mt-3" @click="fetchProducts">Попробовать снова</button>
+      <button class="btn btn--primary btn--md mt-3" @click="fetchProducts">{{ $t('supplierActive.tryAgain') }}</button>
     </div>
 
     <div v-else-if="items.length === 0" class="state-card">
-      <p class="muted">Нет активных заявок</p>
+      <p class="muted">{{ $t('supplierActive.noActiveRequests') }}</p>
     </div>
 
     <!-- список карточек -->
@@ -149,7 +149,7 @@ const pluralDays = (v) => {
               </g>
             </svg>
             <span>
-              Срок выполнения: {{ product.service_time }}
+              {{ $t('supplierActive.serviceTime') }} {{ product.service_time }}
             </span>
           </div>
         </div>
@@ -161,8 +161,8 @@ const pluralDays = (v) => {
             :disabled="deactivating.has(product.id)"
             @click="deactivateProduct(product.id)"
           >
-            <span v-if="deactivating.has(product.id)">Деактивируем…</span>
-            <span v-else>Деактивировать</span>
+            <span v-if="deactivating.has(product.id)">{{ $t('supplierActive.deactivating') }}</span>
+            <span v-else>{{ $t('supplierActive.deactivate') }}</span>
           </button>
 
           <div class="btn-group">
@@ -170,7 +170,7 @@ const pluralDays = (v) => {
               class="btn btn--primary btn--lg"
               :to="`/supplier/services/add-service/${product.id}`"
             >
-              Редактировать
+              {{ $t('supplierActive.edit') }}
             </NuxtLink>
             
             <button class="btn btn--delete" @click="deactivateProduct(product.id)">

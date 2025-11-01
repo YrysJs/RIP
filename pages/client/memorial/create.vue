@@ -178,7 +178,7 @@ const submitMemorial = async () => {
     // await navigateTo('/client/memorials')
   } catch (error) {
     const { $toast } = useNuxtApp()
-    $toast.error("Ошибка при создании мемориала: " +
+    $toast.error($t('memorialCreate.errorCreating') +
         (error.response?.data?.error || error.message))
   } finally {
     isSubmitting.value = false;
@@ -254,9 +254,9 @@ const submitMemorial = async () => {
             <!-- Галерея превью изображений внутри блока загрузки -->
             <div v-else class="upload-area-with-images min-h-[250px]">
               <div class="gallery-header">
-                <h4>Загруженные фото ({{ imagePreviews.length }})</h4>
+                <h4>{{ $t('memorialCreate.uploadedPhotos') }} ({{ imagePreviews.length }})</h4>
                 <button class="remove-all-btn" @click="removeAllImages">
-                  Удалить все
+                  {{ $t('common.deleteAll') }}
                 </button>
               </div>
 
@@ -333,12 +333,12 @@ const submitMemorial = async () => {
                 </p>
               </div>
               <!-- <div class="flex justify-between text-base font-medium">
-                <div>Страна</div>
-                <div>Казахстан</div>
+                <div>{{ $t('memorialCreate.country') }}</div>
+                <div>{{ $t('memorialCreate.kazakhstan') }}</div>
               </div>
               <div class="flex justify-between text-base font-medium">
-                <div>Город</div>
-                <div>Алматы</div>
+                <div>{{ $t('memorialCreate.city') }}</div>
+                <div>{{ $t('memorialCreate.almaty') }}</div>
               </div> -->
 
               <div class="flex flex-col gap-2">
@@ -356,7 +356,7 @@ const submitMemorial = async () => {
                   <div
                     class="flex-1 h-[30px] flex items-center text-base font-medium gap-[11px]"
                   >
-                    <div class="w-[100px] text-base text-[#050202]">Сектор</div>
+                    <div class="w-[100px] text-base text-[#050202]">{{ $t('memorialCreate.sector') }}</div>
                     <div class="text-sm text-[#999]">
                       {{ burial?.sector_number }}
                     </div>
@@ -364,7 +364,7 @@ const submitMemorial = async () => {
                   <div
                     class="flex-1 h-[30px] flex items-center text-base font-medium gap-[11px]"
                   >
-                    <div class="w-[100px] text-base text-[#050202]">Место:</div>
+                    <div class="w-[100px] text-base text-[#050202]">{{ $t('memorialCreate.place') }}</div>
                     <div class="text-sm text-[#999]">
                       {{ burial?.grave_id }}
                     </div>
@@ -386,22 +386,22 @@ const submitMemorial = async () => {
         </div>
 
         <div class="pb-4 border-b border-b-[#eee] max-sm:border-b-0">
-          <h3 class="text-[18px] mb-2">Эпитафия</h3>
+          <h3 class="text-[18px] mb-2">{{ $t('memorialCreate.epitaph') }}</h3>
           <textarea
             v-model="epitaph"
             class="border border-[#AFB5C166] rounded-lg py-[18px] px-3 w-full focus:outline-none"
-            placeholder="Введите эпитафию..."
+            :placeholder="$t('memorialCreate.epitaphPlaceholder')"
             rows="4"
           />
         </div>
         <div
           class="py-4 border-b border-b-[#eee] max-sm:py-0 max-sm:border-b-0"
         >
-          <h3 class="text-[18px] mb-2">Память о человеке:</h3>
+          <h3 class="text-[18px] mb-2">{{ $t('memorialCreate.aboutPersonLabel') }}</h3>
           <textarea
             v-model="aboutPerson"
             class="border border-[#AFB5C166] rounded-lg py-[18px] px-3 w-full focus:outline-none"
-            placeholder="Расскажите о человеке..."
+            :placeholder="$t('memorialCreate.aboutPersonPlaceholder')"
             rows="4"
           />
         </div>
@@ -427,16 +427,15 @@ const submitMemorial = async () => {
           </div>
 
           <div>
-            <div class="text-base font-medium">Публичная личность</div>
+            <div class="text-base font-medium">{{ $t('memorialCreate.publicPerson') }}</div>
 
             <p class="text-sm font-medium text-[#5C6771E6]">
-              Цифровой мемориал этого человека приватный и доступен только по
-              ссылке
+              {{ $t('memorialCreate.publicPersonDescription') }}
             </p>
           </div>
         </div>
         <div class="py-4 border-b border-b-[#eee]">
-          <h3 class="text-[18px] mb-1">Достижения</h3>
+          <h3 class="text-[18px] mb-1">{{ $t('memorialCreate.achievements') }}</h3>
 
           <!-- Кнопка загрузки фото -->
           <div
@@ -451,8 +450,8 @@ const submitMemorial = async () => {
               />
             </div>
             <p class="text-base text-[#3F474F]">
-              <span class="font-medium text-[#E9B949]">Загрузите файлы</span>
-              или перетащите их
+              <span class="font-medium text-[#E9B949]">{{ $t('memorialCreate.uploadFiles') }}</span>
+              {{ $t('memorialCreate.orDrag') }}
             </p>
           </div>
 
@@ -472,7 +471,7 @@ const submitMemorial = async () => {
             class="achievement-photos-gallery"
           >
             <div class="gallery-header">
-              <h4>Фото достижений ({{ achievementPhotos.length }})</h4>
+              <h4>{{ $t('memorialCreate.achievementPhotos') }} ({{ achievementPhotos.length }})</h4>
             </div>
 
             <div class="gallery-grid">
@@ -500,7 +499,7 @@ const submitMemorial = async () => {
           </div>
         </div>
         <div>
-          <h3 class="text-[18px] font-medium mb-1">Видеоматериалы</h3>
+          <h3 class="text-[18px] font-medium mb-1">{{ $t('memorialCreate.videoMaterials') }}</h3>
 
           <!-- Кнопка добавления видео -->
 <!--          <button-->
@@ -523,7 +522,7 @@ const submitMemorial = async () => {
               <input
                 v-model="videoUrl"
                 type="text"
-                placeholder="Вставьте ссылку на YouTube видео"
+                :placeholder="$t('memorialCreate.youtubePlaceholder')"
                 class="flex-1 border border-[#222222] rounded-lg p-3 text-base"
                 @keyup.enter="addVideo"
               />
@@ -531,7 +530,7 @@ const submitMemorial = async () => {
                 class="bg-[#224C4F] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#1a3a3c] transition-colors"
                 @click="addVideo"
               >
-                Добавить
+                {{ $t('common.add') }}
               </button>
               <button
                 class="bg-[#EF4444] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#DC2626] transition-colors"
@@ -588,8 +587,8 @@ const submitMemorial = async () => {
             class="bg-[#E9B949] text-black px-8 py-4 rounded-lg font-medium text-sm transition-colors disabled:bg-gray-400 hover:bg-[#D1A53F] active:bg-[#B88F34]"
             @click="submitMemorial"
           >
-            <span v-if="isSubmitting">Создание мемориала...</span>
-            <span v-else>Создать мемориал</span>
+            <span v-if="isSubmitting">{{ $t('memorialCreate.creatingMemorial') }}</span>
+            <span v-else>{{ $t('memorialCreate.createMemorial') }}</span>
           </button>
         </div>
       </div>

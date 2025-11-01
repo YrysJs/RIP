@@ -3,12 +3,12 @@
   <div v-if="visible" class="modal-wrapper">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="text-[24px] bold">Вход в кабинет Акимата</h2>
+        <h2 class="text-[24px] bold">{{ $t('loginModal.akimatLogin') }}</h2>
         <button class="modal-close" @click="emit('close')">
           <img src="/icons/close.svg" alt="X" />
         </button>
       </div>
-      <p class="modal-sub">Введите номер мобильного телефона - мы пришлем код</p>
+      <p class="modal-sub">{{ $t('loginModal.enterPhoneHint') }}</p>
 
 
     </div>

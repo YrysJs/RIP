@@ -175,7 +175,7 @@ const handleNotificationClick = async (notification) => {
       <!-- Индикатор загрузки -->
       <div v-if="loading && notifications.length === 0" class="loading-state">
         <div class="loading-spinner"/>
-        <span class="loading-text">Загрузка уведомлений...</span>
+        <span class="loading-text">{{ $t('notifications.loading') }}</span>
       </div>
       
       <!-- Ошибка загрузки -->
@@ -185,12 +185,12 @@ const handleNotificationClick = async (notification) => {
             <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <p class="error-message">Ошибка загрузки уведомлений: {{ error }}</p>
+        <p class="error-message">{{ $t('notifications.errorLoading') }} {{ error }}</p>
         <button 
           class="btn btn--secondary"
           @click="fetchNotifications(true)"
         >
-          Попробовать снова
+          {{ $t('notifications.tryAgain') }}
         </button>
       </div>
       
@@ -239,13 +239,13 @@ const handleNotificationClick = async (notification) => {
         <!-- Индикатор загрузки дополнительных уведомлений -->
         <div v-if="loadingMore" class="loading-more">
           <div class="loading-spinner loading-spinner--small"/>
-          <span class="loading-text">Загрузка...</span>
+          <span class="loading-text">{{ $t('notifications.loadingMore') }}</span>
 
         </div>
         
         <!-- Сообщение о завершении загрузки -->
         <div v-else-if="!hasMore && notifications.length > 0" class="end-message">
-          <p>Все уведомления загружены</p>
+          <p>{{ $t('notifications.allLoaded') }}</p>
         </div>
       </div>
       
@@ -257,8 +257,8 @@ const handleNotificationClick = async (notification) => {
             <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <h3 class="empty-state__title">Уведомлений пока нет</h3>
-        <p class="empty-state__description">Здесь будут отображаться все ваши уведомления</p>
+        <h3 class="empty-state__title">{{ $t('notifications.emptyTitle') }}</h3>
+        <p class="empty-state__description">{{ $t('notifications.emptyDescription') }}</p>
       </div>
     </div>
   </NuxtLayout>

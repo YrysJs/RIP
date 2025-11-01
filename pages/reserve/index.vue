@@ -11,7 +11,25 @@ import AppHeader from "~/components/layout/AppHeader.vue";
 import AppHeaderClient from "~/components/layout/AppHeaderClient.vue";
 import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
+
+// Функция для получения локализованного имени кладбища
+const getCemeteryName = (cemetery) => {
+  if (!cemetery) return ''
+  if (locale.value === 'kk' && cemetery.name_kz) {
+    return cemetery.name_kz
+  }
+  return cemetery.name || ''
+}
+
+// Функция для получения локализованного описания кладбища
+const getCemeteryDescription = (cemetery) => {
+  if (!cemetery) return ''
+  if (locale.value === 'kk' && cemetery.description_kz) {
+    return cemetery.description_kz
+  }
+  return cemetery.description || ''
+}
 const router = useRouter();
 
 const shareCoordModalState = ref(false);
@@ -263,13 +281,13 @@ const cancelGraveSelection = () => {
 const getGraveStatusText = (status) => {
   switch (status) {
     case "free":
-      return "Свободное место";
+      return t('reserve.freePlace');
     case "reserved":
-      return "Зарезервировано";
+      return t('reserve.reserved');
     case "occupied":
-      return "Занято";
+      return t('reserve.occupied');
     default:
-      return "Неизвестно";
+      return t('reserve.unknown');
   }
 };
 
@@ -492,6 +510,59 @@ function openRoute() {
   // Открываем ссылку в новой вкладке
   window.open(yandexMapsUrl, '_blank');
 }
+
+// Функция для форматирования телефона с маской
+function formatPhone(phone) {
+  if (!phone) return '';
+  
+  // Убираем все нецифровые символы
+  const cleaned = phone.toString().replace(/\D/g, '');
+  
+  // Если номер начинается с 7 или 8, убираем первую цифру и добавляем +7
+  let formatted = cleaned;
+  if (formatted.startsWith('7')) {
+    formatted = formatted.substring(1);
+  } else if (formatted.startsWith('8')) {
+    formatted = formatted.substring(1);
+  }
+  
+  // Применяем маску +7 (###) ###-##-##
+  if (formatted.length >= 10) {
+    const code = formatted.substring(0, 3);
+    const part1 = formatted.substring(3, 6);
+    const part2 = formatted.substring(6, 8);
+    const part3 = formatted.substring(8, 10);
+    return `+7 (${code}) ${part1}-${part2}-${part3}`;
+  }
+  
+  return phone; // Возвращаем как есть, если не удалось отформатировать
+}
+
+// Функция для создания WhatsApp ссылки
+function getWhatsAppLink(phone) {
+  if (!phone) return '#';
+  
+  // Убираем все нецифровые символы
+  let cleaned = phone.toString().replace(/\D/g, '');
+  
+  // Если номер начинается с 7, оставляем как есть, если с 8 - заменяем на 7
+  if (cleaned.startsWith('8')) {
+    cleaned = '7' + cleaned.substring(1);
+  } else if (!cleaned.startsWith('7')) {
+    cleaned = '7' + cleaned;
+  }
+  
+  // Формируем WhatsApp ссылку
+  return `https://wa.me/${cleaned}`;
+}
+
+// Функция для открытия WhatsApp
+function openWhatsApp(phone) {
+  const link = getWhatsAppLink(phone);
+  if (link !== '#') {
+    window.open(link, '_blank');
+  }
+}
 </script>
 
 <template>
@@ -573,7 +644,7 @@ function openRoute() {
                   <div
                     class="p-[16px] border rounded-lg text-sm text-[#666] bg-[#fafafa]"
                   >
-                    Ничего не найдено. Измените фильтры или выберите город.
+                    {{ $t('reserve.nothingFound') }}
                   </div>
                 </template>
 
@@ -643,7 +714,7 @@ function openRoute() {
                   <div
                     class="w-full h-full flex items-center justify-center text-[#666]"
                   >
-                    Загрузка карты…
+                    {{ $t('reserve.loadingMap') }}
                   </div>
                 </template>
               </ClientOnly>
@@ -688,7 +759,7 @@ function openRoute() {
                           class="w-6 h-6"
                         />
                         <h3 class="text-fluid text-[#201001] font-foglihten">
-                          {{ selectedCemetery?.name }}
+                          {{ getCemeteryName(selectedCemetery) }}
                         </h3>
                       </div>
                       <p class="text-[#939393] text-sm mt-[4px] mb-[8px]">
@@ -703,7 +774,7 @@ function openRoute() {
                           class="w-[36px] h-[16px] rounded-sm bg-[#43DC4966] border-2 border-[#43DC49]"
                         ></div>
                         <p class="text-sm sm:text-[13px]">
-                          Сводобные места: {{ selectedCemetery?.free_spaces }}
+                          {{ $t('reserve.freePlaces') }} {{ selectedCemetery?.free_spaces }}
                         </p>
                       </div>
                       <div class="flex gap-[8px] items-center">
@@ -711,7 +782,7 @@ function openRoute() {
                           class="w-[36px] h-[16px] rounded-sm bg-[#DCBA4366] border-2 border-[#DCBA43]"
                         ></div>
                         <p class="text-sm sm:text-[13px]">
-                          Зарезервировано: {{ selectedCemetery?.reserved_spaces }}
+                          {{ $t('reserve.reservedPlaces') }} {{ selectedCemetery?.reserved_spaces }}
                         </p>
                       </div>
                       <div class="flex gap-[8px] items-center">
@@ -719,7 +790,7 @@ function openRoute() {
                           class="w-[36px] h-[16px] rounded-sm bg-[#93939366] border-2 border-[#939393]"
                         ></div>
                         <p class="text-sm sm:text-[13px]">
-                          Занято: {{ selectedCemetery?.occupied_spaces }}
+                          {{ $t('reserve.occupiedPlaces') }} {{ selectedCemetery?.occupied_spaces }}
                         </p>
                       </div>
                     </div>
@@ -733,30 +804,26 @@ function openRoute() {
                         selectedCemetery?.street_name
                       }}</span>
                       <span class="text-[#999] text-sm ml-1"
-                        >({{ selectedCemetery?.distance }} км от вас)</span
+                        >({{ selectedCemetery?.distance }} {{ $t('reserve.kmFromYou') }})</span
                       >
                     </div>
-                    <div class="flex gap-[8px] items-center">
-                      <img src="/icons/phone.svg" alt="" />
-                      <a
-                        :href="`tel:${selectedCemetery?.phone2}`"
-                        class="text-[13px]"
-                        >{{ selectedCemetery?.phone }}</a
-                      >
+                    <div class="flex gap-[8px] items-center cursor-pointer" @click="openWhatsApp(selectedCemetery?.phone2 || selectedCemetery?.phone)">
+                      <img src="/icons/whatsapp1.svg" alt="WhatsApp" />
+                      <span class="text-[13px]">{{ formatPhone(selectedCemetery?.phone2 || selectedCemetery?.phone) }}</span>
                     </div>
                   </div>
 
                   <!-- <div class="flex gap-[24px] mt-[16px] mb-[32px]">
           <span class="text-base font-medium"
-            >Вместимость: {{ selectedCemetery?.capacity }}</span
+            >{{ $t('reserve.capacity') }} {{ selectedCemetery?.capacity }}</span
           >
           <span class="text-base font-medium"
             >Cвободных мест: {{ selectedCemetery?.free_spaces }}</span
           >
-          <span class="text-base font-medium">Стоимость брони: 10 000₸</span>
+          <span class="text-base font-medium">{{ $t('reserve.bookingCost') }}</span>
         </div> -->
                   <p class="text-base text-[#222] py-4">
-                    {{ selectedCemetery?.description }}
+                    {{ getCemeteryDescription(selectedCemetery) }}
                   </p>
 
                   <!-- Информация о выбранной могиле -->
@@ -765,20 +832,20 @@ function openRoute() {
                     class="bg-[#F4F0E7] p-4 rounded-lg my-4 border border-[#E9B949]"
                   >
                     <h4 class="text-base font-medium text-[#201001] mb-2">
-                      Выбранное место
+                      {{ $t('reserve.selectedPlace') }}
                     </h4>
                     <div class="flex gap-4 text-sm">
                       <div class="flex items-center gap-2">
-                        <span class="text-[#666]">Сектор:</span>
+                        <span class="text-[#666]">{{ $t('reserve.sector') }}</span>
                         <span class="font-medium text-[#201001]">{{ selectedGrave.sector_number }}</span>
                       </div>
                       <div class="flex items-center gap-2">
-                        <span class="text-[#666]">Место:</span>
+                        <span class="text-[#666]">{{ $t('reserve.place') }}</span>
                         <span class="font-medium text-[#201001]">{{ selectedGrave.grave_number }}</span>
                       </div>
                     </div>
                     <div class="flex items-center gap-2 mt-2">
-                      <span class="text-[#666] text-sm">Статус:</span>
+                      <span class="text-[#666] text-sm">{{ $t('reserve.status') }}</span>
                       <span 
                         class="text-sm font-medium px-2 py-1 rounded"
                         :class="{
@@ -798,24 +865,24 @@ function openRoute() {
                     class="bg-[#E3F2FD] p-4 rounded-lg my-4 border border-[#2196F3]"
                   >
                     <h4 class="text-base font-medium text-[#1976D2] mb-2">
-                      Выбрана соседняя могила
+                      {{ $t('reserve.selectedNeighborGrave') }}
                     </h4>
                     <div class="flex gap-4 text-sm">
                       <div class="flex items-center gap-2">
-                        <span class="text-[#666]">Сектор:</span>
+                        <span class="text-[#666]">{{ $t('reserve.sector') }}</span>
                         <span class="font-medium text-[#1976D2]">{{ neighborGrave.sector_number }}</span>
                       </div>
                       <div class="flex items-center gap-2">
-                        <span class="text-[#666]">Место:</span>
+                        <span class="text-[#666]">{{ $t('reserve.place') }}</span>
                         <span class="font-medium text-[#1976D2]">{{ neighborGrave.grave_number }}</span>
                       </div>
                       <div class="flex items-center gap-2">
-                        <span class="text-[#666]">Ряд:</span>
+                        <span class="text-[#666]">{{ $t('reserve.row') }}</span>
                         <span class="font-medium text-[#1976D2]">{{ neighborGrave.row_number }}</span>
                       </div>
                     </div>
                     <div class="flex items-center gap-2 mt-2">
-                      <span class="text-[#666] text-sm">Статус:</span>
+                      <span class="text-[#666] text-sm">{{ $t('reserve.status') }}</span>
                       <span 
                         class="text-sm font-medium px-2 py-1 rounded"
                         :class="{
@@ -839,7 +906,7 @@ function openRoute() {
                       alt="Reserve icon"
                       class="w-5 h-5"
                     />
-                    Забронировать место
+                    {{ $t('reserve.reservePlaceButton') }}
                   </button>
                 </div>
               </transition>
@@ -910,16 +977,12 @@ function openRoute() {
                     selectedCemetery?.street_name
                   }}</span>
                   <span class="text-[#999] text-sm ml-1"
-                    >({{ selectedCemetery?.distance }} км от вас)</span
+                    >({{ selectedCemetery?.distance }} {{ $t('reserve.kmFromYou') }})</span
                   >
                 </div>
-                <div class="flex gap-[8px] items-center">
-                  <img src="/icons/phone.svg" alt="" />
-                  <a
-                    :href="`tel:${selectedCemetery?.phone2}`"
-                    class="text-[13px]"
-                    >{{ selectedCemetery?.phone }}</a
-                  >
+                <div class="flex gap-[8px] items-center cursor-pointer" @click="openWhatsApp(selectedCemetery?.phone2 || selectedCemetery?.phone)">
+                  <img src="/icons/whatsapp1.svg" alt="WhatsApp" />
+                  <span class="text-[13px]">{{ formatPhone(selectedCemetery?.phone2 || selectedCemetery?.phone) }}</span>
                 </div>
               </div>
 
@@ -932,24 +995,24 @@ function openRoute() {
                 class="bg-[#F4F0E7] p-4 rounded-lg my-4 border border-[#E9B949]"
               >
                 <h4 class="text-base font-medium text-[#201001] mb-2">
-                  Выбранное место
+                  {{ $t('reserve.selectedPlace') }}
                 </h4>
                 <div class="flex gap-6 text-sm">
                   <div class="flex items-center gap-2">
-                    <span class="text-[#666]">Сектор:</span>
+                    <span class="text-[#666]">{{ $t('reserve.sector') }}</span>
                     <span class="font-medium text-[#201001]">{{ selectedGrave.sector_number }}</span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <span class="text-[#666]">Место:</span>
+                    <span class="text-[#666]">{{ $t('reserve.place') }}</span>
                     <span class="font-medium text-[#201001]">{{ selectedGrave.grave_number }}</span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <span class="text-[#666]">Ряд:</span>
+                    <span class="text-[#666]">{{ $t('reserve.row') }}</span>
                     <span class="font-medium text-[#201001]">{{ selectedGrave.row_number }}</span>
                   </div>
                 </div>
                 <div class="flex items-center gap-2 mt-2">
-                  <span class="text-[#666] text-sm">Статус:</span>
+                  <span class="text-[#666] text-sm">{{ $t('reserve.status') }}</span>
                   <span 
                     class="text-sm font-medium px-2 py-1 rounded"
                     :class="{
@@ -969,24 +1032,24 @@ function openRoute() {
                 class="bg-[#E3F2FD] p-4 rounded-lg my-4 border border-[#2196F3]"
               >
                 <h4 class="text-base font-medium text-[#1976D2] mb-2">
-                  Выбрана соседняя могила
+                  {{ $t('reserve.selectedNeighborGrave') }}
                 </h4>
                 <div class="flex gap-6 text-sm">
                   <div class="flex items-center gap-2">
-                    <span class="text-[#666]">Сектор:</span>
+                    <span class="text-[#666]">{{ $t('reserve.sector') }}</span>
                     <span class="font-medium text-[#1976D2]">{{ neighborGrave.sector_number }}</span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <span class="text-[#666]">Место:</span>
+                    <span class="text-[#666]">{{ $t('reserve.place') }}</span>
                     <span class="font-medium text-[#1976D2]">{{ neighborGrave.grave_number }}</span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <span class="text-[#666]">Ряд:</span>
+                    <span class="text-[#666]">{{ $t('reserve.row') }}</span>
                     <span class="font-medium text-[#1976D2]">{{ neighborGrave.row_number }}</span>
                   </div>
                 </div>
                 <div class="flex items-center gap-2 mt-2">
-                  <span class="text-[#666] text-sm">Статус:</span>
+                  <span class="text-[#666] text-sm">{{ $t('reserve.status') }}</span>
                   <span 
                     class="text-sm font-medium px-2 py-1 rounded"
                     :class="{
@@ -1001,7 +1064,7 @@ function openRoute() {
               </div>
 
               <div v-if="selectedGrave" class="flex gap-[24px] mt-[16px] mb-[32px]">
-                <span class="text-base font-medium">Стоимость брони: {{ neighborGrave ? selectedCemetery?.burial_price*2 : selectedCemetery?.burial_price }} ₸</span>
+                <span class="text-base font-medium">{{ $t('reserve.bookingCost') }} {{ neighborGrave ? selectedCemetery?.burial_price*2 : selectedCemetery?.burial_price }} ₸</span>
               </div>
 
               <button
@@ -1117,13 +1180,13 @@ function openRoute() {
                     </h4>
                     <div class="text-base text-gray-600 space-y-1">
                       <p v-if="secondTooltipData.deceased.death_date">
-                        <span class="font-medium">Дата смерти:</span> {{ new Date(secondTooltipData.deceased.death_date).toLocaleDateString('ru-RU') }}
+                        <span class="font-medium">{{ $t('reserve.deathDate') }}</span> {{ new Date(secondTooltipData.deceased.death_date).toLocaleDateString('ru-RU') }}
                       </p>
                       <p v-if="secondTooltipData.grave.sector_number && secondTooltipData.grave.grave_number">
-                        <span class="font-medium">Место:</span> {{ secondTooltipData.grave.sector_number }}-{{ secondTooltipData.grave.grave_number }}
+                        <span class="font-medium">{{ $t('reserve.placeLabel') }}</span> {{ secondTooltipData.grave.sector_number }}-{{ secondTooltipData.grave.grave_number }}
                       </p>
                       <p v-if="secondTooltipData.grave.cemetery_name">
-                        <span class="font-medium">Кладбище:</span> {{ secondTooltipData.grave.cemetery_name }}
+                        <span class="font-medium">{{ $t('reserve.cemetery') }}</span> {{ secondTooltipData.grave.cemetery_name }}
                       </p>
                     </div>
                   </div>

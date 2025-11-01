@@ -1,5 +1,9 @@
 <script setup>
 import { updateUser } from '~/services/login'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 const emit = defineEmits(['close', 'finish'])
 const props = defineProps(['user'])
 
@@ -28,7 +32,7 @@ async function run () {
     console.error('Ошибка при логине:', error)
     
     const { $toast } = useNuxtApp();
-    $toast.error("Произошла ошибка при обновлении данных");
+    $toast.error(t('akimatUserUpdate.updateError'));
 
   } finally {
     console.log('login')
@@ -52,32 +56,32 @@ onMounted(() => {
       <button class="absolute right-[32px] top-[32px] text-[22px] leading-5 font-semibold" @click="close">&#10005;</button>
       <div class="flex flex-col">
         <h3 class="text-2xl font-extrabold text-left text-[#222222] mb-[32px] max-lg:text-[22px] max-lg:mb-4">
-          Редактировать пользователя
+          {{ $t('akimatUserUpdate.title') }}
         </h3>
         <div class="flex flex-col gap-[10px] max-lg:gap-2">
           <input
             v-model="name"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Имя"
+            :placeholder="$t('akimatUserUpdate.namePlaceholder')"
           />
           <input
             v-model="surname"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Фамилия"
+            :placeholder="$t('akimatUserUpdate.surnamePlaceholder')"
           />
           <input
             v-model="patronymic"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Отчество"
+            :placeholder="$t('akimatUserUpdate.patronymicPlaceholder')"
           />
           <input
             v-model="iin"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px] mb-[32px]"
             type="text"
-            placeholder="ИИН"
+            :placeholder="$t('akimatUserUpdate.iinPlaceholder')"
           />
         </div>
         <button
@@ -86,7 +90,7 @@ onMounted(() => {
           :disabled="!iin.length || !name.length || !surname.length"
           @click="run"
         >
-          Сохранить
+          {{ $t('akimatUserUpdate.save') }}
         </button>
       </div>
     </div>

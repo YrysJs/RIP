@@ -90,10 +90,10 @@
 
       <!-- Прикрепить файл -->
       <div class="mb-[8px]">
-        <h3 class="attach-title">Прикрепить файл</h3>
+        <h3 class="attach-title">{{ $t('user.news.attachFile') }}</h3>
 
         <button @click="$refs.achievementFileInput.click()" class="attach-add">
-          Добавить
+          {{ $t('common.add') }}
         </button>
 
         <input ref="achievementFileInput" type="file" multiple @change="handleAchievementPhotoUpload" class="hidden" />

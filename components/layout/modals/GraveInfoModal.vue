@@ -58,7 +58,7 @@ const view = computed(() => ({
             <!-- Кнопка закрытия -->
             <button
               class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 hover:bg-white transition shadow"
-              aria-label="Закрыть"
+              :aria-label="$t('graveInfo.close')"
               @click.stop="close"
             >
               ✕
@@ -76,12 +76,12 @@ const view = computed(() => ({
               <span
                 class="rounded-full bg-[#F0F1F2] px-3 py-1 text-xs font-medium text-[#5C6771]"
               >
-                Сектор: {{ view.sector }}
+                {{ $t('graveInfo.sector') }} {{ view.sector }}
               </span>
               <span
                 class="rounded-full bg-[#F0F1F2] px-3 py-1 text-xs font-medium text-[#5C6771]"
               >
-                Место: {{ view.place }}
+                {{ $t('graveInfo.place') }} {{ view.place }}
               </span>
             </div>
 
@@ -95,7 +95,7 @@ const view = computed(() => ({
 
             <!-- Примечание -->
             <p class="mt-4 text-sm leading-6">
-              <span class="font-semibold">Примечание:</span>
+              <span class="font-semibold">{{ $t('review.note') }}</span>
               <span class="text-[#222]">{{ view.note }}</span>
             </p>
           </div>

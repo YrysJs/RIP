@@ -167,7 +167,7 @@ function formatPhoneNumber(phone) {
 
         <!-- Provider Info -->
         <div class="mb-3 xs:mb-4 sm:mb-6 rounded-lg">
-          <h3 class="font-semibold text-xs sm:text-sm text-[#939393] mb-1">Поставщик услуг</h3>
+          <h3 class="font-semibold text-xs sm:text-sm text-[#939393] mb-1">{{ $t('review.providerServices') }}</h3>
           <p class="text-xs sm:text-sm font-medium mb-1 break-words">{{ supplier?.name || 'Ритуальный Центр "Покой и Уважение"' }}</p>
           <p class="text-xs sm:text-sm break-words">
             {{ supplier?.city?.name || 'Улица Бейсекбаева, Алматы' }} 
@@ -177,7 +177,7 @@ function formatPhoneNumber(phone) {
 
         <!-- Reviews -->
         <div class="mb-3 xs:mb-4 sm:mb-6">
-          <h3 class="text-sm xs:text-base sm:text-lg font-semibold mb-2 xs:mb-3 sm:mb-4">Отзывы</h3>
+          <h3 class="text-sm xs:text-base sm:text-lg font-semibold mb-2 xs:mb-3 sm:mb-4">{{ $t('review.reviews') }}</h3>
           <div v-if="reviews && reviews.length" class="space-y-2 xs:space-y-3 sm:space-y-4">
             <div
               v-for="review in reviews"
