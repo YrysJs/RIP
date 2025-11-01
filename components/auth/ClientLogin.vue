@@ -465,7 +465,7 @@ const otpCheck = async () => {
               v-mask="'+7 (###) ###-##-##'"
               class="border-2 border-[#AFB5C166] mb-[32px] px-3 py-[18px] text-base rounded-lg h-14 max-lg:py-[14px] max-lg:mb-6"
               type="text"
-              placeholder="Введите номер телефона"
+              :placeholder="$t('clientLogin.phonePlaceholder')"
             />
             <button
               class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#000] font-medium max-lg:py-[15px]"
@@ -495,20 +495,20 @@ const otpCheck = async () => {
               v-model="code"
               class="border-2 border-[#939393] mt-[24px] pl-[16px] rounded-lg h-[60px]"
               type="text"
-              placeholder="Введите код"
+              :placeholder="$t('auth.login.enterCode')"
             />
             <div class="mt-[24px] mb-[18px]">
               <p v-if="true" class="text-base font-semibold text-[#939393]">
-                Отправить код повторно: через {{ fakeTimer }}
+                {{ $t('auth.login.resendCodeIn') }} {{ fakeTimer }}
               </p>
-              <button v-else>Отправить еще раз</button>
+              <button v-else>{{ $t('auth.resendAgain') }}</button>
             </div>
             <button
               class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold"
               :class="{ '!bg-[#E9B949] text-white': code >= 4 }"
               @click="otpCheck"
             >
-              Подтвердить
+              {{ $t('auth.login.verify') }}
             </button>
           </div>
 
@@ -516,11 +516,11 @@ const otpCheck = async () => {
             <h3
               class="text-2xl font-extrabold text-left text-[#222222] mb-[32px] max-lg:text-[22px] max-lg:mb-4"
             >
-              Регистрация
+              {{ $t('auth.signup.register') }}
             </h3>
             <div class="flex flex-col gap-[10px] max-lg:gap-2">
               <p class="text-lg max-lg:text-base">
-                Введите номер мобильного телефона:
+                {{ $t('auth.login.enterPhone') }}
               </p>
               <div
                 class="relative w-full border-2 border-[#AFB5C133] rounded-lg"
@@ -539,33 +539,33 @@ const otpCheck = async () => {
                   for="iin"
                   class="absolute left-3 top-1/2 -translate-y-1/2 text-[#AFB5C1] text-base transition-all duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-[#AFB5C1] peer-focus:top-[15px] peer-focus:text-sm peer-focus:text-[#5C6771E6] peer-[&:not(:placeholder-shown)]:top-[15px] peer-[&:not(:placeholder-shown)]:text-sm peer-[&:not(:placeholder-shown)]:text-[#5C6771E6]"
                 >
-                  ИИН
+                  {{ $t('auth.signup.iin') }}
                 </label>
               </div>
               <input
                 v-model="phone_number"
                 class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
                 type="text"
-                placeholder="Номер телефона"
+                :placeholder="$t('auth.login.phoneNumber')"
                 disabled
               />
               <input
                 v-model="surname"
                 class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
                 type="text"
-                placeholder="Фамилия"
+                :placeholder="$t('auth.signup.surname')"
               />
               <input
                 v-model="name"
                 class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
                 type="text"
-                placeholder="Имя"
+                :placeholder="$t('auth.signup.name')"
               />
               <input
                 v-model="patronymic"
                 class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
                 type="text"
-                placeholder="Отчество"
+                :placeholder="$t('auth.signup.patronymic')"
               />
               <div class="flex gap-[10px] items-start mb-[32px]">
                 <input class="w-6 h-6" v-model="check" type="checkbox" />

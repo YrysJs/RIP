@@ -140,7 +140,7 @@ const handleNotificationClick = async (notification) => {
 <template>
     <NuxtLayout name="manager">
         <div class="w-full flex items-center flex-wrap justify-between bg-white rounded-[16px] text-lg font-semibold px-4 gap-4">
-            <span>Уведомления</span>
+            <span>{{ $t('managerNotifications.title') }}</span>
             
             <div class="flex flex-wrap items-center gap-4">
                 <button 
@@ -149,11 +149,11 @@ const handleNotificationClick = async (notification) => {
                     class="px-2 py-1 text-white text-sm rounded-lg flex items-center gap-2 btn--primary"
                 >
                     <div v-if="markingAllAsRead" class="animate-spin rounded-full border-b-2 border-white text-xs"/>
-                    {{ markingAllAsRead ? 'Обновление...' : 'Пометить все как прочитанные' }}
+                    {{ markingAllAsRead ? $t('managerNotifications.updating') : $t('managerNotifications.markAllAsRead') }}
                 </button>
                 
                 <div class="flex items-center gap-2">
-                    <label class="text-sm text-gray-600">Показать по:</label>
+                    <label class="text-sm text-gray-600">{{ $t('managerNotifications.showBy') }}</label>
                     <select 
                         v-model="limit" 
                         @change="onLimitChange"
@@ -175,17 +175,17 @@ const handleNotificationClick = async (notification) => {
             <!-- Индикатор загрузки -->
             <div v-if="loading && notifications.length === 0" class="flex justify-center items-center py-8">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#38949B]"/>
-                <span class="ml-2 text-gray-600">Загрузка уведомлений...</span>
+                <span class="ml-2 text-gray-600">{{ $t('managerNotifications.loading') }}</span>
             </div>
             
             <!-- Ошибка загрузки -->
             <div v-else-if="error && notifications.length === 0" class="text-center py-8">
-                <p class="text-red-500">Ошибка загрузки уведомлений: {{ error }}</p>
+                <p class="text-red-500">{{ $t('managerNotifications.errorLoading') }} {{ error }}</p>
                 <button 
                     class="mt-4 px-4 py-2 bg-[#38949B] text-white rounded-lg hover:bg-[#2a7179]"
                     @click="fetchNotifications(true)"
                 >
-                    Попробовать снова
+                    {{ $t('managerNotifications.tryAgain') }}
                 </button>
             </div>
             
@@ -200,7 +200,7 @@ const handleNotificationClick = async (notification) => {
                 >
                     <div class="flex flex-col flex-1">
 <!--                      <nuxt-link :to="notification.type === 'new_review' ? `/supplier/reviews` : `/supplier/tickets/active/${notification.entity_id}`" class="text-sm font-semibold">Уведомление - {{ notification.subject }} - {{ notification.data.order_id || notification.data.request_number }}</nuxt-link>-->
-                      <p class="text-sm font-semibold">Уведомление - {{ notification.subject }} - {{ notification.data.order_id || notification.data.request_number }}</p>
+                      <p class="text-sm font-semibold">{{ $t('managerNotifications.notificationPrefix') }} {{ notification.subject }} - {{ notification.data.order_id || notification.data.request_number }}</p>
                         <p v-if="notification.content" class="text-xs text-gray-600 mt-1">{{ notification.content }}</p>
                         <p class="text-xs text-[#224C4F] mt-1">{{ formatDate(notification.created_at) }}</p>
                     </div>
@@ -210,17 +210,17 @@ const handleNotificationClick = async (notification) => {
                 
                 <div v-if="loadingMore" class="flex justify-center items-center py-4">
                     <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#38949B]"/>
-                    <span class="ml-2 text-gray-600 text-sm">Загрузка...</span>
+                    <span class="ml-2 text-gray-600 text-sm">{{ $t('managerNotifications.loadingMore') }}</span>
                 </div>
                 
                 <div v-else-if="!hasMore && notifications.length > 0" class="text-center py-4">
-                    <p class="text-gray-500 text-sm">Все уведомления загружены</p>
+                    <p class="text-gray-500 text-sm">{{ $t('managerNotifications.allLoaded') }}</p>
                 </div>
             </div>
             
             <!-- Пустое состояние -->
             <div v-else class="text-center py-8">
-                <p class="text-gray-500">Уведомлений пока нет</p>
+                <p class="text-gray-500">{{ $t('managerNotifications.empty') }}</p>
             </div>
         </div>
     </NuxtLayout>

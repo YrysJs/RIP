@@ -11,7 +11,7 @@
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-semibold">{{ $t('productDetailModal.title') }}</h2>
         <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
-          <img src="/icons/close.svg" alt="Закрыть" class="w-6 h-6" />
+          <img src="/icons/close.svg" :alt="$t('alts.close')" class="w-6 h-6" />
         </button>
       </div>
 
@@ -53,7 +53,7 @@
             <p class="text-sm text-gray-900">{{ product.price }} ₸</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Телефон поставщика</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('productDetail.supplierPhone') }}</label>
             <p class="text-sm text-gray-900">{{ product.supplier_phone }}</p>
           </div>
         </div>
@@ -66,7 +66,7 @@
             </span>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Тип</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('common.type') }}</label>
             <p class="text-sm text-gray-900">{{ product.type }}</p>
           </div>
         </div>
@@ -88,18 +88,18 @@
             <p class="text-sm text-gray-900">{{ product.availability ? $t('productDetail.available') : $t('productDetail.unavailable') }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Время обслуживания</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('productDetail.serviceTime') }}</label>
             <p class="text-sm text-gray-900">{{ product.service_time }}</p>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Дата создания</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('productDetail.createdAt') }}</label>
             <p class="text-sm text-gray-900">{{ formatDate(product.created_at) }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Дата обновления</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('productDetail.updatedAt') }}</label>
             <p class="text-sm text-gray-900">{{ formatDate(product.updated_at) }}</p>
           </div>
         </div>
@@ -110,14 +110,14 @@
           
           <div class="mb-4">
             <label for="moderationComment" class="block text-sm font-medium text-gray-700 mb-1">
-              Комментарий модератора
+              {{ $t('productDetail.moderationComment') }}
             </label>
             <textarea
               id="moderationComment"
               v-model="moderationComment"
               rows="3"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Введите комментарий..."
+              :placeholder="$t('productDetail.commentPlaceholder')"
             />
           </div>
 
@@ -127,14 +127,14 @@
               :disabled="loading"
               class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
             >
-              {{ loading ? 'Загрузка...' : 'Активировать' }}
+              {{ loading ? $t('common.loading') : $t('productDetail.activate') }}
             </button>
             <button
               @click="updateStatus('requires_fix')"
               :disabled="loading"
               class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 disabled:opacity-50"
             >
-              {{ loading ? 'Загрузка...' : 'Отправить на доработку' }}
+              {{ loading ? $t('common.loading') : $t('productDetail.sendForRevision') }}
             </button>
           </div>
         </div>
@@ -146,6 +146,9 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { updateProductStatus } from '~/services/admin'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   visible: {
@@ -187,7 +190,8 @@ const updateStatus = async (status) => {
     emit('close')
   } catch (error) {
     console.error('Ошибка при обновлении статуса:', error)
-    alert('Ошибка при обновлении статуса товара')
+    const { $toast } = useNuxtApp();
+    $toast.error(t('errors.statusUpdateError'));
   } finally {
     loading.value = false
   }

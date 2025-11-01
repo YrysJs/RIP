@@ -2,17 +2,17 @@
   <NuxtLayout name="admin">
     <div class="w-full bg-white rounded-[16px] p-[20px] mt-[20px]">
       <div class="flex justify-between items-center mb-[16px]">
-        <h2 class="text-2xl font-semibold">Менеджеры</h2>
+        <h2 class="text-2xl font-semibold">{{ $t('adminManagers.title') }}</h2>
         <button class="invite-btn" @click="isCreateModal = true">
           <img src="/icons/plus.svg" alt="Пригласить" class="w-4 h-4 mr-2" />
-          Пригласить
+          {{ $t('adminManagers.invite') }}
         </button>
       </div>
 
       <div class="grid grid-cols-12 text-sm font-semibold text-[#6B7280] py-[10px] border-b border-[#EEEEEE]">
-        <div class="col-span-6">Фио пользователя</div>
-        <div class="col-span-3">Телефон</div>
-        <div class="col-span-3">Кладбище</div>
+        <div class="col-span-6">{{ $t('adminManagers.userFullName') }}</div>
+        <div class="col-span-3">{{ $t('adminManagers.phone') }}</div>
+        <div class="col-span-3">{{ $t('adminManagers.cemetery') }}</div>
       </div>
         <div
             v-for="user in roles"
@@ -26,7 +26,7 @@
               {{getNameById(user.cemetery_id)}}
             </template>
             <button v-else class="invite-btn" @click="openSetCemeteryModal(user.cemetery_manager_phone)">
-              Назначить
+              {{ $t('adminManagers.assign') }}
             </button>
           </div>
         </div>
@@ -88,7 +88,7 @@ const setCemetery = async (id) => {
         cemetery_manager_phone: selectedManagerPhone.value
       }
     })
-    successText.value = 'Менеджер назначен!'
+    successText.value = t('adminManagers.managerAssigned')
     isSetCemeteryModal.value = false
     showSuccessModal.value = true
   } catch (error) {
@@ -104,7 +104,7 @@ const openSetCemeteryModal = (phone) => {
 
 const createUser = () => {
   isCreateModal.value = false
-  successText.value = 'Приглашение отправлено!'
+  successText.value = t('adminManagers.inviteSent')
   showSuccessModal.value = true
 }
 

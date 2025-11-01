@@ -2,7 +2,7 @@
   <NuxtLayout name="admin">
     <div class="w-full bg-white rounded-[16px] p-[20px] mt-[20px]">
       <div class="flex justify-between items-center mb-[16px]">
-        <h2 class="text-2xl font-semibold">Комментарии</h2>
+        <h2 class="text-2xl font-semibold">{{ $t('adminComments.title') }}</h2>
         <!--        <button class="invite-btn" @click="isCreateModal = true">-->
         <!--          <img src="/icons/plus.svg" alt="Пригласить" class="w-4 h-4 mr-2" />-->
         <!--          Пригласить-->
@@ -10,9 +10,9 @@
       </div>
 
       <div class="grid grid-cols-12 text-sm font-semibold text-[#6B7280] py-[10px] border-b border-[#EEEEEE]">
-        <div class="col-span-3">Клиент</div>
-        <div class="col-span-3">Поставщик</div>
-        <div class="col-span-6">Коментарий</div>
+        <div class="col-span-3">{{ $t('adminComments.client') }}</div>
+        <div class="col-span-3">{{ $t('adminComments.supplier') }}</div>
+        <div class="col-span-6">{{ $t('adminComments.comment') }}</div>
       </div>
       <div
           v-for="user in suppliers"
@@ -33,7 +33,7 @@
     <Teleport to="body">
       <SuccessModal
           v-if="showSuccessModal"
-          title="Приглашение отправлено!"
+          :title="$t('adminComments.inviteSent')"
           :show-button="true"
           @close="closeSuccessModal"
       />

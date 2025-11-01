@@ -10,16 +10,6 @@
         <span class="user-name">{{ userName }}</span>
       </div>
       
-      <button 
-        class="menu-toggle"
-        @click="toggleMenu"
-        :class="{ active: isMenuOpen }"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-
       <!-- Переключатель языков -->
       <div class="language-switcher">
         <button
@@ -36,6 +26,16 @@
           ҚАЗ
         </button>
       </div>
+
+      <button 
+        class="menu-toggle"
+        @click="toggleMenu"
+        :class="{ active: isMenuOpen }"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
 
     <!-- Dropdown Menu -->
@@ -499,7 +499,7 @@ onMounted(() => {
   padding: 6px 10px;
   background-color: rgba(255, 255, 255, 0.15);
   border-radius: 6px;
-  margin-right: 8px;
+  margin-left: 8px;
 }
 
 .language-switcher button {

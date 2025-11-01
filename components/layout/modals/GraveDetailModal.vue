@@ -62,12 +62,12 @@ const closeModal = () => {
             >
               <img 
                 src="/images/placeholder.png"
-                alt="Фото"
+                :alt="$t('alts.photo')"
                 class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
               />
               <img 
                 src="/images/placeholder.png"
-                alt="Фото"
+                :alt="$t('alts.photo')"
                 class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
               />
             </div>

@@ -2,11 +2,11 @@
   <div v-if="visible" class="modal-overlay" @click="closeModal">
     <div class="modal-content" @click.stop>
       <div class="payment-form">
-        <h2 class="title">Оплата заказа</h2>
+        <h2 class="title">{{ $t('payment.orderPayment') }}</h2>
         
         <!-- Детали заказа -->
         <div class="order-summary">
-          <h3 class="summary-title">Детали заказа</h3>
+          <h3 class="summary-title">{{ $t('payment.orderDetails') }}</h3>
           <template v-if="orderData.cartItems">
             <div v-for="item in orderData.cartItems" :key="item.id" class="summary-item">
               <span>{{item.product.name}}</span>
@@ -14,13 +14,13 @@
             </div>
           </template>
           <div class="summary-total">
-            <span>Итого к оплате</span>
+            <span>{{ $t('payment.totalToPay') }}</span>
             <span>{{ orderData.cartTotal?.toLocaleString() || '0' }} ₸</span>
           </div>
         </div>
         
         <div class="form-group">
-          <label class="label">Номер карты</label>
+          <label class="label">{{ $t('payment.cardNumber') }}</label>
           <input 
             v-model="cardNumber" 
             type="text" 
@@ -43,7 +43,7 @@
 
         <div class="form-row">
           <div class="form-group half">
-            <label class="label">Срок действия</label>
+            <label class="label">{{ $t('payment.expiryDate') }}</label>
             <input 
               v-model="expiryDate" 
               type="text" 
@@ -55,7 +55,7 @@
           </div>
           
           <div class="form-group half">
-            <label class="label">CVC код</label>
+            <label class="label">{{ $t('payment.cvcCode') }}</label>
             <input 
               v-model="cvcCode" 
               type="password"
@@ -67,7 +67,7 @@
         </div>
 
         <button class="pay-button" @click="processPayment" :disabled="isProcessing">
-          {{ isProcessing ? 'Обработка...' : `Оплатить ${orderData.cartTotal?.toLocaleString() || '0'} ₸` }}
+          {{ isProcessing ? $t('payment.processing') : `${$t('payment.pay')} ${orderData.cartTotal?.toLocaleString() || '0'} ₸` }}
         </button>
       </div>
     </div>
@@ -147,6 +147,7 @@ export default {
           cvc: this.cvcCode,
           email: this.email,
           expDate: this.expiryDate.replace('/', ''),
+          terminalType: 'shop'
         }
 
         // 1. Выполняем платеж (закомментировано для тестирования)

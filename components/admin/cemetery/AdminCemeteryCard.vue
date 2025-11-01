@@ -1,7 +1,7 @@
 <template>
   <div class="cemetery-card mb-4">
     <div class="cemetery-card__header">
-      <h3 class="cemetery-card__title">{{ cemetery.name }}</h3>
+      <h3 class="cemetery-card__title">{{ cemeteryName }}</h3>
       <p class="cemetery-card__type">{{ types[cemetery.religion] ? types[cemetery.religion] : cemetery.religion }}</p>
     </div>
 
@@ -41,7 +41,19 @@ const props = defineProps(['cemetery'])
 const router = useRouter();
 const emit = defineEmits(['open-map', 'upload'])
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+// Функция для получения локализованного имени кладбища
+const getCemeteryName = (cemetery) => {
+  if (!cemetery) return ''
+  if (locale.value === 'kk' && cemetery.name_kz) {
+    return cemetery.name_kz
+  }
+  return cemetery.name || ''
+}
+
+// Computed свойство для текущего кладбища
+const cemeteryName = computed(() => getCemeteryName(props.cemetery))
 
 const types = {
   muslim: t('cemetery.types.muslim'),

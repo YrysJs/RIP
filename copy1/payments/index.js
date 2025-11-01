@@ -5,17 +5,7 @@ function processCardPayment(data) {
     return $axios({
         method: 'POST',
         url: 'http://194.32.140.103:8091/api/v1/payments/card',
-        data: {
-            amount: data.amount,
-            cardNumber: data.cardNumber,
-            currency: data.currency || 'KZT',
-            cvc: data.cvc,
-            description: data.description,
-            email: data.email,
-            expDate: data.expDate,
-            invoiceID: data.invoiceID,
-            phone: data.phone
-        },
+        data: data,
     })
 }
 

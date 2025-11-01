@@ -142,7 +142,8 @@ const submitReply = async (reviewId) => {
     const replyText = replyTexts.value[reviewId]
     
     if (!replyText || replyText.trim() === '') {
-        alert('Пожалуйста, введите текст ответа')
+        const { $toast } = useNuxtApp();
+        $toast.warning(t('review.replyRequired'));
         return
     }
     
@@ -158,11 +159,13 @@ const submitReply = async (reviewId) => {
         // Обновляем список отзывов
         await refresh()
         
-        alert('Ответ успешно отправлен!')
+        const { $toast } = useNuxtApp();
+        $toast.success(t('review.replySent'));
         
     } catch (error) {
         console.error('Ошибка отправки ответа:', error)
-        alert('Ошибка при отправке ответа. Попробуйте еще раз.')
+        const { $toast } = useNuxtApp();
+        $toast.error(t('review.replyError'));
     } finally {
         sendingReply.value[reviewId] = false
     }
@@ -186,7 +189,8 @@ const submitAppeal = async (reviewId) => {
     const reason = appealReasons.value[reviewId]
     
     if (!reason || reason.trim() === '') {
-        alert('Пожалуйста, введите причину обжалования')
+        const { $toast } = useNuxtApp();
+        $toast.warning(t('review.appealReasonRequired'));
         return
     }
     
@@ -205,11 +209,13 @@ const submitAppeal = async (reviewId) => {
         // Обновляем список отзывов
         await refresh()
         
-        alert('Обжалование успешно отправлено!')
+        const { $toast } = useNuxtApp();
+        $toast.success(t('review.appealSent'));
         
     } catch (error) {
         console.error('Ошибка отправки обжалования:', error)
-        alert('Ошибка при отправке обжалования. Попробуйте еще раз.')
+        const { $toast } = useNuxtApp();
+        $toast.error(t('review.appealError'));
     } finally {
         sendingAppeal.value[reviewId] = false
     }
@@ -225,7 +231,7 @@ const submitAppeal = async (reviewId) => {
         
         <!-- Загрузка -->
         <div v-if="pending" class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px] text-center">
-            <div>Загрузка отзывов...</div>
+            <div>{{ $t('supplierReviews.loading') }}</div>
         </div>
 
         <!-- Список отзывов -->
@@ -236,38 +242,38 @@ const submitAppeal = async (reviewId) => {
                 class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px]"
             >
                 <div class="flex justify-between items-center">
-                    <div class="font-medium text-lg">Отзыв #{{ review.id }}</div>
+                    <div class="font-medium text-lg">{{ $t('supplierReviews.reviewNumber') }}{{ review.id }}</div>
                     <div class="flex items-center gap-[20px]">
-                        <span class="text-sm">Продукт ID: #{{ review.product_id }}</span>
+                        <span class="text-sm">{{ $t('supplierReviews.productId') }}{{ review.product_id }}</span>
                         <span 
                             v-if="review.moderation_status === 'approved'"
                             class="text-sm p-1 rounded-md text-white font-medium bg-[#339B38]"
                         >
-                            Одобрен
+                            {{ $t('supplierReviews.approved') }}
                         </span>
                         <span 
                             v-else-if="review.moderation_status === 'rejected'"
                             class="text-sm p-1 rounded-md text-white font-medium bg-red-500"
                         >
-                            Отклонен
+                            {{ $t('supplierReviews.rejected') }}
                         </span>
                         <span 
                             v-else
                             class="text-sm p-1 rounded-md text-white font-medium bg-orange-500"
                         >
-                            На модерации
+                            {{ $t('supplierReviews.onModeration') }}
                         </span>
                     </div>
                 </div>
                 
                 <div class="my-[32px]">
                     <div class="flex text-sm">
-                        <p class="min-w-[150px]">Клиент:</p>
-                        <p>{{ review.user_phone || 'Не указан' }}</p>
+                        <p class="min-w-[150px]">{{ $t('supplierReviews.client') }}</p>
+                        <p>{{ review.user_phone || $t('supplierReviews.notSpecified') }}</p>
                     </div>
                     <div class="flex text-sm">
-                        <p class="min-w-[150px]">Поставщик:</p>
-                        <p>{{ review.supplier_phone || 'Не указан' }}</p>
+                        <p class="min-w-[150px]">{{ $t('supplierReviews.supplier') }}</p>
+                        <p>{{ review.supplier_phone || $t('supplierReviews.notSpecified') }}</p>
                     </div>
                 </div>
                 
@@ -299,17 +305,17 @@ const submitAppeal = async (reviewId) => {
                 <!-- Отзыв и дата -->
                 <div class="mt-[20px]">
                     <div class="flex justify-between items-center">
-                        <div class="font-medium text-normal">Отзыв</div>
+                        <div class="font-medium text-normal">{{ $t('supplierReviews.review') }}</div>
                         <div class="text-sm">{{ formatDate(review.created_at) }}</div>
                     </div>
                     <div class="font-medium text-normal mt-2">
-                        {{ review.comment || 'Комментарий не оставлен' }}
+                        {{ review.comment || $t('supplierReviews.commentNotLeft') }}
                     </div>
                 </div>
 
                 <!-- Изображения отзыва -->
                 <div v-if="review.image_urls && review.image_urls.length > 0" class="mt-4">
-                    <div class="font-medium text-sm mb-2">Фотографии:</div>
+                    <div class="font-medium text-sm mb-2">{{ $t('supplierReviews.photos') }}</div>
                     <div class="flex gap-2 flex-wrap">
                         <img 
                             v-for="(imageUrl, index) in review.image_urls" 
@@ -327,7 +333,7 @@ const submitAppeal = async (reviewId) => {
                     <!-- Существующий ответ (если есть) -->
                     <div v-if="review.response" class="mb-4 p-4 bg-gray-50 rounded-lg">
                         <div class="flex justify-between items-center mb-2">
-                            <div class="font-medium text-sm text-gray-700">Ваш ответ</div>
+                            <div class="font-medium text-sm text-gray-700">{{ $t('supplierReviews.yourResponse') }}</div>
                             <div class="text-xs text-gray-500">{{ formatDate(review.response.created_at) }}</div>
                         </div>
                         <div class="text-sm">{{ review.response.comment }}</div>
@@ -340,13 +346,13 @@ const submitAppeal = async (reviewId) => {
                             @click="toggleAppealForm(review.id)"
                             class="px-4 py-2 text-white text-sm font-medium rounded-lg bg-red-600 hover:bg-red-700 transition-colors"
                         >
-                            Обжаловать
+                            {{ $t('supplierReviews.appeal') }}
                         </button>
                         <button
                             @click="toggleReplyForm(review.id)"
                             class="px-4 py-2 text-white text-sm font-medium rounded-lg bg-[#224C4F] transition-colors"
                         >
-                            Ответить
+                            {{ $t('supplierReviews.reply') }}
                         </button>
                     </div>
 
@@ -355,11 +361,11 @@ const submitAppeal = async (reviewId) => {
                         <div class="space-y-3">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Ваш ответ на отзыв
+                                    {{ $t('supplierReviews.yourReply') }}
                                 </label>
                                 <textarea
                                     v-model="replyTexts[review.id]"
-                                    placeholder="Введите ваш ответ..."
+                                    :placeholder="$t('supplierReviews.replyPlaceholder')"
                                     rows="4"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                                     :disabled="sendingReply[review.id]"
@@ -372,7 +378,7 @@ const submitAppeal = async (reviewId) => {
                                     :disabled="sendingReply[review.id]"
                                     class="px-4 py-2 text-gray-600 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Отменить
+                                    {{ $t('supplierReviews.cancel') }}
                                 </button>
                                 <button
                                     @click="submitReply(review.id)"
@@ -380,7 +386,7 @@ const submitAppeal = async (reviewId) => {
                                     class="px-4 py-2 bg-[#224C4F] text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
                                     <span v-if="sendingReply[review.id]" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                                    {{ sendingReply[review.id] ? 'Отправка...' : 'Отправить' }}
+                                    {{ sendingReply[review.id] ? $t('supplierReviews.sending') : $t('supplierReviews.send') }}
                                 </button>
                             </div>
                         </div>
@@ -391,11 +397,11 @@ const submitAppeal = async (reviewId) => {
                         <div class="space-y-3">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Причина обжалования отзыва
+                                    {{ $t('supplierReviews.appealReason') }}
                                 </label>
                                 <textarea
                                     v-model="appealReasons[review.id]"
-                                    placeholder="Опишите причину обжалования отзыва..."
+                                    :placeholder="$t('supplierReviews.appealPlaceholder')"
                                     rows="4"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
                                     :disabled="sendingAppeal[review.id]"
@@ -408,7 +414,7 @@ const submitAppeal = async (reviewId) => {
                                     :disabled="sendingAppeal[review.id]"
                                     class="px-4 py-2 text-gray-600 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Отменить
+                                    {{ $t('supplierReviews.cancel') }}
                                 </button>
                                 <button
                                     @click="submitAppeal(review.id)"
@@ -416,7 +422,7 @@ const submitAppeal = async (reviewId) => {
                                     class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
                                     <span v-if="sendingAppeal[review.id]" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                                    {{ sendingAppeal[review.id] ? 'Отправка...' : 'Отправить обжалование' }}
+                                    {{ sendingAppeal[review.id] ? $t('supplierReviews.sending') : $t('supplierReviews.sendAppeal') }}
                                 </button>
                             </div>
                         </div>
@@ -424,7 +430,7 @@ const submitAppeal = async (reviewId) => {
 
                   <div v-if="review.appeal" class="mb-4 p-4 bg-gray-50 rounded-lg">
                     <div class="flex justify-between items-center mb-2">
-                      <div class="font-medium text-sm text-gray-700">Обжалования</div>
+                      <div class="font-medium text-sm text-gray-700">{{ $t('supplierReviews.appeals') }}</div>
                       <div class="text-xs text-gray-500">{{ formatDate(review.appeal.created_at) }}</div>
                     </div>
                     <div class="text-sm">{{ review.appeal.reason }}</div>
@@ -439,7 +445,7 @@ const submitAppeal = async (reviewId) => {
             >
                 <div class="flex justify-between items-center">
                     <div class="text-sm text-gray-600">
-                        Показано {{ Math.min(reviews.limit * (reviews.page - 1) + 1, reviews.total_count) }}-{{ Math.min(reviews.limit * reviews.page, reviews.total_count) }} из {{ reviews.total_count }} отзывов
+                        {{ $t('supplierReviews.shownReviews') }} {{ Math.min(reviews.limit * (reviews.page - 1) + 1, reviews.total_count) }}-{{ Math.min(reviews.limit * reviews.page, reviews.total_count) }} {{ $t('supplierReviews.ofReviews') }} {{ reviews.total_count }} {{ $t('supplierReviews.reviews') }}
                     </div>
                     
                     <div class="flex items-center gap-2">
@@ -454,7 +460,7 @@ const submitAppeal = async (reviewId) => {
                                     : 'text-gray-700 bg-gray-200 hover:bg-gray-300'
                             ]"
                         >
-                            ← Предыдущая
+                            {{ $t('supplierReviews.previous') }}
                         </button>
 
                         <!-- Номера страниц -->
@@ -498,7 +504,7 @@ const submitAppeal = async (reviewId) => {
                                     : 'text-gray-700 bg-gray-200 hover:bg-gray-300'
                             ]"
                         >
-                            Следующая →
+                            {{ $t('supplierReviews.next') }}
                         </button>
                     </div>
                 </div>
@@ -508,8 +514,8 @@ const submitAppeal = async (reviewId) => {
         <!-- Пустое состояние -->
         <div v-else class="w-full bg-white rounded-[16px] mt-[20px] py-[20px] px-[12px] text-center">
             <div class="text-gray-500">
-                <div class="text-lg font-medium mb-2">Пока нет отзывов</div>
-                <div class="text-sm">Отзывы будут отображаться здесь после получения от клиентов</div>
+                <div class="text-lg font-medium mb-2">{{ $t('supplierReviews.noReviews') }}</div>
+                <div class="text-sm">{{ $t('supplierReviews.reviewsWillAppear') }}</div>
             </div>
         </div>
     </NuxtLayout>

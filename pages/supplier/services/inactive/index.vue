@@ -96,22 +96,22 @@ const formatDateTime = (iso) => {
   <NuxtLayout name="supplier">
     <!-- заголовок -->
     <div class="page-head">
-      <h2 class="page-title">Неактивные товары и услуги</h2>
+      <h2 class="page-title">{{ $t('supplierServices.inactiveProducts') }}</h2>
     </div>
 
     <!-- состояния -->
     <div v-if="loading" class="state-card">
       <div class="spinner" />
-      <p class="muted mt-3">Загрузка неактивных товаров и услуг…</p>
+      <p class="muted mt-3">{{ $t('supplierServices.loadingInactive') }}</p>
     </div>
 
     <div v-else-if="error" class="state-card">
       <p class="error">{{ error }}</p>
-      <button class="btn btn--primary btn--md mt-3" @click="fetchProducts">Попробовать снова</button>
+      <button class="btn btn--primary btn--md mt-3" @click="fetchProducts">{{ $t('supplierServices.tryAgain') }}</button>
     </div>
 
     <div v-else-if="items.length === 0" class="state-card">
-      <p class="muted">У вас пока нет неактивных товаров и услуг</p>
+      <p class="muted">{{ $t('supplierServices.noInactiveProducts') }}</p>
     </div>
 
     <!-- список карточек -->

@@ -1,5 +1,8 @@
 <script setup>
 import {defineProps} from "vue";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const emit = defineEmits(['finish'])
 const props = defineProps(['visible', 'comment'])
@@ -30,15 +33,15 @@ watch(() => props.comment, (newVal) => {
       <button class="absolute right-[24px] top-[24px]" @click="close">&#10005;</button>
       <div class="flex flex-col">
         <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
-          Модерация комментария
+          {{ $t('moderateComment.title') }}
         </h3>
-        <input v-model="reason" class="border-2 border-[#939393] mt-[24px] pl-[16px] rounded-lg h-[60px] mb-4" type="text" placeholder="Причина">
+        <input v-model="reason" class="border-2 border-[#939393] mt-[24px] pl-[16px] rounded-lg h-[60px] mb-4" type="text" :placeholder="$t('moderateComment.reason')">
         <div class="flex gap-4">
           <button class="flex-1 h-[51px] rounded-lg !bg-[#38949B] text-white font-semibold font-roboto" @click="approve">
-            Одобрить
+            {{ $t('moderateComment.approve') }}
           </button>
           <button class="flex-1 h-[51px] rounded-lg !bg-[#E53935] text-white font-semibold font-roboto" @click="reject">
-            Отклонить
+            {{ $t('moderateComment.reject') }}
           </button>
         </div>
       </div>

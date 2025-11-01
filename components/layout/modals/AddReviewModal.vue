@@ -106,7 +106,7 @@ function submit() {
         <!-- rating -->
         <div class="mb-[18px]">
           <label class="text-[15px] font-medium text-[#5C6771]">
-            Рейтинг:<span class="text-red-500">*</span>
+            {{ $t('review.rating') }}<span class="text-red-500">*</span>
           </label>
           <div class="mt-[14px] flex">
             <button
@@ -154,21 +154,21 @@ function submit() {
         <!-- comment -->
         <div class="mb-[10px]">
           <label class="text-[15px] font-medium text-[#5C6771]">
-            Комментарий:<span class="text-red-500">*</span>
+            {{ $t('review.comment') }}<span class="text-red-500">*</span>
           </label>
           <div class="mt-2 relative">
             <textarea
               v-model="comment"
               :maxlength="maxLen"
               rows="4"
-              placeholder="Пару слов о проделанной работе..."
+              :placeholder="$t('review.commentPlaceholder')"
               class="w-full rounded-lg border border-[#D6DADF] focus:outline-none focus:ring-2 focus:ring-[#E9B949] focus:border-transparent p-3 text-base pr-14 pb-8"
             />
             <!-- Счётчик внутри -->
             <div
               class="absolute bottom-2 right-3 text-sm text-[#5C6771] bg-white/80 px-1 rounded"
             >
-              {{ comment.length }}/{{ maxLen }} символов
+              {{ comment.length }}/{{ maxLen }} {{ $t('review.characters') }}
             </div>
           </div>
         </div>
@@ -176,8 +176,8 @@ function submit() {
         <!-- uploader -->
         <div class="mb-5">
           <p class="text-sm text-[#5C6771]">
-            Перетащите файлы или загрузите файлы до 5 МБ в формате: .png, .jpeg
-            (максимум {{ maxFiles }} фотографий)
+            {{ $t('review.uploadHint') }}
+            ({{ $t('review.maxPhotos') }}: {{ maxFiles }})
           </p>
 
           <div
@@ -189,12 +189,12 @@ function submit() {
               <div class="grid place-items-center">
                 <img src="/icons/upload.svg" alt="" />
               </div>
-              <p class="text-sm font-semibold">Загрузите фотографии</p>
+              <p class="text-sm font-semibold">{{ $t('review.uploadPhotos') }}</p>
 
               <label
                 class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-[#D6DADF] bg-white text-sm cursor-pointer hover:bg-[#F5F6F7]"
               >
-                Загрузить
+                {{ $t('review.upload') }}
                 <input
                   type="file"
                   class="hidden"
@@ -220,7 +220,7 @@ function submit() {
                   type="button"
                   class="absolute top-1 right-1 w-7 h-7 rounded-md bg-black/60 text-white text-sm opacity-0 group-hover:opacity-100 transition"
                   @click="removeFile(i)"
-                  aria-label="Удалить"
+                  :aria-label="$t('review.delete')"
                 >
                   ✕
                 </button>
@@ -241,7 +241,7 @@ function submit() {
             :disabled="!isValid"
             @click="submit"
           >
-            Отправить отзыв
+            {{ $t('review.submitReview') }}
           </button>
         </div>
       </div>

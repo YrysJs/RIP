@@ -250,7 +250,7 @@
           @click="go('/client/reviews')"
         >
           <div class="flex items-center justify-between">
-            <span>Отзывы</span>
+            <span>{{ $t('common.reviews') }}</span>
              <span
               class="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#E4A624]/15 text-[#B88F34] text-[11px] px-1"
               >1</span

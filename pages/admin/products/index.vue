@@ -2,7 +2,7 @@
     <NuxtLayout name="admin">
       <div class="w-full bg-white rounded-[16px] p-[20px] mt-[20px]">
         <div class="flex justify-between items-center mb-[16px]">
-          <h2 class="text-2xl font-semibold">Продукты</h2>
+          <h2 class="text-2xl font-semibold">{{ $t('admin.products.title') }}</h2>
           <!--        <button class="invite-btn" @click="isCreateModal = true">-->
           <!--          <img src="/icons/plus.svg" alt="Пригласить" class="w-4 h-4 mr-2" />-->
           <!--          Пригласить-->
@@ -10,11 +10,11 @@
         </div>
   
         <div class="grid grid-cols-12 text-sm font-semibold text-[#6B7280] py-[10px] border-b border-[#EEEEEE]">
-          <div class="col-span-3">Название</div>
-          <div class="col-span-3">Описание</div>
-          <div class="col-span-1">Цена</div>
-          <div class="col-span-3">Статус</div>
-          <div class="col-span-2">Категория</div>
+          <div class="col-span-3">{{ $t('admin.products.name') }}</div>
+          <div class="col-span-3">{{ $t('admin.products.description') }}</div>
+          <div class="col-span-1">{{ $t('admin.products.price') }}</div>
+          <div class="col-span-3">{{ $t('admin.products.status') }}</div>
+          <div class="col-span-2">{{ $t('admin.products.category') }}</div>
         </div>
         <div
             v-for="product in products"
@@ -40,7 +40,7 @@
       <Teleport to="body">
         <SuccessModal
             v-if="showSuccessModal"
-            title="Приглашение отправлено!"
+            :title="$t('admin.suppliers.inviteSent')"
             :show-button="true"
             @close="closeSuccessModal"
         />

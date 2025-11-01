@@ -378,26 +378,26 @@ const otpCheck = async () => {
           Введите код из {{ isWhatsappLogin ? 'WhatsApp' : 'СМС' }}. Мы отправили его на номер<br />
           {{ phone_number }}
         </p>
-        <input v-model="code" class="border-2 border-[#939393] mt-[24px] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите код">
+        <input v-model="code" class="border-2 border-[#939393] mt-[24px] pl-[16px] rounded-lg h-[60px]" type="text" :placeholder="$t('auth.login.enterCode')">
         <div class="mt-[24px] mb-[18px]">
           <p v-if="true" class="text-base font-semibold text-[#939393]">{{ $t('auth.resendCodeIn') }} {{ fakeTimer }}</p>
           <button v-else>{{ $t('auth.resendAgain') }}</button>
         </div>
-        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold" :class="{ '!bg-[#E9B949] text-white': code >= 4 }" @click="otpCheck">Подтвердить</button>
+        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold" :class="{ '!bg-[#E9B949] text-white': code >= 4 }" @click="otpCheck">{{ $t('auth.login.verify') }}</button>
       </div>
       <div v-if="step === 2" class="flex flex-col  max-h-[800px] overflow-x-auto">
         <h3 class="text-2xl font-extrabold text-left text-[#222222] mb-[32px] max-lg:text-[22px] max-lg:mb-4">
-          Регистрация поставщика услуг
+          {{ $t('auth.signup.supplierRegistration') }}
         </h3>
         <div class="flex flex-col gap-[10px] max-lg:gap-2">
           <p class="text-lg max-lg:text-base">
-            Для продолжения заполните обязательные данные:
+            {{ $t('auth.signup.fillRequiredFields') }}
           </p>
           <input
             v-model="phone_number"
             class="w-full border-2 border-[#AFB5C133] bg-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Номер телефона"
+            :placeholder="$t('auth.login.phoneNumber')"
             disabled
           />
           <input
@@ -405,43 +405,43 @@ const otpCheck = async () => {
             v-mask="'############'"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="БИН"
+            :placeholder="$t('auth.signup.bin')"
             maxlength="12"
           />
           <input
             v-model="name"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Имя"
+            :placeholder="$t('auth.signup.name')"
           />
           <input
             v-model="surname"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Фамилия"
+            :placeholder="$t('auth.signup.surname')"
           />
           <input
             v-model="patronymic"
             class="w-full border-2 border-[#AFB5C133] px-3 py-[18px] rounded-lg max-lg:py-[14px]"
             type="text"
-            placeholder="Отчество"
+            :placeholder="$t('auth.signup.patronymic')"
           />
         <div class="mt-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">Тип НДС</p>
+          <p class="text-sm font-roboto text-[#222222]">{{ $t('supplierLogin.vatType') }}</p>
           <select v-model="vatTypeId" class="input select">
-            <option :value="1">С НДС</option>
-            <option :value="2">Без НДС</option>
+            <option :value="1">{{ $t('supplierLogin.withVAT') }}</option>
+            <option :value="2">{{ $t('supplierLogin.withoutVAT') }}</option>
           </select>
         </div>
         <div class="mt-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">Город оказания услуг</p>
+          <p class="text-sm font-roboto text-[#222222]">{{ $t('supplierLogin.serviceCity') }}</p>
           <select v-model="cityId" class="input select">
             <option v-for="(city, index) in cities" :key="city" :value="index + 1">{{city}}</option>
           </select>
         </div>
         <div class="mt-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">Краткое описание услуг</p>
-          <textarea v-model="serviceDescription" class="w-full border-2 border-[#939393] py-[12px] pl-[16px] rounded-lg h-[120px]" type="text" placeholder="Краткое описание услуг" />
+          <p class="text-sm font-roboto text-[#222222]">{{ $t('supplierLogin.serviceDescription') }}</p>
+          <textarea v-model="serviceDescription" class="w-full border-2 border-[#939393] py-[12px] pl-[16px] rounded-lg h-[120px]" type="text" :placeholder="$t('supplierLogin.serviceDescription')" />
         </div>
 <!--        <div class="mt-[24px] mb-[24px]">-->
 <!--          <h3 class="text-[18px] font-medium mb-1">-->

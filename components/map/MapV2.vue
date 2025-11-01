@@ -88,13 +88,14 @@ function getFillColor(item, isSelected, isNeighbor) {
   return '#999999'
 }
 
-function getStrokeColor(item, isSelected, isNeighbor) {
+function getStrokeColor(item, isSelected, isNeighbor, isNeighborSelected) {
+  // Желтый бордер для выбранной могилы и выбранной соседней могилы
+  if (isSelected || isNeighborSelected) return '#FFD700' // золотой/желтый
   if (isNeighbor && item.status === 'free') return '#007BFF'
   if (isNeighbor) return '#FF8C00'
-  if (!isSelected) return '#006600'
-  return item.status === 'free' ? '#38949B' : 'gray'
+  return '#006600'
 }
-const strokeWidth = (isSelected) => (isSelected ? 4 : 1)
+const strokeWidth = (isSelected, isNeighborSelected) => (isSelected || isNeighborSelected ? 5 : 1)
 
 /* ========== Robust loader for Yandex Maps 2.1 ========== */
 async function loadYMaps21(apiKey, lang = 'ru_RU') {
@@ -387,8 +388,8 @@ function drawPlots() {
 
     const polygon = new ymaps.Polygon([toLatLng(ring)], {}, {
       fillColor: getFillColor(item, isSel, isNeighbor),
-      strokeColor: getStrokeColor(item, isSel || isNeighborSelected, isNeighbor),
-      strokeWidth: strokeWidth(isSel || isNeighborSelected),
+      strokeColor: getStrokeColor(item, isSel, isNeighbor, isNeighborSelected),
+      strokeWidth: strokeWidth(isSel, isNeighborSelected),
       zIndex: isSel ? 12 : (isNeighborSelected ? 11 : (isNeighbor ? 10 : 9)),
       cursor: 'pointer',
     })

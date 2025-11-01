@@ -2,9 +2,9 @@
   <footer class="app-footer" id="contact">
     <div class="container">
       <h3>{{ $t('footer.contacts') }}</h3>
-      <p>Мы проводим консультации ежедневно с 09:00 до 18:00</p>
+      <p>{{ $t('footer.consultationHours') }}</p>
       <ul class="contacts__list">
-        <li>г. Алматы, Республики площадь, 4</li>
+        <li>{{ $t('footer.address') }}</li>
         <li>
           <a class="underlined" href="http://wa.me/77758100110" target="_blank">+7 (775) 810-01-10</a>
         </li>

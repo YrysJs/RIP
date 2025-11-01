@@ -74,7 +74,7 @@ onMounted((async () => {
       </div>
       <button class="create-btn" @click="router.push('/admin/cemetery/form')">
         <img src="/icons/plus.svg" class="w-4 h-4 mr-[8px]" />
-        Создать кладбище
+        {{ $t('adminCemetery.createCemetery') }}
       </button>
     </div>
     <AdminCemeteryCard

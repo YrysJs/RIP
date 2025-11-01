@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, reactive, onMounted } from "vue";
 import { createDeceased, createBurialRequest, uploadDeceasedDeathCertificate } from "~/services/client";
 import { useRouter } from "vue-router";
 import { useCemeteryStore } from "~/store/cemetery";
@@ -117,7 +117,17 @@ const handleBooking = async () => {
       } catch (fileError) {
         console.error("Ошибка при загрузке файла:", fileError);
         const { $toast } = useNuxtApp()
-        $toast.error('Ошибка при загрузке файла свидетельства о смерти')
+        
+        // Извлекаем сообщение об ошибке из ответа бэкенда
+        let errorMessage = t('errors.uploadDeathCertificateError');
+        
+        if (fileError.response?.data) {
+          errorMessage = fileError.response.data.message || fileError.response.data.error || errorMessage;
+        } else if (fileError.message) {
+          errorMessage = fileError.message;
+        }
+        
+        $toast.error(errorMessage)
       }
     }
 
@@ -153,7 +163,18 @@ const handleBooking = async () => {
   } catch (error) {
     console.error("Ошибка при отправке данных:", error);
     const { $toast } = useNuxtApp()
-    $toast.error('Сервер не доступен')
+    
+    // Извлекаем сообщение об ошибке из ответа бэкенда
+    let errorMessage = t('errors.serverUnavailable');
+    
+    if (error.response?.data) {
+      // Приоритет отдаем полю message, если его нет - используем error
+      errorMessage = error.response.data.message || error.response.data.error || errorMessage;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    $toast.error(errorMessage)
   }
 };
 
@@ -164,10 +185,10 @@ onMounted(() => {
 });
 
 function validateRequired() {
-  errors.inn = inn.value.trim() ? "" : "Поле обязательно к заполнению";
+  errors.inn = inn.value.trim() ? "" : t('errors.requiredField');
   errors.fullName = fullName.value.trim()
     ? ""
-    : "Поле обязательно к заполнению";
+    : t('errors.requiredField');
   return !errors.inn && !errors.fullName;
 }
 
@@ -232,7 +253,7 @@ const getAllGraves = () => {
             class="flex items-center gap-2 text-base font-medium text-[#B88F34]"
             to="/reserve"
           >
-            <img src="/icons/arrow-left-orange.svg" alt="" /> Вернуться к выбору
+            <img src="/icons/arrow-left-orange.svg" alt="" /> {{ $t('reserve.backToSelection') }}
           </NuxtLink>
           <div
             class="max-sm:hidden align-center my-6 flex gap-fluid items-baseline"
@@ -247,7 +268,7 @@ const getAllGraves = () => {
           <h3
             class="sm:hidden max-sm:flex w-full py-2 items-center text-fluid font-foglihten leading-[48px]"
           >
-            Бронирование места
+            {{ $t('reserve.bookingPlace') }}
           </h3>
           <div class="bg-[#F4F0E7] p-5 rounded-xl">
             <div class="sm:hidden max-sm:flex gap-fluid items-start">
@@ -261,21 +282,21 @@ const getAllGraves = () => {
             <div
               class="h-9 mb-[14px] border-b border-[#EEEEEE] flex items-center"
             >
-              <h4 class="text-base text-[#050202]">Срок брони:</h4>
-              <span class="text-sm text-[#999] ml-[15px] mr-[5px]">3 дня</span>
+              <h4 class="text-base text-[#050202]">{{ $t('reserve.bookingTerm') }}</h4>
+              <span class="text-sm text-[#999] ml-[15px] mr-[5px]">{{ $t('reserve.bookingDays') }}</span>
               <img src="/icons/info.svg" alt="" />
             </div>
             <div
               class="h-[38px] flex items-start gap-[27px] border-b border-b-[#2010011F]"
             >
               <div class="flex items-center gap-[11px]">
-                <h4 class="text-base text-[#050202]">Сектор:</h4>
+                <h4 class="text-base text-[#050202]">{{ $t('reserve.sector') }}</h4>
                 <span class="text-sm text-[#999]">{{
                   cemeteryStore.selectedGrave?.sector_number ?? "—"
                 }}</span>
               </div>
               <div class="flex items-center gap-[11px]">
-                <h4 class="text-base text-[#050202]">Место:</h4>
+                <h4 class="text-base text-[#050202]">{{ $t('reserve.place') }}</h4>
                 <span class="text-sm text-[#999]">{{
                   getAllGraves() || "—"
                 }}</span>
@@ -284,11 +305,11 @@ const getAllGraves = () => {
             <div
               class="min-h-[46px] flex flex-wrap items-center gap-[11px] border-b border-b-[#2010011F]"
             >
-              <h4 class="text-base text-[#050202]">ФИО покойного:</h4>
+              <h4 class="text-base text-[#050202]">{{ $t('reserve.deceasedFullName') }}</h4>
               <span class="text-sm text-[#999]">{{ fullName || "" }}</span>
             </div>
             <div class="h-[38px] flex items-end gap-[11px]">
-              <h4 class="text-base text-[#050202]">Дата похорон:</h4>
+              <h4 class="text-base text-[#050202]">{{ $t('reserve.burialDateLabel') }}</h4>
               <span
                 class="text-sm"
                 :class="
@@ -297,7 +318,7 @@ const getAllGraves = () => {
                     : 'font-light text-[#939393]'
                 "
               >
-                {{ burialDate || "Не указано" }} {{ burialTime || "" }}
+                {{ burialDate || $t('reserve.notSpecified') }} {{ burialTime || "" }}
               </span>
             </div>
           </div>
@@ -309,14 +330,14 @@ const getAllGraves = () => {
           <h3
             class="max-sm:hidden w-full pb-4 flex items-center text-fluid font-foglihten border-b border-b-[#eee]"
           >
-            Бронирование места
+            {{ $t('reserve.bookingPlace') }}
           </h3>
           <div class="text-4xl font-semibold">
             <div
               class="py-4 flex items-center gap-[10px] max-sm:py-0 max-sm:h-11 max-sm:mb-4"
             >
               <h3 class="text-fluid-27 font-medium text-[#222222]">
-                Укажите данные покойного
+                {{ $t('reserve.enterDeceasedData') }}
               </h3>
             </div>
             <div class="grid grid-cols-2 gap-[16px] max-lg:grid-cols-1">
@@ -327,7 +348,7 @@ const getAllGraves = () => {
                   v-mask="'############'"
                   class="py-[18px] px-3 w-[100%] border !border-[#AFB5C166] rounded-lg text-base input focus:outline-none"
                   :class="errors.inn ? '!border-red-500' : ''"
-                  placeholder="ИИН"
+                  :placeholder="$t('reserve.iinPlaceholder')"
                 />
                 <span v-if="errors.inn" class="text-sm text-[#D63C3C]">{{
                   errors.inn
@@ -339,7 +360,7 @@ const getAllGraves = () => {
                   type="text"
                   class="py-[18px] px-3 w-[100%] !border !border-[#AFB5C166] rounded-lg text-base input focus:outline-none"
                   :class="errors.fullName ? '!border-red-500' : ''"
-                  placeholder="ФИО"
+                  :placeholder="$t('reserve.fullNamePlaceholder')"
                   @input="handleFullNameInput"
                 />
                 <span v-if="errors.fullName" class="text-sm text-[#D63C3C]">
@@ -352,7 +373,7 @@ const getAllGraves = () => {
             class="w-full bg-[#fff] rounded-[16px] font-medium text-[#222222] my-4"
           >
             <div class="h-11 flex items-center gap-[24px] text-fluid-27">
-              Даты
+              {{ $t('reserve.dates') }}
               <div>
                 <label
                   class="relative inline-block w-10 h-6 cursor-pointer select-none align-middle"
@@ -376,7 +397,7 @@ const getAllGraves = () => {
               class="switcher-data grid grid-cols-2 gap-4 mt-4 max-lg:grid-cols-1"
             >
               <div>
-                <p class="text-sm text-[#222222] font-normal">Дата смерти</p>
+                <p class="text-sm text-[#222222] font-normal">{{ $t('reserve.deathDateLabel') }}</p>
                 <input
                   v-model="deathDate"
                   type="date"
@@ -385,7 +406,7 @@ const getAllGraves = () => {
               </div>
               <div>
                 <p class="text-sm text-[#222222] font-normal">
-                  Заключение о смерти от мед учереждении:
+                  {{ $t('reserve.deathCertificateLabel') }}
                 </p>
 
                 <label
@@ -395,8 +416,7 @@ const getAllGraves = () => {
                 >
                   <img src="/icons/upload.svg" alt="upload" class="w-5 h-5" />
                   <span>
-                    <span class="text-[#B88F34]">Загрузите файлы</span> или
-                    перетащите их
+                    <span class="text-[#B88F34]">{{ $t('reserve.uploadFiles') }}</span> {{ $t('reserve.dragFiles') }}
                   </span>
                 </label>
 
@@ -437,7 +457,7 @@ const getAllGraves = () => {
                 />
               </div>
               <div>
-                <p class="text-sm text-[#222222] font-normal">Дата похорон</p>
+                <p class="text-sm text-[#222222] font-normal">{{ $t('reserve.burialDateLabel') }}</p>
                 <input
                   v-model="burialDate"
                   type="date"
@@ -445,7 +465,7 @@ const getAllGraves = () => {
                 />
               </div>
               <div>
-                <p class="text-sm text-[#222222] font-normal">Время похорон</p>
+                <p class="text-sm text-[#222222] font-normal">{{ $t('reserve.burialTime') }}</p>
                 <input
                   v-model="burialTime"
                   type="time"
@@ -457,7 +477,7 @@ const getAllGraves = () => {
           </div>
           <button class="reserve__btn max-sm:w-full" @click="handleBooking">
             <img src="/icons/pencil.svg" alt="Reserve icon" class="w-5 h-5" />
-            Забронировать место
+            {{ $t('reserve.reservePlaceButton') }}
           </button>
         </div>
       </div>
@@ -466,9 +486,9 @@ const getAllGraves = () => {
       <Teleport to="body">
         <SuccessModal
           v-if="showSuccessModal"
-          title="Запрос отправлен"
-          text="Ожидайте подтверждения ..."
-          :subtext="'Перенаправление в личный кабинет через ' + time"
+          :title="$t('reserve.requestSent')"
+          :text="$t('reserve.awaitConfirmation')"
+          :subtext="$t('reserve.redirectToCabinet') + time"
           @close="closeSuccessModal"
         />
       </Teleport>

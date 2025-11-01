@@ -27,10 +27,6 @@
         </template>
       </ClientOnly>
 
-      <button @click="toggleMenu">
-        <img src="/icons/menu-new.svg" :alt="$t('common.close')" class="w-6 h-6" />
-      </button>
-
       <!-- Переключатель языков -->
       <div class="language-switcher">
         <button
@@ -47,6 +43,10 @@
           ҚАЗ
         </button>
       </div>
+
+      <button @click="toggleMenu">
+        <img src="/icons/menu-new.svg" :alt="$t('common.close')" class="w-6 h-6" />
+      </button>
     </div>
 
     <!-- Выпадающее меню -->
@@ -302,7 +302,7 @@ onUnmounted(() => {
   padding: 6px 10px;
   background-color: rgba(255, 255, 255, 0.15);
   border-radius: 6px;
-  margin-right: 8px;
+  margin-left: 8px;
 }
 
 .language-switcher button {

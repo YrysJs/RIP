@@ -10,7 +10,7 @@ import { getUser } from "~/services/login";
 import { parseJwt } from "~/utils/parseJwt";
 import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const router = useRouter();
 
 /* ---- state ---- */
@@ -123,23 +123,23 @@ onMounted(async () => {
   <NuxtLayout name="client">
     <!-- Заголовок -->
     <div>
-      <h1 class="page-title">Создание запроса на перезахоронение</h1>
+      <h1 class="page-title">{{ $t('burialCreate.title') }}</h1>
 
       <!-- Форма -->
       <div class="form-card">
         <div class="form-grid">
           <!-- Старое место -->
           <div class="field">
-            <label class="field__label">Старое место захоронения:</label>
+            <label class="field__label">{{ $t('burialCreate.oldBurialPlace') }}</label>
             <div class="select-wrap">
               <select v-model="fromBurialId" class="select">
-                <option value="0" disabled>Выберите кладбище</option>
+                <option value="0" disabled>{{ $t('burialCreate.selectCemetery') }}</option>
                 <option
                   v-for="cem in cemeteries"
                   :key="cem.id"
                   :value="cem.id"
                 >
-                  {{ cem.name }}
+                  {{ locale === 'kk' && cem.name_kz ? cem.name_kz : cem.name }}
                 </option>
               </select>
             </div>
@@ -147,16 +147,16 @@ onMounted(async () => {
 
           <!-- Новое место -->
           <div class="field">
-            <label class="field__label">Новое место захоронения:</label>
+            <label class="field__label">{{ $t('burialCreate.newBurialPlace') }}</label>
             <div class="select-wrap">
               <select v-model="toBurialId" class="select">
-                <option value="0" disabled>Выберите кладбище</option>
+                <option value="0" disabled>{{ $t('burialCreate.selectCemetery') }}</option>
                 <option
                   v-for="cem in cemeteries"
                   :key="cem.id"
                   :value="cem.id"
                 >
-                  {{ cem.name }}
+                  {{ locale === 'kk' && cem.name_kz ? cem.name_kz : cem.name }}
                 </option>
               </select>
             </div>
@@ -164,13 +164,13 @@ onMounted(async () => {
 
           <!-- Причина -->
           <div class="field">
-            <label class="field__label">Причина:</label>
+            <label class="field__label">{{ $t('burialCreate.reason') }}</label>
             <div class="textarea-wrap">
               <textarea
                 v-model="reason"
                 maxlength="500"
                 class="textarea"
-                placeholder="Причина перезахоронения..."
+                :placeholder="$t('burialCreate.reasonPlaceholder')"
               />
               <div class="counter">{{ reason.length }}/500</div>
             </div>
@@ -178,7 +178,7 @@ onMounted(async () => {
 
           <!-- Свидетельство о смерти -->
           <div class="field">
-            <div class="field__label">Свидетельство о смерти:</div>
+            <div class="field__label">{{ $t('burialCreate.deathCertificate') }}</div>
 
             <!-- нет файлов — дроп-зона -->
             <div
@@ -198,7 +198,7 @@ onMounted(async () => {
               <div class="dz-in">
                 <img class="dz-ico" src="/icons/upload.svg" alt="" />
                 <p class="dz-accent">
-                  Загрузите файлы <span class="dz-sub">или перетащите их</span>
+                  {{ $t('burialCreate.uploadFiles') }} <span class="dz-sub">{{ $t('burialCreate.orDrag') }}</span>
                 </p>
               </div>
             </div>
@@ -214,7 +214,7 @@ onMounted(async () => {
                   <div class="image-preview-container">
                     <img
                       src="/images/doc.png"
-                      alt="Документ"
+                      :alt="$t('burialCreate.document')"
                       class="image-preview"
                     />
                     <div class="image-overlay">
@@ -237,7 +237,7 @@ onMounted(async () => {
 
           <!-- Подтверждение родства заявителя -->
           <div class="field">
-            <div class="field__label">Подтверждение родства заявителя:</div>
+            <div class="field__label">{{ $t('burialCreate.proofOfRelation') }}</div>
 
             <div
               v-if="!proof_of_relation.length"
@@ -256,7 +256,7 @@ onMounted(async () => {
               <div class="dz-in">
                 <img class="dz-ico" src="/icons/upload.svg" alt="" />
                 <p class="dz-accent">
-                  Загрузите файлы <span class="dz-sub">или перетащите их</span>
+                  {{ $t('burialCreate.uploadFiles') }} <span class="dz-sub">{{ $t('burialCreate.orDrag') }}</span>
                 </p>
               </div>
             </div>
@@ -271,7 +271,7 @@ onMounted(async () => {
                   <div class="image-preview-container">
                     <img
                       src="/images/doc.png"
-                      alt="Документ"
+                      :alt="$t('burialCreate.document')"
                       class="image-preview"
                     />
                     <div class="image-overlay">
@@ -294,7 +294,7 @@ onMounted(async () => {
 
           <!-- Документ на могилу -->
           <div class="field">
-            <div class="field__label">Документ на могилу:</div>
+            <div class="field__label">{{ $t('burialCreate.graveDocument') }}</div>
 
             <div
               v-if="!grave_doc.length"
@@ -313,7 +313,7 @@ onMounted(async () => {
               <div class="dz-in">
                 <img class="dz-ico" src="/icons/upload.svg" alt="" />
                 <p class="dz-accent">
-                  Загрузите файлы <span class="dz-sub">или перетащите их</span>
+                  {{ $t('burialCreate.uploadFiles') }} <span class="dz-sub">{{ $t('burialCreate.orDrag') }}</span>
                 </p>
               </div>
             </div>
@@ -328,7 +328,7 @@ onMounted(async () => {
                   <div class="image-preview-container">
                     <img
                       src="/images/doc.png"
-                      alt="Документ"
+                      :alt="$t('burialCreate.document')"
                       class="image-preview"
                     />
                     <div class="image-overlay">

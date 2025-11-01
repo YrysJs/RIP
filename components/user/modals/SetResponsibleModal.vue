@@ -23,16 +23,16 @@ async function run () {
       <button class="absolute right-[24px] top-[24px]" @click="close">&#10005;</button>
       <div class="flex flex-col">
         <h3 class="text-2xl font-bold font-roboto text-left text-[#222222] mb-[8px]">
-          Назначить ответственного
+          {{ $t('responsible.assign') }}
         </h3>
 
         <div class="mt-[24px] mb-[24px]">
-          <p class="text-sm font-roboto text-[#222222]">Ответственный</p>
-          <select v-model="responsible" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px] pr-[16px] select" placeholder="Ответственный">
+          <p class="text-sm font-roboto text-[#222222]">{{ $t('responsible.responsible') }}</p>
+          <select v-model="responsible" class="w-full border-2 border-[#939393] pl-[16px] rounded-lg h-[60px] pr-[16px] select" :placeholder="$t('alts.responsiblePlaceholder')">
             <option v-for="item in users" :key="item.id" :value="item.id">{{ item.surname }} {{ item.name }} {{ item.patronymic }}</option>
           </select>
         </div>
-        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': responsible }" @click="run">Назначить</button>
+        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold font-roboto" :class="{ '!bg-[#38949B] text-white': responsible }" @click="run">{{ $t('responsible.assignButton') }}</button>
       </div>
     </div>
   </div>

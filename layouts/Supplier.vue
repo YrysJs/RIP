@@ -4,11 +4,13 @@ import SupplierSidebar from "~/components/layout/SupplierSidebar.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
 import AppHeaderSupplier from "~/components/layout/AppHeaderSupplier.vue";
 import { getSupplierInfo } from "~/services/supplier";
-import { onMounted, computed } from "vue";
+import { onMounted, computed, ref } from "vue";
 import { useRoute } from "vue-router";
+import { useUserStore } from "~/store/user";
 
 const route = useRoute();
 const supplierInfo = ref(null);
+const userStore = useUserStore();
 
 const props = defineProps({
   transparentContent: {
@@ -48,9 +50,18 @@ const pageTitle = computed(() => {
 });
 
 onMounted(async () => {
-  const response = await getSupplierInfo();
-
-  supplierInfo.value = response.data;
+  try {
+    const response = await getSupplierInfo();
+    supplierInfo.value = response.data;
+    
+    // Сохраняем статус активности поставщика
+    const isActive = response.data?.isActive !== false; // если undefined или true - активен
+    userStore.setSupplierIsActive(isActive);
+  } catch (error) {
+    console.error('Ошибка загрузки информации о поставщике:', error);
+    // В случае ошибки считаем, что активен (по умолчанию)
+    userStore.setSupplierIsActive(true);
+  }
 });
 </script>
 

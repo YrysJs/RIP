@@ -10,7 +10,7 @@
             <path d="M14.5 3.2a9.3 9.3 0 1 0 0 17.6 8 8 0 1 1 0-17.6Z" />
             <path d="M19 6.5l.6 1.8 1.9.1-1.5 1.2.5 1.9L19 10l-1.6 1.5.5-1.9-1.5-1.2 1.9-.1L19 6.5Z" />
           </svg>
-          <h3 class="cem-card__title">{{ cemetery.name }}</h3>
+          <h3 class="cem-card__title">{{ cemeteryName }}</h3>
         </div>
         <p v-if="typeName" class="cem-card__type">{{ typeName }}</p>
       </div>
@@ -53,8 +53,8 @@
     <div class="cem-card__divider" />
 
     <!-- Описание -->
-    <p v-if="cemetery.description" class="cem-card__desc">
-      {{ cemetery.description }}
+    <p v-if="cemeteryDescription" class="cem-card__desc">
+      {{ cemeteryDescription }}
     </p>
 
     <!-- Кнопка -->
@@ -70,7 +70,29 @@ import { computed } from 'vue'
 const emit = defineEmits(['open-map'])
 const props = defineProps({ cemetery: { type: Object, required: true } })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+// Функция для получения локализованного имени кладбища
+const getCemeteryName = (cemetery) => {
+  if (!cemetery) return ''
+  if (locale.value === 'kk' && cemetery.name_kz) {
+    return cemetery.name_kz
+  }
+  return cemetery.name || ''
+}
+
+// Функция для получения локализованного описания кладбища
+const getCemeteryDescription = (cemetery) => {
+  if (!cemetery) return ''
+  if (locale.value === 'kk' && cemetery.description_kz) {
+    return cemetery.description_kz
+  }
+  return cemetery.description || ''
+}
+
+// Computed свойства для текущего кладбища
+const cemeteryName = computed(() => getCemeteryName(props.cemetery))
+const cemeteryDescription = computed(() => getCemeteryDescription(props.cemetery))
 
 /* Текст типа по ключу религии */
 const typeMap = {

@@ -42,7 +42,7 @@
             </button>
             <div class="relative flex items-center">
               <button @click="toggleDropdown">
-                <img src="/icons/menu-new.svg" alt="Меню" />
+                <img src="/icons/menu-new.svg" :alt="$t('alts.menu')" />
               </button>
               <div
                 v-if="showDropdownMenu"

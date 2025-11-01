@@ -113,7 +113,8 @@ async function openReceiptModal(order) {
         order.id;
 
     if (!transactionId) {
-      alert("Ошибка: Transaction ID не найден.");
+      const { $toast } = useNuxtApp();
+      $toast.error(t('errors.transactionIdNotFound'));
       showReceiptModal.value = false;
       return;
     }
@@ -122,12 +123,14 @@ async function openReceiptModal(order) {
     if (response.data?.success && response.data?.data) {
       receiptData.value = response.data.data;
     } else {
-      alert("Ошибка получения чека");
+      const { $toast } = useNuxtApp();
+      $toast.error(t('errors.receiptLoadError'));
       showReceiptModal.value = false;
     }
   } catch (e) {
     console.error(e);
-    alert("Ошибка при получении чека");
+    const { $toast } = useNuxtApp();
+    $toast.error(t('errors.receiptLoadError'));
     showReceiptModal.value = false;
   } finally {
     receiptLoading.value = false;
@@ -326,7 +329,7 @@ useHead({
         <div class="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
           <!-- Header -->
           <div class="flex justify-between items-center p-4 border-b">
-            <h3 class="text-lg font-semibold">Товары в заказе</h3>
+            <h3 class="text-lg font-semibold">{{ $t('clientServices.productsInOrder') }}</h3>
             <button @click="closeItemsModal" class="text-gray-400 hover:text-gray-600 text-2xl">
               &times;
             </button>

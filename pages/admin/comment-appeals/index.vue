@@ -2,7 +2,7 @@
     <NuxtLayout name="admin">
       <div class="w-full bg-white rounded-[16px] p-[20px] mt-[20px]">
         <div class="flex justify-between items-center mb-[16px]">
-          <h2 class="text-2xl font-semibold">Обращения</h2>
+          <h2 class="text-2xl font-semibold">{{ $t('adminCommentAppeals.title') }}</h2>
           <!--        <button class="invite-btn" @click="isCreateModal = true">-->
           <!--          <img src="/icons/plus.svg" alt="Пригласить" class="w-4 h-4 mr-2" />-->
           <!--          Пригласить-->
@@ -10,10 +10,10 @@
         </div>
   
         <div class="grid grid-cols-5 text-sm font-semibold text-[#6B7280] py-[10px] border-b border-[#EEEEEE]">
-          <div>Поставщик</div>
-          <div>ID Обращения</div>
-          <div>Статус</div>
-          <div>Ответ администратора</div>
+          <div>{{ $t('adminCommentAppeals.supplier') }}</div>
+          <div>{{ $t('adminCommentAppeals.appealId') }}</div>
+          <div>{{ $t('adminCommentAppeals.status') }}</div>
+          <div>{{ $t('adminCommentAppeals.adminResponse') }}</div>
           <div></div>
         </div>
         <div
@@ -30,7 +30,7 @@
             </span>
           </div>
           <div class="truncate max-w-[200px]" :title="user.admin_response || 'Нет ответа'">
-            {{ user.admin_response || 'Нет ответа' }}
+            {{ user.admin_response || $t('adminCommentAppeals.noResponse') }}
           </div>
           <div class="flex justify-end">
             <img src="/icons/arrow-right.svg" class="w-4 h-4" />
@@ -41,7 +41,7 @@
       <Teleport to="body">
         <SuccessModal
             v-if="showSuccessModal"
-            title="Обращение обработано!"
+            :title="$t('adminCommentAppeals.processed')"
             :show-button="true"
             @close="closeSuccessModal"
         />
@@ -61,6 +61,9 @@ import ModerateAppealModal from "~/components/admin/comments/ModerateAppealModal
 
 import { getModerateAppeals, moderateAppeal } from '~/services/admin'
   import {ref} from "vue";
+  import { useI18n } from 'vue-i18n';
+
+  const { t } = useI18n();
   
   
   
@@ -110,13 +113,13 @@ import { getModerateAppeals, moderateAppeal } from '~/services/admin'
   function getStatusText(status) {
     switch (status) {
       case 'approved':
-        return 'Одобрено';
+        return t('adminCommentAppeals.approved');
       case 'rejected':
-        return 'Отклонено';
+        return t('adminCommentAppeals.rejected');
       case 'pending':
-        return 'В ожидании';
+        return t('adminCommentAppeals.pending');
       default:
-        return 'Неизвестно';
+        return t('adminCommentAppeals.unknown');
     }
   }
 

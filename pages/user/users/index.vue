@@ -16,9 +16,9 @@
       <!-- Таблица -->
       <div class="table">
         <div class="row thead">
-          <div class="cell th">Роль</div>
-          <div class="cell th">ФИО</div>
-          <div class="cell th th--actions">Статус</div>
+          <div class="cell th">{{ $t('admin.users.role') }}</div>
+          <div class="cell th">{{ $t('admin.users.fullName') }}</div>
+          <div class="cell th th--actions">{{ $t('admin.users.status') }}</div>
           <div class="cell th th--actions"></div>
         </div>
 

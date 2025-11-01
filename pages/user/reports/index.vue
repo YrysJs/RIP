@@ -98,7 +98,7 @@
       <!-- ===== Новостей всего ===== -->
       <section class="section news-section">
         <div class="section__head">
-          <h2 class="h-title">Новостей всего: {{ newsStats?.count ?? 0 }}</h2>
+          <h2 class="h-title">{{ $t('user.news.totalNews') }} {{ newsStats?.count ?? 0 }}</h2>
 <!--          <select v-model="newsPeriod" class="period" @change="onPeriodChange('news')">-->
 <!--            <option value="week">За неделю</option>-->
 <!--            <option value="month">За месяц</option>-->
@@ -124,7 +124,7 @@
       <section class="section topnews-section">
         <div class="card">
           <div class="card__head">
-            <h3 class="card__title">Топ-5 просматриваемых новостей</h3>
+            <h3 class="card__title">{{ $t('user.news.topViewedNews') }}</h3>
           </div>
 
           <div class="topnews" v-if="topNews.length">
@@ -137,7 +137,7 @@
               </div>
             </div>
           </div>
-          <div v-else class="topnews__empty">Новостей нет</div>
+          <div v-else class="topnews__empty">{{ $t('user.news.noNews') }}</div>
         </div>
       </section>
 

@@ -155,13 +155,13 @@ onMounted(async () => {
           class="flex justify-between items-start mt-[16px] border-b-2 border-[#EEEEEE] pb-[16px] max-sm:mt-3 max-sm:pb-3"
         >
           <div class="flex text-base">
-            <p class="min-w-[150px] max-w-[150px] grey-14">Дата похорон:</p>
+            <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('clientTickets.burialDate') }}</p>
             <p v-if="request.burial_date">
               {{ new Date(request.burial_date).toLocaleDateString("ru-RU") }},
               {{ request.burial_time }}
             </p>
             <p v-else class="text-base text-[#DB1414]">
-              Необходимо указать даты похорон
+              {{ $t('clientTickets.burialDateRequired') }}
             </p>
           </div>
         </div>
@@ -170,20 +170,20 @@ onMounted(async () => {
         >
           <div class="font-medium flex flex-col gap-[10px]">
             <div class="flex text-base">
-              <p class="min-w-[150px] max-w-[150px] grey-14">Cтатус:</p>
+              <p class="min-w-[150px] max-w-[150px] grey-14">{{ $t('clientTickets.status') }}</p>
               <div
                 class="flex items-center gap-[10px]"
                 v-if="request.status === 'pending'"
               >
                 <img src="/icons/warning.svg" alt="" />
-                <p class="text-sm text-[#17212A]">Ожидает оплаты</p>
+                <p class="text-sm text-[#17212A]">{{ $t('clientTickets.waitingPayment') }}</p>
               </div>
               <div
                 class="flex items-center gap-[10px]"
                 v-if="request.status === 'paid'"
               >
                 <img src="/icons/paid-tick.svg" alt="" />
-                <p class="text-sm text-[#17212A]">Оплачено</p>
+                <p class="text-sm text-[#17212A]">{{ $t('clientTickets.paid') }}</p>
               </div>
             </div>
           </div>
@@ -191,9 +191,9 @@ onMounted(async () => {
         <div class="flex justify-between items-start mt-[16px] max-sm:mt-3">
           <div class="flex text-base">
             <p class="min-w-[150px] max-w-[150px] grey-14">
-              Дополнительные услуги:
+              {{ $t('clientTickets.additionalServices') }}
             </p>
-            <p class="p-[4px] rounded-md black-16 mr-4">Отсутствуют</p>
+            <p class="p-[4px] rounded-md black-16 mr-4">{{ $t('clientTickets.none') }}</p>
           </div>
         </div>
         <NuxtLink
@@ -205,7 +205,7 @@ onMounted(async () => {
             })
           "
         >
-          Завершить оформление
+          {{ $t('clientTickets.completeOrder') }}
         </NuxtLink>
       </div>
     </template>
@@ -213,7 +213,7 @@ onMounted(async () => {
       v-else
       class="w-full bg-white rounded-[16px] py-[20px] px-[12px] text-center"
     >
-      <p class="text-lg">Нет активных заявок</p>
+      <p class="text-lg">{{ $t('clientTickets.noActiveRequests') }}</p>
     </div>
   </NuxtLayout>
 </template>

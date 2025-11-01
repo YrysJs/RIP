@@ -130,26 +130,25 @@ const otpCheck = async () => {
           Вход в кабинет Акимата
         </h3>
         <p class="text-lg max-lg:text-base">
-          Введите номер мобильного телефона:
+          {{ $t('auth.login.enterPhone') }}
         </p>
-        <input v-model="phone_number" v-mask="'+7 (###) ###-##-##'" class="border-2 border-[#AFB5C166] mb-[32px] px-3 py-[18px] text-base rounded-lg h-14 max-lg:py-[14px] max-lg:mb-6" type="text" placeholder="Введите номер телефона">
-        <button class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#000] font-medium max-lg:py-[15px]" :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }" @click="loginWhatsapp">Получить код в WhatsApp</button>
-        <button class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#17212A] font-medium my-4 max-lg:py-[15px] max-lg:mt-2 max-lg:mb-4" :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }" @click="login">Получить код по СМС</button>
+        <input v-model="phone_number" v-mask="'+7 (###) ###-##-##'" class="border-2 border-[#AFB5C166] mb-[32px] px-3 py-[18px] text-base rounded-lg h-14 max-lg:py-[14px] max-lg:mb-6" type="text" :placeholder="$t('auth.login.phonePlaceholder')">
+        <button class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#000] font-medium max-lg:py-[15px]" :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }" @click="loginWhatsapp">{{ $t('auth.login.getCodeWhatsApp') }}</button>
+        <button class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#17212A] font-medium my-4 max-lg:py-[15px] max-lg:mt-2 max-lg:mb-4" :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }" @click="login">{{ $t('auth.getCodeSMS') }}</button>
       </div>
       <div v-if="step == 1" class="flex flex-col">
         <h3 class="text-2xl font-bold text-left text-[#222222] mb-[8px]">
-          Подтвердите номер
+          {{ $t('auth.login.confirmPhone') }}
         </h3>
         <p class="text-sm">
-          Введите код из {{ isWhatsappLogin ? 'WhatsApp' : 'СМС' }}. Мы отправили его на номер
-          {{ phone_number }}
+          {{ $t('auth.login.enterCodeHint') }} {{ isWhatsappLogin ? 'WhatsApp' : 'СМС' }}. {{ $t('auth.login.weSentTo') }} {{ phone_number }}
         </p>
-        <input v-model="code" class="border-2 border-[#939393] mt-[24px] pl-[16px] rounded-lg h-[60px]" type="text" placeholder="Введите код">
+        <input v-model="code" class="border-2 border-[#939393] mt-[24px] pl-[16px] rounded-lg h-[60px]" type="text" :placeholder="$t('auth.login.enterCode')">
         <div class="mt-[24px] mb-[18px]">
-          <p v-if="true" class="text-base font-semibold text-[#939393]">Отправить код повторно: через {{ fakeTimer }}</p>
-          <button v-else>Отправить еще раз</button>
+          <p v-if="true" class="text-base font-semibold text-[#939393]">{{ $t('auth.login.resendCodeIn') }} {{ fakeTimer }}</p>
+          <button v-else>{{ $t('auth.login.resendAgain') }}</button>
         </div>
-        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold" :class="{ '!bg-[#E9B949] text-white': code >= 4 }" @click="otpCheck">Подтвердить</button>
+        <button class="bg-[#F7F7F7] h-[51px] rounded-lg text-[#222222] font-semibold" :class="{ '!bg-[#E9B949] text-white': code >= 4 }" @click="otpCheck">{{ $t('auth.login.verify') }}</button>
       </div>
   </div>
 </template>

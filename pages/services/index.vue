@@ -321,7 +321,7 @@ function getVisiblePages() {
     <AppHeaderClient />
     <div class="container">
       <!-- <LayoutTop title="Заказать услуги и товары" :hide="true" /> -->
-      <h2 class="page-title">Заказать услуги и товары</h2>
+      <h2 class="page-title">{{ $t('services.orderServicesTitle') }}</h2>
       <!-- Уведомление о добавлении в корзину -->
       <div
         v-if="cartMessage"
@@ -343,12 +343,12 @@ function getVisiblePages() {
           <div
             class="py-[13px] px-[20px] bg-white rounded-lg flex gap-[15px] text-base"
           >
-            <span>Город:</span>
+            <span>{{ $t('services.city') }}</span>
             <select
               v-model="filters.city"
               id=""
               name=""
-              placeholder="Город"
+              :placeholder="$t('services.cityPlaceholder')"
               class="bg-transparent border-none outline-none"
             >
               <option value="Алматы">Алматы</option>
@@ -360,9 +360,9 @@ function getVisiblePages() {
 
           <!-- Фильтры по категориям -->
           <div class="p-[20px] bg-white rounded-lg mt-[20px]">
-            <h3 class="text-xl font-bold text-[#222222]">Фильтры</h3>
+            <h3 class="text-xl font-bold text-[#222222]">{{ $t('services.filters') }}</h3>
             <div class="mt-[40px]">
-              <h4 class="text-base font-bold text-[#222222]">Категория</h4>
+              <h4 class="text-base font-bold text-[#222222]">{{ $t('services.category') }}</h4>
               <div class="flex flex-col gap-[16px] mt-[20px]">
                 <div
                   v-for="category in categories"
@@ -394,7 +394,7 @@ function getVisiblePages() {
                       v-model="filters.category_id"
                       id="category-all"
                     />
-                    <label for="category-all">Все категории</label>
+                    <label for="category-all">{{ $t('services.allCategories') }}</label>
                   </div>
                 </div>
               </div>
@@ -403,7 +403,7 @@ function getVisiblePages() {
 
           <!-- Фильтр по типу -->
           <div class="p-[20px] bg-white rounded-lg mt-[20px]">
-            <h3 class="text-xl font-bold text-[#222222]">Тип</h3>
+            <h3 class="text-xl font-bold text-[#222222]">{{ $t('services.type') }}</h3>
             <div class="mt-[40px]">
               <div class="flex flex-col gap-[16px] mt-[20px]">
                 <div class="flex justify-between items-center">
@@ -416,7 +416,7 @@ function getVisiblePages() {
                       v-model="filters.type"
                       id="type-service"
                     />
-                    <label for="type-service">Услуги</label>
+                    <label for="type-service">{{ $t('services.typeService') }}</label>
                   </div>
                 </div>
                 <div class="flex justify-between items-center">
@@ -429,7 +429,7 @@ function getVisiblePages() {
                       v-model="filters.type"
                       id="type-product"
                     />
-                    <label for="type-product">Товары</label>
+                    <label for="type-product">{{ $t('services.typeProduct') }}</label>
                   </div>
                 </div>
                 <div class="flex justify-between items-center">
@@ -451,20 +451,20 @@ function getVisiblePages() {
 
           <!-- Фильтр по цене -->
           <div class="p-[20px] bg-white rounded-lg mt-[20px] pb-[40px]">
-            <h3 class="text-xl font-bold text-[#222222] mb-[20px]">Цена</h3>
+            <h3 class="text-xl font-bold text-[#222222] mb-[20px]">{{ $t('services.priceRange') }}</h3>
             <div class="mb-[20px]">
               <div class="flex gap-[10px] mb-[10px]">
                 <input
                   type="number"
                   v-model="filters.min_price"
-                  placeholder="От"
+                  :placeholder="$t('services.priceFrom')"
                   min="0"
                   class="w-full p-[8px] border border-gray-300 rounded"
                 />
                 <input
                   type="number"
                   v-model="filters.max_price"
-                  placeholder="До"
+                  :placeholder="$t('services.priceTo')"
                   min="0"
                   class="w-full p-[8px] border border-gray-300 rounded"
                 />
@@ -500,7 +500,7 @@ function getVisiblePages() {
             <input
               class="bg-transparent w-full h-full pl-[45px]"
               type="text"
-              placeholder="Поиск"
+              :placeholder="$t('services.searchPlaceholder')"
               v-model="filters.search"
             />
           </div>
@@ -510,7 +510,7 @@ function getVisiblePages() {
             v-if="loading"
             class="flex justify-center items-center py-[40px]"
           >
-            <div class="text-lg">Загрузка...</div>
+            <div class="text-lg">{{ $t('services.loading') }}</div>
           </div>
 
           <!-- Список продуктов -->
@@ -562,7 +562,7 @@ function getVisiblePages() {
                   class="flex gap-[12px] text-sm text-[#5C5C5C] mb-[4px]"
                 >
                   <img src="/icons/calendar-icon.svg" alt="" />
-                  <span>Срок выполнения: {{ product.service_time }}</span>
+                  <span>{{ $t('services.serviceTimeLabel') }} {{ product.service_time }}</span>
                 </div>
 
                 <!-- Дополнительная информация -->
@@ -578,7 +578,7 @@ function getVisiblePages() {
                   </div>
                   <div v-if="product.type" class="flex gap-[12px]">
                     <span class="font-medium"
-                      >Тип:
+                      >{{ $t('services.typeLabel') }}
                       {{
                         product.type === "service" ? "Услуга" : "Товар"
                       }}</span
@@ -607,7 +607,7 @@ function getVisiblePages() {
               v-if="!loading && products.length === 0"
               class="w-full text-center py-[40px]"
             >
-              <p class="text-lg text-gray-500">Продукты не найдены</p>
+              <p class="text-lg text-gray-500">{{ $t('services.productsNotFound') }}</p>
             </div>
           </div>
 
