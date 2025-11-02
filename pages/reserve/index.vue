@@ -3,7 +3,7 @@ import { useRouter } from "vue-router";
 import MapSecond from "~/components/map/MapV2.vue";
 import { useCemeteryStore } from "~/store/cemetery.js";
 import { getCemeteries, getGraves, getGravesByCoords } from "~/services/cemetery";
-import { getGraveById, getGraveImages } from "~/services/client";
+import { getGraveById } from "~/services/client";
 import ShareCoordModal from "~/components/layout/modals/ShareCoordModal.vue";
 import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
@@ -81,7 +81,6 @@ const neighborGrave = ref(null);
 
 // Переменные для кэширования данных могил
 const graveDataCache = ref({}); // кэш данных могил
-const graveImagesCache = ref({}); // кэш изображений могил
 
 // Переменные для тултипа с информацией об умершем
 const showDeceasedTooltip = ref(false);
@@ -192,7 +191,6 @@ watch(selectedCemetery, (newCemetery) => {
     gravesList.value = [];
     // Очищаем кэш данных могил при смене кладбища
     graveDataCache.value = {};
-    graveImagesCache.value = {};
   }
 });
 
@@ -373,7 +371,6 @@ function onCemeteryDeselected() {
   cemeteryStore.clearSelectedGrave();
   // Очищаем кэш данных могил
   graveDataCache.value = {};
-  graveImagesCache.value = {};
 }
 
 // Обработка клика по занятой могиле
@@ -383,7 +380,6 @@ async function onOccupiedGraveClicked(data) {
   
   try {
     let graveData = null;
-    let imagesData = null;
     
     // Проверяем, есть ли уже данные в кэше
     if (!graveDataCache.value[graveId]) {
@@ -395,18 +391,12 @@ async function onOccupiedGraveClicked(data) {
       graveData = graveDataCache.value[graveId];
     }
     
-    // Проверяем, есть ли уже изображения в кэше
-    if (!graveImagesCache.value[graveId]) {
-      // Вызываем запрос getGraveImages с реальным ID могилы
-      const imagesResponse = await getGraveImages(graveId);
-      graveImagesCache.value[graveId] = imagesResponse.data;
-      imagesData = imagesResponse.data;
-    } else {
-      imagesData = graveImagesCache.value[graveId];
-    }
-    
     // Проверяем наличие данных об умершем
     if (graveData && graveData.deceased && graveData.deceased.length > 0) {
+      const deceased = graveData.deceased[0]; // берем первого умершего
+      // Получаем фото из мемориала, если он есть
+      const images = deceased?.memorial?.photo_urls || [];
+      
       // Очищаем предыдущий таймер
       if (tooltipTimeout) {
         clearTimeout(tooltipTimeout);
@@ -421,8 +411,8 @@ async function onOccupiedGraveClicked(data) {
         showGraveModal.value = false;
         deceasedTooltipData.value = {
           grave: graveData,
-          deceased: graveData.deceased[0], // берем первого умершего
-          images: imagesData?.photos_urls || []
+          deceased: deceased,
+          images: images
         };
       } else if (data.clickCount === 2) {
         // Второй клик - показываем большой тултип и закрываем маленький
@@ -431,8 +421,8 @@ async function onOccupiedGraveClicked(data) {
         showGraveModal.value = false;
         secondTooltipData.value = {
           grave: graveData,
-          deceased: graveData.deceased[0], // берем первого умершего
-          images: imagesData?.photos_urls || []
+          deceased: deceased,
+          images: images
         };
       } else if (data.clickCount >= 3) {
         // Третий клик и далее - показываем модальное окно и закрываем тултипы
@@ -441,8 +431,8 @@ async function onOccupiedGraveClicked(data) {
         showGraveModal.value = true;
         graveModalData.value = {
           grave: graveData,
-          deceased: graveData.deceased[0], // берем первого умершего
-          images: imagesData?.photos_urls || []
+          deceased: deceased,
+          images: images
         };
         // Очищаем таймер, так как модальное окно не закрывается автоматически
         if (tooltipTimeout) {
@@ -672,7 +662,6 @@ function openWhatsApp(phone) {
                       <h3>
                         {{ item.name }}
                       </h3>
-                      <div>{{ item.distance }}км</div>
                     </div>
                     <h4 class="text-sm font-normal text-[#939393]">
                       {{ item.type }}
@@ -803,9 +792,6 @@ function openWhatsApp(phone) {
                       <span class="text-sm text-[#201001]">{{
                         selectedCemetery?.street_name
                       }}</span>
-                      <span class="text-[#999] text-sm ml-1"
-                        >({{ selectedCemetery?.distance }} {{ $t('reserve.kmFromYou') }})</span
-                      >
                     </div>
                     <div class="flex gap-[8px] items-center cursor-pointer" @click="openWhatsApp(selectedCemetery?.phone2 || selectedCemetery?.phone)">
                       <img src="/icons/whatsapp1.svg" alt="WhatsApp" />
@@ -976,9 +962,6 @@ function openWhatsApp(phone) {
                   <span class="text-sm text-[#201001]">{{
                     selectedCemetery?.street_name
                   }}</span>
-                  <span class="text-[#999] text-sm ml-1"
-                    >({{ selectedCemetery?.distance }} {{ $t('reserve.kmFromYou') }})</span
-                  >
                 </div>
                 <div class="flex gap-[8px] items-center cursor-pointer" @click="openWhatsApp(selectedCemetery?.phone2 || selectedCemetery?.phone)">
                   <img src="/icons/whatsapp1.svg" alt="WhatsApp" />
