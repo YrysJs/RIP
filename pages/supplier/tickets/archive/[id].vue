@@ -1,8 +1,10 @@
 <script setup>
 import SupplierDetail from "~/components/supplier/supplier-details/SupplierDetail.vue";
+import { useI18n } from 'vue-i18n';
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
 </script>
 
 <template>
@@ -16,7 +18,7 @@ const router = useRouter();
         src="/icons/arrow-left-orange.svg"
         alt=""
       />
-      Вернуться
+      {{ $t('common.back') }}
     </button>
     <SupplierDetail :ticket-id="route.params.id" />
   </NuxtLayout>

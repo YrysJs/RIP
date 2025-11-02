@@ -2,7 +2,7 @@
   <NuxtLayout name="admin">
     <div class="w-full bg-white rounded-[16px] p-[20px] mt-[20px]">
       <div class="flex justify-between items-center mb-[16px]">
-        <h2 class="text-2xl font-semibold">Поиск захоронении</h2>
+        <h2 class="text-2xl font-semibold">{{ $t('admin.burial.title') }}</h2>
         <!--        <button class="invite-btn" @click="isCreateModal = true">-->
         <!--          <img src="/icons/plus.svg" alt="Пригласить" class="w-4 h-4 mr-2" />-->
         <!--          Пригласить-->
@@ -10,9 +10,9 @@
       </div>
 
       <div class="grid grid-cols-4 text-sm font-semibold text-[#6B7280] py-[10px] border-b border-[#EEEEEE]">
-        <div>Заявитель</div>
-        <div>Телефон</div>
-        <div>Покойный</div>
+        <div>{{ $t('admin.burial.applicant') }}</div>
+        <div>{{ $t('common.phone') }}</div>
+        <div>{{ $t('admin.burial.deceased') }}</div>
       </div>
       <div
           v-for="user in burials"
@@ -34,7 +34,7 @@
       <SuccessModal
           v-if="showSuccessModal"
           :show-button="true"
-          title="Обращение обработано!"
+          :title="$t('admin.burial.processedTitle')"
           @close="closeSuccessModal"
       />
       <BurialDetailModal
@@ -49,9 +49,12 @@
 <script setup>
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import BurialDetailModal from "~/components/admin/burial/BurialDetailModal.vue";
+import { useI18n } from 'vue-i18n';
 
 import { getSearchRequests } from '~/services/admin'
 import {ref} from "vue";
+
+const { t } = useI18n();
 
 
 
@@ -72,7 +75,7 @@ const showDetailModal = (burial) => {
 }
 
 function formatPhoneNumber(phone) {
-  if (!/^\d{11}$/.test(phone)) return 'Неверный формат номера';
+  if (!/^\d{11}$/.test(phone)) return t('admin.burial.invalidPhoneFormat');
 
   return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(4, 7)} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
 }
@@ -86,7 +89,7 @@ onMounted((async () => {
     const response = await  getSearchRequests();
     burials.value = response.data?.data
   } catch (error) {
-    console.error('Ошибка при получении пользователей:', error)
+    console.error(t('admin.burial.fetchError'), error)
   } finally {
     console.log('finally')
   }

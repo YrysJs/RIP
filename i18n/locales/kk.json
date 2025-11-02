@@ -4,6 +4,7 @@
         "back": "Артқа",
         "close": "Жабу",
         "submit": "Жіберу",
+        "send": "Жіберу",
         "save": "Сақтау",
         "cancel": "Бас тарту",
         "delete": "Өшіру",
@@ -45,8 +46,19 @@
         "fileOpened": "Файл жаңа вкладкада ашылды",
         "updating": "Жаңартуда...",
         "cemetery": "Зират:",
-        "download": "Жүктеп алу",
-        "deleteAll": "Барлығын жою"
+        "deleteAll": "Барлығын жою",
+        "notSpecified": "Көрсетілмеген",
+        "defaultDocument": "Document.pdf",
+        "active": "Актив",
+        "inactive": "Актив емес",
+        "types": {
+            "manager": "Менеджер",
+            "admin": "Әкімші"
+        },
+        "from": "бастап",
+        "day": "күн",
+        "days": "күн",
+        "daysPlural": "күн"
     },
     "cities": {
         "almaty": "Алматы",
@@ -103,6 +115,7 @@
         "ourMission": "Біздің миссиямыз",
         "missionText": "Зираттарды іздеу, ұйымдастыру және күтім қызметтері үшін бірыңғай база құру және оны халыққа қолжетімді ету.",
         "servicesTitle": "Қызметтер",
+        "haveQuestions": "Сізде сұрақтар бар ма?",
         "contactUs": "Кез келген уақытта бізбен байланыса аласыз!",
         "writeWhatsApp": "WhatsApp арқылы жазу",
         "news": "Жаңалықтар",
@@ -191,7 +204,16 @@
         "type": "Түрі",
         "searchPlaceholder": "Іздеу",
         "loading": "Жүктелуде...",
-        "productsNotFound": "Өнімдер табылмады"
+        "productsNotFound": "Өнімдер табылмады",
+        "loadedProducts": "Жүктелген тауарлар:",
+        "loadedCategories": "Жүктелген категориялар:",
+        "cartLoaded": "Себет жүктелді:",
+        "categoriesApiResponse": "API категориялардың жауабы:",
+        "loadProductsError": "Тауарларды жүктеу кезінде қате:",
+        "loadCategoriesError": "Категорияларды жүктеу кезінде қате:",
+        "loadCartError": "Себетті жүктеу кезінде қате:",
+        "addToCartError": "Себетке қосу кезінде қате:",
+        "paginationInfo": "Беттеу:"
     },
     "reserve": {
         "pageTitle": "Орынды брондау",
@@ -211,7 +233,6 @@
         "bookingDays": "3 күн",
         "deceasedFullName": "Марқұмның Аты-жөні:",
         "burialDateLabel": "Жерлеу күні:",
-        "notSpecified": "Көрсетілмеген",
         "enterDeceasedData": "Марқұм туралы деректерді көрсетіңіз",
         "iinPlaceholder": "ЖСН",
         "fullNamePlaceholder": "Аты-жөні",
@@ -281,6 +302,38 @@
             "reports": "Есептер",
             "news": "Жаңалықтар",
             "users": "Пайдаланушылар"
+        },
+        "news": {
+            "selectCategory": "Санатты таңдаңыз:",
+            "category": "Санат",
+            "announcements": "Хабарландырулар",
+            "socialSupport": "Әлеуметтік қолдау",
+            "legislationChanges": "Заңнамалық өзгерістер",
+            "newsTitle": "Жаңалық атауы:",
+            "newsPlaceholder": "Атауын енгізіңіз",
+            "uploadCover": "Қаптама үшін фото жүктеу",
+            "uploadPhotoTitle": "Фотосурет жүктеу",
+            "uploadButton": "Жүктеу",
+            "mainText": "Негізгі мәтінді толтырыңыз:",
+            "textPlaceholder": "Жаңалық мәтінін енгізіңіз...",
+            "attachFile": "Файл тіркеу",
+            "selectFile": "Файл таңдаңыз",
+            "changesSaved": "Өзгерістер сақталды!",
+            "newsPublished": "Жаңалық жарияланды!",
+            "totalNews": "Барлық жаңалықтар",
+            "topViewedNews": "Ең көп қаралған жаңалықтар",
+            "noNews": "Жаңалықтар әлі жоқ",
+            "title": "Жаңалықтар",
+            "cover": "Қаптама",
+            "addNews": "Жаңалық қосу",
+            "status": "Мәртебе",
+            "active": "Белсенді",
+            "draft": "Жоба",
+            "newestFirst": "Алдымен жаңалары",
+            "oldestFirst": "Алдымен ескілері",
+            "hide": "Жасыру",
+            "show": "Көрсету",
+            "edit": "Өңдеу"
         }
     },
     "client": {
@@ -314,7 +367,13 @@
             "filterSupplierServices": "Қызмет өтінімдері",
             "allLoaded": "Барлық хабарламалар жүктелді",
             "noNotifications": "Хабарламалар әлі жоқ",
-            "markAllError": "Барлық хабарламаларды оқылған деп белгілеу мүмкін болмады"
+            "markAllError": "Барлық хабарламаларды оқылған деп белгілеу мүмкін болмады",
+            "loading": "Хабарламалар жүктелуде...",
+            "loadingMore": "Жүктелуде...",
+            "errorLoading": "Хабарламаларды жүктеу кезінде қате:",
+            "tryAgain": "Қайталап көріңіз",
+            "notificationPrefix": "Хабарлама -",
+            "markReadError": "Хабарламаны оқылған деп белгілеу кезінде қате:"
         },
         "memorial": {
             "notFound": "Мемориалдар табылмады",
@@ -323,13 +382,19 @@
         },
         "burial": {
             "reburialRequest": "Қайта жерлеу сұранысы",
+            "reburialRequestTitle": "ҚАЙТА ЖЕРЛЕУ ҮШІН СҰРАНЫС",
             "loadingRequests": "Өтініштеріңіз жүктелуде…",
             "nothingFound": "Ештеңе табылмады",
             "noRequestsYet": "Сізде әлі жасалған өтініштер жоқ",
             "createRequest": "Өтініш жасау",
             "request": "ӨТІНІШ:",
             "applicant": "Өтініш беруші:",
-            "reason": "Себебі:"
+            "reason": "Себебі:",
+            "backToList": "Тізімге оралу",
+            "foreignCemetery": "Сыртқы зират:",
+            "requestNotFound": "Сұраныс табылмады",
+            "loadError": "Деректерді жүктеу кезінде қате:",
+            "loadErrorText": "Деректерді жүктеу кезінде қате"
         },
         "government": {
             "loadingAppeals": "Өтініштеріңіз жүктелуде…",
@@ -367,7 +432,24 @@
                 "cemetery": "Қалдықсарай:",
                 "sector": "Сектор",
                 "place": "Орын:",
-                "deceasedFullName": "Қайтыс болғанның толық аты-жөні:"
+                "deceasedFullName": "Қайтыс болғанның толық аты-жөні:",
+                "burialDate": "Жерлеу күні:",
+                "status": "Статус:",
+                "cemeteryPhone": "Қалдықсарайдың телефоны:",
+                "bookingPlace": "Орын брондау:",
+                "notAvailable": "N/A",
+                "loadError": "Деректерді жүктеу кезінде қате",
+                "deathCertificate": "Қайтыс болу туралы куәлік",
+                "toPay": "Төлеуге:",
+                "fillAllFields": "Барлық өрістерді толтырыңыз",
+                "payFee": "Алымды төлеу",
+                "paySkruServices": "СКРУ қызметтерін төлеу",
+                "fillAllFieldsForSkru": "СКРУ қызметтерін төлеу үшін барлық өрістерді толтырыңыз",
+                "skruCompanyName": "ТОО \"Алматы қаласының Мамандандырылған ритуалдық қызметтер комбинаты\"",
+                "paymentSuccessTitle": "Төлем сәтті өтті, жерлеу өтініші жіберілді!",
+                "paymentSuccessText": "Жеке кабинетте статусты қараңыз",
+                "burialDateRequired": "Жерлеу күнін көрсету қажет",
+                "waitingPayment": "Төлем күтуде"
             },
             "burial": {
                 "noRequests": "Төленген жерлеу өтініштері жоқ",
@@ -409,14 +491,6 @@
                 "status_cancelled": "Бас тартылды",
                 "orderProducts": "Тапсырысындағы тауарлар"
             }
-        },
-        "government": {
-            "status_rejected": "Қабылданбады",
-            "status_confirmed": "Расталды",
-            "status_closed": "Жабылды",
-            "status_new": "Жаңа өтініш",
-            "status_inProcess": "Жұмыс барысында",
-            "status_pending": "Күтуде"
         },
         "reservation": {
             "iin": "ЖСН",
@@ -560,7 +634,6 @@
                 "country": "Ел",
                 "city": "Қала",
                 "additionalInfo": "Қосымша ақпарат",
-                "preview": "Алдын ала қарау",
                 "publish": "Жариялау",
                 "requestSent": "Өтініш жіберілді",
                 "underReview": "қаралуда!",
@@ -609,15 +682,50 @@
         },
         "servicesActive": {
             "deactivated": "Тауар өшірілді",
-            "movedToInactive": "«Активті емес» бөліміне көшірілді."
+            "movedToInactive": "«Активті емес» бөліміне көшірілді.",
+            "deactivateError": "Деактивациялау сәтсіз аяқталды. Қайталап көріңіз.",
+            "goToInactive": "Активті емес бөліміне өту"
+        },
+        "servicesConsideration": {
+            "title": "Қаралудағы тауарлар мен қызметтер",
+            "loading": "Қаралудағы тауарлар мен қызметтерді жүктеу...",
+            "tryAgain": "Қайталап көріңіз",
+            "noPending": "Сізде әлі қаралудағы тауарлар мен қызметтер жоқ",
+            "requestDateTime": "Өтініш күні мен уақыты:",
+            "loadError": "Қаралудағы өнімдерді жүктеу кезінде қате:",
+            "dataLoadError": "Деректерді жүктеу кезінде қате"
+        },
+        "servicesImprovement": {
+            "title": "Жақсарту қажет",
+            "loading": "Жақсарту қажет тауарлар мен қызметтерді жүктеу...",
+            "tryAgain": "Қайталап көріңіз",
+            "noImprovement": "Сізде әлі жақсарту қажет тауарлар мен қызметтер жоқ",
+            "requiresImprovement": "Қызмет жақсартуды талап етеді",
+            "defaultComment": "нақты сипаттаманы көрсетіп, фотосуреттерді тіркеңіз",
+            "loadError": "Жақсарту қажет өнімдерді жүктеу кезінде қате:",
+            "dataLoadError": "Деректерді жүктеу кезінде қате"
         },
         "reviews": {
             "loading": "Қызмет көрсетушінің пікірлері жүктелуде...",
             "loaded": "Пікірлер жүктелді:",
-            "emptyResponse": "Пікірлер серверінен бос жауап"
+            "emptyResponse": "Пікірлер серверінен бос жауап",
+            "authError": "Авторизация қатесі - басты бетке бағыттау",
+            "noAccess": "Пікірлерге қол жетімсіз",
+            "replyError": "Жауап жіберу қатесі:",
+            "appealError": "Апелляция жіберу қатесі:"
         },
         "tickets": {
             "allStatuses": "Барлық статус"
+        },
+        "reports": {
+            "title": "Есептер",
+            "productService": "Тауар/қызмет",
+            "sevenDays": "7 күн",
+            "oneMonth": "1 ай",
+            "threeMonths": "3 ай",
+            "downloadXls": "Файлды жүктеп алу .xls",
+            "downloadPdf": "Файлды жүктеп алу .pdf",
+            "loadError": "Статистиканы жүктеу кезінде қате:"
         },
         "loading": "Жүктелуде…",
         "orderDateTime": "Өтініш күні мен уақыты:",
@@ -655,7 +763,6 @@
         "requiresFix": "Түзетуді қажет етеді",
         "blocked": "Блокталған",
         "unknown": "Белгісіз",
-        "notSpecified": "Көрсетілмеген",
         "login": {
             "title": "Кіріңіз",
             "description": "Мобильді телефон нөмірін енгізіңіз - біз код жібереміз",
@@ -675,6 +782,33 @@
             "status": "Мәртебе",
             "activateSupplier": "Қызмет көрсетушіні белсендіру?",
             "inviteSent": "Шақыру жіберілді!"
+        },
+        "users": {
+            "role": "Роль",
+            "fullName": "ТАӘ",
+            "status": "Мәртебе",
+            "statusActive": "Белсенді",
+            "statusBlocked": "Блокталған",
+            "statusPending": "Шақыру жіберілді",
+            "roleAdministrator": "Әкімші",
+            "roleManager": "Менеджер",
+            "roleWriter": "Жазушы"
+        },
+        "products": {
+            "title": "Өнімдер",
+            "name": "Атауы",
+            "description": "Сипаттама",
+            "price": "Бағасы",
+            "status": "Мәртебе",
+            "category": "Санат"
+        },
+        "burial": {
+            "title": "Қабір іздеу",
+            "applicant": "Өтініш беруші",
+            "deceased": "Марқұм",
+            "invalidPhoneFormat": "Нөмір форматы дұрыс емес",
+            "fetchError": "Қабірді іздеу өтінімдерін алу кезінде қате",
+            "processedTitle": "Өтініш өңделді!"
         }
     },
     "akimat": {
@@ -716,26 +850,6 @@
             "newRequests": "Жаңа өтінімдер",
             "reburialRequests": "Қайта жерлеу өтінімдері",
             "akimatAppeal": "Акиматқа өтініш"
-        }
-    },
-    "user": {
-        "news": {
-            "selectCategory": "Санатты таңдаңыз:",
-            "category": "Санат",
-            "announcements": "Хабарландырулар",
-            "socialSupport": "Әлеуметтік қолдау",
-            "legislationChanges": "Заңнамалық өзгерістер",
-            "newsTitle": "Жаңалық атауы:",
-            "newsPlaceholder": "Атауын енгізіңіз",
-            "uploadCover": "Қаптама үшін фото жүктеу",
-            "uploadPhotoTitle": "Фотосурет жүктеу",
-            "uploadButton": "Жүктеу",
-            "mainText": "Негізгі мәтінді толтырыңыз:",
-            "textPlaceholder": "Жаңалық мәтінін енгізіңіз...",
-            "attachFile": "Файл тіркеу",
-            "selectFile": "Файл таңдаңыз",
-            "changesSaved": "Өзгерістер сақталды!",
-            "newsPublished": "Жаңалық жарияланды!"
         }
     },
     "payment": {
@@ -857,7 +971,6 @@
             "errorWhatsApp": "WhatsApp кодын жіберу қателігі:",
             "errorOtp": "Кодты тексеру қателігі:",
             "enterPhone": "Мобильді телефон нөмірін енгізіңіз:",
-            "phonePlaceholder": "Телефон нөмірін енгізіңіз",
             "confirmPhone": "Нөмірді растаңыз",
             "enterCodeHint": "Кодты енгізіңіз",
             "weSentTo": "Біз оны нөмірге жібердік",
@@ -1044,7 +1157,22 @@
     },
     "clientServices": {
         "mockServiceName": "Қызмет",
-        "loadingOrders": "Тапсырыстарды жүктеу кезінде қате"
+        "loadingOrders": "Тапсырыстарды жүктеу кезінде қате",
+        "shown": "Көрсетілген",
+        "of": "ішінен",
+        "orders": "тапсырыс",
+        "perPage": "бетінде",
+        "previous": "Алдыңғы",
+        "next": "Келесі",
+        "ordersEmpty": "Тапсырыстар жоқ.",
+        "productsInOrder": "Тапсырыстағы тауарлар",
+        "phone": "телефон:",
+        "quantityInOrder": "Тапсырыстағы тауарлар саны:",
+        "arrivalAddress": "Келу мекенжайы:",
+        "arrivalTime": "Келу уақыты:",
+        "paymentReceipt": "Төлемді растау",
+        "leaveReview": "Пікір қалдыру",
+        "close": "×"
     },
     "filterOptions": {
         "allTypes": "Барлық түрлер",
@@ -1057,6 +1185,15 @@
         "phoneLabel": "Телефон",
         "addressLabel": "Мекен-жай",
         "onMap": "Картада"
+    },
+    "akimatCreate": {
+        "title": "Акимат құру",
+        "akimatData": "Акимат туралы деректер",
+        "mapLink": "Картаға сілтеме",
+        "admin": "Әкімші",
+        "iin": "ЖСН",
+        "create": "Құру",
+        "successTitle": "Акимат құрылды!"
     },
     "adminMenu": {
         "akimats": "Акиматтар",
@@ -1074,7 +1211,21 @@
     "ennoblement": {
         "cleaningTerritory": "Қабір айналасын абаттандыру",
         "installFence": "Қоршау орнату",
-        "cleaning": "Тазалау"
+        "cleaning": "Тазалау",
+        "requestNumber": "Өтініш №",
+        "requestDateTime": "Өтініш күні мен уақыты:",
+        "cemetery": "Зират:",
+        "sector": "Сектор",
+        "place": "Орын:",
+        "deceasedFullName": "Марқұмның ТАӘ:",
+        "plotData": "Участок деректері",
+        "customer": "Тапсырыс беруші:",
+        "contacts": "Байланыстар:",
+        "services": "Қызметтер:",
+        "comment": "Пікір",
+        "status": "Мәртебе:",
+        "receipt": "Төлем чекі",
+        "confirmExecution": "Орындауды растау"
     },
     "memorialPage": {
         "noIdInUrl": "URL-де мемориал ID жоқ",
@@ -1082,7 +1233,14 @@
         "share": "Бөлісу",
         "videos": "Бейнематериалдар",
         "achievements": "Жетістіктер",
-        "existing": "Бар"
+        "existing": "Бар",
+        "coordinates": "Координаттар",
+        "viewOnMap": "Картада көру",
+        "addedVideos": "Қосылған бейнелер ({count})",
+        "documentsAndAwards": "Құжаттар мен марапаттар ({count})",
+        "achievementDefault": "Жетістік {number}",
+        "copyLinkError": "Сілтемені көшіру кезінде қате:",
+        "openFileError": "Файлды ашу кезінде қате:"
     },
     "mainPageAlt": {
         "title": "Жақындардың естелігін сақтаңыз",
@@ -1123,7 +1281,11 @@
         "loadError": "Белсенді емес өнімдерді жүктеу кезінде қате",
         "dataLoadError": "Деректерді жүктеу кезінде қате",
         "activated": "Өнім белсендірілді",
-        "movedToActive": "«Белсенділерге» көшірілді."
+        "movedToActive": "«Белсенділерге» көшірілді.",
+        "activateError": "Тауар/қызметті белсендіру кезінде қате",
+        "lastModified": "Соңғы өзгерту күні:",
+        "activate": "Белсендіру",
+        "goToActive": "Белсенділерге өту"
     },
     "newsForm": {
         "back": "Кері қайту",
@@ -1144,7 +1306,15 @@
         "graveDetail": {
             "sector": "Сектор",
             "place": "Орын",
-            "perimeter": "Периметр"
+            "perimeter": "Периметр",
+            "deceasedInfo": "Марқұм туралы ақпарат",
+            "fullName": "Толық аты-жөні",
+            "deathDate": "Қайтыс болған күні",
+            "iin": "ЖСН",
+            "reburial": "Қайта жерлеу",
+            "deathCertificate": "Қайтыс болу туралы куәлік",
+            "openDocument": "Құжатты ашу",
+            "note": "Ескерту"
         }
     },
     "receiptPayment": {
@@ -1170,7 +1340,11 @@
         "supplierPhone": "Жеткізушінің телефоны",
         "serviceTime": "Қызмет көрсету уақыты",
         "createdAt": "Құрылған күні",
-        "updatedAt": "Жаңартылған күні"
+        "updatedAt": "Жаңартылған күні",
+        "commentPlaceholder": "Пікір енгізіңіз...",
+        "moderationComment": "Модеравтушының пікірі",
+        "activate": "Белсендіру",
+        "sendForRevision": "Доработкаға жіберу"
     },
     "review": {
         "rating": "Рейтинг:",
@@ -1255,7 +1429,34 @@
         "sector": "Сектор",
         "place": "Орын:",
         "creatingMemorial": "Мемориал жасалуда...",
-        "createMemorial": "Мемориал жасау"
+        "createMemorial": "Мемориал жасау",
+        "addMorePhotos": "+ Тағы фото қосу",
+        "burialInfo": "Жерлеу туралы ақпарат",
+        "uploadHint": "Файлдарды сүйреп әкеліңіз немесе .png, .jpeg форматындағы файлдарды N мб дейін жүктеңіз",
+        "birthDeathDate": "Туған күні - Қайтыс болған күні",
+        "memorialId": "Мемориал ID: {id}",
+        "addedVideos": "Қосылған бейнелер",
+        "creator": "Құрушы",
+        "publicity": "Жариялық",
+        "lastUpdate": "Соңғы жаңарту",
+        "private": "Жеке",
+        "coordinates": "Координаттар:",
+        "videoTitle": "Бейне {number}",
+        "loadBurialError": "Жерлеу деректерін жүктеу кезінде қате:",
+        "loadMemorialError": "Мемориал деректерін жүктеу кезінде қате:",
+        "loadDeceasedError": "Қайтыс болған адамның деректерін жүктеу кезінде қате:",
+        "updatingMemorial": "Мемориал жаңартылуда...",
+        "updateMemorial": "Мемориалды жаңарту",
+        "updateError": "Мемориалды жаңарту кезінде қате",
+        "createError": "Мемориалды жасау кезінде қате",
+        "copyLinkError": "Сілтемені көшіру кезінде қате:",
+        "noIdInUrl": "URL-де мемориал ID жоқ",
+        "missingId": "Мемориал ID жоқ"
+    },
+    "memorialCreated": {
+        "subscriptions": "Жазылымдар",
+        "oneTimeServices": "Бір реттік қызметтер",
+        "notSelected": "Таңдалмаған"
     },
     "notificationsPage": {
         "showBy": "Көрсету бойынша"
@@ -1293,22 +1494,6 @@
         "adminResponsePlaceholder": "Әкімшінің жауабы",
         "approve": "Бекіту",
         "reject": "Қабыл алмау"
-    },
-    "ennoblement": {
-        "requestNumber": "Өтініш №",
-        "requestDateTime": "Өтініш күні мен уақыты:",
-        "cemetery": "Зират:",
-        "sector": "Сектор",
-        "place": "Орын:",
-        "deceasedFullName": "Марқұмның ТАӘ:",
-        "plotData": "Участок деректері",
-        "customer": "Тапсырыс беруші:",
-        "contacts": "Байланыстар:",
-        "services": "Қызметтер:",
-        "comment": "Пікір",
-        "status": "Мәртебе:",
-        "receipt": "Төлем чекі",
-        "confirmExecution": "Орындауды растау"
     },
     "notifications": {
         "loading": "Хабарландырулар жүктелуде...",
@@ -1348,6 +1533,7 @@
     },
     "cemeteryForm": {
         "createCemetery": "Зират құру",
+        "editCemetery": "Зиратты өңдеу",
         "cemeteryData": "Зират туралы деректер",
         "name": "Атауы",
         "description": "Сипаттама",
@@ -1362,7 +1548,11 @@
         "christianity": "Христиандық",
         "islam": "Ислам",
         "judaism": "Иудаизм",
-        "cemeteryStatus": "Зират мәртебесі"
+        "cemeteryStatus": "Зират мәртебесі",
+        "createButton": "Құру",
+        "createdTitle": "Зират құрылды!",
+        "updatedTitle": "Зират өзгертілді!",
+        "fetchError": "Зират деректерін алу кезінде қате"
     },
     "supplierServices": {
         "inactiveProducts": "Белсенді емес тауарлар мен қызметтер",
@@ -1457,23 +1647,6 @@
         "approveBurial": "Жерлеуді мақұлдау",
         "reject": "Қабылдамау"
     },
-    "clientServices": {
-        "shown": "Көрсетілген",
-        "of": "ішінен",
-        "orders": "тапсырыс",
-        "perPage": "бетінде",
-        "previous": "Алдыңғы",
-        "next": "Келесі",
-        "ordersEmpty": "Тапсырыстар жоқ.",
-        "productsInOrder": "Тапсырыстағы тауарлар",
-        "phone": "телефон:",
-        "quantityInOrder": "Тапсырыстағы тауарлар саны:",
-        "arrivalAddress": "Келу мекенжайы:",
-        "arrivalTime": "Келу уақыты:",
-        "paymentReceipt": "Төлемді растау",
-        "leaveReview": "Пікір қалдыру",
-        "close": "×"
-    },
     "adminComments": {
         "title": "Пікірлер",
         "client": "Клиент",
@@ -1502,15 +1675,15 @@
         "sector": "Сектор:",
         "place": "Орын:"
     },
-    "supplierReviews": {
-        "loading": "Пікірлер жүктелуде...",
+        "supplierReviews": {
+            "title": "Пікірлер мен рейтингтер",
+            "loading": "Пікірлер жүктелуде...",
         "reviewNumber": "Пікір #",
         "productId": "Өнім ID: #",
         "approved": "Бекітілген",
         "rejected": "Қабылданбады",
         "onModeration": "Модеравтуда",
         "client": "Клиент:",
-        "notSpecified": "Көрсетілмеген",
         "supplier": "Жеткізуші:",
         "review": "Пікір",
         "commentNotLeft": "Пікір қалдырылмаған",
@@ -1539,14 +1712,20 @@
         "replyError": "Жауап жіберу кезінде қате. Қайталап көріңіз.",
         "appealReasonRequired": "Апелляция себебін енгізіңіз",
         "appealSent": "Апелляция сәтті жіберілді!",
-        "appealError": "Апелляция жіберу кезінде қате. Қайталап көріңіз."
-    },
+        "appealError": "Апелляция жіберу кезінде қате. Қайталап көріңіз.",
+        "reviewPhoto": "Пікір фотосуреті {number}"
+        },
     "governmentCreate": {
         "title": "Әкімшілікке өтініш құру",
-        "appealType": "Өтініш түрі:",
-        "selectAppeal": "Өтінішті таңдаңыз",
-        "appeal": "Өтініш:",
-        "appealPlaceholder": "Өтініш мәтінін жазыңыз ...."
+        "appealType": "Өтініш түрі",
+        "selectAppeal": "Өтініш түрін таңдаңыз",
+        "appeal": "Өтініш",
+        "appealPlaceholder": "Өтінішіңізді сипаттаңыз...",
+        "requestForInfo": "Ақпарат сұрау",
+        "fillAllFields": "Барлық өрістерді толтырыңыз",
+        "createError": "Өтініш құру кезінде қате",
+        "creating": "Құруда...",
+        "createButton": "Өтініш құру"
     },
     "burialCreate": {
         "title": "Қайта жерлеуге өтініш құру",
@@ -1560,7 +1739,8 @@
         "orDrag": "немесе сүйреңіз",
         "proofOfRelation": "Өтініш берушінің туыстығын растау:",
         "graveDocument": "Қабірге құжат:",
-        "document": "Құжат"
+        "document": "Құжат",
+        "createRequest": "Әкімшілікке сұраныс құру"
     },
     "serviceEdit": {
         "loading": "Тауар/қызмет деректерін жүктеу...",
@@ -1584,7 +1764,6 @@
         "upload": "Жүктеу",
         "serviceLocation": "Қызмет көрсету орны",
         "country": "Ел",
-        "preview": "Алдын ала қарау",
         "saveChanges": "Өзгерістерді сақтау",
         "close": "Жабу",
         "publish": "Жариялау",
@@ -1600,7 +1779,6 @@
         "previewTemporarilyUnavailable": "Уақытша алдын ала қарау жоқ",
         "enterNameForPreview": "Алдын ала қарауға атауын енгізіңіз",
         "enterDescriptionForPreview": "Алдын ала қарауға сипаттаманы енгізіңіз",
-        "preview": "Алдын ала қарау:",
         "previewName": "Атауы:",
         "previewDescription": "Сипаттама:",
         "previewPrice": "Бағасы:",
@@ -1663,15 +1841,6 @@
         "receipt": "чек",
         "reviewImage": "Пікір суреті",
         "responsiblePlaceholder": "Жауапты"
-    },
-    "clientLogin": {
-        "phonePlaceholder": "Телефон нөмірін енгізіңіз"
-    },
-    "productDetail": {
-        "commentPlaceholder": "Пікір енгізіңіз...",
-        "moderationComment": "Модеравтушының пікірі",
-        "activate": "Белсендіру",
-        "sendForRevision": "Доработкаға жіберу"
     }
 }
 

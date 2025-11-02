@@ -5,6 +5,7 @@
     "close": "Закрыть",
     "fileOpened": "Файл открыт в новой вкладке",
     "submit": "Отправить",
+    "send": "Отправить",
     "save": "Сохранить",
     "cancel": "Отменить",
     "delete": "Удалить",
@@ -44,7 +45,20 @@
     "select": "Выбрать",
     "reset": "Сбросить",
     "updating": "Обновление...",
-    "cemetery": "Кладбище:"
+    "cemetery": "Кладбище:",
+    "deleteAll": "Удалить все",
+    "notSpecified": "Не указано",
+    "defaultDocument": "Document.pdf",
+    "active": "Активен",
+    "inactive": "Неактивен",
+    "types": {
+      "manager": "Менеджер",
+      "admin": "Администратор"
+    },
+    "from": "от",
+    "day": "день",
+    "days": "дня",
+    "daysPlural": "дней"
   },
   "cities": {
     "almaty": "Алматы",
@@ -101,6 +115,7 @@
     "ourMission": "Наша миссия",
     "missionText": "Создать единую базу для поиска, организации и услуг по уходу за захоронениями и сделать её доступной для населения.",
     "servicesTitle": "Услуги",
+    "haveQuestions": "У вас есть вопросы?",
     "contactUs": "Можете связаться с нами в любое время!",
     "writeWhatsApp": "Написать на WhatsApp",
     "news": "Новости",
@@ -189,7 +204,16 @@
     "type": "Тип",
     "searchPlaceholder": "Поиск",
     "loading": "Загрузка...",
-    "productsNotFound": "Продукты не найдены"
+    "productsNotFound": "Продукты не найдены",
+    "loadedProducts": "Загружено продуктов:",
+    "loadedCategories": "Загружено категорий:",
+    "cartLoaded": "Корзина загружена:",
+    "categoriesApiResponse": "Ответ API категорий:",
+    "loadProductsError": "Ошибка при загрузке продуктов:",
+    "loadCategoriesError": "Ошибка при загрузке категорий:",
+    "loadCartError": "Ошибка при загрузке корзины:",
+    "addToCartError": "Ошибка при добавлении в корзину:",
+    "paginationInfo": "Пагинация:"
   },
   "reserve": {
     "pageTitle": "Забронировать место",
@@ -209,7 +233,6 @@
     "bookingDays": "3 дня",
     "deceasedFullName": "ФИО покойного:",
     "burialDateLabel": "Дата похорон:",
-    "notSpecified": "Не указано",
     "enterDeceasedData": "Укажите данные покойного",
     "iinPlaceholder": "ИИН",
     "fullNamePlaceholder": "ФИО",
@@ -280,6 +303,38 @@
       "reports": "Отчеты",
       "news": "Новости",
       "users": "Пользователи"
+    },
+    "news": {
+      "selectCategory": "Выберите категорию:",
+      "category": "Категория",
+      "announcements": "Объявления",
+      "socialSupport": "Социальная поддержка",
+      "legislationChanges": "Изменения в законодательстве",
+      "newsTitle": "Название новости:",
+      "newsPlaceholder": "Введите название",
+      "uploadCover": "Загрузить фото для обложки",
+      "uploadPhotoTitle": "Загрузить фото",
+      "uploadButton": "Загрузить",
+      "mainText": "Заполните основной текст:",
+      "textPlaceholder": "Введите текст новости...",
+      "attachFile": "Прикрепить файл",
+      "selectFile": "Выбрать файл",
+      "changesSaved": "Изменения сохранены!",
+      "newsPublished": "Новость опубликована!",
+      "totalNews": "Всего новостей",
+      "topViewedNews": "Топ просматриваемых новостей",
+      "noNews": "Новостей пока нет",
+      "title": "Новости",
+      "cover": "Обложка",
+      "addNews": "Добавить новость",
+      "status": "Статус",
+      "active": "Активный",
+      "draft": "Черновик",
+      "newestFirst": "Сначала новые",
+      "oldestFirst": "Сначала старые",
+      "hide": "Скрыть",
+      "show": "Показать",
+      "edit": "Редактировать"
     }
   },
   "client": {
@@ -313,7 +368,13 @@
       "filterSupplierServices": "Заявки услуг",
       "allLoaded": "Все уведомления загружены",
       "noNotifications": "Уведомлений пока нет",
-      "markAllError": "Не удалось пометить все уведомления как прочитанные"
+      "markAllError": "Не удалось пометить все уведомления как прочитанные",
+      "loading": "Загрузка уведомлений...",
+      "loadingMore": "Загрузка...",
+      "errorLoading": "Ошибка загрузки уведомлений:",
+      "tryAgain": "Попробовать снова",
+      "notificationPrefix": "Уведомление -",
+      "markReadError": "Ошибка при пометке уведомления как прочитанное:"
     },
     "memorial": {
       "notFound": "Мемориалы не найдены",
@@ -322,13 +383,19 @@
     },
     "burial": {
       "reburialRequest": "Запрос на перезахоронение",
+      "reburialRequestTitle": "ЗАПРОС НА ПЕРЕЗАХОРОНЕНИЕ",
       "loadingRequests": "Загружаем ваши заявки…",
       "nothingFound": "Ничего не найдено",
       "noRequestsYet": "У вас пока нет созданных заявок",
       "createRequest": "Создать заявку",
       "request": "ЗАЯВКА:",
       "applicant": "Заявитель:",
-      "reason": "Причина:"
+      "reason": "Причина:",
+      "backToList": "Вернуться к списку",
+      "foreignCemetery": "Внешнее кладбище:",
+      "requestNotFound": "Запрос не найден",
+      "loadError": "Ошибка загрузки данных:",
+      "loadErrorText": "Ошибка загрузки данных"
     },
     "government": {
       "loadingAppeals": "Загружаем ваши обращения…",
@@ -366,7 +433,24 @@
         "cemetery": "Кладбище:",
         "sector": "Сектор",
         "place": "Место:",
-        "deceasedFullName": "ФИО покойного:"
+        "deceasedFullName": "ФИО покойного:",
+        "burialDate": "Дата похорон:",
+        "status": "Статус:",
+        "cemeteryPhone": "Телефон кладбища:",
+        "bookingPlace": "Бронирование места:",
+        "notAvailable": "N/A",
+        "loadError": "Ошибка при загрузке данных",
+        "deathCertificate": "Свидетельство о смерти",
+        "toPay": "К оплате:",
+        "fillAllFields": "Заполните все поля",
+        "payFee": "Оплатить сбор",
+        "paySkruServices": "Оплатить услуги СКРУ",
+        "fillAllFieldsForSkru": "Заполните все поля для оплаты услуг СКРУ",
+        "skruCompanyName": "ТОО \"Специализированный комбинат ритуальных услуг города Алматы\"",
+        "paymentSuccessTitle": "Оплата прошла успешно, заявка на захоронения отправлена!",
+        "paymentSuccessText": "Отслеживайте статус в личном кабинете",
+        "burialDateRequired": "Необходимо указать даты похорон",
+        "waitingPayment": "В ожидании оплаты"
       },
       "burial": {
         "noRequests": "Нет оплаченных заявок на захоронение",
@@ -408,14 +492,6 @@
         "status_cancelled": "Отменён",
         "orderProducts": "Товары в заказе"
       }
-    },
-    "government": {
-      "status_rejected": "Отказано",
-      "status_confirmed": "Подтверждено",
-      "status_closed": "Закрыто",
-      "status_new": "Новый запрос",
-      "status_inProcess": "В работе",
-      "status_pending": "Ожидание"
     },
     "reservation": {
       "iin": "ИИН",
@@ -559,7 +635,6 @@
         "country": "Страна",
         "city": "Город",
         "additionalInfo": "Доп информация",
-        "preview": "Предпросмотр",
         "publish": "Опубликовать",
         "requestSent": "Заявка отправлена",
         "underReview": "на рассмотрение!",
@@ -608,15 +683,50 @@
     },
     "servicesActive": {
       "deactivated": "Товар деактивирован",
-      "movedToInactive": "перемещён в «Неактивные»."
+      "movedToInactive": "перемещён в «Неактивные».",
+      "deactivateError": "Не удалось деактивировать. Попробуйте ещё раз.",
+      "goToInactive": "Перейти в неактивные"
+    },
+    "servicesConsideration": {
+      "title": "Товары и услуги на рассмотрении",
+      "loading": "Загрузка товаров и услуг на рассмотрении…",
+      "tryAgain": "Попробовать снова",
+      "noPending": "У вас пока нет товаров и услуг на рассмотрении",
+      "requestDateTime": "Дата и время заявки:",
+      "loadError": "Ошибка при загрузке продуктов на рассмотрении:",
+      "dataLoadError": "Ошибка при загрузке данных"
+    },
+    "servicesImprovement": {
+      "title": "Требует доработки",
+      "loading": "Загрузка товаров и услуг, требующих доработки…",
+      "tryAgain": "Попробовать снова",
+      "noImprovement": "У вас пока нет товаров и услуг, требующих доработки",
+      "requiresImprovement": "Услуга требует доработки",
+      "defaultComment": "укажите точное описание и прикрепите фотографии",
+      "loadError": "Ошибка при загрузке продуктов требующих доработки:",
+      "dataLoadError": "Ошибка при загрузке данных"
     },
     "reviews": {
       "loading": "Загрузка отзывов поставщика...",
       "loaded": "Отзывы получены:",
-      "emptyResponse": "Пустой ответ от сервера отзывов"
+      "emptyResponse": "Пустой ответ от сервера отзывов",
+      "authError": "Ошибка авторизации - перенаправление на главную",
+      "noAccess": "Нет доступа к отзывам",
+      "replyError": "Ошибка отправки ответа:",
+      "appealError": "Ошибка отправки обжалования:"
     },
     "tickets": {
       "allStatuses": "Все статусы"
+    },
+    "reports": {
+      "title": "Отчёты",
+      "productService": "Товар/услуга",
+      "sevenDays": "7 дней",
+      "oneMonth": "1 месяц",
+      "threeMonths": "3 месяца",
+      "downloadXls": "Скачать файл .xls",
+      "downloadPdf": "Скачать файл .pdf",
+      "loadError": "Ошибка при загрузке статистики:"
     },
     "loading": "Загрузка…",
     "orderDateTime": "Дата и время заявки:",
@@ -654,7 +764,6 @@
     "requiresFix": "Требует доработки",
     "blocked": "Заблокирован",
     "unknown": "Неизвестно",
-    "notSpecified": "Не указана",
     "login": {
       "title": "Войдите",
       "description": "Введите номер мобильного телефона - мы пришлем код",
@@ -674,6 +783,33 @@
       "status": "Статус",
       "activateSupplier": "Активировать поставщика?",
       "inviteSent": "Приглашение отправлено!"
+    },
+    "users": {
+      "role": "Роль",
+      "fullName": "ФИО",
+      "status": "Статус",
+      "statusActive": "Активен",
+      "statusBlocked": "Заблокирован",
+      "statusPending": "Приглашение отправлено",
+      "roleAdministrator": "Администратор",
+      "roleManager": "Менеджер",
+      "roleWriter": "Писатель"
+    },
+    "products": {
+      "title": "Продукты",
+      "name": "Название",
+      "description": "Описание",
+      "price": "Цена",
+      "status": "Статус",
+      "category": "Категория"
+    },
+    "burial": {
+      "title": "Поиск захоронении",
+      "applicant": "Заявитель",
+      "deceased": "Покойный",
+      "invalidPhoneFormat": "Неверный формат номера",
+      "fetchError": "Ошибка при получении заявок на поиск",
+      "processedTitle": "Обращение обработано!"
     }
   },
   "akimat": {
@@ -715,26 +851,6 @@
       "newRequests": "Новые заявки",
       "reburialRequests": "Заявки на перезахоронение",
       "akimatAppeal": "Обращение в акимат"
-    }
-  },
-  "user": {
-    "news": {
-      "selectCategory": "Выберите категорию:",
-      "category": "Категория",
-      "announcements": "Объявления",
-      "socialSupport": "Социальная поддержка",
-      "legislationChanges": "Изменения в законодательстве",
-      "newsTitle": "Название новости:",
-      "newsPlaceholder": "Введите название",
-      "uploadCover": "Загрузить фото для обложки",
-      "uploadPhotoTitle": "Загрузить фото",
-      "uploadButton": "Загрузить",
-      "mainText": "Заполните основной текст:",
-      "textPlaceholder": "Введите текст новости...",
-      "attachFile": "Прикрепить файл",
-      "selectFile": "Выбрать файл",
-      "changesSaved": "Изменения сохранены!",
-      "newsPublished": "Новость опубликована!"
     }
   },
   "payment": {
@@ -850,7 +966,6 @@
       "errorWhatsApp": "Ошибка при отправке WhatsApp кода:",
       "errorOtp": "Ошибка при проверке кода:",
       "enterPhone": "Введите номер мобильного телефона:",
-      "phonePlaceholder": "Введите номер телефона",
       "confirmPhone": "Подтвердите номер",
       "enterCodeHint": "Введите код из",
       "weSentTo": "Мы отправили его на номер",
@@ -1043,7 +1158,22 @@
   },
   "clientServices": {
     "mockServiceName": "Услуга",
-    "loadingOrders": "Ошибка загрузки заказов"
+    "loadingOrders": "Ошибка загрузки заказов",
+    "shown": "Показано",
+    "of": "из",
+    "orders": "заказов",
+    "perPage": "на странице",
+    "previous": "Предыдущая",
+    "next": "Следующая",
+    "ordersEmpty": "Заказов нет.",
+    "productsInOrder": "Товары в заказе",
+    "phone": "телефон:",
+    "quantityInOrder": "Количество товаров в заказе:",
+    "arrivalAddress": "Адрес прибытия:",
+    "arrivalTime": "Время прибытия:",
+    "paymentReceipt": "Чек об оплате",
+    "leaveReview": "Оставить отзыв",
+    "close": "×"
   },
   "filterOptions": {
     "allTypes": "Все типы",
@@ -1056,6 +1186,15 @@
     "phoneLabel": "Телефон",
     "addressLabel": "Адрес",
     "onMap": "На карте"
+  },
+  "akimatCreate": {
+    "title": "Создание Акимата",
+    "akimatData": "Данные о Акимате",
+    "mapLink": "Ссылка на карту",
+    "admin": "Админ",
+    "iin": "ИИН",
+    "create": "Создать",
+    "successTitle": "Акимат создан!"
   },
   "adminMenu": {
     "akimats": "Акиматы",
@@ -1073,7 +1212,21 @@
   "ennoblement": {
     "cleaningTerritory": "Облагораживание территории вокруг могилы",
     "installFence": "Установка ограды",
-    "cleaning": "Уборка"
+    "cleaning": "Уборка",
+    "requestNumber": "Запрос №",
+    "requestDateTime": "Дата и время заявки:",
+    "cemetery": "Кладбище:",
+    "sector": "Сектор",
+    "place": "Место:",
+    "deceasedFullName": "ФИО покойного:",
+    "plotData": "Данные участка",
+    "customer": "Заказчик:",
+    "contacts": "Контакты:",
+    "services": "Услуги:",
+    "comment": "Комментарий",
+    "status": "Статус:",
+    "receipt": "Чек об оплате",
+    "confirmExecution": "Подтвердить исполнение"
   },
   "memorialPage": {
     "noIdInUrl": "Нет id мемориала в URL",
@@ -1081,7 +1234,14 @@
     "share": "Поделиться",
     "videos": "Видеоматериалы",
     "achievements": "Достижения",
-    "existing": "Существующее"
+    "existing": "Существующее",
+    "coordinates": "Координаты",
+    "viewOnMap": "Посмотреть на карте",
+    "addedVideos": "Добавленные видео ({count})",
+    "documentsAndAwards": "Документы и награды ({count})",
+    "achievementDefault": "Достижение {number}",
+    "copyLinkError": "Ошибка при копировании ссылки:",
+    "openFileError": "Ошибка при открытии файла:"
   },
   "mainPageAlt": {
     "title": "Сохраните память о близких",
@@ -1122,7 +1282,11 @@
     "loadError": "Ошибка при загрузке неактивных продуктов",
     "dataLoadError": "Ошибка при загрузке данных",
     "activated": "Товар активирован",
-    "movedToActive": "перемещён в «Активные»."
+    "movedToActive": "перемещён в «Активные».",
+    "activateError": "Ошибка при активации товара/услуги",
+    "lastModified": "Дата последнего изменения:",
+    "activate": "Активировать",
+    "goToActive": "Перейти в активные"
   },
   "newsForm": {
     "back": "Вернуться",
@@ -1143,7 +1307,15 @@
     "graveDetail": {
       "sector": "Сектор",
       "place": "Место",
-      "perimeter": "Периметр"
+      "perimeter": "Периметр",
+      "deceasedInfo": "Информация о покойном",
+      "fullName": "ФИО",
+      "deathDate": "Дата смерти",
+      "iin": "ИИН",
+      "reburial": "Перезахоронение",
+      "deathCertificate": "Свидетельство о смерти",
+      "openDocument": "Открыть документ",
+      "note": "Примечание"
     }
   },
   "receiptPayment": {
@@ -1169,7 +1341,11 @@
     "supplierPhone": "Телефон поставщика",
     "serviceTime": "Время обслуживания",
     "createdAt": "Дата создания",
-    "updatedAt": "Дата обновления"
+    "updatedAt": "Дата обновления",
+    "commentPlaceholder": "Введите комментарий...",
+    "moderationComment": "Комментарий модератора",
+    "activate": "Активировать",
+    "sendForRevision": "Отправить на доработку"
   },
   "review": {
     "rating": "Рейтинг:",
@@ -1195,6 +1371,11 @@
     "providerServices": "Поставщик услуг",
     "reviews": "Отзывы",
     "note": "Примечание:"
+  },
+  "responsible": {
+    "assign": "Назначить ответственного",
+    "responsible": "Ответственный",
+    "assignButton": "Назначить"
   },
   "memorialDetails": {
     "place": "Место",
@@ -1248,12 +1429,29 @@
     "addMorePhotos": "+ Добавить еще фото",
     "burialInfo": "Информация о захоронении",
     "memorialInfo": "Информация о мемориале",
+    "uploadHint": "Перетащите файлы или загрузите файлы до N мб в формате: .png, .jpeg",
+    "birthDeathDate": "Дата рождения - Дата смерти",
+    "memorialId": "Мемориал ID: {id}",
+    "addedVideos": "Добавленные видео",
     "creator": "Создатель",
     "publicity": "Публичность",
     "lastUpdate": "Последнее обновление",
     "private": "Приватный",
     "coordinates": "Координаты:",
-    "addedVideos": "Добавленные видео"
+    "videoTitle": "Видео {number}",
+    "loadBurialError": "Ошибка при загрузке данных захоронения:",
+    "loadMemorialError": "Ошибка при загрузке данных мемориала:",
+    "loadDeceasedError": "Ошибка при загрузке данных покойного:",
+    "updateError": "Ошибка при обновлении мемориала",
+    "createError": "Ошибка при создании мемориала",
+    "copyLinkError": "Ошибка при копировании ссылки:",
+    "noIdInUrl": "Нет id мемориала в URL",
+    "missingId": "Отсутствует ID мемориала"
+  },
+  "memorialCreated": {
+    "subscriptions": "Подписки",
+    "oneTimeServices": "Одноразовые услуги",
+    "notSelected": "Не выбрано"
   },
   "notificationsPage": {
     "showBy": "Показать по"
@@ -1291,22 +1489,6 @@
     "adminResponsePlaceholder": "Ответ администратора",
     "approve": "Одобрить",
     "reject": "Отклонить"
-  },
-  "ennoblement": {
-    "requestNumber": "Запрос №",
-    "requestDateTime": "Дата и время заявки:",
-    "cemetery": "Кладбище:",
-    "sector": "Сектор",
-    "place": "Место:",
-    "deceasedFullName": "ФИО покойного:",
-    "plotData": "Данные участка",
-    "customer": "Заказчик:",
-    "contacts": "Контакты:",
-    "services": "Услуги:",
-    "comment": "Комментарий",
-    "status": "Статус:",
-    "receipt": "Чек об оплате",
-    "confirmExecution": "Подтвердить исполнение"
   },
   "notifications": {
     "loading": "Загрузка уведомлений...",
@@ -1346,6 +1528,7 @@
   },
   "cemeteryForm": {
     "createCemetery": "Создание кладбища",
+    "editCemetery": "Редактирование кладбища",
     "cemeteryData": "Данные о кладбище",
     "name": "Название",
     "description": "Описание",
@@ -1360,7 +1543,11 @@
     "christianity": "Христианство",
     "islam": "Ислам",
     "judaism": "Иудаизм",
-    "cemeteryStatus": "Статус кладбища"
+    "cemeteryStatus": "Статус кладбища",
+    "createButton": "Создать",
+    "createdTitle": "Кладбище создано!",
+    "updatedTitle": "Кладбище изменено!",
+    "fetchError": "Ошибка при получении данных кладбища"
   },
   "supplierServices": {
     "inactiveProducts": "Неактивные товары и услуги",
@@ -1452,24 +1639,8 @@
     "newBurialPlace": "Новое место захоронения",
     "reburialReason": "Причина перезахоронения:",
     "reburialRequest": "ЗАЯВКА НА ПЕРЕЗАХОРОНЕНИЕ",
-    "approveBurial": "Согласовать захоронение"
-  },
-  "clientServices": {
-    "shown": "Показано",
-    "of": "из",
-    "orders": "заказов",
-    "perPage": "на странице",
-    "previous": "Предыдущая",
-    "next": "Следующая",
-    "ordersEmpty": "Заказов нет.",
-    "productsInOrder": "Товары в заказе",
-    "phone": "телефон:",
-    "quantityInOrder": "Количество товаров в заказе:",
-    "arrivalAddress": "Адрес прибытия:",
-    "arrivalTime": "Время прибытия:",
-    "paymentReceipt": "Чек об оплате",
-    "leaveReview": "Оставить отзыв",
-    "close": "×"
+    "approveBurial": "Согласовать захоронение",
+    "reject": "Отклонить"
   },
   "adminComments": {
     "title": "Комментарии",
@@ -1500,6 +1671,7 @@
     "place": "Место:"
   },
   "supplierReviews": {
+    "title": "Отзывы и рейтинги",
     "loading": "Загрузка отзывов...",
     "reviewNumber": "Отзыв #",
     "productId": "Продукт ID: #",
@@ -1507,7 +1679,6 @@
     "rejected": "Отклонен",
     "onModeration": "На модерации",
     "client": "Клиент:",
-    "notSpecified": "Не указан",
     "supplier": "Поставщик:",
     "review": "Отзыв",
     "commentNotLeft": "Комментарий не оставлен",
@@ -1536,14 +1707,20 @@
     "replyError": "Ошибка при отправке ответа. Попробуйте еще раз.",
     "appealReasonRequired": "Пожалуйста, введите причину обжалования",
     "appealSent": "Обжалование успешно отправлено!",
-    "appealError": "Ошибка при отправке обжалования. Попробуйте еще раз."
+    "appealError": "Ошибка при отправке обжалования. Попробуйте еще раз.",
+    "reviewPhoto": "Фото отзыва {number}"
   },
   "governmentCreate": {
-    "title": "Создание обращения в акимат",
-    "appealType": "Тип обращения:",
-    "selectAppeal": "Выберите обращение",
-    "appeal": "Обращение:",
-    "appealPlaceholder": "Напишите текст вашего обращения ...."
+    "title": "Создание обращения в Акимат",
+    "appealType": "Тип обращения",
+    "selectAppeal": "Выберите тип обращения",
+    "appeal": "Обращение",
+    "appealPlaceholder": "Опишите ваше обращение...",
+    "requestForInfo": "Запрос информации",
+    "fillAllFields": "Пожалуйста, заполните все поля",
+    "createError": "Ошибка при создании обращения",
+    "creating": "Создание...",
+    "createButton": "Создать обращение"
   },
   "burialCreate": {
     "title": "Создание запроса на перезахоронение",
@@ -1557,7 +1734,8 @@
     "orDrag": "или перетащите их",
     "proofOfRelation": "Подтверждение родства заявителя:",
     "graveDocument": "Документ на могилу:",
-    "document": "Документ"
+    "document": "Документ",
+    "createRequest": "Создать запрос в акимат"
   },
   "serviceEdit": {
     "loading": "Загрузка данных товара/услуги...",
@@ -1581,7 +1759,6 @@
     "upload": "Загрузить",
     "serviceLocation": "Местоположение оказания услуг",
     "country": "Страна",
-    "preview": "Предпросмотр",
     "saveChanges": "Сохранить изменения",
     "close": "Закрыть",
     "publish": "Опубликовать",
@@ -1597,7 +1774,6 @@
     "previewTemporarilyUnavailable": "Временно без предпросмотра",
     "enterNameForPreview": "Введите название для предпросмотра",
     "enterDescriptionForPreview": "Введите описание для предпросмотра",
-    "preview": "Предпросмотр:",
     "previewName": "Название:",
     "previewDescription": "Описание:",
     "previewPrice": "Цена:",
@@ -1660,14 +1836,5 @@
     "receipt": "чек",
     "reviewImage": "Изображение отзыва",
     "responsiblePlaceholder": "Ответственный"
-  },
-  "clientLogin": {
-    "phonePlaceholder": "Введите номер телефона"
-  },
-  "productDetail": {
-    "commentPlaceholder": "Введите комментарий...",
-    "moderationComment": "Комментарий модератора",
-    "activate": "Активировать",
-    "sendForRevision": "Отправить на доработку"
   }
 }

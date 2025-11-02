@@ -141,7 +141,7 @@ const handleMarkAsRead = async (notificationId) => {
       notifications.value[notificationIndex].is_read = true;
     }
   } catch (err) {
-    console.error("Ошибка при пометке уведомления как прочитанное:", err);
+    console.error(t('client.notifications.markReadError'), err);
   }
 };
 
@@ -218,7 +218,7 @@ const handleNotificationClick = async (notification) => {
           <div
             class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#38949B]"
           />
-          <span class="ml-2 text-gray-600">Загрузка уведомлений...</span>
+          <span class="ml-2 text-gray-600">{{ $t('client.notifications.loading') }}</span>
         </div>
 
         <!-- Ошибка загрузки -->
@@ -226,12 +226,12 @@ const handleNotificationClick = async (notification) => {
           v-else-if="error && notifications.length === 0"
           class="text-center py-8"
         >
-          <p class="text-red-500">Ошибка загрузки уведомлений: {{ error }}</p>
+          <p class="text-red-500">{{ $t('client.notifications.errorLoading') }} {{ error }}</p>
           <button
             class="mt-4 px-4 py-2 bg-[#38949B] text-white rounded-lg hover:bg-[#2a7179]"
             @click="fetchNotifications(true)"
           >
-            Попробовать снова
+            {{ $t('client.notifications.tryAgain') }}
           </button>
         </div>
 
@@ -250,7 +250,7 @@ const handleNotificationClick = async (notification) => {
             <div class="flex flex-col flex-1">
               <!--                        <nuxt-link :to="notification.type === 'new_review' ? `/supplier/reviews` : `/supplier/tickets/active/${notification.entity_id}`" class="text-sm font-semibold">Уведомление - {{ notification.subject }} - {{ notification.data.order_id || notification.data.request_number }}</nuxt-link>-->
               <p class="text-sm font-semibold">
-                Уведомление - {{ notification.subject }} -
+                {{ $t('client.notifications.notificationPrefix') }} {{ notification.subject }} -
                 {{
                   notification.data.order_id || notification.data.request_number
                 }}
@@ -274,7 +274,7 @@ const handleNotificationClick = async (notification) => {
             <div
               class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#38949B]"
             />
-            <span class="ml-2 text-gray-600 text-sm">Загрузка...</span>
+            <span class="ml-2 text-gray-600 text-sm">{{ $t('client.notifications.loadingMore') }}</span>
           </div>
 
           <div

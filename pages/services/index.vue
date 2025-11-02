@@ -138,14 +138,14 @@ async function fetchProducts() {
     totalItems.value = response.data?.total || 0;
     totalPages.value = response.data?.total_pages || 1;
     
-    console.log("Загружено продуктов:", products.value.length);
-    console.log("Пагинация:", {
+    console.log(t('services.loadedProducts'), products.value.length);
+    console.log(t('services.paginationInfo'), {
       currentPage: currentPage.value,
       totalPages: totalPages.value,
       totalItems: totalItems.value
     });
   } catch (error) {
-    console.error("Ошибка при загрузке продуктов:", error);
+    console.error(t('services.loadProductsError'), error);
     const { $toast } = useNuxtApp();
     $toast.error(t('common.serverUnavailable'));
     products.value = [];
@@ -158,13 +158,13 @@ async function fetchProducts() {
 async function fetchCategories() {
   try {
     const response = await getCategories();
-    console.log("Ответ API категорий:", response.data);
+    console.log(t('services.categoriesApiResponse'), response.data);
 
     // Предполагаем, что категории также могут быть в items
     categories.value = response.data?.items || response.data || [];
-    console.log("Загружено категорий:", categories.value.length);
+    console.log(t('services.loadedCategories'), categories.value.length);
   } catch (error) {
-    console.error("Ошибка при загрузке категорий:", error);
+    console.error(t('services.loadCategoriesError'), error);
     const { $toast } = useNuxtApp();
     $toast.error(t('common.serverUnavailable'));
     categories.value = [];
@@ -175,9 +175,9 @@ const loadCart = async () => {
   try {
     const response = await getCart();
     cartItems.value = response.data || [];
-    console.log("Cart loaded:", cartItems.value);
+    console.log(t('services.cartLoaded'), cartItems.value);
   } catch (err) {
-    console.error("Ошибка при загрузке корзины:", err);
+    console.error(t('services.loadCartError'), err);
     const { $toast } = useNuxtApp();
     $toast.error(t('common.serverUnavailable'));
   }
@@ -217,7 +217,7 @@ const handleDeliveryConfirm = async (deliveryData) => {
     }, 3000);
   } catch (err) {
     cartMessage.value = t('cart.addError');
-    console.error("Ошибка при добавлении в корзину:", err);
+    console.error(t('services.addToCartError'), err);
     const { $toast } = useNuxtApp();
     $toast.error(t('common.serverUnavailable'));
   } finally {
@@ -327,7 +327,7 @@ function getVisiblePages() {
         v-if="cartMessage"
         class="mt-4 p-3 rounded-lg text-center"
         :class="
-          cartMessage.includes('Ошибка')
+          cartMessage.includes(t('common.error'))
             ? 'bg-red-100 text-red-700'
             : 'bg-green-100 text-green-700'
         "
@@ -351,10 +351,10 @@ function getVisiblePages() {
               :placeholder="$t('services.cityPlaceholder')"
               class="bg-transparent border-none outline-none"
             >
-              <option value="Алматы">Алматы</option>
-              <option value="Астана">Астана</option>
-              <option value="Шымкент">Шымкент</option>
-              <option value="Тараз">Тараз</option>
+              <option value="Алматы">{{ $t('cities.almaty') }}</option>
+              <option value="Астана">{{ $t('cities.astana') }}</option>
+              <option value="Шымкент">{{ $t('cities.shymkent') }}</option>
+              <option value="Тараз">{{ $t('cities.taraz') }}</option>
             </select>
           </div>
 
@@ -442,7 +442,7 @@ function getVisiblePages() {
                       v-model="filters.type"
                       id="type-all"
                     />
-                    <label for="type-all">Все</label>
+                    <label for="type-all">{{ $t('services.typeAll') }}</label>
                   </div>
                 </div>
               </div>
@@ -580,7 +580,7 @@ function getVisiblePages() {
                     <span class="font-medium"
                       >{{ $t('services.typeLabel') }}
                       {{
-                        product.type === "service" ? "Услуга" : "Товар"
+                        product.type === "service" ? $t('filterOptions.service') : $t('filterOptions.product')
                       }}</span
                     >
                   </div>
@@ -590,13 +590,13 @@ function getVisiblePages() {
                     class="w-[50%] text-sm rounded-lg bg-[#224C4F26] text-[#17212A] py-[8px] font-semibold"
                     @click="fetchProduct(product.id)"
                   >
-                    Подробнее
+                    {{ $t('services.details') }}
                   </button>
                   <button
                     class="w-[50%] text-sm rounded-lg bg-[#E9B949] text-[#17212A] py-[8px] font-semibold"
                     @click="addProductToCart(product.id)"
                   >
-                    Добавить
+                    {{ $t('services.addToCart') }}
                   </button>
                 </div>
               </div>
@@ -623,7 +623,7 @@ function getVisiblePages() {
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
                   : 'bg-white text-gray-700 hover:bg-gray-50'"
               >
-                Предыдущая
+                {{ $t('services.pagination.previous') }}
               </button>
 
               <!-- Номера страниц -->
@@ -675,14 +675,14 @@ function getVisiblePages() {
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
                   : 'bg-white text-gray-700 hover:bg-gray-50'"
               >
-                Следующая
+                {{ $t('services.pagination.next') }}
               </button>
             </div>
           </div>
 
           <!-- Информация о пагинации -->
           <div v-if="!loading && totalItems > 0" class="mt-4 text-center text-sm text-gray-600">
-            Показано {{ products.length }} из {{ totalItems }} товаров
+            {{ $t('services.pagination.showing') }} {{ products.length }} {{ $t('services.pagination.of') }} {{ totalItems }} {{ $t('services.pagination.items') }}
           </div>
         </div>
       </div>

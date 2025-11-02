@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { getSalesStats } from "~/services/supplier";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const stats = ref({
   seven_days: 0,
@@ -31,7 +34,7 @@ onMounted(async () => {
       all_time: toNum( data?.total_stats.all_time),
     };
   } catch (e) {
-    console.error("Ошибка при загрузке статистики:", e);
+    console.error(t('supplier.reports.loadError'), e);
   } finally {
     isLoading.value = false;
   }
@@ -42,29 +45,29 @@ onMounted(async () => {
   <NuxtLayout name="supplier">
     <!-- Заголовок страницы -->
     <div class="page-head">
-      <h2 class="page-title">Отчёты</h2>
+      <h2 class="page-title">{{ $t('supplier.reports.title') }}</h2>
     </div>
 
     <!-- Карточка с таблицей -->
     <div class="card">
       <div v-if="isLoading" class="state">
         <div class="spinner" />
-        <p class="muted mt-3">Загрузка…</p>
+        <p class="muted mt-3">{{ $t('common.loading') }}</p>
       </div>
 
       <div v-else class="reports">
         <!-- шапка таблицы -->
         <div class="reports__head">
-          <div class="th th--name">Товар/услуга</div>
-          <div class="th">7 дней</div>
-          <div class="th">1 месяц</div>
-          <div class="th">3 месяца</div>
-          <div class="th">За всё время</div>
+          <div class="th th--name">{{ $t('supplier.reports.productService') }}</div>
+          <div class="th">{{ $t('supplier.reports.sevenDays') }}</div>
+          <div class="th">{{ $t('supplier.reports.oneMonth') }}</div>
+          <div class="th">{{ $t('supplier.reports.threeMonths') }}</div>
+          <div class="th">{{ $t('reports.allTime') }}</div>
         </div>
 
         <!-- строка ИТОГО -->
         <div class="reports__row">
-          <div class="td td--name">Итого</div>
+          <div class="td td--name">{{ $t('common.total') }}</div>
           <div class="td td--num">{{ stats.seven_days }}</div>
           <div class="td td--num">{{ stats.one_month }}</div>
           <div class="td td--num">{{ stats.three_months }}</div>
@@ -75,8 +78,8 @@ onMounted(async () => {
 
         <!-- выгрузка -->
         <div class="downloads">
-          <a href="#" download class="dl">Скачать файл .xls</a>
-          <a href="#" download class="dl">Скачать файл .pdf</a>
+          <a href="#" download class="dl">{{ $t('supplier.reports.downloadXls') }}</a>
+          <a href="#" download class="dl">{{ $t('supplier.reports.downloadPdf') }}</a>
         </div>
       </div>
     </div>

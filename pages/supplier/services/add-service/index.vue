@@ -300,12 +300,12 @@ const submitForm = async () => {
       <!-- Цена + Ед. измерения -->
       <div class="row-2">
         <div class="field">
-          <label class="label">{{ $t('services.addService.price') }} (KZT)<span class="req">*</span></label>
+          <label class="label">{{ $t('supplier.services.addService.price') }} (KZT)<span class="req">*</span></label>
           <input v-model="form.price" type="number" class="control" placeholder="0">
         </div>
 
         <div v-if="isProduct" class="field">
-          <label class="label">{{ $t('services.addService.unit') }}</label>
+          <label class="label">{{ $t('supplier.services.addService.unit') }}</label>
           <div class="select-shell">
             <select v-model="form.unit" class="control control--select">
               <option value="" disabled hidden>{{ $t('serviceEdit.select') }}</option>
@@ -318,7 +318,7 @@ const submitForm = async () => {
 
       <!-- Доступность -->
       <div class="field">
-        <label class="label">{{ $t('services.addService.availability') }}</label>
+          <label class="label">{{ $t('supplier.services.addService.availability') }}</label>
         <div class="segmented">
           <button :class="['seg-btn', form.availability && 'is-active']" @click="form.availability = true">
             <svg class="seg-ic" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -384,7 +384,7 @@ const submitForm = async () => {
         </div>
 
         <div class="field">
-          <label class="label">{{ $t('services.addService.city') }}</label>
+          <label class="label">{{ $t('supplier.services.addService.city') }}</label>
           <div class="select-shell">
             <select v-model="form.city" class="control control--select">
               <option value="Алматы">{{ $t('serviceEdit.almaty') }}</option>
@@ -415,7 +415,7 @@ const submitForm = async () => {
 
     <!-- Кнопки -->
     <div class="card actions">
-      <button class="btn btn-ghost" :disabled="loading" @click="() => { const { $toast } = useNuxtApp(); $toast.info(t('serviceEdit.previewTemporarilyUnavailable')) }">{{ $t('serviceEdit.preview') }}</button>
+      <button class="btn btn-ghost" :disabled="loading" @click="() => { const { $toast } = useNuxtApp(); $toast.info(t('serviceEdit.previewTemporarilyUnavailable')) }">{{ $t('common.preview') }}</button>
       <button class="btn btn-primary" :disabled="loading" @click="submitForm">
         <span v-if="loading">{{ $t('common.creating') }}</span>
         <span v-else>{{ $t('serviceEdit.publish') }}</span>

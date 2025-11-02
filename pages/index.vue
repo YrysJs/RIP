@@ -275,6 +275,7 @@ onMounted(() => {
     </div>
     <section class="questions">
       <div class="questions__inner">
+        <h2 class="questions__title">{{ $t('mainPage.haveQuestions') }}</h2>
         <p>{{ $t('mainPage.contactUs') }}</p>
         <a href="http://wa.me/77758100110" target="_blank">
           <button>
@@ -674,7 +675,7 @@ onMounted(() => {
 
 .questions {
   position: relative;
-  background: url("/images/question.jpg") no-repeat center;
+  background: url("/images/question1.jpg") no-repeat center;
   background-size: cover;
   width: 100vw;
   height: 410px;
@@ -690,10 +691,28 @@ onMounted(() => {
 
   .questions__inner {
     width: 100%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, 5%);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .questions__title {
+      font-size: 66px;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      margin-bottom: clamp(8px, 1vw, 16px);
+      font-family: "Manrope", sans-serif;
+
+      @media (max-width: 768px) {
+        font-size: clamp(28px, 6vw, 48px);
+      }
+
+      @media (max-width: 540px) {
+        font-size: clamp(24px, 5vw, 36px);
+      }
+    }
 
     p {
       font-size: clamp(14px, 2vw, 21px);

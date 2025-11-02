@@ -318,7 +318,7 @@ const getAllGraves = () => {
                     : 'font-light text-[#939393]'
                 "
               >
-                {{ burialDate || $t('reserve.notSpecified') }} {{ burialTime || "" }}
+                {{ burialDate || $t('common.notSpecified') }} {{ burialTime || "" }}
               </span>
             </div>
           </div>

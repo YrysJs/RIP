@@ -178,7 +178,7 @@ const submitMemorial = async () => {
     // await navigateTo('/client/memorials')
   } catch (error) {
     const { $toast } = useNuxtApp()
-    $toast.error($t('memorialCreate.errorCreating') +
+    $toast.error(t('memorialCreate.errorCreating') +
         (error.response?.data?.error || error.message))
   } finally {
     isSubmitting.value = false;
@@ -201,7 +201,7 @@ const submitMemorial = async () => {
           src="/icons/arrow-left-orange.svg"
           alt=""
         />
-        Вернуться
+        {{ $t('common.back') }}
       </button>
 
       <div class="bg-white py-6 px-[18px] rounded-2xl max-sm:p-0">
@@ -211,7 +211,7 @@ const submitMemorial = async () => {
             <h3 class="text-fluid font-medium font-foglihten">
               {{
                 isEditMode
-                  ? deceased?.full_name || `Мемориал ID: ${memorial?.id}`
+                  ? deceased?.full_name || t('memorialCreate.memorialId', { id: memorial?.id })
                   : burial?.deceased?.full_name
               }}
             </h3>
@@ -240,13 +240,12 @@ const submitMemorial = async () => {
                 </div>
                 <p class="upload-text">{{ $t('memorialCreate.uploadPhotos') }}</p>
                 <p class="upload-hint">
-                  Перетащите файлы или загрузите файлы до N мб в формате: .png,
-                  .jpeg
+                  {{ $t('memorialCreate.uploadHint') }}
                 </p>
                 <button
                   class="py-2 px-3 border border-[#D6DADF] bg-white rounded-lg mt-5"
                 >
-                  Загрузить
+                  {{ $t('common.upload') }}
                 </button>
               </div>
             </div>
@@ -278,7 +277,7 @@ const submitMemorial = async () => {
 
               <!-- Кнопка добавления еще фото -->
               <button class="add-more-btn" @click="$refs.fileInput.click()">
-                + Добавить еще фото
+                {{ $t('memorialCreate.addMorePhotos') }}
               </button>
             </div>
 
@@ -306,7 +305,7 @@ const submitMemorial = async () => {
             </div> -->
             <div class="bg-[#F4F0E7] p-5 rounded-xl">
               <h3 class="text-[18px] font-medium mb-2">
-                Информация о захоронении
+                {{ $t('memorialCreate.burialInfo') }}
               </h3>
               <div class="pb-2 border-b border-b-[#2010011F]">
                 <p class="text-lg text-[#1A1C1F]">
@@ -329,7 +328,7 @@ const submitMemorial = async () => {
                   }}
                 </p>
                 <p class="text-xs text-[#666C72]">
-                  Дата рождения - Дата смерти
+                  {{ $t('memorialCreate.birthDeathDate') }}
                 </p>
               </div>
               <!-- <div class="flex justify-between text-base font-medium">
@@ -346,7 +345,7 @@ const submitMemorial = async () => {
                   class="mt-2 h-[30px] flex items-center text-base font-medium gap-[11px]"
                 >
                   <div class="flex-1 w-[100px] text-base text-[#050202]">
-                    Кладбище:
+                    {{ $t('common.cemetery') }}
                   </div>
                   <div class="flex-1 text-sm text-[#999]">
                     {{ burial?.cemetery_name }}
@@ -536,7 +535,7 @@ const submitMemorial = async () => {
                 class="bg-[#EF4444] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#DC2626] transition-colors"
                 @click="cancelVideoInput"
               >
-                Отмена
+                {{ $t('common.cancel') }}
               </button>
             </div>
           </div>
@@ -545,7 +544,7 @@ const submitMemorial = async () => {
           <div v-if="videos.length > 0" class="videos-list">
             <div class="videos-header mb-4">
               <h4 class="text-base font-medium">
-                Добавленные видео ({{ videos.length }})
+                {{ $t('memorialCreate.addedVideos') }} ({{ videos.length }})
               </h4>
             </div>
 
@@ -563,7 +562,7 @@ const submitMemorial = async () => {
                     class="text-[#EF4444] hover:text-[#DC2626] font-medium transition-colors text-sm"
                     @click="removeVideo(index)"
                   >
-                    Удалить
+                    {{ $t('common.delete') }}
                   </button>
                 </div>
                 <div class="video-wrapper">

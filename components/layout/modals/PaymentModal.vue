@@ -216,7 +216,11 @@ export default {
         const paymentId = paymentResponse.data.data.paymentInfo.id;
 
         if (paymentResponse.data.data.secure3DURL) {
-          window.open(paymentResponse.data.data.secure3DURL, '_blank');
+          const link = document.createElement('a');
+          link.href = paymentResponse.data.data.secure3DURL;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.click();
           
           // Ждем подтверждения оплаты через интервал
           await this.waitForPaymentConfirmation(burialId, paymentId);

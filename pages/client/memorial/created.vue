@@ -5,7 +5,9 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { getMemorialById } from "~/services/client";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 const route = useRoute();
 
@@ -49,7 +51,7 @@ const uniqueUrls = (arr) => {
 onMounted(async () => {
   try {
     const id = route.query.id || route.params.id;
-    if (!id) throw new Error("Нет id мемориала в URL");
+    if (!id) throw new Error(t('memorialCreate.noIdInUrl'));
 
     const { data } = await getMemorialById(id);
     memorial.value = data;
@@ -126,18 +128,18 @@ function goBack() {
           src="/icons/arrow-left-orange.svg"
           alt=""
         />
-        Вернуться
+        {{ $t('common.back') }}
       </button>
 
       <div class="bg-white py-6 px-[18px] rounded-2xl max-sm:p-0">
-        <div v-if="isLoading" class="p-4">Загрузка...</div>
+        <div v-if="isLoading" class="p-4">{{ $t('common.loading') }}</div>
         <div v-else-if="errorMsg" class="p-4 text-red-600">{{ errorMsg }}</div>
 
         <template v-else>
           <!-- Заголовок + Поделиться -->
           <div class="flex justify-between items-center gap-2">
             <div>
-              <p class="text-sm text-[#999] max-sm:hidden">Мемориал</p>
+              <p class="text-sm text-[#999] max-sm:hidden">{{ $t('memorial.memorial') }}</p>
               <h1
                 class="font-medium font-foglihten text-[clamp(24px,3vw,32px)]"
               >
@@ -153,7 +155,7 @@ function goBack() {
                 alt=""
                 class="max-sm:w-5 max-sm:h-5"
               />
-              <span class="max-sm:hidden">Поделиться</span>
+              <span class="max-sm:hidden">{{ $t('memorial.share') }}</span>
             </button>
           </div>
 
@@ -198,20 +200,20 @@ function goBack() {
             <!-- Правая часть: Информация о захоронении -->
             <aside class="bg-[#F4F0E7] p-4 md:p-5 rounded-xl">
               <h3 class="text-[18px] font-medium mb-2">
-                Информация о захоронении
+                {{ $t('memorialCreate.burialInfo') }}
               </h3>
 
               <div class="pb-2 border-b border-b-[#2010011F]">
                 <p class="text-lg text-[#1A1C1F]">{{ lifespan }}</p>
                 <p class="text-xs text-[#666C72]">
-                  Дата рождения — Дата смерти
+                  {{ $t('memorialCreate.birthDeathDate') }}
                 </p>
               </div>
 
               <div class="flex flex-col gap-2 mt-2">
                 <div class="flex items-center h-[30px] gap-[11px]">
                   <div class="w-[110px] text-base text-[#050202]">
-                    Кладбище:
+                    {{ $t('reserve.cemetery') }}
                   </div>
                   <div class="text-sm text-[#999]">
                     {{ burial?.cemetery_name }}
@@ -220,13 +222,13 @@ function goBack() {
 
                 <div class="flex flex-wrap gap-x-6">
                   <div class="flex items-center h-[30px] gap-[11px]">
-                    <div class="w-[100px] text-base text-[#050202]">Сектор</div>
+                    <div class="w-[100px] text-base text-[#050202]">{{ $t('reserve.sector') }}</div>
                     <div class="text-sm text-[#999]">
                       {{ burial?.sector_number }}
                     </div>
                   </div>
                   <div class="flex items-center h-[30px] gap-[11px]">
-                    <div class="w-[100px] text-base text-[#050202]">Место:</div>
+                    <div class="w-[100px] text-base text-[#050202]">{{ $t('reserve.place') }}</div>
                     <div class="text-sm text-[#999]">
                       {{ burial?.grave_id }}
                     </div>
@@ -235,7 +237,7 @@ function goBack() {
 
                 <div class="flex items-center h-11 gap-[11px]">
                   <div class="w-[110px] text-base text-[#050202]">
-                    Координаты:
+                    {{ $t('memorialCreate.coordinates') }}
                   </div>
                   <div class="text-sm text-[#999]">{{ burial?.coords }}</div>
                 </div>
@@ -260,7 +262,7 @@ function goBack() {
 
           <!-- Видеоматериалы -->
           <section class="my-6 max-sm:my-4">
-            <h3 class="text-[18px] font-semibold mb-4">Видеоматериалы:</h3>
+            <h3 class="text-[18px] font-semibold mb-4">{{ $t('memorial.videoMaterials') }}:</h3>
 
             <div v-if="videos.length">
               <Swiper
@@ -303,7 +305,7 @@ function goBack() {
                 </button>
               </Swiper>
             </div>
-            <p v-else class="text-sm text-[#6B7280]">Видео не добавлены.</p>
+            <p v-else class="text-sm text-[#6B7280]">{{ $t('memorial.noVideos') }}</p>
           </section>
 
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-sm:gap-4">
@@ -312,7 +314,7 @@ function goBack() {
               <h3
                 class="text-[20px] font-semibold mb-4 max-sm:text-[18px] max-sm:mb-2"
               >
-                Подписки
+                {{ $t('memorialCreated.subscriptions') }}
               </h3>
 
               <ul class="space-y-5 max-sm:space-y-2">
@@ -351,7 +353,7 @@ function goBack() {
             <!-- Одноразовые услуги -->
             <section class="bg-[#F6F7F8] rounded-2xl p-6">
               <div class="flex items-center justify-between">
-                <h3 class="text-[18px] font-semibold">Одноразовые услуги</h3>
+                <h3 class="text-[18px] font-semibold">{{ $t('memorialCreated.oneTimeServices') }}</h3>
 
                 <button
                   type="button"
@@ -360,14 +362,14 @@ function goBack() {
                   <span class="text-[28px] font-normal leading-3 -mt-[2px]"
                     >+</span
                   >
-                  Добавить
+                  {{ $t('common.add') }}
                 </button>
               </div>
 
               <p
                 class="mt-3 text-[15px] font-medium text-[#6B7280] max-sm:mt-2"
               >
-                Не выбрано
+                {{ $t('memorialCreated.notSelected') }}
               </p>
             </section>
           </div>

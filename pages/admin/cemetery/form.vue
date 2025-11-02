@@ -3,7 +3,8 @@
 import FormMap from "~/components/map/FormMap.vue";
 import { CreateCemetery } from '~/services/admin'
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
-import {ref} from "vue";
+import {ref, reactive} from "vue";
+import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
@@ -149,7 +150,6 @@ const create = async () => {
         </select>
       </div>
     </div>
-    {{form.polygon_data.coordinates}}
     <FormMap @complete="finishDraw" />
 
     <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
@@ -168,14 +168,14 @@ const create = async () => {
 
     <div class="bg-white p-5 rounded-2xl mb-4 flex gap-[10px] justify-end">
       <button class="btn btn-submit" @click="create">
-        Создать
+        {{ $t('cemeteryForm.createButton') }}
       </button>
     </div>
     <Teleport to="body">
       <SuccessModal
           v-if="showSuccessModal"
           :show-button="true"
-          title="Кладбище создано!"
+          :title="$t('cemeteryForm.createdTitle')"
           @close="closeSuccessModal"
       />
     </Teleport>

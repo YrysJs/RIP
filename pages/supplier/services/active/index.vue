@@ -2,6 +2,9 @@
 import { ref, computed, onMounted, reactive, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getProducts, updateProductStatus } from '~/services/supplier'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // -------- router --------
 const router = useRouter()
@@ -23,8 +26,8 @@ const fetchProducts = async () => {
     const resp = await getProducts({ status: 'active' })
     products.value = resp?.data ?? []
   } catch (e) {
-    console.error($t('errors.fetchError'), e)
-    error.value = $t('errors.fetchError')
+    console.error(t('errors.fetchError'), e)
+    error.value = t('errors.fetchError')
   } finally {
     loading.value = false
   }
@@ -32,8 +35,6 @@ const fetchProducts = async () => {
 onMounted(fetchProducts)
 
 // -------- success modal (UI) --------
-import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
 
 const success = reactive({
   open: false,
@@ -64,12 +65,13 @@ const deactivateProduct = async (id) => {
 
     // модалка успеха
     openSuccess({
-      title: 'Товар деактивирован',
-      text: 'перемещён в «Неактивные».',
+      title: t('supplier.servicesActive.deactivated'),
+      text: t('supplier.servicesActive.movedToInactive'),
     })
   } catch (e) {
-    alert('Не удалось деактивировать. Попробуйте ещё раз.')
-    console.error(e)
+    const { $toast } = useNuxtApp()
+    $toast.error(t('supplier.servicesActive.deactivateError'))
+    console.error(t('supplier.servicesActive.deactivateError'), e)
   } finally {
     deactivating.value.delete(id)
   }
@@ -85,9 +87,9 @@ const getImageUrl = (urls) =>
 const pluralDays = (v) => {
   const n = Number(String(v).replace(/\D/g, '')) || 0
   const mod10 = n % 10, mod100 = n % 100
-  if (mod10 === 1 && mod100 !== 11) return 'день'
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'дня'
-  return 'дней'
+  if (mod10 === 1 && mod100 !== 11) return t('common.day')
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return t('common.days')
+  return t('common.daysPlural')
 }
 </script>
 
@@ -128,7 +130,7 @@ const pluralDays = (v) => {
             <h3 class="title">{{ product.name }}</h3>
             <p class="subtitle">{{ product.category?.name || ' ' }}</p>
           </div>
-          <div class="price-badge">от {{ formatPrice(product.price) }} ₸</div>
+          <div class="price-badge">{{ $t('common.from') }} {{ formatPrice(product.price) }} ₸</div>
         </div>
 
         <!-- мета -->
@@ -195,7 +197,7 @@ const pluralDays = (v) => {
         <h3 id="su-modal-title" class="su-modal__title">{{ success.title }}</h3>
         <p class="su-modal__text">{{ success.text }}</p>
         <button type="button" class="btn btn--primary btn--block su-modal__btn" @click="closeSuccess">
-          Перейти в неактивные
+          {{ $t('supplier.servicesActive.goToInactive') }}
         </button>
       </div>
     </div>

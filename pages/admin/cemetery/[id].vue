@@ -3,9 +3,11 @@
 import FormMap from "~/components/map/FormMap.vue";
 import { UpdateCemetery } from '~/services/admin'
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
-import {ref} from "vue";
+import {ref, reactive} from "vue";
+import { useI18n } from 'vue-i18n';
 import {getCemeteryById} from "~/services/cemetery";
 
+const { t } = useI18n();
 const showSuccessModal = ref(false)
 const route = useRoute()
 
@@ -103,7 +105,7 @@ onMounted(async () => {
     form.capacity = response.data.capacity
     form.burial_price = response.data.burial_price || 0
   } catch (error) {
-    console.error('Ошибка при получении заявок:', error)
+    console.error(t('cemeteryForm.fetchError'), error)
   } finally {
     console.log('finally')
   }
@@ -116,65 +118,65 @@ onMounted(async () => {
     <div class="flex items-center bg-white p-5 rounded-2xl mb-4">
       <button class="btn btn-back mr-4" @click="router.push('/admin/cemetery')">
         <img class="w-4 h-4 mr-[10px]" src="/icons/arrow-left-primary.svg" alt="">
-        Назад
+        {{ $t('common.back') }}
       </button>
 
-      <h1 class="text-[32px] font-medium">Редактирование кладбища</h1>
+      <h1 class="text-[32px] font-medium">{{ $t('cemeteryForm.editCemetery') }}</h1>
     </div>
 
 
     <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
-      <h2 class="text-lg font-medium">Данные о кладбище</h2>
+      <h2 class="text-lg font-medium">{{ $t('cemeteryForm.cemeteryData') }}</h2>
 
       <div>
-        <label class="block text-sm mb-1">Название</label>
+        <label class="block text-sm mb-1">{{ $t('cemeteryForm.name') }}</label>
         <input type="text" v-model="form.name" class="input" />
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Описание</label>
+        <label class="block text-sm mb-1">{{ $t('cemeteryForm.description') }}</label>
         <textarea v-model="form.description" rows="3" class="input textarea"></textarea>
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Телефон</label>
+        <label class="block text-sm mb-1">{{ $t('cemeteryForm.phone') }}</label>
         <input type="tel" v-mask="'+7 (###) ###-##-##'" v-model="form.phone" class="input" />
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Вместимость</label>
+        <label class="block text-sm mb-1">{{ $t('cemeteryForm.capacity') }}</label>
         <input type="number" v-model="form.capacity" class="input" />
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Цена захоронения</label>
+        <label class="block text-sm mb-1">{{ $t('cemeteryForm.burialPrice') }}</label>
         <input 
           type="number" 
           v-model.number="form.burial_price" 
           class="input" 
-          placeholder="Введите цену"
+          :placeholder="$t('cemeteryForm.enterPrice')"
         />
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Город</label>
+        <label class="block text-sm mb-1">{{ $t('cemeteryForm.city') }}</label>
         <select v-model="form.city" class="input">
           <option v-for="city in cities" :key="city" :value="city">{{city}}</option>
         </select>
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Адрес кладбища</label>
+        <label class="block text-sm mb-1">{{ $t('cemeteryForm.address') }}</label>
         <input type="text" v-model="form.street_name" class="input" />
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Религия</label>
+        <label class="block text-sm mb-1">{{ $t('cemeteryForm.religion') }}</label>
         <select v-model="form.religion" class="input">
-          <option value="all">Все</option>
-          <option value="christian">Христианство</option>
-          <option value="muslim">Ислам</option>
-          <option value="jewish">Иудаизм</option>
+          <option value="all">{{ $t('cemeteryForm.all') }}</option>
+          <option value="christian">{{ $t('cemeteryForm.christianity') }}</option>
+          <option value="muslim">{{ $t('cemeteryForm.islam') }}</option>
+          <option value="jewish">{{ $t('cemeteryForm.judaism') }}</option>
         </select>
       </div>
     </div>
@@ -182,14 +184,14 @@ onMounted(async () => {
     <FormMap :initial-polygon="removeLastElement(form.polygon_data.coordinates)" @complete="finishDraw" />
 
     <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
-      <h2 class="text-lg font-medium">Статус кладбища</h2>
+      <h2 class="text-lg font-medium">{{ $t('cemeteryForm.cemeteryStatus') }}</h2>
 
       <div class="flex justify-between gap-4">
         <div class="flex justify-center items-center flex-1 h-12 rounded-lg bg-[#EEEEEE] text-center text-[#939393] font-semibold text-sm cursor-pointer" :class="{'!bg-[#224C4F] text-white': form.status === 'active'}" @click="form.status='active'">
-          Активен
+          {{ $t('common.active') }}
         </div>
         <div class="flex justify-center items-center flex-1 h-12 rounded-lg bg-[#EEEEEE] text-center text-[#939393] font-semibold text-sm cursor-pointer" :class="{'!bg-[#224C4F] text-white': form.status === 'inactive'}" @click="form.status='inactive'">
-          Не активен
+          {{ $t('common.inactive') }}
         </div>
       </div>
 
@@ -197,14 +199,14 @@ onMounted(async () => {
 
     <div class="bg-white p-5 rounded-2xl mb-4 flex gap-[10px] justify-end">
       <button class="btn btn-submit" @click="create">
-        Создать
+        {{ $t('common.save') }}
       </button>
     </div>
     <Teleport to="body">
       <SuccessModal
           v-if="showSuccessModal"
           :show-button="true"
-          title="Кладбище изменено!"
+          :title="$t('cemeteryForm.updatedTitle')"
           @close="closeSuccessModal"
       />
     </Teleport>

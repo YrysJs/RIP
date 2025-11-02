@@ -2,8 +2,10 @@
 import { ref, computed, reactive, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getProducts, updateProductStatus } from '~/services/supplier'
+import { useI18n } from 'vue-i18n'
 
-const router   = useRouter()
+const router = useRouter()
+const { t } = useI18n()
 
 // -------- state --------
 const products = ref([])
@@ -22,7 +24,6 @@ const fetchProducts = async () => {
     const resp = await getProducts({ status: 'inactive' })
     products.value = resp?.data ?? []
   } catch (e) {
-    const { t } = useI18n();
     console.error(t('supplierInactive.loadError'), e)
     error.value = t('supplierInactive.dataLoadError')
   } finally {
@@ -30,8 +31,6 @@ const fetchProducts = async () => {
   }
 }
 onMounted(fetchProducts)
-
-const { t } = useI18n();
 
 // -------- success modal --------
 const success = reactive({
@@ -66,12 +65,13 @@ const activateProduct = async (id) => {
     }
 
     openSuccess({
-      title: 'Товар активирован',
-      text: 'перемещён в «Активные».'
+      title: t('supplierInactive.activated'),
+      text: t('supplierInactive.movedToActive')
     })
   } catch (e) {
-    console.error('Ошибка при активации:', e)
-    alert('Ошибка при активации товара/услуги')
+    const { $toast } = useNuxtApp()
+    console.error(t('supplierInactive.activateError'), e)
+    $toast.error(t('supplierInactive.activateError'))
   }
 }
 
@@ -148,7 +148,7 @@ const formatDateTime = (iso) => {
               </g>
             </svg>
             <span>
-              Срок выполнения:
+              {{ $t('supplierActive.serviceTime') }}
               {{ product.service_time }}
             </span>
           </div>
@@ -156,15 +156,15 @@ const formatDateTime = (iso) => {
 
         <div class="inactive-card__bottom">
           <div class="submitted">
-            Дата последнего изменения: {{ formatDateTime(product.updated_at || product.created_at) }}
+            {{ $t('supplierInactive.lastModified') }} {{ formatDateTime(product.updated_at || product.created_at) }}
           </div>
 
           <div class="btn-group">
             <button class="btn btn--primary btn--lg" @click="activateProduct(product.id)">
-              Активировать
+              {{ $t('supplierInactive.activate') }}
             </button>
             <NuxtLink class="btn btn--outline btn--lg" :to="`/supplier/services/add-service/${product.id}`">
-              Редактировать
+              {{ $t('supplierActive.edit') }}
             </NuxtLink>
           </div>
         </div>
@@ -183,7 +183,7 @@ const formatDateTime = (iso) => {
         <h3 id="su-modal-title" class="su-modal__title">{{ success.title }}</h3>
         <p class="su-modal__text">{{ success.text }}</p>
         <button type="button" class="btn btn--primary su-modal__btn" @click="closeSuccess">
-          Перейти в активные
+          {{ $t('supplierInactive.goToActive') }}
         </button>
       </div>
     </div>

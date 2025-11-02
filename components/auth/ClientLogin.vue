@@ -236,7 +236,7 @@ async function run() {
     Cookies.set("token", response.data.token);
     Cookies.set("role", "client");
     emit('close');
-    await router.push("/client/profile");
+    await router.push("/");
   } catch (error) {
     console.error("Ошибка при логине:", error);
     
@@ -290,7 +290,7 @@ async function run() {
 // }
 
 function goToTickets() {
-  router.push("/client/profile");
+  router.push("/");
 }
 
 // function buildFio(surname, name, patronymic) {
@@ -382,7 +382,7 @@ const otpCheck = async () => {
     Cookies.set("token", response.data.token);
     Cookies.set("role", "client");
     emit('close');
-    await router.push("/client/profile");
+    await router.push("/");
   } catch (error) {
     console.error("Ошибка при логине:", error);
     
@@ -467,7 +467,7 @@ const otpCheck = async () => {
               v-mask="'+7 (###) ###-##-##'"
               class="border-2 border-[#AFB5C166] mb-[32px] px-3 py-[18px] text-base rounded-lg h-14 max-lg:py-[14px] max-lg:mb-6"
               type="text"
-              :placeholder="$t('clientLogin.phonePlaceholder')"
+              :placeholder="$t('admin.login.phonePlaceholder')"
             />
             <button
               class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#000] font-medium max-lg:py-[15px]"

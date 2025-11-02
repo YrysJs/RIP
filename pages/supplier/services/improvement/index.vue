@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { getProducts } from '~/services/supplier'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // -------- state --------
 const products = ref([])
@@ -19,8 +22,8 @@ const fetchProducts = async () => {
     const resp = await getProducts({ status: 'requires_fix' })
     products.value = resp?.data ?? []
   } catch (e) {
-    console.error('Ошибка при загрузке продуктов требующих доработки:', e)
-    error.value = 'Ошибка при загрузке данных'
+    console.error(t('supplier.servicesImprovement.loadError'), e)
+    error.value = t('supplier.servicesImprovement.dataLoadError')
   } finally {
     loading.value = false
   }
@@ -48,22 +51,22 @@ const formatDateTime = (iso) => {
   <NuxtLayout name="supplier">
     <!-- заголовок -->
     <div class="page-head">
-      <h2 class="page-title">Требует доработки</h2>
+      <h2 class="page-title">{{ $t('supplier.servicesImprovement.title') }}</h2>
     </div>
 
     <!-- состояния -->
     <div v-if="loading" class="state-card">
       <div class="spinner" />
-      <p class="muted mt-3">Загрузка товаров и услуг, требующих доработки…</p>
+      <p class="muted mt-3">{{ $t('supplier.servicesImprovement.loading') }}</p>
     </div>
 
     <div v-else-if="error" class="state-card">
       <p class="error">{{ error }}</p>
-      <button class="btn btn--primary btn--md mt-3" @click="fetchProducts">Попробовать снова</button>
+      <button class="btn btn--primary btn--md mt-3" @click="fetchProducts">{{ $t('supplier.servicesImprovement.tryAgain') }}</button>
     </div>
 
     <div v-else-if="items.length === 0" class="state-card">
-      <p class="muted">У вас пока нет товаров и услуг, требующих доработки</p>
+      <p class="muted">{{ $t('supplier.servicesImprovement.noImprovement') }}</p>
     </div>
 
     <!-- список карточек -->
@@ -109,7 +112,7 @@ const formatDateTime = (iso) => {
               </g>
             </svg>
             <span>
-              Срок выполнения:
+              {{ $t('supplierActive.serviceTime') }}
               {{ product.service_time }}
             </span>
           </div>
@@ -118,7 +121,7 @@ const formatDateTime = (iso) => {
         <!-- низ -->
         <div class="fix-card__bottom">
           <div class="submitted">
-            Дата и время заявки: {{ formatDateTime(product.created_at) }}
+            {{ $t('supplier.servicesConsideration.requestDateTime') }} {{ formatDateTime(product.created_at) }}
           </div>
 
           <div class="btn-group">
@@ -126,7 +129,7 @@ const formatDateTime = (iso) => {
               class="btn btn--primary btn--lg"
               :to="`/supplier/services/add-service/${product.id}`"
             >
-              Редактировать
+              {{ $t('supplierActive.edit') }}
             </NuxtLink>
           </div>
         </div>
@@ -139,8 +142,8 @@ const formatDateTime = (iso) => {
             <path d="M12 8v6M12 18h.01" stroke="#DC6E29" stroke-width="2" stroke-linecap="round"/>
           </svg>
           <span>
-            Услуга требует доработки:
-            {{ product?.moderation_comment || 'укажите точное описание и прикрепите фотографии' }}
+            {{ $t('supplier.servicesImprovement.requiresImprovement') }}:
+            {{ product?.moderation_comment || $t('supplier.servicesImprovement.defaultComment') }}
           </span>
         </div>
       </div>

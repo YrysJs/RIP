@@ -30,7 +30,7 @@
               {{ getStatusText(product.status) }}
             </span>
           </div>
-          <div class="col-span-1">{{ product.category?.name || t('admin.notSpecified') }}</div>
+          <div class="col-span-1">{{ product.category?.name || t('common.notSpecified') }}</div>
           <div class="col-span-1 flex justify-end">
             <img src="/icons/arrow-right.svg" class="w-4 h-4" />
           </div>

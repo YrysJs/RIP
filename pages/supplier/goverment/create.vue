@@ -1,24 +1,26 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { createAppeal } from '~/services/client'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 
-const appeal_types = ref([
+const appeal_types = computed(() => [
     {
         id: 1,
         value: "COMPLAINT",
-        nameRu: "Жалоба"
+        nameRu: t('userTickets.complaint')
     },
     {
         id: 2,
         value: "OFFER",
-        nameRu: "Предложение"
+        nameRu: t('userTickets.suggestion')
     },
     {
         id: 3,
         value: "REQUEST_FOR_INFO",
-        nameRu: "Запросы информации"
+        nameRu: t('governmentCreate.requestForInfo')
     }
 ])
 
@@ -32,7 +34,8 @@ onMounted(() => {
 
 async function userCreateAppeal() {
     if (!selected_appeal_type.value || !appeal_content.value.trim()) {
-        alert('Пожалуйста, заполните все поля')
+        const { $toast } = useNuxtApp();
+        $toast.error(t('governmentCreate.fillAllFields'))
         return
     }
     
@@ -48,8 +51,9 @@ async function userCreateAppeal() {
         })
         router.push('/supplier/goverment/requests')
     } catch (error) {
-        console.log(error)
-        alert('Ошибка при создании обращения')
+        console.error(t('governmentCreate.createError'), error)
+        const { $toast } = useNuxtApp();
+        $toast.error(t('governmentCreate.createError'))
     } finally {
         isLoading.value = false
     }
@@ -66,9 +70,9 @@ async function userCreateAppeal() {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Назад
+          {{ $t('common.back') }}
         </button>
-        <h2 class="page-title">Создание обращения в Акимат</h2>
+        <h2 class="page-title">{{ $t('governmentCreate.title') }}</h2>
         </div>
 
       <!-- Форма -->
@@ -76,14 +80,14 @@ async function userCreateAppeal() {
         <div class="form-content">
           <!-- Тип обращения -->
           <div class="field-group">
-            <label class="field-label">Тип обращения</label>
+            <label class="field-label">{{ $t('governmentCreate.appealType') }}</label>
             <div class="field relative">
               <select 
                 v-model="selected_appeal_type" 
                 class="field__control appearance-none w-full pr-[40px]"
                 required
               >
-                <option value="" disabled hidden>Выберите тип обращения</option>
+                <option value="" disabled hidden>{{ $t('governmentCreate.selectAppeal') }}</option>
                 <option v-for="appeal_type in appeal_types" :key="appeal_type.id" :value="appeal_type.id">
                   {{ appeal_type.nameRu }}
                 </option>
@@ -98,11 +102,11 @@ async function userCreateAppeal() {
 
           <!-- Текст обращения -->
           <div class="field-group">
-            <label class="field-label">Обращение</label>
+            <label class="field-label">{{ $t('governmentCreate.appeal') }}</label>
             <textarea 
               v-model="appeal_content" 
               class="field__control textarea"
-              placeholder="Опишите ваше обращение..."
+              :placeholder="$t('governmentCreate.appealPlaceholder')"
               required
             ></textarea>
           </div>
@@ -115,7 +119,7 @@ async function userCreateAppeal() {
               :disabled="isLoading"
             >
               <div v-if="isLoading" class="btn-spinner"></div>
-              {{ isLoading ? 'Создание...' : 'Создать обращение' }}
+              {{ isLoading ? $t('governmentCreate.creating') : $t('governmentCreate.createButton') }}
             </button>
                 </div>
                 </div>

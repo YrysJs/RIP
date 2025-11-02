@@ -171,7 +171,7 @@ const loadBurialData = async () => {
       burial.value = response.data;
     }
   } catch (error) {
-    console.error("Ошибка при загрузке данных захоронения:", error);
+    console.error(t('memorialCreate.loadBurialError'), error);
   }
 };
 
@@ -193,7 +193,7 @@ const loadMemorialData = async () => {
       fillFormWithMemorialData();
     }
   } catch (error) {
-    console.error("Ошибка при загрузке данных мемориала:", error);
+    console.error(t('memorialCreate.loadMemorialError'), error);
   }
 };
 
@@ -204,7 +204,7 @@ const loadDeceasedData = async (deceasedId) => {
     // const response = await getDeceasedByIdSafe(deceasedId);
     deceased.value = response.data;
   } catch (error) {
-    console.error("Ошибка при загрузке данных покойного:", error);
+    console.error(t('memorialCreate.loadDeceasedError'), error);
   }
 };
 
@@ -304,7 +304,7 @@ const fillFormWithMemorialData = () => {
         id: Date.now() + idx + 2000,
         url: u, // хранить нормализованный url
         embedUrl: `https://www.youtube.com/embed/${vid}`,
-        title: `Видео ${idx + 1}`,
+        title: t('memorialCreate.videoTitle', { number: idx + 1 }),
         isExisting: true,
       });
     }
@@ -396,7 +396,7 @@ const addVideo = () => {
     id: Date.now() + Math.random(),
     url: watchUrl,
     embedUrl: `https://www.youtube.com/embed/${vid}`, // https!
-    title: `Видео ${videos.value.length + 1}`,
+    title: t('memorialCreate.videoTitle', { number: videos.value.length + 1 }),
   });
   videoUrl.value = "";
   showVideoInput.value = false;
@@ -444,9 +444,11 @@ const submitMemorial = async () => {
     isSubmitting.value = true;
 
     const video_urls = uniqueUrls(videos.value.map((v) => v.url));
-    console.log(memorial.value?.id, route.params.id)
     const memorialId = memorial.value?.id || route.params.id; // ← всегда есть id
-    if (!memorialId) throw new Error("Memorial ID is missing");
+    if (!memorialId) {
+      $toast.error(t('memorialCreate.missingId'));
+      return;
+    }
 
     const hasFiles =
       selectedImages.value.length ||
@@ -483,15 +485,12 @@ const submitMemorial = async () => {
     // ВАЖНО: передай id отдельным аргументом
     await updateMemorial(memorialId, payload); // ← см. сервис ниже
 
-    router.push({
-      path: "/client/memorial/created",
-      query: { id: String(memorialId) },
-    });
+    router.push("/client/memorial");
   } catch (e) {
     console.error(e);
-    alert(
-      `Ошибка при ${isEditMode.value ? "обновлении" : "создании"} мемориала: ` +
-        (e.response?.data?.message || e.message)
+    const errorMessage = e?.response?.data?.message || e?.response?.data?.error || e.message || t('errors.fetchError');
+    $toast.error(
+      `${isEditMode.value ? t('memorialCreate.updateError') : t('memorialCreate.createError')}: ${errorMessage}`
     );
   } finally {
     isSubmitting.value = false;
@@ -506,7 +505,7 @@ async function shareMemorial() {
     await navigator.clipboard.writeText(memorialUrl);
     $toast.success(t('memorial.linkCopied'));
   } catch (error) {
-    console.error("Ошибка при копировании ссылки:", error);
+    console.error(t('memorialCreate.copyLinkError'), error);
     $toast.error(t('modals.shareCoordinates.copyError'));
   }
 }
@@ -527,7 +526,7 @@ async function shareMemorial() {
           src="/icons/arrow-left-orange.svg"
           alt=""
         />
-        Вернуться
+        {{ $t('common.back') }}
       </button>
       <!-- <div class="flex items-center bg-white p-5 rounded-2xl mb-4 bg-[#fff]">
         <h1 class="text-[32px] font-medium">
@@ -541,7 +540,7 @@ async function shareMemorial() {
             <h3 class="text-fluid font-medium font-foglihten">
               {{
                 isEditMode
-                  ? deceased?.full_name || `Мемориал ID: ${memorial?.id}`
+                  ? deceased?.full_name || t('memorialCreate.memorialId', { id: memorial?.id })
                   : burial?.deceased?.full_name
               }}
             </h3>
@@ -570,8 +569,7 @@ async function shareMemorial() {
                 </div>
                 <p class="upload-text">{{ $t('memorialCreate.uploadPhotos') }}</p>
                 <p class="upload-hint">
-                  Перетащите файлы или загрузите файлы до N мб в формате: .png,
-                  .jpeg
+                  {{ $t('memorialCreate.uploadHint') }}
                 </p>
                 <button
                   class="py-2 px-3 border border-[#D6DADF] bg-white rounded-lg mt-5"
@@ -673,7 +671,7 @@ async function shareMemorial() {
               <div class="pb-2 border-b border-b-[#2010011F]">
                 <p class="text-lg text-[#1A1C1F]">01.01.1900 - 01.01.2000</p>
                 <p class="text-xs text-[#666C72]">
-                  Дата рождения - Дата смерти
+                  {{ $t('memorialCreate.birthDeathDate') }}
                 </p>
               </div>
               <!-- <div class="flex justify-between text-base font-medium">
