@@ -135,7 +135,7 @@ onMounted(fetchOrders);
   margin-bottom: 12px;
 }
 .page-title {
-  font-family: "FoglihtenNo06", serif;
+  font-family: "Manrope", serif;
   font-weight: 700;
   font-size: 28px;
   margin: 0;

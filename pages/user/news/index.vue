@@ -222,7 +222,7 @@ async function show(news) {
 /* заголовок */
 .page-head{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
 .page-title{
-  font-family: "FoglihtenNo06", sans-serif;
+  font-family: "Manrope", sans-serif;
   font-size:32px; line-height:36px; font-weight:700; text-transform:uppercase; letter-spacing:.02em; color:#111827;
 }
 
@@ -337,7 +337,7 @@ async function show(news) {
     font-size: 24px;
     line-height: 28px;
     margin-bottom: 0;
-    font-family: "FoglihtenNo06", sans-serif;
+    font-family: "Manrope", sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.02em;
   }

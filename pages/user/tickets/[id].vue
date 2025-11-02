@@ -5,7 +5,7 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="mr-2">
         <path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      Вернуться
+      {{ $t('common.back') }}
     </button>
 
     <div class="card">
@@ -13,18 +13,18 @@
 <div class="head">
   <div class="head__left">
     <h1 class="case-title">
-      ЗАЯВКА НА ПЕРЕЗАХОРОНЕНИЕ
+      {{ $t('userTickets.reburialRequest') }}
       <span class="case-title__no">№ {{ request?.id ?? '—' }}</span>
     </h1>
 
     <!-- без запятых между первыми двумя пунктами, запятая только перед телефоном -->
     <div class="meta">
       <span class="meta__item">
-        Дата заявки: <b>{{ dateText }}</b>
+        {{ $t('userTickets.requestDate') }} <b>{{ dateText }}</b>
       </span>
 
       <span class="meta__item">
-        Ответственный исполнитель: <b>{{ responsibleText }}</b>
+        {{ $t('userTickets.responsibleExecutor') }} <b>{{ responsibleText }}</b>
       </span>
 
       <span
@@ -48,11 +48,11 @@
 
       <!-- Данные заявителя -->
       <section class="block">
-        <h3 class="block__title">Данные заявителя</h3>
+        <h3 class="block__title">{{ $t('userTickets.applicantData') }}</h3>
 
         <div class="grid-2col">
           <div class="kv">
-            <div class="k">Заявитель:</div>
+            <div class="k">{{ $t('userTickets.applicant') }}</div>
             <div class="v" :class="{ 'is-empty': !request?.user }">
               <template v-if="request?.user">{{ fio(request.user) }}</template>
               <template v-else>—</template>
@@ -60,14 +60,14 @@
           </div>
 
           <div class="kv">
-            <div class="k">Контакты заявителя:</div>
+            <div class="k">{{ $t('userTickets.applicantContacts') }}</div>
             <div class="v" :class="{ 'is-empty': !request?.user?.phone }">
               {{ prettyPhone(request?.user?.phone) || '—' }}
             </div>
           </div>
 
           <div class="kv">
-            <div class="k">ИИН заявителя:</div>
+            <div class="k">{{ $t('userTickets.applicantIIN') }}</div>
             <div class="v" :class="{ 'is-empty': !request?.user?.iin }">
               {{ request?.user?.iin || '—' }}
             </div>
@@ -116,11 +116,11 @@
 
       <!-- Старое место -->
       <section class="block">
-        <h3 class="block__title">Старое место захоронения</h3>
+        <h3 class="block__title">{{ $t('userTickets.oldBurialPlace') }}</h3>
 
         <div class="grid-2kv">
           <div class="kv kv--wide">
-            <div class="k">Кладбище:</div>
+            <div class="k">{{ $t('common.cemetery') }}</div>
             <div class="v" :class="{ 'is-empty': !request?.fromBurialId }">
               {{ request?.fromBurialId ? getNameById(request?.fromBurialId) : '—' }}
             </div>
@@ -133,11 +133,11 @@
 
       <!-- Новое место -->
       <section class="block">
-        <h3 class="block__title">Новое место захоронения</h3>
+        <h3 class="block__title">{{ $t('userTickets.newBurialPlace') }}</h3>
 
         <div class="grid-2kv">
           <div class="kv kv--wide">
-            <div class="k">Кладбище:</div>
+            <div class="k">{{ $t('common.cemetery') }}</div>
             <div class="v" :class="{ 'is-empty': !request?.toBurialId }">
               {{ request?.toBurialId ? getNameById(request?.toBurialId) : '—' }}
             </div>
@@ -151,7 +151,7 @@
       <!-- Причина -->
       <section class="block">
         <div class="kv kv--reason">
-          <div class="k">Причина перезахоронения:</div>
+          <div class="k">{{ $t('userTickets.reburialReason') }}</div>
           <div class="v" :class="{ 'is-empty': !request?.reason }">
             {{ request?.reason || '—' }}
           </div>
@@ -177,9 +177,9 @@
                 </div>
 
               </div>
-              Скачать
+              {{ $t('common.download') }}
               <div class="doc-card__right">
-                <button class="doc-btn" title="Скачать">
+                <button class="doc-btn" :title="$t('common.download')">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 21h14" stroke="#111827" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -198,14 +198,14 @@
           :disabled="isLoading"
           @click="handleReject"
         >
-          {{ isLoading ? 'Обновление...' : 'Отказать' }}
+          {{ isLoading ? $t('common.updating') : $t('userTickets.reject') }}
         </button>
         <button 
           class="btn btn--yellow" 
           :disabled="isLoading"
           @click="handleApprove"
         >
-          {{ isLoading ? 'Обновление...' : 'Согласовать захоронение' }}
+          {{ isLoading ? $t('common.updating') : $t('userTickets.approveBurial') }}
         </button>
       </div>
     </div>
@@ -217,7 +217,9 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getCemeteries } from '~/services/cemetery'
 import { getRequests, requestStatus } from '~/services/akimat'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 
@@ -330,12 +332,12 @@ const updateRequestStatus = async (statusId) => {
       statusId: statusId
     })
     
-    $toast.success('Статус заявки обновлен')
+    $toast.success(t('userTickets.statusUpdated'))
     router.push('/user/tickets')
   } catch (error) {
     console.error('Ошибка при обновлении статуса:', error)
     const { $toast } = useNuxtApp()
-    $toast.error('Ошибка при обновлении статуса заявки')
+    $toast.error(t('errors.statusUpdateError'))
   } finally {
     isLoading.value = false
   }
@@ -388,7 +390,7 @@ const handleApprove = () => {
   gap: 20px;
 }
 .case-title {
-  font-family: "FoglihtenNo06", sans-serif;
+  font-family: "Manrope", sans-serif;
   font-size: 32px;
   line-height: 36px;
   font-weight: 700;

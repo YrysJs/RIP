@@ -467,7 +467,7 @@ onMounted(() => {
   .about__title {
     grid-area: title;
     margin: 0 0 clamp(1rem, 5vw, 2.8rem);
-    font-family: "FoglihtenNo06", sans-serif;
+    font-family: "Manrope", sans-serif;
     font-size: clamp(2rem, 4vw, 4rem);
   }
 
@@ -524,7 +524,7 @@ onMounted(() => {
     margin: 0 auto 20px;
     width: fit-content;
     position: relative;
-    font-family: "FoglihtenNo06", sans-serif;
+    font-family: "Manrope", sans-serif;
     font-size: clamp(2rem, 5vw, 4.125rem);
     color: #201001;
     &::before {
@@ -561,7 +561,7 @@ onMounted(() => {
     height: clamp(4.6rem, 5vw, 5.25rem);
     width: fit-content;
     margin: 0 auto clamp(2rem, 2vw, 3.125rem);
-    font-family: "FoglihtenNo06", sans-serif;
+    font-family: "Manrope", sans-serif;
     font-size: clamp(2rem, 5vw, 4.125rem);
     color: #201001;
 
@@ -593,7 +593,7 @@ onMounted(() => {
 
     .service__title {
       grid-area: headline;
-      font-family: "FoglihtenNo06", sans-serif;
+      font-family: "Manrope", sans-serif;
       font-size: clamp(1rem, 3vw, 2rem);
 
       @media (max-width: 540px) {
@@ -761,7 +761,7 @@ onMounted(() => {
     height: clamp(4.6rem, 5vw, 5.25rem);
     width: fit-content;
     margin: 0 auto clamp(2rem, 2vw, 3.125rem);
-    font-family: "FoglihtenNo06", sans-serif;
+    font-family: "Manrope", sans-serif;
     font-size: clamp(2rem, 5vw, 4.125rem);
     color: #201001;
 

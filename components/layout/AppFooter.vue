@@ -98,7 +98,7 @@ const getLinkHref = (anchor) => {
     clamp(80.75px, 2vw, 62px);
 
   h3 {
-    font-family: "FoglihtenNo06", sans-serif;
+    font-family: "Manrope", sans-serif;
     font-size: clamp(2rem, 5vw, 4.125rem);
     color: #201001;
 

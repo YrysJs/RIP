@@ -72,7 +72,7 @@ const prettyPhone = computed(() => {
   display:flex; align-items:center; justify-content:space-between; gap:8px;
 }
 .profile__title{
-  font-family:"FoglihtenNo06", serif;
+  font-family:"Manrope", serif;
   font-weight:700;
   text-transform:uppercase;
   letter-spacing:.01em;

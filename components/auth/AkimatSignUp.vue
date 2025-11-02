@@ -1,5 +1,8 @@
 <script setup>
 import { signupAkimat } from '~/services/login'
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const emit = defineEmits(['close', 'finish'])
 
 const phone_number = ref('')
@@ -33,7 +36,7 @@ async function run () {
     console.error('Ошибка при логине:', error)
     
     const { $toast } = useNuxtApp();
-    $toast.error("Произошла ошибка при регистрации");
+    $toast.error(t('errors.registrationError'));
 
   } finally {
     console.log('login')

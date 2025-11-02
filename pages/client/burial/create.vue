@@ -369,7 +369,7 @@ onMounted(async () => {
 <style scoped>
 /* Заголовок */
 .page-title {
-  font-family: "FoglihtenNo06", serif;
+  font-family: "Manrope", serif;
   letter-spacing: 0.02em;
   font-size: clamp(24px, 3vw, 32px);
   color: #1c140e;

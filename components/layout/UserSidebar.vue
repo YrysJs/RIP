@@ -91,7 +91,7 @@ const isActive = (p: string) => computed(() => route.path.startsWith(p));
 <style scoped lang="scss">
 .sidebar {
   &__title {
-    font-family: "FoglihtenNo06", sans-serif;
+    font-family: "Manrope", sans-serif;
     font-size: 24px;
     letter-spacing: .02em;
     color: #1c1c1c;

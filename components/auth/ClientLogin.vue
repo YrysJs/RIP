@@ -18,7 +18,9 @@ import { useLoadingStore } from "~/store/loading.js";
 import { NuxtLink } from "#components";
 import { ref, watch, onBeforeUnmount } from "vue";
 import {useAuthModalStore} from "~/store/authModal.js";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const emit = defineEmits(["close"]);
 const router = useRouter();
 
@@ -114,7 +116,7 @@ watch(iin, async (newValue) => {
                 // Проверяем на ответ таймаута ПКБ
                 if (response?.data?.message === "Timeout") {
                   const { $toast } = useNuxtApp();
-                  $toast.error("Сервис ПКБ не доступен");
+                  $toast.error(t('errors.pkbServiceUnavailable'));
                 }
                 
                 // Проверяем наличие person_data
@@ -185,7 +187,7 @@ watch(iin, async (newValue) => {
         loadingStore.stopLoading();
         isFcb.value = true;
         const { $toast } = useNuxtApp();
-        $toast.error("Не удалось получить данные, проверьте ИИН.");
+        $toast.error(t('errors.cannotGetDataCheckIIN'));
       }
     };
 
@@ -248,7 +250,7 @@ async function run() {
       error?.response?.data?.description?.includes("Invalid") ||
       error?.response?.data?.description?.includes("код")
     ) {
-      $toast.error("Неверный код подтверждения");
+      $toast.error(t('errors.invalidConfirmationCode'));
       return;
     }
 
@@ -258,7 +260,7 @@ async function run() {
     ) {
       step.value++;
     } else {
-      $toast.error("Произошла ошибка при регистрации");
+      $toast.error(t('errors.registrationError'));
     }
   } finally {
     console.log("login");
@@ -394,7 +396,7 @@ const otpCheck = async () => {
       error?.response?.data?.description?.includes("Invalid") ||
       error?.response?.data?.description?.includes("код")
     ) {
-      $toast.error("Неверный код подтверждения");
+      $toast.error(t('errors.invalidConfirmationCode'));
       return;
     }
 
@@ -404,7 +406,7 @@ const otpCheck = async () => {
     ) {
       step.value++;
     } else {
-      $toast.error("Произошла ошибка при входе");
+      $toast.error(t('errors.loginError'));
     }
   } finally {
     console.log("login");

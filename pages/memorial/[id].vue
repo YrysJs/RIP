@@ -134,7 +134,7 @@ onMounted(async () => {
     
     // Если мемориал приватный, показываем тост и перенаправляем
     if (errorMessage && errorMessage.includes('приватным')) {
-      $toast.error('Мемориал является приватным');
+      $toast.error(t('memorial.isPrivate'));
       router.push('/');
       return;
     }
@@ -172,10 +172,10 @@ async function shareMemorial() {
   try {
     const currentUrl = window.location.href;
     await navigator.clipboard.writeText(currentUrl);
-    $toast.success("Ссылка скопирована");
+    $toast.success(t('modals.shareCoordinates.linkCopied'));
   } catch (error) {
     console.error("Ошибка при копировании ссылки:", error);
-    $toast.error("Не удалось скопировать ссылку");
+    $toast.error(t('modals.shareCoordinates.copyError'));
   }
 }
 
@@ -183,10 +183,10 @@ async function shareMemorial() {
 function openAchievement(url, filename) {
   try {
     window.open(url, '_blank');
-    $toast.success("Файл открыт в новой вкладке");
+    $toast.success(t('common.fileOpened'));
   } catch (error) {
     console.error("Ошибка при открытии файла:", error);
-    $toast.error("Не удалось открыть файл");
+    $toast.error(t('errors.openFileError'));
   }
 }
 </script>
@@ -272,7 +272,7 @@ function openAchievement(url, filename) {
             <div v-else class="grid grid-cols-2 grid-rows-2 gap-4">
               <div class="row-span-2 rounded-xl bg-[#F3F4F6] flex items-center justify-center">
                 <div class="text-center text-gray-500">
-                  <p class="text-sm">Нет изображений</p>
+                  <p class="text-sm">{{ $t('memorial.noImages') }}</p>
                 </div>
               </div>
             </div>
@@ -324,7 +324,7 @@ function openAchievement(url, filename) {
                     Координаты:
                   </div>
                   <div class="text-sm text-[#999]">
-                    {{ grave?.polygon_data.coordinates[0][0] + ', ' + grave?.polygon_data.coordinates[0][1] || "Не указаны" }}
+                    {{ grave?.polygon_data.coordinates[0][0] + ', ' + grave?.polygon_data.coordinates[0][1] || $t('memorial.coordinatesNotSpecified') }}
                   </div>
                 </div>
                 <div v-if="grave?.polygon_data.coordinates[0][0] && grave?.polygon_data.coordinates[0][1]" class="mt-2">
@@ -416,7 +416,7 @@ function openAchievement(url, filename) {
                 >
                   <div class="achievement-content">
                     <div class="achievement-icon">
-                      <img src="/icons/file.svg" alt="Файл" class="w-6 h-6" />
+                      <img src="/icons/file.svg" :alt="$t('common.file')" class="w-6 h-6" />
                     </div>
                     <div class="achievement-info">
                       <h5 class="achievement-title">{{ achievement.filename }}</h5>

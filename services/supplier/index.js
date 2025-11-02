@@ -4,7 +4,7 @@ function getSupplierInfo() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/supplier/current',
+        url: 'http://194.32.140.103:8081/v1/supplier/current',
     })
 }
 
@@ -13,7 +13,7 @@ function createReviewAppeal(data) {
 
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/appeals`,
+        url: `http://194.32.140.103:8090/api/v1/appeals`,
         data: data
     })
 }
@@ -22,7 +22,7 @@ function getReviewAppeals(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/appeals',
+        url: 'http://194.32.140.103:8090/api/v1/appeals',
         params,
     })
 }
@@ -31,7 +31,7 @@ function getBurialRequests(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v8/burial-requests/my',
+        url: 'http://194.32.140.103:8094/api/v1/burial-requests/my',
         params,
     })
 }
@@ -40,7 +40,7 @@ function getSalesStats() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/user/supplier/sales/stats',
+        url: 'http://194.32.140.103:8090/api/v1/user/supplier/sales/stats',
     })
 }
 
@@ -48,7 +48,7 @@ function getOrders(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/user/supplier/orders',
+        url: 'http://194.32.140.103:8090/api/v1/user/supplier/orders',
         params,
     })
 }
@@ -57,7 +57,7 @@ function getProducts(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/user/supplier/products',
+        url: 'http://194.32.140.103:8090/api/v1/user/supplier/products',
         params,
     })
 }
@@ -66,7 +66,7 @@ function getAllProducts(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/products',
+        url: 'http://194.32.140.103:8090/api/v1/products',
         params,
     })
 }
@@ -75,7 +75,7 @@ function getCategories() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/categories',
+        url: 'http://194.32.140.103:8090/api/v1/categories',
     })
 }
 
@@ -88,7 +88,7 @@ function getProductById(id) {
 
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/products/${id}`,
+        url: `http://194.32.140.103:8090/api/v1/products/${id}`,
     })
 }
 
@@ -101,7 +101,7 @@ function updateProductStatus(id, status) {
 
     return $axios({
         method: 'PATCH',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/products/${id}/status`,
+        url: `http://194.32.140.103:8090/api/v1/products/${id}/status`,
         data: { status },
     })
 }
@@ -110,7 +110,7 @@ function getReviews() {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/user/supplier/reviews',
+        url: 'http://194.32.140.103:8090/api/v1/user/supplier/reviews',
     })
 }
 
@@ -123,7 +123,7 @@ function getOrderById(id) {
 
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/orders/${id}`,
+        url: `http://194.32.140.103:8090/api/v1/orders/${id}`,
     })
 }
 
@@ -144,7 +144,7 @@ function updateOrderStatus(id, status, itemId) {
 
     return $axios({
         method: 'PATCH',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/orders/${id}/items/${itemId}/status`,
+        url: `http://194.32.140.103:8090/api/v1/orders/${id}/items/${itemId}/status`,
         data: { status },
     })
 }
@@ -173,7 +173,7 @@ function createProduct(data) {
 
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/products',
+        url: 'http://194.32.140.103:8090/api/v1/products',
         data: payload,
         headers: {
             'Content-Type': 'application/json'
@@ -198,7 +198,7 @@ function loadProductFiles(phone, files) {
 
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v7/products/product/${phone}`,
+        url: `http://194.32.140.103:8093/api/v1/products/product/${phone}`,
         data: formData,
         headers: {
             'Content-Type': 'multipart/form-data'
@@ -234,7 +234,7 @@ function updateProduct(id, data) {
 
     return $axios({
         method: 'PUT',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/products/${id}`,
+        url: `http://194.32.140.103:8090/api/v1/products/${id}`,
         data: payload,
         headers: {
             'Content-Type': 'application/json'
@@ -252,7 +252,7 @@ function getSupplierProductReviews(phone, page = 1, limit = 10) {
 
     return $axios({
         method: 'GET',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/reviews/suppliers/${phone}/products`,
+        url: `http://194.32.140.103:8090/api/v1/reviews/suppliers/${phone}/products`,
         params: {
             page,
             limit
@@ -273,7 +273,7 @@ function addReviewResponse(reviewId, comment) {
 
     return $axios({
         method: 'POST',
-        url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/reviews/${reviewId}/response`,
+        url: `http://194.32.140.103:8090/api/v1/reviews/${reviewId}/response`,
         data: {
             comment,
             review_id: reviewId

@@ -551,7 +551,7 @@ const submitAppeal = async (reviewId) => {
     border-radius: 12px;
     font-size: 18px;
     font-weight: 600;
-    font-family: "FoglihtenNo06", serif;
+    font-family: "Manrope", serif;
     color: #2E1E17;
     background: #FDFCF9;
     box-shadow: 0 2px 8px rgba(46, 30, 23, 0.08);
@@ -579,7 +579,7 @@ const submitAppeal = async (reviewId) => {
     font-size: 18px;
     font-weight: 700;
     color: #2E1E17;
-    font-family: "FoglihtenNo06", serif;
+    font-family: "Manrope", serif;
   }
 
   .flex.items-center.gap-\[20px\] {
@@ -785,7 +785,7 @@ const submitAppeal = async (reviewId) => {
 
 /* Веб-версия заголовка */
 .w-full.h-\[61px\] {
-  font-family: "FoglihtenNo06", serif;
+  font-family: "Manrope", serif;
   color: #2E1E17;
 }
 </style>

@@ -153,7 +153,7 @@ const distanceText = computed(() => {
 
 /* Заголовок — как в фигме, но компакт */
 .cem-card__title{
-  font-family:"FoglihtenNo06", serif;
+  font-family:"Manrope", serif;
   font-weight:700;
   font-size:24px;
   line-height:1.15;

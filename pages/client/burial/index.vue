@@ -146,7 +146,7 @@ const formatPhoneNumber = (phone) => {
 <style lang="scss" scoped>
 /* ===== Заголовок ===== */
 .page-title {
-  font-family: "FoglihtenNo06", serif;
+  font-family: "Manrope", serif;
   font-weight: 500;
   letter-spacing: 0.02em;
   font-size: clamp(24px, 3vw, 32px);
@@ -257,7 +257,7 @@ const formatPhoneNumber = (phone) => {
   gap: 10px;
 }
 .title {
-  font-family: "FoglihtenNo06", serif;
+  font-family: "Manrope", serif;
   font-weight: 700;
   color: #1c140e;
   font-size: 20px;

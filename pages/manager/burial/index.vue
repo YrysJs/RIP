@@ -325,13 +325,13 @@ watch([dateFrom, dateTo, cemeteryId], () => {
 /* Заголовок */
 .head-left{ display:flex; align-items:baseline; gap:10px; flex-shrink: 1; min-width: 0; }
 .title{
-  font-family:"FoglihtenNo06", serif;
+  font-family:"Manrope", serif;
   font-weight:700; letter-spacing:.02em; color:#1C140E; font-size:24px;
   white-space: nowrap;
 }
 /* Жёлтый бейдж с номером (не «пилюля») */
 .num-badge{
-  color:#F7B500; font-weight:700; font-family:"FoglihtenNo06", serif;
+  color:#F7B500; font-weight:700; font-family:"Manrope", serif;
  display:inline-block; font-size: 24px;
 }
 
@@ -548,14 +548,14 @@ watch([dateFrom, dateTo, cemeteryId], () => {
     font-size: 18px;
     font-weight: 700;
     color: #1C140E;
-    font-family: "FoglihtenNo06", serif;
+    font-family: "Manrope", serif;
   }
 
   .num-badge {
     font-size: 20px;
     color: #F7B500;
     font-weight: 700;
-    font-family: "FoglihtenNo06", serif;
+    font-family: "Manrope", serif;
   }
 
 

@@ -72,7 +72,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .sidebar {
   &__title {
-    font-family: "FoglihtenNo06", sans-serif;
+    font-family: "Manrope", sans-serif;
     font-size: 32px;
     letter-spacing: 0.02em;
     color: #201001;

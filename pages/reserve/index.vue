@@ -139,7 +139,7 @@ async function getCemeteriesReq() {
       params.city = selectedCity.value;
     }
 
-    if (selectedReligios.value && selectedReligios.value !== "Не выбрано") {
+    if (selectedReligios.value && selectedReligios.value !== t('reserve.notSelected')) {
       params.religion = selectedReligios.value;
     }
 
@@ -464,13 +464,13 @@ async function onOccupiedGraveClicked(data) {
     } else {
       // Показываем toast с сообщением об отсутствии данных
       const { $toast } = useNuxtApp();
-      $toast.error('Нет данных об умершем');
+      $toast.error(t('errors.noDeceasedData'));
     }
     
   } catch (error) {
     console.error('Ошибка при получении данных могилы:', error);
     const { $toast } = useNuxtApp();
-    $toast.error('Ошибка при загрузке данных могилы');
+    $toast.error(t('errors.errorLoadingGrave'));
   }
 }
 
@@ -496,7 +496,7 @@ function openRoute() {
   
   if (!tooltipData?.grave?.polygon_data?.coordinates) {
     const { $toast } = useNuxtApp();
-    $toast.error('Координаты могилы не найдены');
+    $toast.error(t('errors.coordinatesNotFound'));
     return;
   }
   
@@ -634,7 +634,7 @@ function openWhatsApp(phone) {
               </select>
 
               <p class="text-[#222222]">
-                {{ cemetriessList.length }} результатов
+                {{ cemetriessList.length }} {{ $t('reserve.results') }}
               </p>
 
               <!-- Список кладбищ -->
@@ -947,7 +947,7 @@ function openWhatsApp(phone) {
                       class="w-[36px] h-[16px] rounded-sm bg-[#43DC4966] border-2 border-[#43DC49]"
                     ></div>
                     <p class="text-sm sm:text-[13px]">
-                      Сводобные места: {{ selectedCemetery?.free_spaces }}
+                      {{ $t('reserve.freePlaces') }} {{ selectedCemetery?.free_spaces }}
                     </p>
                   </div>
                   <div class="flex gap-[8px] items-center">
@@ -955,7 +955,7 @@ function openWhatsApp(phone) {
                       class="w-[36px] h-[16px] rounded-sm bg-[#DCBA4366] border-2 border-[#DCBA43]"
                     ></div>
                     <p class="text-sm sm:text-[13px]">
-                      Зарезервировано: {{ selectedCemetery?.reserved_spaces }}
+                      {{ $t('reserve.reservedPlaces') }} {{ selectedCemetery?.reserved_spaces }}
                     </p>
                   </div>
                   <div class="flex gap-[8px] items-center">
@@ -963,7 +963,7 @@ function openWhatsApp(phone) {
                       class="w-[36px] h-[16px] rounded-sm bg-[#93939366] border-2 border-[#939393]"
                     ></div>
                     <p class="text-sm sm:text-[13px]">
-                      Занято: {{ selectedCemetery?.occupied_spaces }}
+                      {{ $t('reserve.occupiedPlaces') }} {{ selectedCemetery?.occupied_spaces }}
                     </p>
                   </div>
                 </div>
@@ -1078,7 +1078,7 @@ function openWhatsApp(phone) {
                   alt="Reserve icon"
                   class="w-5 h-5"
                 />
-                Забронировать место
+                {{ $t('reserve.reservePlaceButton') }}
               </button>
               
               <!-- Тултип с информацией об умершем -->
@@ -1119,10 +1119,10 @@ function openWhatsApp(phone) {
                     </h4>
                     <div class="text-sm text-gray-600 mt-1">
                       <p v-if="deceasedTooltipData.deceased.death_date">
-                        Дата смерти: {{ new Date(deceasedTooltipData.deceased.death_date).toLocaleDateString('ru-RU') }}
+                        {{ $t('reserve.deathDate') }} {{ new Date(deceasedTooltipData.deceased.death_date).toLocaleDateString('ru-RU') }}
                       </p>
                       <p v-if="deceasedTooltipData.grave.sector_number && deceasedTooltipData.grave.grave_number">
-                        Место: {{ deceasedTooltipData.grave.sector_number }}-{{ deceasedTooltipData.grave.grave_number }}
+                        {{ $t('reserve.placeLabel') }} {{ deceasedTooltipData.grave.sector_number }}-{{ deceasedTooltipData.grave.grave_number }}
                       </p>
                     </div>
                   </div>
@@ -1136,7 +1136,7 @@ function openWhatsApp(phone) {
                     @mouseover="$event.target.style.backgroundColor = '#b88f34'"
                     @mouseout="$event.target.style.backgroundColor = '#d1a53f'"
                   >
-                    Маршрут
+                    {{ $t('reserve.route') }}
                   </button>
                 </div>
               </div>
@@ -1200,7 +1200,7 @@ function openWhatsApp(phone) {
                     @mouseover="$event.target.style.backgroundColor = '#b88f34'"
                     @mouseout="$event.target.style.backgroundColor = '#d1a53f'"
                   >
-                    Маршрут
+                    {{ $t('reserve.route') }}
                   </button>
                 </div>
               </div>

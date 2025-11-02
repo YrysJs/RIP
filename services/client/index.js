@@ -4,7 +4,7 @@ function getAppeals(params) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-government/v1/appeal',
+    url: 'http://194.32.140.103:8081/rip-government/v1/appeal',
     params,
   })
 }
@@ -13,7 +13,7 @@ function getMyAppeals(params) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-government/v1/appeal/my',
+    url: 'http://194.32.140.103:8081/rip-government/v1/appeal/my',
     params,
   })
 }
@@ -22,7 +22,7 @@ function createAppeal(data) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'PUT',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-government/v1/appeal',
+    url: 'http://194.32.140.103:8081/rip-government/v1/appeal',
     data,
   })
 }
@@ -31,7 +31,7 @@ function createRequest(data) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'PUT',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v3/rip-government/v1/request',
+    url: 'http://194.32.140.103:8081/rip-government/v1/request',
     data,
   })
 }
@@ -40,7 +40,7 @@ function processCardPayment(data) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/payments/card',
+    url: 'http://194.32.140.103:8091/card',
     data
   })
 }
@@ -49,7 +49,7 @@ function getProducts(params) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/products',
+    url: 'http://194.32.140.103:8090/api/v1/products',
     params,
   })
 }
@@ -58,7 +58,7 @@ function getProductById(id) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/products/${id}`,
+    url: `http://194.32.140.103:8090/api/v1/products/${id}`,
   })
 }
 
@@ -66,7 +66,7 @@ function getProductReviews(productId, params) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/reviews/products/${productId}`,
+    url: `http://194.32.140.103:8090/api/v1/reviews/products/${productId}`,
     params,
   })
 }
@@ -75,7 +75,7 @@ function getProviderReviews(providerId, params) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/reviews/providers/${providerId}`,
+    url: `http://194.32.140.103:8090/api/v1/reviews/providers/${providerId}`,
     params,
   })
 }
@@ -84,7 +84,7 @@ function getGraves(params) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/graves',
+    url: 'http://194.32.140.103:8092/api/v1/graves',
     params,
   })
 }
@@ -93,7 +93,7 @@ function getGraveById(id) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/graves/${id}`,
+    url: `http://194.32.140.103:8092/api/v1/graves/${id}`,
   })
 }
 
@@ -101,7 +101,7 @@ function getGraveImages(id) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/graves/${id}/photos`,
+    url: `http://194.32.140.103:8092/api/v1/graves/${id}/photos`,
   })
 }
 
@@ -109,7 +109,7 @@ function createDeceased(data) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v9/deceased',
+    url: 'http://194.32.140.103:8095/api/v1/deceased',
     data,
   })
 }
@@ -118,7 +118,7 @@ function getDeceasedById(id) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v9/deceased/${id}`,
+    url: `http://194.32.140.103:8095/api/v1/deceased/${id}`,
   })
 }
 
@@ -126,7 +126,7 @@ function getCart() {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/cart',
+    url: 'http://194.32.140.103:8090/api/v1/cart',
   })
 }
 
@@ -134,7 +134,7 @@ function addToCart(data) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/cart',
+    url: 'http://194.32.140.103:8090/api/v1/cart',
     data,
   })
 }
@@ -143,7 +143,7 @@ function removeFromCart(productId) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'DELETE',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/cart/${productId}`,
+    url: `http://194.32.140.103:8090/api/v1/cart/${productId}`,
   })
 }
 
@@ -151,7 +151,7 @@ function updateCartCount(data) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'PATCH',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/cart/${data.id}`,
+    url: `http://194.32.140.103:8090/api/v1/cart/${data.id}`,
     data: data.data
   })
 }
@@ -160,7 +160,7 @@ function clearCart() {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'DELETE',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/cart',
+    url: 'http://194.32.140.103:8090/api/v1/cart',
   })
 }
 
@@ -168,7 +168,7 @@ function getOrders(params) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/orders',
+    url: 'http://194.32.140.103:8090/api/v1/orders',
     params,
   })
 }
@@ -177,7 +177,7 @@ function getBurialRequests(params) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v8/burial-requests/my',
+    url: 'http://194.32.140.103:8094/api/v1/burial-requests/my',
     params,
   })
 }
@@ -186,7 +186,7 @@ function getBurialRequestById(id) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${id}`,
+    url: `http://194.32.140.103:8094/api/v1/burial-requests/${id}`,
   })
 }
 
@@ -194,7 +194,7 @@ function updateBurialRequestStatus(requestId, data) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'PATCH',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${requestId}/status`,
+    url: `http://194.32.140.103:8094/api/v1/burial-requests/${requestId}/status`,
     data,
   })
 }
@@ -203,7 +203,7 @@ function updateBurialRequestData(requestId, data) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'PUT',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${requestId}`,
+    url: `http://194.32.140.103:8094/api/v1/burial-requests/${requestId}`,
     data,
   })
 }
@@ -216,7 +216,7 @@ function uploadBurialRequestDocument(requestId, document) {
 
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v8/burial-requests/${requestId}/document`,
+    url: `http://194.32.140.103:8094/api/v1/burial-requests/${requestId}/document`,
     data: formData,
   })
 }
@@ -230,7 +230,7 @@ function uploadDeceasedDeathCertificate(deceasedId, certificate) {
 
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v7/deceased/death_certificate/${deceasedId}`,
+    url: `http://194.32.140.103:8093/api/v1/deceased/death_certificate/${deceasedId}`,
     data: formData,
   })
 }
@@ -239,7 +239,7 @@ function createBurialRequest(data) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v8/burial-requests',
+    url: 'http://194.32.140.103:8094/api/v1/burial-requests',
     data,
   })
 }
@@ -248,7 +248,7 @@ function createOrder(data) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/orders',
+    url: 'http://194.32.140.103:8090/api/v1/orders',
     data,
   })
 }
@@ -273,7 +273,7 @@ function postReview(data) {
 
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/reviews',
+    url: 'http://194.32.140.103:8090/api/v1/reviews',
     data: formData,
   })
 }
@@ -298,7 +298,7 @@ function createProductReview(data) {
 
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/reviews/products',
+    url: 'http://194.32.140.103:8090/api/v1/reviews/products',
     data: formData,
   })
 }
@@ -307,7 +307,7 @@ function getMemorials(params) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/memorials',
+    url: 'http://194.32.140.103:8090/api/v1/memorials',
     params,
   })
 }
@@ -316,7 +316,7 @@ function searchDeceased(data) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v9/search-requests',
+    url: 'http://194.32.140.103:8095/api/v1/search-requests',
     data,
   })
 }
@@ -357,7 +357,7 @@ function createMemorial(data) {
 
   return $axios({
     method: 'POST',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/memorials',
+    url: 'http://194.32.140.103:8090/api/v1/memorials',
     data: formData,
   })
 }
@@ -399,17 +399,16 @@ function updateMemorial(id, data) {
 
   return $axios({
     method: 'PUT',
-    url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/memorials/' + data.id,
+    url: 'http://194.32.140.103:8090/api/v1/memorials/' + id,
     data: formData,
   })
 }
-
 
 function getMemorialById(id) {
   const { $axios } = useNuxtApp()
   return $axios({
     method: 'GET',
-    url: useRuntimeConfig().public.apiBaseUrl + `/api/v1/memorials/${id}`,
+    url: `http://194.32.140.103:8090/api/v1/memorials/${id}`,
   })
 }
 
