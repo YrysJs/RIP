@@ -114,12 +114,14 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AkimatSignUp from '~/components/auth/AkimatSignUp.vue'
 import AkimatUserUpdate from '~/components/auth/AkimatUserUpdate.vue'
 import SuccessModal from '~/components/layout/modals/SuccessModal.vue'
 // ConfirmModal не используем — сделали кастомную
 import { getUsersByRole, deleteUser } from '~/services/login'
 
+const { t } = useI18n()
 const isCreateModal = ref(false)
 const showSuccessModal = ref(false)
 const isConfirmModal = ref(false)
@@ -183,18 +185,18 @@ onMounted(fetchUsers)
 function fio(u){ return `${u.surname || ''} ${u.name || ''} ${u.patronymic || ''}`.trim() || '—' }
 function roleLabel(code){
   switch (code) {
-    case 'AKIMAT_ADMIN': return 'Администратор'
-    case 'AKIMAT_MANAGER': return 'Менеджер'
-    case 'AKIMAT_WRITER': return 'Писатель'
+    case 'AKIMAT_ADMIN': return t('admin.users.roleAdministrator')
+    case 'AKIMAT_MANAGER': return t('admin.users.roleManager')
+    case 'AKIMAT_WRITER': return t('admin.users.roleWriter')
     default: return '—'
   }
 }
 function statusText(s){
   switch (s) {
-    case 'blocked': return 'Заблокирован'
-    case 'pending': return 'Приглашение отправлено'
+    case 'blocked': return t('admin.users.statusBlocked')
+    case 'pending': return t('admin.users.statusPending')
     case 'active':
-    default: return 'Активен'
+    default: return t('admin.users.statusActive')
   }
 }
 function statusClass(s){

@@ -5,7 +5,9 @@ import PaymentModal from "~/components/layout/modals/PaymentModal.vue";
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
 import browserDevtoolsTimingClient from "#app/plugins/browser-devtools-timing.client.js";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const cemeteryStore = useCemeteryStore();
 const switcher = ref(false);
 const route = useRoute();
@@ -53,8 +55,8 @@ const loadBurialData = async () => {
       switcher.value = true;
     }
   } catch (err) {
-    error.value = "Ошибка при загрузке данных";
-    console.error("Error loading burial data:", err);
+    error.value = t('client.tickets.active.loadError');
+    console.error(t('errors.fetchError'), err);
   } finally {
     loading.value = false;
   }
@@ -164,7 +166,7 @@ const displayBurialDate = computed(() => {
       : "";
     return `${date}${time}`;
   }
-  return "Не указано";
+  return t('common.notSpecified');
 });
 
 // Computed property для класса цвета даты похорон
@@ -200,7 +202,7 @@ const canPay = computed(() => {
           v-if="loading"
           class="flex justify-center items-center min-h-[400px]"
         >
-          <div class="text-xl text-[#38949B]">Загрузка...</div>
+          <div class="text-xl text-[#38949B]">{{ $t('common.loading') }}</div>
         </div>
 
         <div
@@ -221,7 +223,7 @@ const canPay = computed(() => {
               class="flex items-center gap-2 text-base font-medium text-[#B88F34]"
               @click="$router.go(-1)"
             >
-              <img src="/icons/arrow-left-orange.svg" alt="" /> Вернуться
+              <img src="/icons/arrow-left-orange.svg" alt="" /> {{ $t('common.back') }}
             </button>
             <div
               class="max-sm:hidden align-center my-6 flex gap-fluid items-baseline"
@@ -230,16 +232,16 @@ const canPay = computed(() => {
               <h3
                 class="text-2xl text-[#222222] font-medium font-foglihten text-fluid"
               >
-                {{ burialData?.cemetery_name || "Кладбище" }}
+                {{ burialData?.cemetery_name || $t('common.cemetery') }}
               </h3>
             </div>
             <div class="sm:hidden max-sm:flex max-sm:flex-col w-full pt-2 pb-4">
               <h3
                 class="items-center text-fluid-24 font-foglihten leading-[48px]"
               >
-                Бронирование:
+                {{ $t('client.tickets.active.reservation') }}
                 <span class="text-[#B88F34]">{{
-                  burialData?.request_number || "N/A"
+                  burialData?.request_number || $t('client.tickets.active.notAvailable')
                 }}</span>
               </h3>
               <span class="text-sm text-[#999]">{{
@@ -247,7 +249,7 @@ const canPay = computed(() => {
                   ? new Date(
                       burialData?.reservation_expires_at
                     ).toLocaleDateString()
-                  : "Не указано"
+                  : $t('common.notSpecified')
               }}</span>
             </div>
             <div class="bg-[#F4F0E7] p-5 rounded-xl">
@@ -256,19 +258,19 @@ const canPay = computed(() => {
                 <h3
                   class="text-2xl text-[#222222] font-medium font-foglihten text-fluid"
                 >
-                  {{ burialData?.cemetery_name || "Кладбище" }}
+                  {{ burialData?.cemetery_name || $t('common.cemetery') }}
                 </h3>
               </div>
               <div
                 class="h-10 mb-[14px] border-b border-[#EEEEEE] flex items-center"
               >
-                <h4 class="text-base text-[#050202]">Срок брони:</h4>
+                <h4 class="text-base text-[#050202]">{{ $t('client.tickets.active.reservationPeriod') }}</h4>
                 <span class="text-sm text-[#999] ml-[15px] mr-[5px]">{{
                   burialData?.reservation_expires_at
                     ? new Date(
                         burialData?.reservation_expires_at
                       ).toLocaleDateString()
-                    : "Не указано"
+                    : $t('common.notSpecified')
                 }}</span>
                 <img src="/icons/info.svg" alt="" />
               </div>
@@ -276,28 +278,28 @@ const canPay = computed(() => {
                 class="h-[38px] flex items-start gap-[27px] border-b border-b-[#2010011F]"
               >
                 <div class="flex items-center gap-[11px]">
-                  <h4 class="text-base text-[#050202]">Сектор:</h4>
+                  <h4 class="text-base text-[#050202]">{{ $t('reserve.sector') }}</h4>
                   <span class="text-sm text-[#999]">{{
-                    burialData?.sector_number || "Не указано"
+                    burialData?.sector_number || $t('common.notSpecified')
                   }}</span>
                 </div>
                 <div class="flex items-center gap-[11px]">
-                  <h4 class="text-base text-[#050202]">Место:</h4>
+                  <h4 class="text-base text-[#050202]">{{ $t('reserve.place') }}</h4>
                   <span class="text-sm text-[#999]">{{
-                    burialData?.grave_number || "Не указано"
+                    burialData?.grave_number || $t('common.notSpecified')
                   }}</span>
                 </div>
               </div>
               <div
                 class="h-[46px] flex items-center gap-[11px] border-b border-b-[#2010011F]"
               >
-                <h4 class="text-base text-[#050202]">ФИО покойного:</h4>
+                <h4 class="text-base text-[#050202]">{{ $t('client.tickets.active.deceasedFullName') }}</h4>
                 <span class="text-sm text-[#999]">{{
-                  burialData?.deceased?.full_name || "Не указано"
+                  burialData?.deceased?.full_name || $t('common.notSpecified')
                 }}</span>
               </div>
               <div class="h-[46px] flex items-center gap-[11px]">
-                <h4 class="text-base text-[#050202]">Дата похорон:</h4>
+                <h4 class="text-base text-[#050202]">{{ $t('client.tickets.active.burialDate') }}</h4>
                 <span
                   class="text-sm"
                   :class="
@@ -313,7 +315,7 @@ const canPay = computed(() => {
                 class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center"
               >
                 <h4 class="text-base font-medium text-[#222222] w-[105px]">
-                  Статус:
+                  {{ $t('client.tickets.active.status') }}
                 </h4>
                 <span
                   class="text-base font-bold"
@@ -326,14 +328,14 @@ const canPay = computed(() => {
                 >
                   {{
                     burialData?.status === "processing" || burialData?.status === 'pending_payment'
-                      ? "В ожидании оплаты"
+                      ? $t('client.tickets.active.waitingPayment')
                       : burialData?.status === "new"
-                      ? "Новая"
+                      ? $t('statuses.new')
                       : burialData?.status === "in_progress"
-                      ? "В работе"
+                      ? $t('statuses.inProgress')
                       : burialData?.status === "paid"
-                                    ? "Оплачено"
-                                    : "Не указано"
+                                    ? $t('client.tickets.active.paid')
+                                    : $t('common.notSpecified')
                   }}
                 </span>
               </div>
@@ -341,10 +343,10 @@ const canPay = computed(() => {
                 class="border-b border-[#EEEEEE] pb-[16px] pt-[16px] flex items-center"
               >
                 <h4 class="text-base font-medium text-[#222222] w-[105px]">
-                  Телефон кладбища:
+                  {{ $t('client.tickets.active.cemeteryPhone') }}
                 </h4>
                 <span class="text-base font-bold text-[#222222]">{{
-                  burialData?.cemetery_phone || "Не указано"
+                  burialData?.cemetery_phone || $t('common.notSpecified')
                 }}</span>
               </div>
 
@@ -357,9 +359,9 @@ const canPay = computed(() => {
             <h3
               class="max-sm:hidden w-full pb-4 flex items-center text-fluid font-foglihten border-b border-b-[#eee]"
             >
-              Бронирование места:&nbsp;
+              {{ $t('client.tickets.active.bookingPlace') }}&nbsp;
               <span class="text-[#B88F34]">{{
-                burialData?.request_number || "N/A"
+                burialData?.request_number || $t('client.tickets.active.notAvailable')
               }}</span>
             </h3>
             <div class="text-4xl font-semibold">
@@ -369,7 +371,7 @@ const canPay = computed(() => {
                 <h3
                   class="text-fluid-27 font-medium text-[#222222] max-sm:font-semibold"
                 >
-                  Укажите данные покойного
+                  {{ $t('reserve.enterDeceasedData') }}
                 </h3>
               </div>
               <div class="grid grid-cols-2 gap-[16px] max-lg:grid-cols-1">
@@ -379,7 +381,7 @@ const canPay = computed(() => {
                     v-if="burialData?.deceased"
                     v-model="burialData.deceased.inn"
                     class="w-[100%] h-[60px] !border !border-[#AFB5C166] rounded-lg pl-[16px] text-lg input"
-                    placeholder="ИИН"
+                    :placeholder="$t('reserve.iinPlaceholder')"
                     readonly
                   />
                 </div>
@@ -388,7 +390,7 @@ const canPay = computed(() => {
                     type="text"
                     v-model="burialData.deceased.full_name"
                     class="w-[100%] h-[60px] !border !border-[#AFB5C166] rounded-lg pl-[16px] text-lg input"
-                    placeholder="ФИО"
+                    :placeholder="$t('reserve.fullNamePlaceholder')"
                     readonly
                   />
                 </div>
@@ -398,7 +400,7 @@ const canPay = computed(() => {
               class="w-full bg-[#fff] rounded-[16px] font-medium text-[#222222] my-4 max-sm:mb-[43px]"
             >
               <div class="h-11 flex items-center gap-[24px] text-fluid-27">
-                Даты
+                {{ $t('reserve.dates') }}
                 <div>
                   <label
                     class="relative inline-block w-10 h-6 cursor-pointer select-none align-middle"
@@ -422,7 +424,7 @@ const canPay = computed(() => {
                     !burialData?.deceased?.death_date
                   "
                   class="text-sm text-[#D63C3C]"
-                  >Необходимо указать даты похорон</span
+                  >{{ $t('client.tickets.active.burialDateRequired') }}</span
                 >
               </div>
               <div
@@ -430,7 +432,7 @@ const canPay = computed(() => {
                 class="switcher-data grid grid-cols-2 max-sm:gap-4 gap-4 mt-[24px]"
               >
                 <div>
-                  <p class="text-sm text-[#222222] font-normal">Дата смерти</p>
+                  <p class="text-sm text-[#222222] font-normal">{{ $t('reserve.deathDateLabel') }}</p>
                   <input
                     type="date"
                     v-model="deathDate"
@@ -439,7 +441,7 @@ const canPay = computed(() => {
                 </div>
                 <div>
                   <p class="text-sm text-[#222222] font-normal">
-                    Заключение о смерти от мед учереждении:
+                    {{ $t('reserve.deathCertificateLabel') }}
                   </p>
 
                   <!-- Кнопка скачивания существующего файла -->
@@ -448,12 +450,12 @@ const canPay = computed(() => {
                     class="flex items-center gap-2 p-4 border-2 border-solid border-[#B88F34] rounded-lg bg-[#fef3c7]"
                   >
                     <img src="/icons/file.svg" alt="file" class="w-5 h-5" />
-                    <span class="text-[#222222] flex-1">Свидетельство о смерти</span>
+                    <span class="text-[#222222] flex-1">{{ $t('client.tickets.active.deathCertificate') }}</span>
                     <button
                       @click="downloadFile(burialData.deceased.death_cert_url)"
                       class="px-3 py-1 bg-[#B88F34] text-white rounded text-sm hover:bg-[#9a7a2a] transition-colors"
                     >
-                      Скачать
+                      {{ $t('common.download') }}
                     </button>
                   </div>
 
@@ -464,8 +466,7 @@ const canPay = computed(() => {
                   >
                     <img src="/icons/upload.svg" alt="upload" class="w-5 h-5" />
                     <span>
-                      <span class="text-[#B88F34]">Загрузите файлы</span> или
-                      перетащите их
+                      <span class="text-[#B88F34]">{{ $t('reserve.uploadFiles') }}</span> {{ $t('reserve.dragFiles') }}
                     </span>
                   </label>
 
@@ -506,7 +507,7 @@ const canPay = computed(() => {
                   />
                 </div>
                 <div>
-                  <p class="text-sm text-[#222222] font-normal">Дата похорон</p>
+                  <p class="text-sm text-[#222222] font-normal">{{ $t('reserve.burialDateLabel') }}</p>
                   <input
                     type="date"
                     v-model="burialDate"
@@ -515,7 +516,7 @@ const canPay = computed(() => {
                 </div>
                 <div>
                   <p class="text-sm text-[#222222] font-normal">
-                    Время похорон
+                    {{ $t('reserve.burialTime') }}
                   </p>
                   <input
                     type="time"
@@ -529,7 +530,7 @@ const canPay = computed(() => {
                 <h3
                   class="text-fluid font-medium text-[#222222] mb-[38px] max-sm:mb-0"
                 >
-                  К оплате: {{burialData.burial_price}} ₸
+                  {{ $t('client.tickets.active.toPay') }} {{burialData.burial_price}} ₸
                 </h3>
               </div>
               <button
@@ -546,9 +547,9 @@ const canPay = computed(() => {
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1ZM8.75 11.25C8.75 11.6642 8.41421 12 8 12C7.58579 12 7.25 11.6642 7.25 11.25V7.75C7.25 7.33579 7.58579 7 8 7C8.41421 7 8.75 7.33579 8.75 7.75V11.25ZM8 6C7.44772 6 7 5.55228 7 5C7 4.44772 7.44772 4 8 4C8.55228 4 9 4.44772 9 5C9 5.55228 8.55228 6 8 6Z" fill="#CCCCCC"/>
                   </svg>
-                  Заполните все поля
+                  {{ $t('client.tickets.active.fillAllFields') }}
                 </span>
-                <span v-else>Оплатить сбор</span>
+                <span v-else>{{ $t('client.tickets.active.payFee') }}</span>
               </button>
             </div>
             <div class="mt-4">
@@ -562,7 +563,7 @@ const canPay = computed(() => {
                   <button
                     class="text-base py-[18px] px-[28px] rounded-lg bg-[#E9B949] text-black w-[300px] hover:bg-[#D1A53F] active:bg-[#B88F34] transition-all duration-200"
                   >
-                    Оплатить услуги СКРУ
+                    {{ $t('client.tickets.active.paySkruServices') }}
                   </button>
                 </a>
                 <button
@@ -574,7 +575,7 @@ const canPay = computed(() => {
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1ZM8.75 11.25C8.75 11.6642 8.41421 12 8 12C7.58579 12 7.25 11.6642 7.25 11.25V7.75C7.25 7.33579 7.58579 7 8 7C8.41421 7 8.75 7.33579 8.75 7.75V11.25ZM8 6C7.44772 6 7 5.55228 7 5C7 4.44772 7.44772 4 8 4C8.55228 4 9 4.44772 9 5C9 5.55228 8.55228 6 8 6Z" fill="#CCCCCC"/>
                     </svg>
-                    Заполните все поля для оплаты услуг СКРУ
+                    {{ $t('client.tickets.active.fillAllFieldsForSkru') }}
                   </span>
                 </button>
                 <div class="relative inline-block group">
@@ -582,7 +583,7 @@ const canPay = computed(() => {
                     <path d="M8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1ZM8.75 11.25C8.75 11.6642 8.41421 12 8 12C7.58579 12 7.25 11.6642 7.25 11.25V7.75C7.25 7.33579 7.58579 7 8 7C8.41421 7 8.75 7.33579 8.75 7.75V11.25ZM8 6C7.44772 6 7 5.55228 7 5C7 4.44772 7.44772 4 8 4C8.55228 4 9 4.44772 9 5C9 5.55228 8.55228 6 8 6Z" fill="currentColor"/>
                   </svg>
                   <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                    ТОО "Специализированный комбинат ритуальных услуг города Алматы"
+                    {{ $t('client.tickets.active.skruCompanyName') }}
                     <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
                   </div>
                 </div>
@@ -603,8 +604,8 @@ const canPay = computed(() => {
         <Teleport to="body">
           <SuccessModal
             v-if="showSuccessModal"
-            title="Оплата прошла успешно, заявка на захоронения отправлена!"
-            text="Отслеживайте статус в личном кабинете"
+            :title="$t('client.tickets.active.paymentSuccessTitle')"
+            :text="$t('client.tickets.active.paymentSuccessText')"
             @close="closeSuccessModal"
           />
         </Teleport>

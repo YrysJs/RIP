@@ -358,7 +358,7 @@ onMounted(async () => {
             :class="{ 'btn-disabled': !isFormValid }"
             @click="userCreateAppeal"
           >
-            Создать запрос в акимат
+            {{ $t('burialCreate.createRequest') }}
           </button>
         </div>
       </div>

@@ -64,10 +64,10 @@ const loadReviews = async () => {
         console.error(t('errors.fetchError'), error)
         // Показываем пользователю более информативную ошибку
         if (error.response?.status === 401) {
-            console.error('Ошибка авторизации - перенаправление на главную')
+            console.error(t('supplier.reviews.authError'))
             await navigateTo('/')
         } else if (error.response?.status === 403) {
-            console.error('Нет доступа к отзывам')
+            console.error(t('supplier.reviews.noAccess'))
         }
         reviews.value = { items: [], total_pages: 0, total_count: 0, page: 1, limit: 10 }
     } finally {
@@ -82,13 +82,11 @@ const refresh = () => {
 
 // Загружаем отзывы при монтировании компонента
 onMounted(() => {
-    console.log('Компонент отзывов поставщика смонтирован')
     loadReviews()
 })
 
 // Следим за изменением страницы и перезагружаем данные
 watch(currentPage, () => {
-    console.log('Изменилась страница на:', currentPage.value)
     loadReviews()
 })
 
@@ -143,7 +141,7 @@ const submitReply = async (reviewId) => {
     
     if (!replyText || replyText.trim() === '') {
         const { $toast } = useNuxtApp();
-        $toast.warning(t('review.replyRequired'));
+        $toast.warning(t('supplierReviews.replyRequired'));
         return
     }
     
@@ -160,12 +158,12 @@ const submitReply = async (reviewId) => {
         await refresh()
         
         const { $toast } = useNuxtApp();
-        $toast.success(t('review.replySent'));
+        $toast.success(t('supplierReviews.replySent'));
         
     } catch (error) {
-        console.error('Ошибка отправки ответа:', error)
+        console.error(t('supplier.reviews.replyError'), error)
         const { $toast } = useNuxtApp();
-        $toast.error(t('review.replyError'));
+        $toast.error(t('supplierReviews.replyError'));
     } finally {
         sendingReply.value[reviewId] = false
     }
@@ -190,7 +188,7 @@ const submitAppeal = async (reviewId) => {
     
     if (!reason || reason.trim() === '') {
         const { $toast } = useNuxtApp();
-        $toast.warning(t('review.appealReasonRequired'));
+        $toast.warning(t('supplierReviews.appealReasonRequired'));
         return
     }
     
@@ -210,12 +208,12 @@ const submitAppeal = async (reviewId) => {
         await refresh()
         
         const { $toast } = useNuxtApp();
-        $toast.success(t('review.appealSent'));
+        $toast.success(t('supplierReviews.appealSent'));
         
     } catch (error) {
-        console.error('Ошибка отправки обжалования:', error)
+        console.error(t('supplier.reviews.appealError'), error)
         const { $toast } = useNuxtApp();
-        $toast.error(t('review.appealError'));
+        $toast.error(t('supplierReviews.appealError'));
     } finally {
         sendingAppeal.value[reviewId] = false
     }
@@ -226,7 +224,7 @@ const submitAppeal = async (reviewId) => {
 <template>
     <NuxtLayout name="supplier">
         <div class="w-full h-[61px] pl-[20px] flex items-center bg-white rounded-[16px] text-lg font-semibold">
-            Отзывы и рейтинги
+            {{ $t('supplierReviews.title') }}
         </div>
         
         <!-- Загрузка -->
@@ -269,11 +267,11 @@ const submitAppeal = async (reviewId) => {
                 <div class="my-[32px]">
                     <div class="flex text-sm">
                         <p class="min-w-[150px]">{{ $t('supplierReviews.client') }}</p>
-                        <p>{{ review.user_phone || $t('supplierReviews.notSpecified') }}</p>
+                        <p>{{ review.user_phone || $t('common.notSpecified') }}</p>
                     </div>
                     <div class="flex text-sm">
                         <p class="min-w-[150px]">{{ $t('supplierReviews.supplier') }}</p>
-                        <p>{{ review.supplier_phone || $t('supplierReviews.notSpecified') }}</p>
+                        <p>{{ review.supplier_phone || $t('common.notSpecified') }}</p>
                     </div>
                 </div>
                 
@@ -321,7 +319,7 @@ const submitAppeal = async (reviewId) => {
                             v-for="(imageUrl, index) in review.image_urls" 
                             :key="index"
                             :src="imageUrl"
-                            :alt="`Фото отзыва ${index + 1}`"
+                            :alt="$t('supplierReviews.reviewPhoto', { number: index + 1 })"
                             class="w-20 h-20 object-cover rounded-lg border"
                             @error="$event.target.style.display = 'none'"
                         />

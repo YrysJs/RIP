@@ -2,12 +2,14 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Cookies from "js-cookie";
+import { useI18n } from 'vue-i18n';
 
 import { getCemeteries } from "~/services/cemetery";
 import { getUser } from "~/services/login";
 import { getMyRequests } from "~/services/akimat";
 import { parseJwt } from "~/utils/parseJwt";
 
+const { t } = useI18n();
 const router = useRouter();
 const route = useRoute();
 
@@ -59,7 +61,7 @@ const cemList = computed(() =>
 );
 
 const cemNameById = (id) =>
-  cemList.value.find((c) => String(c.id) === String(id))?.name || "—";
+  cemList.value.find((c) => String(c.id) === String(id))?.name || t('common.notSpecified');
 
 /* -------- init -------- */
 onMounted(async () => {
@@ -97,14 +99,14 @@ onMounted(async () => {
       if (foundRequest) {
         data.value = normalize(foundRequest);
       } else {
-        error.value = "Запрос не найден";
+        error.value = t('client.burial.requestNotFound');
       }
     } else if (props.request) {
       data.value = normalize(props.request);
     }
   } catch (err) {
-    console.error("Ошибка загрузки данных:", err);
-    error.value = "Ошибка загрузки данных";
+    console.error(t('client.burial.loadError'), err);
+    error.value = t('client.burial.loadErrorText');
   } finally {
     loading.value = false;
   }
@@ -129,12 +131,12 @@ function normalize(r) {
 }
 
 function fileTitle(url) {
-  if (!url || typeof url !== "string") return "Document.pdf";
+  if (!url || typeof url !== "string") return t('common.defaultDocument');
   try {
     const name = decodeURIComponent(url.split("/").pop() || "");
-    return name || "Document.pdf";
+    return name || t('common.defaultDocument');
   } catch {
-    return "Document.pdf";
+    return t('common.defaultDocument');
   }
 }
 
@@ -145,23 +147,23 @@ function fileTitle(url) {
     <div>
       <!-- Состояние загрузки -->
       <div v-if="loading" class="loading-state">
-        <div class="loader">Загрузка...</div>
+        <div class="loader">{{ $t('common.loading') }}</div>
       </div>
 
       <!-- Состояние ошибки -->
       <div v-else-if="error" class="error-state">
         <div class="error-message">{{ error }}</div>
         <button class="btn-yellow" @click="$router.push('/client/burial')">
-          Вернуться к списку
+          {{ $t('client.burial.backToList') }}
         </button>
       </div>
 
       <!-- Основной контент -->
       <div v-else>
         <div class="topbar">
-          <h1 class="page-title">ЗАПРОС НА ПЕРЕЗАХОРОНЕНИЕ</h1>
+          <h1 class="page-title">{{ $t('client.burial.reburialRequestTitle') }}</h1>
           <div class="req-info">
-            <div class="req-num">Запрос на перезахоронение {{ data.number }}</div>
+            <div class="req-num">{{ $t('client.burial.reburialRequest') }} {{ data.number }}</div>
 <!--            <div v-if="data.status" class="req-status" :class="`status-${data.status.value.toLowerCase()}`">-->
 <!--              {{ data.status.nameRu }}-->
 <!--            </div>-->
@@ -171,32 +173,32 @@ function fileTitle(url) {
         <div class="view-card">
           <div class="rows">
             <div class="row">
-              <div class="label">Старое место<br />захоронения:</div>
+              <div class="label">{{ $t('burialCreate.oldBurialPlace') }}</div>
               <div class="value">{{ cemNameById(data.fromBurialId) }}</div>
             </div>
 
             <div class="row">
-              <div class="label">Новое место<br />захоронения:</div>
+              <div class="label">{{ $t('burialCreate.newBurialPlace') }}</div>
               <div class="value">{{ cemNameById(data.toBurialId) }}</div>
             </div>
 
             <div v-if="data.foreign_cemetery" class="row">
-              <div class="label">Внешнее кладбище:</div>
+              <div class="label">{{ $t('client.burial.foreignCemetery') }}</div>
               <div class="value">{{ data.foreign_cemetery }}</div>
             </div>
 
             <div class="row">
-              <div class="label">Причина:</div>
-              <div class="value">{{ data.reason || "—" }}</div>
+              <div class="label">{{ $t('burialCreate.reason') }}</div>
+              <div class="value">{{ data.reason || $t('common.notSpecified') }}</div>
             </div>
 
             <div v-if="data.user" class="row">
-              <div class="label">Заявитель:</div>
+              <div class="label">{{ $t('client.burial.applicant') }}</div>
               <div class="value">{{ data.user.fio }}</div>
             </div>
 
             <div class="row">
-              <div class="label">Свидетельство о<br />смерти:</div>
+              <div class="label">{{ $t('burialCreate.deathCertificate') }}</div>
               <div class="value">
                 <a
                   v-if="data.death_certificate"
@@ -208,12 +210,12 @@ function fileTitle(url) {
                   <img class="doc-ico" src="/icons/file.svg" alt="" />
                   <span>{{ fileTitle(data.death_certificate) }}</span>
                 </a>
-                <span v-else class="no-doc">—</span>
+                <span v-else class="no-doc">{{ $t('common.notSpecified') }}</span>
               </div>
             </div>
 
             <div class="row">
-              <div class="label">Подтверждение<br />родства заявителя:</div>
+              <div class="label">{{ $t('burialCreate.proofOfRelation') }}</div>
               <div class="value">
                 <a
                   v-if="data.proof_of_relation"
@@ -225,12 +227,12 @@ function fileTitle(url) {
                   <img class="doc-ico" src="/icons/file.svg" alt="" />
                   <span>{{ fileTitle(data.proof_of_relation) }}</span>
                 </a>
-                <span v-else class="no-doc">—</span>
+                <span v-else class="no-doc">{{ $t('common.notSpecified') }}</span>
               </div>
             </div>
 
             <div class="row">
-              <div class="label">Документ на могилу:</div>
+              <div class="label">{{ $t('burialCreate.graveDocument') }}</div>
               <div class="value">
                 <a
                   v-if="data.grave_doc"
@@ -242,7 +244,7 @@ function fileTitle(url) {
                   <img class="doc-ico" src="/icons/file.svg" alt="" />
                   <span>{{ fileTitle(data.grave_doc) }}</span>
                 </a>
-                <span v-else class="no-doc">—</span>
+                <span v-else class="no-doc">{{ $t('common.notSpecified') }}</span>
               </div>
             </div>
           </div>

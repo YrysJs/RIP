@@ -1,8 +1,10 @@
 <script setup>
 import { CreateAkimat, getCities } from '~/services/admin'
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
-import {ref} from "vue";
+import {ref, reactive} from "vue";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const showSuccessModal = ref(false)
 
 definePageMeta({
@@ -91,50 +93,50 @@ onMounted(async () => {
     <div class="flex items-center bg-white p-5 rounded-2xl mb-4">
       <button class="btn btn-back mr-4" @click="router.push('/admin/akimat')">
         <img class="w-4 h-4 mr-[10px]" src="/icons/arrow-left-primary.svg" alt="">
-        Назад
+        {{ $t('common.back') }}
       </button>
 
-      <h1 class="text-[32px] font-medium">Создание Акимата</h1>
+      <h1 class="text-[32px] font-medium">{{ $t('akimatCreate.title') }}</h1>
     </div>
 
 
     <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
-      <h2 class="text-lg font-medium">Данные о Акимате</h2>
+      <h2 class="text-lg font-medium">{{ $t('akimatCreate.akimatData') }}</h2>
 
       <div>
-        <label class="block text-sm mb-1">Название</label>
+        <label class="block text-sm mb-1">{{ $t('common.name') }}</label>
         <input type="text" v-model="form.name" class="input" />
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Адрес</label>
+        <label class="block text-sm mb-1">{{ $t('common.address') }}</label>
         <input type="text" v-model="form.address" class="input" />
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Телефон</label>
+        <label class="block text-sm mb-1">{{ $t('common.phone') }}</label>
         <input type="tel" v-mask="'+7 (###) ###-##-##'" v-model="form.phone" class="input" />
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Город</label>
+        <label class="block text-sm mb-1">{{ $t('common.city') }}</label>
         <select v-model="form.cityId" class="input select">
           <option v-for="(city, index) in cities" :key="city" :value="index + 1">{{city}}</option>
         </select>
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Ссылка на карту</label>
+        <label class="block text-sm mb-1">{{ $t('akimatCreate.mapLink') }}</label>
         <input type="text" v-model="form.mapUrl" class="input" />
       </div>
 
     </div>
 
     <div class="bg-white p-5 rounded-2xl space-y-4 mb-4">
-      <h2 class="text-lg font-medium">Админ</h2>
+      <h2 class="text-lg font-medium">{{ $t('akimatCreate.admin') }}</h2>
 
       <div>
-        <label class="block text-sm mb-1">ИИН</label>
+        <label class="block text-sm mb-1">{{ $t('akimatCreate.iin') }}</label>
         <input 
           type="text" 
           v-model="form.admin.iin" 
@@ -145,22 +147,22 @@ onMounted(async () => {
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Имя</label>
+        <label class="block text-sm mb-1">{{ $t('search.firstName') }}</label>
         <input type="text" v-model="form.admin.name" class="input" />
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Отчество</label>
+        <label class="block text-sm mb-1">{{ $t('search.middleName') }}</label>
         <input type="text" v-model="form.admin.patronymic" class="input" />
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Фамилия</label>
+        <label class="block text-sm mb-1">{{ $t('search.lastName') }}</label>
         <input type="text" v-model="form.admin.surname" class="input" />
       </div>
 
       <div>
-        <label class="block text-sm mb-1">Телефон</label>
+        <label class="block text-sm mb-1">{{ $t('common.phone') }}</label>
         <input type="tel" v-mask="'+7 (###) ###-##-##'" v-model="form.admin.phone" class="input" />
       </div>
 
@@ -168,14 +170,14 @@ onMounted(async () => {
 
     <div class="bg-white p-5 rounded-2xl mb-4 flex gap-[10px] justify-end">
       <button class="btn btn-submit" @click="create">
-        Создать
+        {{ $t('akimatCreate.create') }}
       </button>
     </div>
     <Teleport to="body">
       <SuccessModal
           v-if="showSuccessModal"
           :show-button="true"
-          title="Акимат создан!"
+          :title="$t('akimatCreate.successTitle')"
           @close="closeSuccessModal"
       />
     </Teleport>

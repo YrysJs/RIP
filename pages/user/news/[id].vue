@@ -3,7 +3,7 @@
     <div class="news-detail w-full bg-white">
       <button class="btn btn-back mb-[16px]" @click="router.push('/user/news')">
         <img src="/icons/arrow-left-primary.svg" class="w-4 h-4 mr-[10px]" />
-        Назад
+        {{ $t('common.back') }}
       </button>
 
       <div class="flex justify-between items-center text-sm text-[#6B7280] mb-[16px]">
@@ -24,7 +24,7 @@
 
       <h1 class="text-2xl font-semibold mb-[20px] leading-tight">{{ newsStore.selectedNews?.title }}</h1>
 
-      <img :src="newsStore.selectedNews?.coverImageUrl" alt="Обложка" class="w-full h-auto rounded-[12px] mb-[24px]" />
+      <img :src="newsStore.selectedNews?.coverImageUrl" :alt="$t('user.news.cover')" class="w-full h-auto rounded-[12px] mb-[24px]" />
 
       <p class="text-base text-[#374151] leading-6 whitespace-pre-line">
         {{ newsStore.selectedNews?.content }}
@@ -36,7 +36,10 @@
 
 <script setup>
 import { useNewsStore } from '~/store/news.js'
-const router = useRouter();
+import { useI18n } from 'vue-i18n'
+
+const router = useRouter()
+const { t } = useI18n()
 
 const newsStore = useNewsStore()
 
@@ -65,8 +68,8 @@ function formatDate(arr) {
 
 
 const statusLabel = (status) => {
-  if (status === 'active') return 'Активно';
-  if (status === 'draft') return 'Черновик';
+  if (status === 'active') return t('user.news.active');
+  if (status === 'draft') return t('user.news.draft');
   return '';
 };
 </script>

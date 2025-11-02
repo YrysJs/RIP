@@ -126,7 +126,7 @@ onMounted(async () => {
     achievements.value = (data.achievement_urls || []).map((url, i) => ({
       id: i,
       url: url,
-      filename: url.split('/').pop() || `Достижение ${i + 1}`
+      filename: url.split('/').pop() || t('memorialPage.achievementDefault', { number: i + 1 })
     }));
   } catch (e) {
     console.error(e);
@@ -174,7 +174,7 @@ async function shareMemorial() {
     await navigator.clipboard.writeText(currentUrl);
     $toast.success(t('modals.shareCoordinates.linkCopied'));
   } catch (error) {
-    console.error("Ошибка при копировании ссылки:", error);
+    console.error(t('memorialPage.copyLinkError'), error);
     $toast.error(t('modals.shareCoordinates.copyError'));
   }
 }
@@ -185,7 +185,7 @@ function openAchievement(url, filename) {
     window.open(url, '_blank');
     $toast.success(t('common.fileOpened'));
   } catch (error) {
-    console.error("Ошибка при открытии файла:", error);
+    console.error(t('memorialPage.openFileError'), error);
     $toast.error(t('errors.openFileError'));
   }
 }
@@ -280,7 +280,7 @@ function openAchievement(url, filename) {
             <!-- Правая часть: Информация о захоронении -->
             <aside class="bg-[#F4F0E7] p-5 rounded-xl">
               <h3 class="text-[18px] font-medium mb-2">
-                Информация о захоронении
+                {{ $t('memorialCreate.burialInfo') }}
               </h3>
 <!--              <div class="pb-2 border-b border-b-[#2010011F]">-->
 <!--                <p class="text-lg text-[#1A1C1F]">{{ lifespan }}</p>-->
@@ -293,7 +293,7 @@ function openAchievement(url, filename) {
                   class="mt-2 h-[30px] flex items-center text-base font-medium gap-[11px]"
                 >
                   <div class="w-[100px] text-base text-[#050202]">
-                    Кладбище:
+                    {{ $t('common.cemetery') }}:
                   </div>
                   <div class="text-sm text-[#999]">
                     {{ grave?.cemetery_name || burial?.cemetery_name }}
@@ -311,7 +311,7 @@ function openAchievement(url, filename) {
                   <div
                     class="h-[30px] flex items-center text-base font-medium gap-[11px]"
                   >
-                    <div class="w-[100px] text-base text-[#050202]">{{ $t('memorialDetails.place') }}:</div>
+                    <div class="w-[100px] text-base text-[#050202]">{{ $t('memorial.place') }}:</div>
                     <div class="text-sm text-[#999]">
                       {{ grave?.grave_number || burial?.grave_id }}
                     </div>
@@ -321,7 +321,7 @@ function openAchievement(url, filename) {
                   class="h-11 flex items-center text-base font-medium gap-[11px]"
                 >
                   <div class="w-[100px] text-base text-[#050202]">
-                    Координаты:
+                    {{ $t('memorialPage.coordinates') }}:
                   </div>
                   <div class="text-sm text-[#999]">
                     {{ grave?.polygon_data.coordinates[0][0] + ', ' + grave?.polygon_data.coordinates[0][1] || $t('memorial.coordinatesNotSpecified') }}
@@ -333,7 +333,7 @@ function openAchievement(url, filename) {
                     target="_blank"
                     class="text-blue-600 hover:text-blue-800 underline cursor-pointer text-sm"
                   >
-                    Посмотреть на карте
+                    {{ $t('memorialPage.viewOnMap') }}
                   </a>
                 </div>
               </div>
@@ -363,7 +363,7 @@ function openAchievement(url, filename) {
             <div v-if="videos.length > 0" class="videos-list">
               <div class="videos-header mb-4">
                 <h4 class="text-base font-medium">
-                  Добавленные видео ({{ videos.length }})
+                  {{ $t('memorialPage.addedVideos', { count: videos.length }) }}
                 </h4>
               </div>
 
@@ -394,7 +394,7 @@ function openAchievement(url, filename) {
                 </div>
               </div>
             </div>
-            <p v-else class="text-sm text-[#6B7280]">{{ $t('memorialDetails.videosNotAdded') }}</p>
+            <p v-else class="text-sm text-[#6B7280]">{{ $t('memorial.noVideos') }}</p>
           </section>
 
           <!-- Достижения -->
@@ -404,7 +404,7 @@ function openAchievement(url, filename) {
             <div class="achievements-list">
               <div class="achievements-header mb-4">
                 <h4 class="text-base font-medium">
-                  Документы и награды ({{ achievements.length }})
+                  {{ $t('memorialPage.documentsAndAwards', { count: achievements.length }) }}
                 </h4>
               </div>
 
@@ -420,13 +420,13 @@ function openAchievement(url, filename) {
                     </div>
                     <div class="achievement-info">
                       <h5 class="achievement-title">{{ achievement.filename }}</h5>
-                      <p class="achievement-description">{{ $t('memorialDetails.documentOrAward') }}</p>
+                      <p class="achievement-description">{{ $t('memorial.documentOrAward') }}</p>
                     </div>
                     <button
                       @click="openAchievement(achievement.url, achievement.filename)"
                       class="achievement-download-btn"
                     >
-                      Открыть
+                      {{ $t('common.open') }}
                     </button>
                   </div>
                 </div>

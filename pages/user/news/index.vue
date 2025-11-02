@@ -4,13 +4,13 @@
 
       <!-- Заголовок + кнопка -->
       <div class="page-head">
-        <h1 class="page-title">Новости</h1>
+        <h1 class="page-title">{{ $t('user.news.title') }}</h1>
 
         <button class="add-btn" @click="router.push('/user/news/form')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          Добавить новость
+          {{ $t('user.news.addNews') }}
         </button>
       </div>
 
@@ -25,10 +25,10 @@
             </svg>
           </span>
           <select class="field__control" v-model="categoryId">
-            <option value="">Категория</option>
-            <option value="1">Объявления</option>
-            <option value="2">Социальная поддержка</option>
-            <option value="3">Изменения в законодательстве</option>
+            <option value="">{{ $t('user.news.category') }}</option>
+            <option value="1">{{ $t('user.news.announcements') }}</option>
+            <option value="2">{{ $t('user.news.socialSupport') }}</option>
+            <option value="3">{{ $t('user.news.legislationChanges') }}</option>
           </select>
           <span class="field__chevron" aria-hidden>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -46,9 +46,9 @@
             </svg>
           </span>
           <select class="field__control" v-model="statusId">
-            <option value="">Статус</option>
-            <option value="1">Активный</option>
-            <option value="2">Черновик</option>
+            <option value="">{{ $t('user.news.status') }}</option>
+            <option value="1">{{ $t('user.news.active') }}</option>
+            <option value="2">{{ $t('user.news.draft') }}</option>
           </select>
           <span class="field__chevron" aria-hidden>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -66,8 +66,8 @@
             </svg>
           </span>
           <select class="field__control" v-model="sortingType">
-            <option value="desc">Сначала новые</option>
-            <option value="asc">Сначала старые</option>
+            <option value="desc">{{ $t('user.news.newestFirst') }}</option>
+            <option value="asc">{{ $t('user.news.oldestFirst') }}</option>
           </select>
           <span class="field__chevron" aria-hidden>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -121,7 +121,7 @@
                   class="btn btn--ghost"
                   @click="hide(news)"
                 >
-                  Скрыть
+                  {{ $t('user.news.hide') }}
                 </button>
 
                 <button
@@ -129,14 +129,14 @@
                     class="btn btn--ghost"
                     @click="show(news)"
                 >
-                  Показать
+                  {{ $t('user.news.show') }}
                 </button>
 
                 <button
                   class="btn btn--yellow"
                   @click="edit(news)"
                 >
-                  Редактировать
+                  {{ $t('user.news.edit') }}
                 </button>
               </div>
             </div>
@@ -150,10 +150,12 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { getNews, changeNewsStatus } from '~/services/akimat'
 import { useNewsStore } from '~/store/news.js'
 
 const router = useRouter()
+const { t } = useI18n()
 const newsStore = useNewsStore()
 
 const newsList   = ref([])
@@ -198,7 +200,7 @@ async function hide(news) {
   try {
     await changeNewsStatus({ newsId: news.id, newsStatusId: 2 })
     news.newsStatus.id = 2
-    news.newsStatus.nameRu = 'Черновик'
+    news.newsStatus.nameRu = t('user.news.draft')
   } catch (e) {
     console.error('Ошибка при смене статуса:', e)
   }
@@ -208,7 +210,7 @@ async function show(news) {
   try {
     await changeNewsStatus({ newsId: news.id, newsStatusId: 1 })
     news.newsStatus.id = 1
-    news.newsStatus.nameRu = 'Активно'
+    news.newsStatus.nameRu = t('user.news.active')
   } catch (e) {
     console.error('Ошибка при смене статуса:', e)
   }

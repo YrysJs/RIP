@@ -149,7 +149,7 @@ function showPreview(){
     return
   }
 
-  $toast.info(`${t('serviceEdit.preview')}
+  $toast.info(`${t('common.preview')}
 
 ${t('serviceEdit.previewName')} ${form.name}
 ${t('serviceEdit.previewDescription')} ${form.description}
@@ -438,7 +438,7 @@ onMounted(async () => {
           </div>
 
           <div class="field">
-            <label class="label">{{ $t('services.addService.city') }}</label>
+            <label class="label">{{ $t('supplier.services.addService.city') }}</label>
             <div class="select-shell">
               <select v-model="form.city" class="control control--select">
                 <option value="Алматы">Алматы</option>
@@ -469,7 +469,7 @@ onMounted(async () => {
 
       <!-- Кнопки -->
       <div class="card actions">
-        <button class="btn btn-ghost" :disabled="loading" @click="showPreview">{{ $t('serviceEdit.preview') }}</button>
+        <button class="btn btn-ghost" :disabled="loading" @click="showPreview">{{ $t('common.preview') }}</button>
         <button class="btn btn-primary" :disabled="loading" @click="submitForm">
           <span v-if="loading">{{ $t('common.saving') }}</span>
           <span v-else>{{ $t('serviceEdit.saveChanges') }}</span>
