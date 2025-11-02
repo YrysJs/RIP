@@ -99,10 +99,10 @@
 
             <div class="dlg__actions">
               <button type="button" class="btn-ghost" @click="closeConfirmModal">
-                Отменить
+                {{ $t('common.cancel') }}
               </button>
               <button type="button" class="btn-primary" @click="onDeleteUser">
-                Подтвердить
+                {{ $t('modals.confirm.confirm') }}
               </button>
             </div>
           </div>
@@ -231,7 +231,7 @@ watch(isConfirmModal, (open) => {
 /* Шапка */
 .page-head{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
 .page-title{
-  font-family: "FoglihtenNo06", sans-serif;
+  font-family: "Manrope", sans-serif;
   text-transform:uppercase; letter-spacing:.02em;
   font-weight:700; font-size:32px; line-height:36px; color:#1c140e;
 }
@@ -385,7 +385,7 @@ watch(isConfirmModal, (open) => {
     font-size: 24px;
     line-height: 28px;
     margin-bottom: 16px;
-    font-family: "FoglihtenNo06", sans-serif;
+    font-family: "Manrope", sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.02em;
   }

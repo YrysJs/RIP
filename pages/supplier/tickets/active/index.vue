@@ -346,7 +346,7 @@ onMounted(() => {
 }
 
 .page-title {
-  font-family: "FoglihtenNo06", serif;
+  font-family: "Manrope", serif;
   font-weight: 700;
   letter-spacing: 0.02em;
   font-size: 28px;

@@ -664,7 +664,7 @@ const applicantName = (a) => {
 .page-title {
   letter-spacing: 0.02em;
   line-height: 44px;
-  font-family: "FoglihtenNo06", sans-serif;
+  font-family: "Manrope", sans-serif;
   font-size: 32px;
   margin-bottom: 8px;
 }
@@ -924,7 +924,7 @@ option[disabled][hidden] { display: none; }
     margin-bottom: 0;
     font-weight: 700;
     color: #1c1c1c;
-    font-family: "FoglihtenNo06", sans-serif;
+    font-family: "Manrope", sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     flex: 1;

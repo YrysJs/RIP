@@ -216,10 +216,10 @@ watch(() => props.initialPolygon, (v) => {
   <div ref="mapContainer" style="width: 100%; height: 400px; margin-bottom: 24px;"></div>
 
   <button v-if="!drawingFinished" @click="finishDrawing" :disabled="points.length < 3">
-    Завершить рисование
+    {{ $t('map.finishDrawing') }}
   </button>
 
   <button v-if="drawingFinished" @click="clearMap">
-    Очистить карту
+    {{ $t('map.clearMap') }}
   </button>
 </template>

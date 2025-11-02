@@ -7,7 +7,9 @@ import {
   getDeceasedById,
   updateMemorial,
 } from "~/services/client";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const { $toast } = useNuxtApp();
@@ -502,10 +504,10 @@ async function shareMemorial() {
     const memorialId = memorial.value?.id || route.params.id;
     const memorialUrl = `${window.location.origin}/memorial/${memorialId}`;
     await navigator.clipboard.writeText(memorialUrl);
-    $toast.success("Ссылка на мемориал скопирована");
+    $toast.success(t('memorial.linkCopied'));
   } catch (error) {
     console.error("Ошибка при копировании ссылки:", error);
-    $toast.error("Не удалось скопировать ссылку");
+    $toast.error(t('modals.shareCoordinates.copyError'));
   }
 }
 </script>
@@ -535,7 +537,7 @@ async function shareMemorial() {
       <div class="bg-white py-6 px-[18px] rounded-2xl max-sm:p-0">
         <div class="flex justify-between items-center gap-2">
           <div>
-            <p class="text-sm text-[#999] max-sm:hidden">Мемориал</p>
+            <p class="text-sm text-[#999] max-sm:hidden">{{ $t('memorial.memorial') }}</p>
             <h3 class="text-fluid font-medium font-foglihten">
               {{
                 isEditMode
@@ -549,7 +551,7 @@ async function shareMemorial() {
             class="flex items-center gap-2 bg-[#00000014] py-[10px] px-4 rounded-[10px] hover:bg-[#AFB5C166] active:bg-[#AFB5C199] transition max-sm:bg-transparent"
           >
             <img src="/icons/share.svg" alt="" class="max-sm:w-5 max-sm:h-5" />
-            <span class="max-sm:hidden">Поделиться</span>
+            <span class="max-sm:hidden">{{ $t('memorial.share') }}</span>
           </button>
         </div>
         <div
@@ -566,7 +568,7 @@ async function shareMemorial() {
                 <div class="flex justify-center mb-[20px]">
                   <img src="/icons/upload.svg" alt="" class="upload-icon" />
                 </div>
-                <p class="upload-text">Загрузите фотографии</p>
+                <p class="upload-text">{{ $t('memorialCreate.uploadPhotos') }}</p>
                 <p class="upload-hint">
                   Перетащите файлы или загрузите файлы до N мб в формате: .png,
                   .jpeg
@@ -574,7 +576,7 @@ async function shareMemorial() {
                 <button
                   class="py-2 px-3 border border-[#D6DADF] bg-white rounded-lg mt-5"
                 >
-                  Загрузить
+                  {{ $t('common.upload') }}
                 </button>
               </div>
             </div>
@@ -582,9 +584,9 @@ async function shareMemorial() {
             <!-- Галерея превью изображений внутри блока загрузки -->
             <div v-else class="upload-area-with-images min-h-[250px]">
               <div class="gallery-header">
-                <h4>Загруженные фото ({{ imagePreviews.length }})</h4>
+                <h4>{{ $t('memorialCreate.uploadedPhotos') }} ({{ imagePreviews.length }})</h4>
                 <button @click="removeAllImages" class="remove-all-btn">
-                  Удалить все
+                  {{ $t('common.deleteAll') }}
                 </button>
               </div>
 
@@ -603,14 +605,14 @@ async function shareMemorial() {
                   </div>
                   <div class="image-number">{{ index + 1 }}</div>
                   <div v-if="preview.isExisting" class="existing-badge">
-                    Существующее
+                    {{ $t('memorial.existing') }}
                   </div>
                 </div>
               </div>
 
               <!-- Кнопка добавления еще фото -->
               <button @click="$refs.fileInput.click()" class="add-more-btn">
-                + Добавить еще фото
+                + {{ $t('memorialCreate.addMorePhotos') }}
               </button>
             </div>
 
@@ -666,7 +668,7 @@ async function shareMemorial() {
             </div> -->
             <div v-if="!isEditMode" class="bg-[#F4F0E7] p-5 rounded-xl">
               <h3 class="text-[18px] font-medium mb-2">
-                Информация о захоронении
+                {{ $t('memorialCreate.burialInfo') }}
               </h3>
               <div class="pb-2 border-b border-b-[#2010011F]">
                 <p class="text-lg text-[#1A1C1F]">01.01.1900 - 01.01.2000</p>
@@ -687,7 +689,7 @@ async function shareMemorial() {
                   class="mt-2 h-[30px] flex items-center text-base font-medium gap-[11px]"
                 >
                   <div class="w-[100px] text-base text-[#050202]">
-                    Кладбище:
+                    {{ $t('reserve.cemetery') }}
                   </div>
                   <div class="text-sm text-[#999]">
                     {{ burial?.cemetery_name }}
@@ -697,7 +699,7 @@ async function shareMemorial() {
                   <div
                     class="h-[30px] flex items-center text-base font-medium gap-[11px]"
                   >
-                    <div class="w-[100px] text-base text-[#050202]">Сектор</div>
+                    <div class="w-[100px] text-base text-[#050202]">{{ $t('reserve.sector') }}</div>
                     <div class="text-sm text-[#999]">
                       {{ burial?.sector_number }}
                     </div>
@@ -705,7 +707,7 @@ async function shareMemorial() {
                   <div
                     class="h-[30px] flex items-center text-base font-medium gap-[11px]"
                   >
-                    <div class="w-[100px] text-base text-[#050202]">Место:</div>
+                    <div class="w-[100px] text-base text-[#050202]">{{ $t('reserve.place') }}</div>
                     <div class="text-sm text-[#999]">
                       {{ burial?.grave_id }}
                     </div>
@@ -715,7 +717,7 @@ async function shareMemorial() {
                   class="h-11 flex items-center text-base font-medium gap-[11px]"
                 >
                   <div class="w-[100px] text-base text-[#050202]">
-                    Координаты:
+                    {{ $t('memorialCreate.coordinates') }}
                   </div>
                   <div class="text-sm text-[#999]">
                     56.35107309557659, 62.01158847670595
@@ -725,7 +727,7 @@ async function shareMemorial() {
             </div>
             <div v-else class="bg-[#F4F0E7] p-5 rounded-xl">
               <h3 class="text-[18px] font-medium mb-2">
-                Информация о мемориале
+                {{ $t('memorialCreate.memorialInfo') }}
               </h3>
               <div class="flex flex-col gap-2">
                 <!-- <div
@@ -739,7 +741,7 @@ async function shareMemorial() {
                 <div
                   class="h-[30px] flex items-center text-base font-medium max-sm:gap-2"
                 >
-                  <div class="text-base text-[#050202] mr-2">Создатель:</div>
+                  <div class="text-base text-[#050202] mr-2">{{ $t('memorialCreate.creator') }}:</div>
                   <div class="text-sm text-[#999]">
                     {{ memorial?.creator_phone }}
                   </div>
@@ -747,16 +749,16 @@ async function shareMemorial() {
                 <div
                   class="h-[30px] flex items-center text-base font-medium max-sm:gap-2"
                 >
-                  <div class="text-base text-[#050202] mr-2">Публичность:</div>
+                  <div class="text-base text-[#050202] mr-2">{{ $t('memorialCreate.publicity') }}:</div>
                   <div class="text-sm text-[#999]">
-                    {{ memorial?.is_public ? "Публичный" : "Приватный" }}
+                    {{ memorial?.is_public ? $t('memorial.public') : $t('memorialCreate.private') }}
                   </div>
                 </div>
                 <div
                   class="h-[30px] flex items-center text-base font-medium max-sm:gap-2"
                 >
                   <div class="text-base text-[#050202] mr-2">
-                    Последнее обновление:
+                    {{ $t('memorialCreate.lastUpdate') }}:
                   </div>
                   <div class="text-sm text-[#999]">
                     {{
@@ -776,22 +778,22 @@ async function shareMemorial() {
         </div>
 
         <div class="pb-4 border-b border-b-[#eee] max-sm:border-b-0">
-          <h3 class="text-[18px] mb-2">Эпитафия</h3>
+          <h3 class="text-[18px] mb-2">{{ $t('memorialCreate.epitaph') }}</h3>
           <textarea
             v-model="epitaph"
             class="border border-[#AFB5C166] rounded-lg py-[18px] px-3 w-full focus:outline-none"
-            placeholder="Введите эпитафию..."
+            :placeholder="$t('memorialCreate.epitaphPlaceholder')"
             rows="4"
           ></textarea>
         </div>
         <div
           class="py-4 border-b border-b-[#eee] max-sm:py-0 max-sm:border-b-0"
         >
-          <h3 class="text-[18px] mb-2">Память о человеке:</h3>
+          <h3 class="text-[18px] mb-2">{{ $t('memorialCreate.aboutPersonLabel') }}</h3>
           <textarea
             v-model="aboutPerson"
             class="border border-[#AFB5C166] rounded-lg py-[18px] px-3 w-full focus:outline-none"
-            placeholder="Расскажите о человеке..."
+            :placeholder="$t('memorialCreate.aboutPersonPlaceholder')"
             rows="4"
           ></textarea>
         </div>
@@ -817,16 +819,15 @@ async function shareMemorial() {
           </div>
 
           <div>
-            <div class="text-base font-medium">Публичная личность</div>
+            <div class="text-base font-medium">{{ $t('memorialCreate.publicPerson') }}</div>
 
             <p class="text-sm font-medium text-[#5C6771E6]">
-              Цифровой мемориал этого человека приватный и доступен только по
-              ссылке
+              {{ $t('memorialCreate.publicPersonDescription') }}
             </p>
           </div>
         </div>
         <div class="py-4 border-b border-b-[#eee]">
-          <h3 class="text-[18px] mb-1">Достижения</h3>
+          <h3 class="text-[18px] mb-1">{{ $t('memorialCreate.achievements') }}</h3>
 
           <!-- Кнопка загрузки фото -->
           <div
@@ -841,8 +842,8 @@ async function shareMemorial() {
               />
             </div>
             <p class="text-base text-[#3F474F]">
-              <span class="font-medium text-[#E9B949]">Загрузите файлы</span>
-              или перетащите их
+              <span class="font-medium text-[#E9B949]">{{ $t('memorialCreate.uploadFiles') }}</span>
+              {{ $t('memorialCreate.orDrag') }}
             </p>
           </div>
 
@@ -862,7 +863,7 @@ async function shareMemorial() {
             class="achievement-photos-gallery"
           >
             <div class="gallery-header">
-              <h4>Фото достижений ({{ achievementPhotos.length }})</h4>
+              <h4>{{ $t('memorialCreate.achievementPhotos') }} ({{ achievementPhotos.length }})</h4>
             </div>
 
             <div class="gallery-grid">
@@ -887,14 +888,14 @@ async function shareMemorial() {
                 </div>
                 <div class="image-number">{{ index + 1 }}</div>
                 <div v-if="photo.isExisting" class="existing-badge">
-                  Существующее
+                  {{ $t('memorial.existing') }}
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="py-4">
-          <h3 class="text-[18px] mb-1">Видеоматериалы</h3>
+          <h3 class="text-[18px] mb-1">{{ $t('memorialCreate.videoMaterials') }}</h3>
 
           <!-- Кнопка добавления видео -->
           <div
@@ -906,8 +907,8 @@ async function shareMemorial() {
               <img src="/icons/upload-video.svg" alt="" class="w-6 h-6" />
             </div>
             <p class="text-base text-[#3F474F]">
-              <span class="font-medium text-[#E9B949]">Загрузите файлы</span>
-              или перетащите их
+              <span class="font-medium text-[#E9B949]">{{ $t('memorialCreate.uploadFiles') }}</span>
+              {{ $t('memorialCreate.orDrag') }}
             </p>
           </div>
 
@@ -917,7 +918,7 @@ async function shareMemorial() {
               <input
                 v-model="videoUrl"
                 type="text"
-                placeholder="Вставьте ссылку на YouTube видео"
+                :placeholder="$t('memorialCreate.youtubePlaceholder')"
                 class="flex-1 border border-[#222222] rounded-lg p-3 text-base"
                 @keyup.enter="addVideo"
               />
@@ -925,13 +926,13 @@ async function shareMemorial() {
                 @click="addVideo"
                 class="bg-[#224C4F] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#1a3a3c] transition-colors"
               >
-                Добавить
+                {{ $t('common.add') }}
               </button>
               <button
                 @click="cancelVideoInput"
                 class="bg-[#EF4444] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#DC2626] transition-colors"
               >
-                Отмена
+                {{ $t('common.cancel') }}
               </button>
             </div>
           </div>
@@ -940,7 +941,7 @@ async function shareMemorial() {
           <div v-if="videos.length > 0" class="videos-list">
             <div class="videos-header mb-4">
               <h4 class="text-base font-medium">
-                Добавленные видео ({{ videos.length }})
+                {{ $t('memorialCreate.addedVideos') }} ({{ videos.length }})
               </h4>
             </div>
 
@@ -955,14 +956,14 @@ async function shareMemorial() {
                   <h5 class="text-sm font-medium text-gray-700">
                     {{ video.title }}
                     <span v-if="video.isExisting" class="existing-badge-inline"
-                      >Существующее</span
+                      >{{ $t('memorial.existing') }}</span
                     >
                   </h5>
                   <button
                     @click="removeVideo(index)"
                     class="text-[#EF4444] hover:text-[#DC2626] font-medium transition-colors text-sm"
                   >
-                    Удалить
+                    {{ $t('common.delete') }}
                   </button>
                 </div>
                 <div class="video-wrapper">
@@ -988,11 +989,11 @@ async function shareMemorial() {
           >
             <span v-if="isSubmitting">
               {{
-                isEditMode ? "Обновление мемориала..." : "Создание мемориала..."
+                isEditMode ? $t('memorialCreate.updatingMemorial') : $t('memorialCreate.creatingMemorial')
               }}
             </span>
             <span v-else>
-              {{ isEditMode ? "Обновить мемориал" : "Создать мемориал" }}
+              {{ isEditMode ? $t('memorialCreate.updateMemorial') : $t('memorialCreate.createMemorial') }}
             </span>
           </button>
         </div>

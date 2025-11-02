@@ -1,8 +1,9 @@
 {
   "kk": "Казахский",
-  "common": {
+    "common": {
     "back": "Назад",
     "close": "Закрыть",
+    "fileOpened": "Файл открыт в новой вкладке",
     "submit": "Отправить",
     "save": "Сохранить",
     "cancel": "Отменить",
@@ -41,7 +42,9 @@
     "error": "Ошибка",
     "success": "Успешно",
     "select": "Выбрать",
-    "reset": "Сбросить"
+    "reset": "Сбросить",
+    "updating": "Обновление...",
+    "cemetery": "Кладбище:"
   },
   "cities": {
     "almaty": "Алматы",
@@ -234,7 +237,10 @@
     "loadingMap": "Загрузка карты…",
     "capacity": "Вместимость:",
     "placeLabel": "Место:",
-    "cemetery": "Кладбище:"
+    "cemetery": "Кладбище:",
+    "bookingCost": "Стоимость бронирования:",
+    "results": "результатов",
+    "route": "Маршрут"
   },
   "contacts": {
     "companyName": "ТОО \"RIP SERVICE\"",
@@ -423,7 +429,11 @@
     "loading": "Загрузка...",
     "memorial": "Мемориал",
     "share": "Поделиться",
+    "linkCopied": "Ссылка на мемориал скопирована",
+    "isPrivate": "Мемориал является приватным",
     "noImages": "Нет изображений",
+    "coordinatesNotSpecified": "Не указаны",
+    "public": "Публичный",
     "sector": "Сектор",
     "place": "Место:",
     "videoMaterials": "Видеоматериалы",
@@ -450,6 +460,7 @@
       "burialTitle": "ЗАХОРОНЕНИЕ:",
       "bookingDate": "Дата брони:",
       "burialDate": "Дата похорон:",
+      "burialDateLabel": "Дата похорон",
       "deceasedFullName": "ФИО покойного:",
       "details": "Подробнее",
       "sector": "Сектор",
@@ -462,7 +473,11 @@
       "placeLabel": "Место",
       "areaLabel": "Площадь:",
       "open": "Открыть",
-      "photo": "Фото"
+      "photo": "Фото",
+      "receipt": "Чек",
+      "confirmBurial": "Подтвердить захоронение",
+      "confirmBurialShort": "Подтвердить",
+      "complete": "Завершить"
     },
     "booking": {
       "cemetery": "Кладбище",
@@ -616,7 +631,19 @@
     "requiresFix": "Требует доработки",
     "blocked": "Заблокирован",
     "unknown": "Неизвестно",
-    "notSpecified": "Не указана"
+    "notSpecified": "Не указана",
+    "login": {
+      "title": "Войдите",
+      "description": "Введите номер мобильного телефона - мы пришлем код",
+      "phonePlaceholder": "Введите номер телефона",
+      "getCodeSMS": "Получить код по СМС",
+      "confirmPhone": "Подтвердите номер",
+      "enterCodeDescription": "Введлите код из СМС. Мы отправили его на номер",
+      "codePlaceholder": "Введите код",
+      "resendCodeIn": "Отправить код повторно: через",
+      "resendAgain": "Отправить еще раз",
+      "confirm": "Подтвердить"
+    }
   },
   "akimat": {
     "cabinet": "Кабинет Акимата",
@@ -843,7 +870,10 @@
     "networkError": "Ошибка сети",
     "invalidCode": "Неверный код подтверждения",
     "registrationError": "Произошла ошибка при регистрации",
-    "loginError": "Ошибка при логине",
+    "loginError": "Произошла ошибка при входе",
+    "invalidConfirmationCode": "Неверный код подтверждения",
+    "pkbServiceUnavailable": "Сервис ПКБ не доступен",
+    "cannotGetDataCheckIIN": "Не удалось получить данные, проверьте ИИН.",
     "dataNotFound": "Не удалось получить данные, проверьте БИН",
     "orderLoadError": "Ошибка при загрузке данных заказа",
     "statusUpdateError": "Ошибка при обновлении статуса",
@@ -853,7 +883,12 @@
     "serverUnavailable": "Сервер не доступен",
     "requiredField": "Поле обязательно к заполнению",
     "transactionIdNotFound": "Ошибка: Transaction ID не найден.",
-    "receiptLoadError": "Ошибка при получении чека"
+    "receiptLoadError": "Ошибка при получении чека",
+    "noDeceasedData": "Нет данных об умершем",
+    "errorLoadingGrave": "Ошибка при загрузке данных могилы",
+    "coordinatesNotFound": "Координаты могилы не найдены",
+    "serverError": "Ошибка сервера",
+    "openFileError": "Не удалось открыть файл"
   },
   "orders": {
     "acceptOrder": "Принять заказ",
@@ -863,6 +898,10 @@
     "processingStatus": "В обработке",
     "inProgressStatus": "В процессе",
     "waitingPaymentStatus": "Ожидается оплата"
+  },
+  "map": {
+    "finishDrawing": "Завершить рисование",
+    "clearMap": "Очистить карту"
   },
   "cemetery": {
     "capacity": "Вместимость",
@@ -1197,7 +1236,18 @@
     "sector": "Сектор",
     "place": "Место:",
     "creatingMemorial": "Создание мемориала...",
-    "createMemorial": "Создать мемориал"
+    "createMemorial": "Создать мемориал",
+    "updatingMemorial": "Обновление мемориала...",
+    "updateMemorial": "Обновить мемориал",
+    "addMorePhotos": "+ Добавить еще фото",
+    "burialInfo": "Информация о захоронении",
+    "memorialInfo": "Информация о мемориале",
+    "creator": "Создатель",
+    "publicity": "Публичность",
+    "lastUpdate": "Последнее обновление",
+    "private": "Приватный",
+    "coordinates": "Координаты:",
+    "addedVideos": "Добавленные видео"
   },
   "notificationsPage": {
     "showBy": "Показать по"
@@ -1387,7 +1437,16 @@
     "document": "Документ:",
     "appeal": "Обращение:",
     "dateFrom": "Дата с (дд.мм.гггг)",
-    "dateTo": "Дата по (дд.мм.гггг)"
+    "dateTo": "Дата по (дд.мм.гггг)",
+    "statusUpdated": "Статус заявки обновлен",
+    "applicantData": "Данные заявителя",
+    "applicantContacts": "Контакты заявителя:",
+    "applicantIIN": "ИИН заявителя:",
+    "oldBurialPlace": "Старое место захоронения",
+    "newBurialPlace": "Новое место захоронения",
+    "reburialReason": "Причина перезахоронения:",
+    "reburialRequest": "ЗАЯВКА НА ПЕРЕЗАХОРОНЕНИЕ",
+    "approveBurial": "Согласовать захоронение"
   },
   "clientServices": {
     "shown": "Показано",

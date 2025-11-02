@@ -94,7 +94,7 @@ onMounted(async () => {
   margin-bottom: 12px;
 }
 .page-title {
-  font-family: "FoglihtenNo06", serif;
+  font-family: "Manrope", serif;
   font-weight: 700;
   letter-spacing: 0.02em;
   font-size: 22px;
@@ -225,7 +225,7 @@ onMounted(async () => {
     font-size: 20px;
     font-weight: 700;
     color: #2E1E17;
-    font-family: "FoglihtenNo06", serif;
+    font-family: "Manrope", serif;
   }
 
   /* Карточка */

@@ -198,7 +198,7 @@ const formatDateTime = (iso) => {
   padding:14px 16px; margin-bottom:12px;
 }
 .page-title{
-  font-family:"FoglihtenNo06", serif;
+  font-family:"Manrope", serif;
   font-weight:700; letter-spacing:.02em;
   font-size:22px; line-height:1.15; margin:0; color:#1C140E;
 }

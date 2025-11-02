@@ -316,7 +316,7 @@ onBeforeUnmount(() => {
 
 /* Заголовки секций */
 .h-title{
-  font-family:"FoglihtenNo06", serif;
+  font-family:"Manrope", serif;
   font-weight:700;
   text-transform:uppercase;
   letter-spacing:.02em;

@@ -107,25 +107,25 @@ const statusConfig = computed(() => {
       };
     case 'paid':
       return {
-        text: 'Оплачено',
+        text: t('statuses.paid'),
         bgColor: 'bg-[#E5F8EC]',
         textColor: 'text-[#1EB676]'
       };
     case 'cancelled':
       return {
-        text: 'Отменено',
+        text: t('statuses.cancelled'),
         bgColor: 'bg-[#FEE2E2]',
         textColor: 'text-[#DC2626]'
       };
     case 'confirmed':
       return {
-        text: 'Подтверждено',
+        text: t('statuses.confirmed'),
         bgColor: 'bg-[#E0E7FF]',
         textColor: 'text-[#3730A3]'
       };
     default:
       return {
-        text: 'Неизвестный статус',
+        text: t('statuses.unknown'),
         bgColor: 'bg-[#F3F4F6]',
         textColor: 'text-[#6B7280]'
       };
@@ -134,139 +134,137 @@ const statusConfig = computed(() => {
 </script>
 
 <template>
-  <div v-if="visible" class="modal fixed min-w-full min-h-[100vh] flex justify-center items-center z-50">
-    <div class="bg-white rounded-lg max-w-[800px] w-full max-h-[90vh] overflow-y-auto m-4">
+  <div v-if="visible" class="modal fixed min-w-full min-h-[100vh] flex justify-center items-center z-50 p-2 sm:p-4">
+    <div class="bg-white rounded-lg max-w-[800px] w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto m-0 sm:m-4">
       <!-- Header -->
-      <div class="flex justify-between items-center pt-6 px-6 pb-0 border-b">
-        <h2 class="text-2xl font-bold">{{ booking?.cemetery_name }}</h2>
-        <button @click="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">
+      <div class="flex justify-between items-center pt-4 sm:pt-6 px-4 sm:px-6 pb-3 sm:pb-0 border-b sticky top-0 bg-white z-10">
+        <h2 class="text-lg sm:text-xl md:text-2xl font-bold pr-2 break-words">{{ booking?.cemetery_name }}</h2>
+        <button @click="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl sm:text-3xl flex-shrink-0">
           &times;
         </button>
       </div>
 
       <!-- Content -->
-      <div class="pt-2 px-6 pb-6">
+      <div class="pt-4 sm:pt-2 px-4 sm:px-6 pb-4 sm:pb-6">
         <!-- Location info -->
-        <div class="mb-6">
-          <div class="flex gap-1 items-center mb-2 flex-wrap">
-            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">{{ $t('burial.sectorLabel') }} <span class="font-bold">{{ grave?.sector_number }}</span></span>
-            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">{{ $t('burial.placeLabel') }} <span class="font-bold">{{ getAllGraves() }}</span></span>
-            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-sm">{{ $t('burial.areaLabel') }} <span class="font-bold">{{ grave?.area || '2.5 x 1.5 м' }}</span></span>
+        <div class="mb-4 sm:mb-6">
+          <div class="flex gap-1 sm:gap-2 items-center mb-2 flex-wrap">
+            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-xs sm:text-sm">{{ $t('manager.burial.sectorLabel') }} <span class="font-bold">{{ grave?.sector_number }}</span></span>
+            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-xs sm:text-sm">{{ $t('manager.burial.placeLabel') }} <span class="font-bold">{{ getAllGraves() }}</span></span>
+            <span class="bg-[#E9EDED] rounded-lg px-2 py-1 text-xs sm:text-sm">{{ $t('manager.burial.areaLabel') }} <span class="font-bold">{{ grave?.area || '2.5 x 1.5 м' }}</span></span>
           </div>
         </div>
 
 
         <!-- Images Gallery -->
-        <div v-if="images?.photos_urls?.length" class="mb-6">
-          <div class="flex gap-4 overflow-x-scroll">
+        <div v-if="images?.photos_urls?.length" class="mb-4 sm:mb-6">
+          <div class="flex gap-2 sm:gap-4 overflow-x-scroll pb-2 -mx-4 sm:-mx-6 px-4 sm:px-6">
             <div
                 v-for="(image, index) in images"
                 :key="index"
-                class="min-w-[330px] h-[221px] aspect-square rounded-lg overflow-hidden bg-gray-100"
+                class="min-w-[250px] sm:min-w-[300px] md:min-w-[330px] h-[167px] sm:h-[200px] md:h-[221px] rounded-lg overflow-hidden bg-gray-100 flex-shrink-0"
             >
               <img
                   :src="removeEscapedQuotes(image)"
-                  :alt="$t('burial.photo') + ' ' + (index + 1)"
+                  :alt="$t('manager.burial.photo') + ' ' + (index + 1)"
                   class="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
               />
             </div>
           </div>
         </div>
 
-        <div class="flex justify-between items-start mt-[16px] border-b border-[#EEEEEE] pb-[16px]">
-          <div class="flex text-base">
-            <p class="min-w-[150px] font-medium">{{ $t('burial.deceasedFullName') }}</p>
-            <p class="font-bold">{{ booking?.deceased?.full_name }}</p>
-          </div>
-
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mt-4 sm:mt-[16px] border-b border-[#EEEEEE] pb-3 sm:pb-[16px] gap-2 sm:gap-0">
+          <p class="text-sm sm:text-base font-medium sm:min-w-[150px]">{{ $t('manager.burial.deceasedFullName') }}</p>
+          <p class="text-sm sm:text-base font-bold break-words">{{ booking?.deceased?.full_name }}</p>
         </div>
 
 <!--         Заключение о смерти-->
 
-        <div v-if="booking.deceased.death_cert_url" class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-4">
-          <p class="min-w-[150px] max-w-[150px] font-medium">{{ $t('burial.deathCertificate') }}</p>
+        <div v-if="booking.deceased.death_cert_url" class="flex flex-col sm:flex-row text-sm sm:text-base border-b border-[#EEEEEE] pb-3 sm:pb-[16px] mt-3 sm:mt-4 gap-2 sm:gap-0">
+          <p class="font-medium sm:min-w-[150px] sm:max-w-[150px]">{{ $t('manager.burial.deathCertificate') }}</p>
           <a
               :href="booking.deceased.death_cert_url"
               target="_blank"
-              class="text-[#007AFF] font-medium hover:underline"
+              class="text-[#007AFF] font-medium hover:underline break-all sm:break-normal"
           >
-            {{ $t('burial.open') }}
+            {{ $t('manager.burial.open') }}
           </a>
         </div>
 
         <!-- Дата похорон -->
-        <div class="flex text-base mt-2">
-          <p class="min-w-[150px] max-w-[150px] font-medium">{{ $t('burial.burialDate') }}</p>
-          <p v-if="booking?.burial_date" class="font-bold">{{ new Date(booking.burial_date).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) }} {{booking.burial_time}}</p>
+        <div class="flex flex-col sm:flex-row text-sm sm:text-base mt-3 sm:mt-2 gap-2 sm:gap-0">
+          <p class="font-medium sm:min-w-[150px] sm:max-w-[150px]">{{ $t('manager.burial.burialDate') }}</p>
+          <p v-if="booking?.burial_date" class="font-bold break-words">{{ new Date(booking.burial_date).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) }} {{booking.burial_time}}</p>
         </div>
 
 
         <!-- Контакты заказчика -->
-        <div class="flex text-base border-b border-[#EEEEEE] pb-[16px] mt-2">
-          <p class="min-w-[150px] max-w-[150px] font-medium">{{ $t('burial.customerContacts') }}</p>
-          <p class="font-bold">{{ formatPhoneNumber(booking?.user_phone) }}</p>
+        <div class="flex flex-col sm:flex-row text-sm sm:text-base border-b border-[#EEEEEE] pb-3 sm:pb-[16px] mt-3 sm:mt-2 gap-2 sm:gap-0">
+          <p class="font-medium sm:min-w-[150px] sm:max-w-[150px]">{{ $t('manager.burial.customerContacts') }}</p>
+          <p class="font-bold break-words">{{ formatPhoneNumber(booking?.user_phone) }}</p>
         </div>
 
         <!-- Статус -->
-        <div class="flex text-base mt-4 items-center  border-b border-[#EEEEEE] pb-[16px]">
-          <p class="min-w-[150px] max-w-[150px] font-medium">{{ $t('reserve.status') }}</p>
+        <div class="flex flex-col sm:flex-row text-sm sm:text-base mt-3 sm:mt-4 items-start sm:items-center border-b border-[#EEEEEE] pb-3 sm:pb-[16px] gap-2 sm:gap-0">
+          <p class="font-medium sm:min-w-[150px] sm:max-w-[150px]">{{ $t('reserve.status') }}</p>
           <div class="flex gap-2 items-center">
             <span 
               :class="[statusConfig.bgColor, statusConfig.textColor]" 
-              class="px-3 py-1 rounded-md text-sm font-medium"
+              class="px-3 py-1 rounded-md text-xs sm:text-sm font-medium"
             >
               {{ statusConfig.text }}
             </span>
           </div>
         </div>
 
-        <div class="flex text-base mt-2">
-          <p class="min-w-[150px] max-w-[150px] font-medium">{{ $t('burial.completed') }}</p>
+        <div class="flex flex-col sm:flex-row text-sm sm:text-base mt-3 sm:mt-2 gap-2 sm:gap-0">
+          <p class="font-medium sm:min-w-[150px] sm:max-w-[150px]">{{ $t('manager.burial.completed') }}</p>
           <p class="font-bold">{{ booking?.is_complete ? $t('common.yes') : $t('common.no') }}</p>
         </div>
 
         <!-- Кнопки -->
-        <div class="flex justify-between mt-6">
+        <div class="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 mt-6 sm:mt-6">
           <!-- Кнопка чека (показывается для paid и confirmed) -->
           <button 
             v-if="booking?.status === 'paid' || booking?.status === 'confirmed'"
             @click="openReceiptModal" 
-            class="flex items-center gap-2 px-4 py-2 border rounded-md border-gray-300 hover:bg-gray-100 text-sm"
+            class="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 border rounded-md border-gray-300 hover:bg-gray-100 text-sm w-full sm:w-auto"
           >
             <img src="/icons/file-text.svg" :alt="$t('alts.receipt')" class="w-4 h-4" />
-            {{ $t('burial.receipt') }}
+            {{ $t('manager.burial.receipt') }}
           </button>
           
           <!-- Пустой div для выравнивания, если кнопка чека не показывается -->
           <div v-else></div>
 
           <!-- Кнопки действий -->
-          <div class="flex gap-[16px]">
+          <div class="flex flex-col sm:flex-row gap-2 sm:gap-[16px] w-full sm:w-auto">
             <!-- Кнопка отменить (показывается для pending и paid) -->
             <button 
               v-if="booking?.status === 'pending' || booking?.status === 'paid'"
-              class="px-6 py-2 bg-[#FEE2E2] text-[#B91C1C] rounded-md text-sm hover:bg-[#fcbaba]" 
+              class="px-4 sm:px-6 py-2.5 sm:py-2 bg-[#FEE2E2] text-[#B91C1C] rounded-md text-sm hover:bg-[#fcbaba] w-full sm:w-auto" 
               @click="emit('cancel')"
             >
-              Отменить
+              {{ $t('common.cancel') }}
             </button>
             
             <!-- Кнопка подтвердить (показывается только для paid) -->
             <button 
               v-if="booking?.status === 'paid'"
-              class="px-6 py-2 bg-[#10B981] text-white rounded-md text-sm hover:bg-[#0e9c6e]" 
+              class="px-4 sm:px-6 py-2.5 sm:py-2 bg-[#10B981] text-white rounded-md text-sm hover:bg-[#0e9c6e] w-full sm:w-auto" 
               @click="emit('confirm')"
             >
-              Подтвердить захоронение
+              <span class="hidden sm:inline">{{ $t('manager.burial.confirmBurial') }}</span>
+              <span class="sm:hidden">{{ $t('manager.burial.confirmBurialShort') }}</span>
             </button>
             
             <!-- Кнопка завершить (показывается только для confirmed) -->
             <button 
               v-if="booking?.status === 'confirmed' && !booking?.is_complete"
-              class="px-6 py-2 bg-[#3B82F6] text-white rounded-md text-sm hover:bg-[#2563EB]" 
+              class="px-4 sm:px-6 py-2.5 sm:py-2 bg-[#3B82F6] text-white rounded-md text-sm hover:bg-[#2563EB] w-full sm:w-auto" 
               @click="emit('complete')"
             >
-              Завершить
+              {{ $t('manager.burial.complete') }}
             </button>
           </div>
 

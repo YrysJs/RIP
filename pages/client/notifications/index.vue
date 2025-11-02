@@ -301,7 +301,7 @@ const handleNotificationClick = async (notification) => {
 }
 
 .page-title {
-  font-family: "FoglihtenNo06", serif;
+  font-family: "Manrope", serif;
   font-size: clamp(24px, 3vw, 32px);
   color: #201001;
   font-weight: 400;

@@ -113,10 +113,10 @@ const otpCheck = async () => {
       error?.response?.data?.description?.includes("Invalid") ||
       error?.response?.data?.description?.includes("код")
     ) {
-      $toast.error("Неверный код подтверждения");
+      $toast.error(t('errors.invalidConfirmationCode'));
       return;
     } else {
-      $toast.error("Произошла ошибка при входе");
+      $toast.error(t('errors.loginError'));
     }
   } finally {
     console.log('login')

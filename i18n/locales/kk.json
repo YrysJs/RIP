@@ -41,7 +41,12 @@
         "error": "Қате",
         "success": "Сәтті",
         "select": "Таңдау",
-        "reset": "Қалпына келтіру"
+        "reset": "Қалпына келтіру",
+        "fileOpened": "Файл жаңа вкладкада ашылды",
+        "updating": "Жаңартуда...",
+        "cemetery": "Зират:",
+        "download": "Жүктеп алу",
+        "deleteAll": "Барлығын жою"
     },
     "cities": {
         "almaty": "Алматы",
@@ -234,7 +239,10 @@
         "loadingMap": "Карта жүктелуде…",
         "capacity": "Сыйымдылығы:",
         "placeLabel": "Орын:",
-        "cemetery": "Зират:"
+        "cemetery": "Зират:",
+        "bookingCost": "Бронь бағасы:",
+        "results": "нәтижелер",
+        "route": "Маршрут"
     },
     "contacts": {
         "companyName": "ЖШС \"RIP SERVICE\"",
@@ -422,7 +430,11 @@
         "loading": "Жүктелуде...",
         "memorial": "Мемориал",
         "share": "Бөлісу",
+        "linkCopied": "Мемориал сілтемесі көшірілді",
+        "isPrivate": "Мемориал жеке",
         "noImages": "Суреттер жоқ",
+        "coordinatesNotSpecified": "Көрсетілмеген",
+        "public": "Жария",
         "sector": "Сектор",
         "place": "Орын:",
         "videoMaterials": "Бейнематериалдар",
@@ -449,6 +461,7 @@
             "burialTitle": "ЖЕРЛЕУ:",
             "bookingDate": "Бронь күні:",
             "burialDate": "Жерлеу күні:",
+            "burialDateLabel": "Жерлеу күні",
             "deceasedFullName": "Қайтыс болғанның толық аты-жөні:",
             "details": "Толығырақ",
             "sector": "Сектор",
@@ -461,7 +474,11 @@
             "placeLabel": "Орны",
             "areaLabel": "Аудан:",
             "open": "Ашу",
-            "photo": "Сурет"
+            "photo": "Сурет",
+            "receipt": "Чек",
+            "confirmBurial": "Жерлеуді растау",
+            "confirmBurialShort": "Растау",
+            "complete": "Аяқтау"
         },
         "booking": {
             "cemetery": "Қалдықсарай",
@@ -615,7 +632,19 @@
         "requiresFix": "Түзетуді қажет етеді",
         "blocked": "Блокталған",
         "unknown": "Белгісіз",
-        "notSpecified": "Көрсетілмеген"
+        "notSpecified": "Көрсетілмеген",
+        "login": {
+            "title": "Кіріңіз",
+            "description": "Мобильді телефон нөмірін енгізіңіз - біз код жібереміз",
+            "phonePlaceholder": "Телефон нөмірін енгізіңіз",
+            "getCodeSMS": "SMS арқылы код алу",
+            "confirmPhone": "Нөмірді растаңыз",
+            "enterCodeDescription": "SMS-тен кодты енгізіңіз. Біз оны нөмірге жібердік",
+            "codePlaceholder": "Кодты енгізіңіз",
+            "resendCodeIn": "Кодты қайта жіберу: кейін",
+            "resendAgain": "Тағы жіберу",
+            "confirm": "Растау"
+        }
     },
     "akimat": {
         "cabinet": "Әкімдік кабинеті",
@@ -848,7 +877,10 @@
         "networkError": "Желі қатесі",
         "invalidCode": "Растау коды дұрыс емес",
         "registrationError": "Тіркеу кезінде қате орын алды",
-        "loginError": "Кіру қатесі",
+        "loginError": "Кіру кезінде қате орын алды",
+        "invalidConfirmationCode": "Растау коды дұрыс емес",
+        "pkbServiceUnavailable": "ПКБ қызметі қолжетімсіз",
+        "cannotGetDataCheckIIN": "Деректерді алу мүмкін болмады, ЖСН тексеріңіз.",
         "dataNotFound": "Деректерді алу мүмкін болмады, БСН тексеріңіз",
         "orderLoadError": "Тапсырыс деректерін жүктеу қатесі",
         "statusUpdateError": "Мәртебені жаңарту қатесі",
@@ -858,7 +890,12 @@
         "serverUnavailable": "Сервер қолжетімсіз",
         "requiredField": "Бұл өріс міндетті",
         "transactionIdNotFound": "Қате: Transaction ID табылмады.",
-        "receiptLoadError": "Чекті алу кезінде қате"
+        "receiptLoadError": "Чекті алу кезінде қате",
+        "noDeceasedData": "Марқұм туралы деректер жоқ",
+        "errorLoadingGrave": "Қабір деректерін жүктеу кезінде қате",
+        "coordinatesNotFound": "Қабір координаттары табылмады",
+        "serverError": "Сервер қатесі",
+        "openFileError": "Файлды ашу мүмкін болмады"
     },
     "orders": {
         "acceptOrder": "Тапсырысты қабылдау",
@@ -868,6 +905,10 @@
         "processingStatus": "Өңделуде",
         "inProgressStatus": "Процесте",
         "waitingPaymentStatus": "Төлем күтілуде"
+    },
+    "map": {
+        "finishDrawing": "Сызуды аяқтау",
+        "clearMap": "Картаны тазалау"
     },
     "cemetery": {
         "capacity": "Сыйымдылық",
@@ -1398,7 +1439,17 @@
         "document": "Құжат:",
         "appeal": "Өтінім:",
         "dateFrom": "Күнінен (кк.аа.жжжж)",
-        "dateTo": "Күніне (кк.аа.жжжж)"
+        "dateTo": "Күніне (кк.аа.жжжж)",
+        "statusUpdated": "Өтініш статусы жаңартылды",
+        "applicantData": "Өтініш берушінің деректері",
+        "applicantContacts": "Өтініш берушінің байланыстары:",
+        "applicantIIN": "Өтініш берушінің ЖСН:",
+        "oldBurialPlace": "Ескі жерлеу орны",
+        "newBurialPlace": "Жаңа жерлеу орны",
+        "reburialReason": "Қайта жерлеу себебі:",
+        "reburialRequest": "ҚАЙТА ЖЕРЛЕУ ҮШІН ӨТІНІШ",
+        "approveBurial": "Жерлеуді мақұлдау",
+        "reject": "Қабылдамау"
     },
     "clientServices": {
         "shown": "Көрсетілген",

@@ -80,12 +80,12 @@
           v-model="newsContent"
           class="form-textarea"
           :maxlength="CHAR_LIMIT"
-          placeholder="Введите текст новости..."
+          :placeholder="t('user.news.textPlaceholder')"
         ></textarea>
       </div>
 
       <div class="char-row">
-        <span class="char-counter">{{ charCount }}/{{ CHAR_LIMIT }} символов</span>
+        <span class="char-counter">{{ charCount }}/{{ CHAR_LIMIT }} {{ $t('common.characters') }}</span>
       </div>
 
       <!-- Прикрепить файл -->
@@ -128,7 +128,7 @@
           :disabled="!isFormValid"
           @click="saveNews"
         >
-          {{ isEdit ? 'Сохранить' : 'Опубликовать' }}
+          {{ isEdit ? $t('common.save') : $t('common.publish') }}
         </button>
       </div>
     </div>
@@ -136,8 +136,8 @@
     <Teleport to="body">
       <SuccessModal
         v-if="showSuccessModal"
-        :title="isEdit ? 'Изменения сохранены!' : 'Новость опубликована!'"
-        :text="'Закрыть'"
+        :title="isEdit ? $t('user.news.changesSaved') : $t('user.news.newsPublished')"
+        :text="$t('common.close')"
         :show-button="true"
         @close="closeSuccessModal"
       />
@@ -152,7 +152,9 @@ import { createNews, setAkimatFile, updateNews } from '~/services/akimat'
 import { useNewsStore } from '~/store/news'
 import SuccessModal from '~/components/layout/modals/SuccessModal.vue'
 import Cookies from 'js-cookie'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const newsStore = useNewsStore()
@@ -291,7 +293,7 @@ const saveNews = async () => {
     console.error('Ошибка при сохранении новости:', e)
     // Показываем тост об ошибке
     const { $toast } = useNuxtApp()
-    $toast.error('Ошибка сервера')
+    $toast.error(t('errors.serverError'))
   }
 }
 </script>
@@ -311,7 +313,7 @@ const saveNews = async () => {
 
 /* Заголовок */
 .page-title{
-  font-family: "FoglihtenNo06", sans-serif;
+  font-family: "Manrope", sans-serif;
   text-transform:uppercase; letter-spacing:.02em;
   font-weight:700; font-size:28px; line-height:36px; color:#111827;
 }
@@ -438,7 +440,7 @@ const saveNews = async () => {
     font-size: 24px;
     line-height: 28px;
     margin-bottom: 20px;
-    font-family: "FoglihtenNo06", sans-serif;
+    font-family: "Manrope", sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.02em;
   }

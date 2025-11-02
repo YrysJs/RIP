@@ -147,7 +147,7 @@ async function fetchProducts() {
   } catch (error) {
     console.error("Ошибка при загрузке продуктов:", error);
     const { $toast } = useNuxtApp();
-    $toast.error("Сервер не доступен");
+    $toast.error(t('common.serverUnavailable'));
     products.value = [];
   } finally {
     loading.value = false;
@@ -166,7 +166,7 @@ async function fetchCategories() {
   } catch (error) {
     console.error("Ошибка при загрузке категорий:", error);
     const { $toast } = useNuxtApp();
-    $toast.error("Сервер не доступен");
+    $toast.error(t('common.serverUnavailable'));
     categories.value = [];
   }
 }
@@ -179,7 +179,7 @@ const loadCart = async () => {
   } catch (err) {
     console.error("Ошибка при загрузке корзины:", err);
     const { $toast } = useNuxtApp();
-    $toast.error("Сервер не доступен");
+    $toast.error(t('common.serverUnavailable'));
   }
 };
 
@@ -209,17 +209,17 @@ const handleDeliveryConfirm = async (deliveryData) => {
     };
 
     await addToCart(cartData);
-    cartMessage.value = "Товар добавлен в корзину";
+    cartMessage.value = t('cart.itemAdded');
     await loadCart(); // Перезагружаем корзину
     await router.push("/client/tickets/burial/add-service");
     setTimeout(() => {
       cartMessage.value = "";
     }, 3000);
   } catch (err) {
-    cartMessage.value = "Ошибка при добавлении товара";
+    cartMessage.value = t('cart.addError');
     console.error("Ошибка при добавлении в корзину:", err);
     const { $toast } = useNuxtApp();
-    $toast.error("Сервер не доступен");
+    $toast.error(t('common.serverUnavailable'));
   } finally {
     addingToCart.value = false;
     selectedProductId.value = null;
@@ -727,7 +727,7 @@ function getVisiblePages() {
 }
 
 .page-title {
-  font-family: "FoglihtenNo06", serif;
+  font-family: "Manrope", serif;
   font-size: clamp(24px, 3vw, 32px);
   color: #201001;
   font-weight: 400;

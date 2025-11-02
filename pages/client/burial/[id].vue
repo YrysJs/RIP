@@ -283,7 +283,7 @@ function fileTitle(url) {
   border-bottom: 1px solid #eee;
 }
 .page-title {
-  font-family: "FoglihtenNo06", serif;
+  font-family: "Manrope", serif;
   letter-spacing: 0.02em;
   font-size: 32px;
   color: #1c140e;
