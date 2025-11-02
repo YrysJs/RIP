@@ -618,7 +618,30 @@
         },
         "tickets": {
             "allStatuses": "Барлық статус"
-        }
+        },
+        "loading": "Жүктелуде…",
+        "orderDateTime": "Өтініш күні мен уақыты:",
+        "cemetery": "Зират:",
+        "sector": "Сектор",
+        "place": "Орны:",
+        "cemeteryCoordinates": "Зират координаттары",
+        "deceasedFullName": "Марқұмның Аты-жөні:",
+        "burialDate": "Жерлеу күні:",
+        "customer": "Тапсырыс беруші:",
+        "customerContacts": "Тапсырыс берушінің байланыстары:",
+        "arrivalAddress": "Келу мекенжайы:",
+        "arrivalTime": "Келу уақыты:",
+        "status": "Статус:",
+        "update": "Жаңарту...",
+        "cancel": "Болдырмау",
+        "completed": "Өтініш аяқталды",
+        "orderNotFound": "Тапсырыс табылмады",
+        "new": "Жаңа",
+        "inProgress": "Орындалуда",
+        "waitingPayment": "Төлем күтілуде",
+        "paid": "Төленді",
+        "completedStatus": "Аяқталды",
+        "burialDateRequired": "Жерлеу күнін көрсету керек"
     },
     "admin": {
         "loginTitle": "Әкімшілікке кіру",
@@ -644,6 +667,14 @@
             "resendCodeIn": "Кодты қайта жіберу: кейін",
             "resendAgain": "Тағы жіберу",
             "confirm": "Растау"
+        },
+        "suppliers": {
+            "title": "Қызмет көрсетушілер",
+            "userFullName": "Пайдаланушының ТАӘ",
+            "bin": "БСН",
+            "status": "Мәртебе",
+            "activateSupplier": "Қызмет көрсетушіні белсендіру?",
+            "inviteSent": "Шақыру жіберілді!"
         }
     },
     "akimat": {
@@ -1165,31 +1196,6 @@
         "providerServices": "Қызмет көрсетуші",
         "reviews": "Пікірлер",
         "note": "Ескерту:"
-    },
-    "supplier": {
-        "loading": "Жүктелуде…",
-        "orderDateTime": "Өтініш күні мен уақыты:",
-        "cemetery": "Зират:",
-        "sector": "Сектор",
-        "place": "Орны:",
-        "cemeteryCoordinates": "Зират координаттары",
-        "deceasedFullName": "Марқұмның Аты-жөні:",
-        "burialDate": "Жерлеу күні:",
-        "customer": "Тапсырыс беруші:",
-        "customerContacts": "Тапсырыс берушінің байланыстары:",
-        "arrivalAddress": "Келу мекенжайы:",
-        "arrivalTime": "Келу уақыты:",
-        "status": "Статус:",
-        "update": "Жаңарту...",
-        "cancel": "Болдырмау",
-        "completed": "Өтініш аяқталды",
-        "orderNotFound": "Тапсырыс табылмады",
-        "new": "Жаңа",
-        "inProgress": "Орындалуда",
-        "waitingPayment": "Төлем күтілуде",
-        "paid": "Төленді",
-        "completedStatus": "Аяқталды",
-        "burialDateRequired": "Жерлеу күнін көрсету керек"
     },
     "responsible": {
         "assign": "Жауапкершілікті тағайындау",

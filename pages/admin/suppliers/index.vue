@@ -115,9 +115,7 @@ onMounted((async () => {
     const response = await getSuppliers()
     suppliers.value = response.data
   } catch (error) {
-    console.error('Ошибка при получении пользователей:', error)
-  } finally {
-    console.log('finally')
+    console.error(t('errors.fetchError'), error)
   }
 }))
 
