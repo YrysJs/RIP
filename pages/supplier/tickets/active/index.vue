@@ -23,14 +23,20 @@ const displayRows = computed(() =>
 
 // Чип статуса (текст + класс под цвет бейджа)
 function statusChip(status) {
+  if (!status) return { text: "—", class: "chip chip--orange" };
+  
+  const statusLower = String(status).toLowerCase();
   const map = {
     new: { text: t('supplier.orders.status_new'), kind: "orange" },
     processing: { text: t('statuses.processing'), kind: "orange" },
     in_progress: { text: t('statuses.inProgress'), kind: "orange" },
+    'in progress': { text: t('statuses.inProgress'), kind: "orange" },
     completed: { text: t('statuses.completed'), kind: "green" },
     pending_payment: { text: t('statuses.waitingPayment'), kind: "green" },
+    'pending payment': { text: t('statuses.waitingPayment'), kind: "green" },
     cancelled: { text: t('statuses.cancelled'), kind: "red" },
-  }[status] ?? { text: "—", kind: "orange" };
+    canceled: { text: t('statuses.cancelled'), kind: "red" },
+  }[statusLower] ?? { text: t('statuses.unknown'), kind: "orange" };
   return { text: map.text, class: `chip chip--${map.kind}` };
 }
 
@@ -151,9 +157,9 @@ const formatDate = (dateString) => {
 // Функция для получения названия продукта/услуги из первого элемента заказа
 const getProductName = (order) => {
   if (order.items && order.items.length > 0) {
-    return order.items[0].product?.name || "Не указано";
+    return order.items[0].product?.name || t('common.notSpecified');
   }
-  return "Не указано";
+  return t('common.notSpecified');
 };
 
 // Функция для получения времени доставки из первого элемента заказа

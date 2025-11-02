@@ -6,9 +6,7 @@ import { useI18n } from 'vue-i18n';
 import { useUserStore } from '~/store/user';
 
 const { t } = useI18n();
-const props = withDefaults(defineProps<{ title?: string }>(), {
-  title: 'Кабинет поставщика услуг'
-});
+const props = defineProps<{ title?: string }>();
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -29,22 +27,22 @@ const unreadCount = ref(0);
 
 const sectionA = computed(() => [
   { title: t('supplier.layoutSidebar.active'), path: '/supplier/tickets/active', count: 0 },
-  { title: t('supplier.layoutSidebar.archive'),    path: '/supplier/tickets/archive' }
+  { title: t('supplier.layoutSidebar.archive'),    path: '/supplier/tickets/archive', count: undefined }
 ]);
 
 const sectionB = computed(() => [
-  { title: t('supplier.layoutSidebar.active'),          path: '/supplier/services/active' },
-  { title: t('supplier.layoutSidebar.underReview'),   path: '/supplier/services/consideration' },
-  { title: t('supplier.layoutSidebar.needsImprovement'), path: '/supplier/services/improvement' },
-  { title: t('supplier.layoutSidebar.inactive'),       path: '/supplier/services/inactive' }
+  { title: t('supplier.layoutSidebar.active'),          path: '/supplier/services/active', count: undefined },
+  { title: t('supplier.layoutSidebar.underReview'),   path: '/supplier/services/consideration', count: undefined },
+  { title: t('supplier.layoutSidebar.needsImprovement'), path: '/supplier/services/improvement', count: undefined },
+  { title: t('supplier.layoutSidebar.inactive'),       path: '/supplier/services/inactive', count: undefined }
 ]);
 
 const singles = computed(() => [
-  { title: t('supplier.layoutSidebar.addProductOrService'), path: '/supplier/services/add-service', kind: 'add' },
-  { title: t('supplier.layoutSidebar.reviews'),                     path: '/supplier/reviews' },
-  { title: t('supplier.layoutSidebar.reports'),                     path: '/supplier/reports' },
-  { title: t('supplier.layoutSidebar.governmentAppeal'),         path: '/supplier/goverment/requests' },
-  { title: t('supplier.layoutSidebar.notifications'), path: '/supplier/notifications', count: unreadCount.value > 0 ? unreadCount.value : null },
+  { title: t('supplier.layoutSidebar.addProductOrService'), path: '/supplier/services/add-service', kind: 'add', count: undefined },
+  { title: t('supplier.layoutSidebar.reviews'),                     path: '/supplier/reviews', count: undefined },
+  { title: t('supplier.layoutSidebar.reports'),                     path: '/supplier/reports', count: undefined },
+  { title: t('supplier.layoutSidebar.governmentAppeal'),         path: '/supplier/goverment/requests', count: undefined },
+  { title: t('supplier.layoutSidebar.notifications'), path: '/supplier/notifications', count: unreadCount.value > 0 ? unreadCount.value : undefined },
 ]);
 
 const fetchUnreadCount = async () => {
@@ -63,7 +61,7 @@ onMounted(() => {
 
 <template>
   <div class="sidebar">
-    <div class="sidebar__title">{{ title }}</div>
+    <div class="sidebar__title">{{ title || $t('supplier.layout.cabinet') }}</div>
 
     <div class="sidebar__block">
       <button class="sidebar__head" @click="openA = !openA">
@@ -79,7 +77,7 @@ onMounted(() => {
             @click.prevent="!isLinkDisabled(it.path) && $router.push(it.path)"
         >
           <span class="sidebar__text">{{ it.title }}</span>
-          <span v-if="it.count" class="sidebar__badge">{{ it.count }}</span>
+          <span v-if="it.count !== undefined && it.count !== null && it.count > 0" class="sidebar__badge">{{ it.count }}</span>
         </RouterLink>
       </div>
     </div>
@@ -98,7 +96,7 @@ onMounted(() => {
             @click.prevent="!isLinkDisabled(it.path) && $router.push(it.path)"
         >
           <span class="sidebar__text">{{ it.title }}</span>
-          <span v-if="it.count" class="sidebar__badge">{{ it.count }}</span>
+          <span v-if="it.count !== undefined && it.count !== null && it.count > 0" class="sidebar__badge">{{ it.count }}</span>
         </RouterLink>
       </div>
     </div>

@@ -617,7 +617,30 @@
     },
     "tickets": {
       "allStatuses": "Все статусы"
-    }
+    },
+    "loading": "Загрузка…",
+    "orderDateTime": "Дата и время заявки:",
+    "cemetery": "Кладбище:",
+    "sector": "Сектор",
+    "place": "Место:",
+    "cemeteryCoordinates": "Координаты кладбища",
+    "deceasedFullName": "ФИО покойного:",
+    "burialDate": "Дата похорон:",
+    "customer": "Заказчик:",
+    "customerContacts": "Контакты заказчика:",
+    "arrivalAddress": "Адрес прибытия:",
+    "arrivalTime": "Время прибытия:",
+    "status": "Статус:",
+    "update": "Обновление...",
+    "cancel": "Отменить",
+    "completed": "Заявка завершена",
+    "orderNotFound": "Заказ не найден",
+    "new": "Новая",
+    "inProgress": "В работе",
+    "waitingPayment": "В ожидании оплаты",
+    "paid": "Оплачено",
+    "completedStatus": "Завершено",
+    "burialDateRequired": "Необходимо указать даты похорон"
   },
   "admin": {
     "loginTitle": "Вход для администрации",
@@ -643,6 +666,14 @@
       "resendCodeIn": "Отправить код повторно: через",
       "resendAgain": "Отправить еще раз",
       "confirm": "Подтвердить"
+    },
+    "suppliers": {
+      "title": "Поставщики",
+      "userFullName": "Фио пользователя",
+      "bin": "БИН",
+      "status": "Статус",
+      "activateSupplier": "Активировать поставщика?",
+      "inviteSent": "Приглашение отправлено!"
     }
   },
   "akimat": {
@@ -677,7 +708,7 @@
       "userFullName": "Фио пользователя",
       "bin": "БИН",
       "status": "Статус",
-      "activateSupplier": "Активировать постащика?",
+      "activateSupplier": "Активировать поставщика?",
       "inviteSent": "Приглашение отправлено!"
     },
     "tickets": {
@@ -955,31 +986,6 @@
     "cancelBooking": "Отменить бронь",
     "completed": "Заявка завершена",
     "orderNotFound": "Заказ не найден"
-  },
-  "supplier": {
-    "loading": "Загрузка…",
-    "orderDateTime": "Дата и время заявки:",
-    "cemetery": "Кладбище:",
-    "sector": "Сектор",
-    "place": "Место:",
-    "cemeteryCoordinates": "Координаты кладбища",
-    "deceasedFullName": "ФИО покойного:",
-    "burialDate": "Дата похорон:",
-    "customer": "Заказчик:",
-    "customerContacts": "Контакты заказчика:",
-    "arrivalAddress": "Адрес прибытия:",
-    "arrivalTime": "Время прибытия:",
-    "status": "Статус:",
-    "update": "Обновление...",
-    "cancel": "Отменить",
-    "completed": "Заявка завершена",
-    "orderNotFound": "Заказ не найден",
-    "new": "Новая",
-    "inProgress": "В работе",
-    "waitingPayment": "В ожидании оплаты",
-    "paid": "Оплачено",
-    "completedStatus": "Завершено",
-    "burialDateRequired": "Необходимо указать даты похорон"
   },
   "religions": {
     "islam": "Ислам",
