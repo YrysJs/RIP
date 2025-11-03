@@ -11,14 +11,17 @@ import {
   getPkbToken,
   getPkbRequest,
   pkbGetData,
+  getCurrentUser,
 } from "~/services/login/index.js";
 import Cookies from "js-cookie";
 // import AppLoader from "~/components/loader/AppLoader.vue";
 import { useLoadingStore } from "~/store/loading.js";
+import { useUserStore } from "~/store/user.js";
 import { NuxtLink } from "#components";
 import { ref, watch, onBeforeUnmount } from "vue";
 import {useAuthModalStore} from "~/store/authModal.js";
 import { useI18n } from 'vue-i18n';
+import { parseJwt } from "~/utils/parseJwt.js";
 
 const { t } = useI18n();
 const emit = defineEmits(["close"]);
@@ -39,6 +42,7 @@ const patronymic = ref("");
 const isWhatsappLogin = ref(false);
 
 const loadingStore = useLoadingStore();
+const userStore = useUserStore();
 
 const currentModal = ref("form");
 // const showOverlay = ref(true); // фон-оверлей со спиннером (по желанию)
@@ -204,6 +208,35 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
+async function loadUserData() {
+  try {
+    const token = Cookies.get("token");
+    if (!token) return;
+    
+    // Пытаемся получить id из токена
+    const decodedToken = parseJwt(token);
+    const userId = decodedToken?.id || decodedToken?.user_id || localStorage.getItem("user_id");
+    
+    // Получаем данные пользователя
+    const response = await getCurrentUser(userId ? { id: userId } : {});
+    
+    // Обрабатываем ответ в зависимости от структуры
+    const userData = response?.data?.data || response?.data;
+    if (userData) {
+      userStore.setUser(userData);
+      userStore.setToken(token);
+      // Сохраняем user_id в localStorage если нужно
+      if (userData.id) {
+        localStorage.setItem("user_id", userData.id);
+      } else if (userId) {
+        localStorage.setItem("user_id", userId);
+      }
+    }
+  } catch (error) {
+    console.error("Ошибка при загрузке данных пользователя:", error);
+  }
+}
+
 async function run() {
   try {
     let response;
@@ -235,6 +268,10 @@ async function run() {
     }
     Cookies.set("token", response.data.token);
     Cookies.set("role", "client");
+    
+    // Загружаем данные пользователя и сохраняем в store
+    await loadUserData();
+    
     emit('close');
     await router.push("/");
   } catch (error) {
@@ -381,6 +418,10 @@ const otpCheck = async () => {
 
     Cookies.set("token", response.data.token);
     Cookies.set("role", "client");
+    
+    // Загружаем данные пользователя и сохраняем в store
+    await loadUserData();
+    
     emit('close');
     await router.push("/");
   } catch (error) {

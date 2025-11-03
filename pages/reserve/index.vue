@@ -1067,7 +1067,7 @@ function openWhatsApp(phone) {
               <!-- Тултип с информацией об умершем -->
               <div
                 v-if="showDeceasedTooltip && deceasedTooltipData"
-                class="absolute bottom-4 right-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm"
+                class="absolute bottom-4 right-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm max-sm:fixed max-sm:bottom-4 max-sm:left-4 max-sm:right-4 max-sm:max-w-none z-50"
               >
                 <button
                   @click="closeDeceasedTooltip"
@@ -1085,7 +1085,7 @@ function openWhatsApp(phone) {
                       v-if="deceasedTooltipData.images && deceasedTooltipData.images.length > 0"
                       :src="deceasedTooltipData.images[0]"
                       :alt="deceasedTooltipData.deceased.full_name"
-                      class="w-full h-full object-cover"
+                      class="w-full h-full object-contain"
                     />
                     <div v-else class="text-gray-400 text-center">
                       <svg class="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
@@ -1127,8 +1127,8 @@ function openWhatsApp(phone) {
               <!-- Второй тултип (больший) с информацией об умершем -->
               <div
                 v-if="showSecondTooltip && secondTooltipData"
-                class="absolute bg-white rounded-lg shadow-lg border border-gray-200 p-6 max-w-md"
-                style="top: -300px; right: -200px;"
+                class="absolute bg-white rounded-lg shadow-lg border border-gray-200 p-6 max-w-md max-sm:fixed max-sm:bottom-4 max-sm:left-4 max-sm:right-4 max-sm:top-auto max-sm:max-w-none max-sm:z-50 max-sm:p-4"
+                :style="isMobile ? { top: 'auto', right: 'auto' } : { top: '-300px', right: '-200px' }"
               >
                 <button
                   @click="closeDeceasedTooltip"
@@ -1146,7 +1146,7 @@ function openWhatsApp(phone) {
                       v-if="secondTooltipData.images && secondTooltipData.images.length > 0"
                       :src="secondTooltipData.images[0]"
                       :alt="secondTooltipData.deceased.full_name"
-                      class="w-full h-full object-cover"
+                      class="w-full h-full object-contain"
                     />
                     <div v-else class="text-gray-400 text-center">
                       <svg class="w-16 h-16 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">

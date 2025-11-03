@@ -863,8 +863,17 @@
     "orderDetails": "Детали заказа",
     "totalToPay": "Итого к оплате",
     "cardNumber": "Номер карты",
+    "cardNumberPlaceholder": "2340 0330 0022 1331",
+    "email": "E-mail",
+    "emailPlaceholder": "example{'@'}test.com",
     "expiryDate": "Срок действия",
-    "cvcCode": "CVC код"
+    "expiryPlaceholder": "01/25",
+    "cvv": "CVC код",
+    "cvvPlaceholder": "234",
+    "cvcCode": "CVC код",
+    "secure3DTitle": "3D Secure",
+    "secure3DDescription": "Для завершения оплаты необходимо пройти дополнительную проверку 3D Secure. Это безопасная процедура, которая подтверждает, что вы являетесь владельцем карты.",
+    "secure3DPayButton": "Оплатить"
   },
   "cart": {
     "itemAdded": "Товар добавлен в корзину",

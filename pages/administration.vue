@@ -1,6 +1,6 @@
 <template>
   <div class="admin-login-page">
-    <AppHeader style="'landing'" />
+    <AppHeader style="landing" />
     
     <main class="main-content">
       <div class="container">
