@@ -3,7 +3,21 @@
     <div class="modal-content" @click.stop>
       <div class="payment-form">
         <h2 class="title">{{ $t('payment.orderPayment') }}</h2>
-        
+
+        <!-- Модалка 3D Secure для мобильных устройств -->
+        <div v-if="showSecure3DModal" class="secure3d-modal">
+          <h3 class="secure3d-title">{{ $t('payment.secure3DTitle') }}</h3>
+          <p class="secure3d-description">{{ $t('payment.secure3DDescription') }}</p>
+          <a 
+            :href="secure3DURL" 
+            target="_blank" 
+            class="secure3d-button"
+          >
+            {{ $t('payment.secure3DPayButton') }}
+          </a>
+        </div>
+
+        <template v-else>
         <!-- Детали заказа -->
         <div class="order-summary">
           <h3 class="summary-title">{{ $t('payment.orderDetails') }}</h3>
@@ -18,50 +32,50 @@
             <span>{{ orderData.cartTotal?.toLocaleString() || '0' }} ₸</span>
           </div>
         </div>
-        
+
         <div class="form-group">
           <label class="label">{{ $t('payment.cardNumber') }}</label>
-          <input 
-            v-model="cardNumber" 
-            type="text" 
-            class="input"
-            placeholder="2340 0330 0022 1331"
-            maxlength="19"
-            @input="formatCardNumber"
+          <input
+              v-model="cardNumber"
+              type="text"
+              class="input"
+              placeholder="2340 0330 0022 1331"
+              maxlength="19"
+              @input="formatCardNumber"
           />
         </div>
 
         <div class="form-group">
           <label class="label">Email</label>
-          <input 
-            v-model="email" 
-            type="text" 
-            class="input"
-            placeholder="example@test.com"
+          <input
+              v-model="email"
+              type="text"
+              class="input"
+              placeholder="example@test.com"
           />
         </div>
 
         <div class="form-row">
           <div class="form-group half">
             <label class="label">{{ $t('payment.expiryDate') }}</label>
-            <input 
-              v-model="expiryDate" 
-              type="text" 
-              class="input"
-              placeholder="01/25"
-              maxlength="5"
-              @input="formatExpiryDate"
+            <input
+                v-model="expiryDate"
+                type="text"
+                class="input"
+                placeholder="01/25"
+                maxlength="5"
+                @input="formatExpiryDate"
             />
           </div>
-          
+
           <div class="form-group half">
             <label class="label">{{ $t('payment.cvcCode') }}</label>
-            <input 
-              v-model="cvcCode" 
-              type="password"
-              class="input"
-              placeholder="234"
-              maxlength="3"
+            <input
+                v-model="cvcCode"
+                type="password"
+                class="input"
+                placeholder="234"
+                maxlength="3"
             />
           </div>
         </div>
@@ -69,6 +83,7 @@
         <button class="pay-button" @click="processPayment" :disabled="isProcessing">
           {{ isProcessing ? $t('payment.processing') : `${$t('payment.pay')} ${orderData.cartTotal?.toLocaleString() || '0'} ₸` }}
         </button>
+        </template>
       </div>
     </div>
   </div>
@@ -100,12 +115,22 @@ export default {
       expiryDate: '',
       cvcCode: '',
       email: '',
-      isProcessing: false
+      isProcessing: false,
+      showSecure3DModal: false,
+      secure3DURL: ''
+    }
+  },
+  computed: {
+    isMobile() {
+      if (typeof window === 'undefined') return false;
+      return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
   },
   methods: {
     closeModal() {
       if (!this.isProcessing) {
+        this.showSecure3DModal = false;
+        this.secure3DURL = '';
         this.$emit('close')
       }
     },
@@ -114,11 +139,11 @@ export default {
       let matches = value.match(/\d{4,16}/g)
       let match = matches && matches[0] || ''
       let parts = []
-      
+
       for (let i = 0, len = match.length; i < len; i += 4) {
         parts.push(match.substring(i, i + 4))
       }
-      
+
       if (parts.length) {
         this.cardNumber = parts.join(' ')
       } else {
@@ -133,95 +158,11 @@ export default {
         this.expiryDate = value
       }
     },
-    async parse3DSecureFromURL(secure3DURL) {
-      // Делаем запрос на URL чтобы получить HTML форму
-      const { $axios } = useNuxtApp()
-      try {
-        const response = await $axios.get(secure3DURL, {
-          responseType: 'text'
-        })
-        
-        // Создаем временный DOM элемент для парсинга HTML
-        const parser = new DOMParser()
-        const doc = parser.parseFromString(response.data, 'text/html')
-        
-        // Ищем форму на странице
-        const form = doc.querySelector('form')
-        if (!form) {
-          throw new Error('Форма не найдена на странице 3D Secure')
-        }
-        
-        // Извлекаем action формы
-        const action = form.action || secure3DURL
-        
-        // Извлекаем значения полей из формы
-        const paReqInput = form.querySelector('input[name="PaReq"], input[name="paReq"]')
-        const mdInput = form.querySelector('input[name="MD"], input[name="md"]')
-        const termUrlInput = form.querySelector('input[name="TermUrl"], input[name="termUrl"]')
-        
-        return {
-          action: action,
-          paReq: paReqInput ? paReqInput.value : '',
-          md: mdInput ? mdInput.value : '',
-          termUrl: termUrlInput ? termUrlInput.value : ''
-        }
-      } catch (error) {
-        console.error('Ошибка при парсинге 3D Secure URL:', error)
-        throw error
-      }
-    },
-    open3DSecureForm(action, paReq, md, termUrl) {
-      // Создать форму динамически
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = action
-      form.style.display = 'none'
-      
-      // Добавить скрытые поля
-      const paReqInput = document.createElement('input')
-      paReqInput.type = 'hidden'
-      paReqInput.name = 'PaReq'
-      paReqInput.value = paReq
-      form.appendChild(paReqInput)
-      
-      const mdInput = document.createElement('input')
-      mdInput.type = 'hidden'
-      mdInput.name = 'MD'
-      mdInput.value = md
-      form.appendChild(mdInput)
-      
-      const termUrlInput = document.createElement('input')
-      termUrlInput.type = 'hidden'
-      termUrlInput.name = 'TermUrl'
-      termUrlInput.value = termUrl
-      form.appendChild(termUrlInput)
-      
-      document.body.appendChild(form)
-      
-      // Открыть в новом окне/popup
-      const popup = window.open('', '3DSecure', 'width=600,height=600,scrollbars=yes')
-      form.target = '3DSecure'
-      form.submit()
-      
-      // Отслеживать закрытие popup
-      const checkPopup = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(checkPopup)
-          // Проверить статус платежа через API можно здесь
-          console.log('3D Secure popup closed')
-        }
-      }, 500)
-      
-      // Удалить форму после отправки
-      setTimeout(() => form.remove(), 100)
-      
-      return popup
-    },
     async processPayment() {
       if (this.isProcessing) return
-      
+
       this.isProcessing = true
-      
+
       try {
         // Подготавливаем данные для оплаты
         const paymentData = {
@@ -234,47 +175,21 @@ export default {
           terminalType: 'shop'
         }
 
-        // 1. Выполняем платеж
+        // 1. Выполняем платеж (закомментировано для тестирования)
         const paymentResponse = await processCardPayment(paymentData)
 
-        // Получаем transaction_id из ответа платежа
-        const transactionId = paymentResponse.data.data.paymentInfo.id
-        let requires3DSecure = false
-
-        // Проверяем, требуется ли 3D Secure
-        if (paymentResponse.data.data.requires3DSecure && paymentResponse.data.data.secure3D) {
-          // Новый формат API - данные уже в JSON
-          requires3DSecure = true
-          const { paReq, md, action } = paymentResponse.data.data.secure3D
-          const termUrl = paymentResponse.data.data.termUrl
-          
-          // Открываем 3D Secure форму
-          this.open3DSecureForm(action, paReq, md, termUrl)
-          
-          // Примечание: после прохождения 3D Secure пользователь будет перенаправлен на страницу результата
-          // Бэкенд обработает результат и подтвердит платеж автоматически
-        } else if (paymentResponse.data.data.secure3DURL) {
-          // Старый формат API - получаем URL, парсим HTML и извлекаем данные
-          requires3DSecure = true
-          
-          try {
-            // Парсим URL и извлекаем данные формы
-            const secure3DData = await this.parse3DSecureFromURL(paymentResponse.data.data.secure3DURL)
-            
-            // Открываем 3D Secure форму с извлеченными данными
-            this.open3DSecureForm(
-              secure3DData.action,
-              secure3DData.paReq,
-              secure3DData.md,
-              secure3DData.termUrl
-            )
-          } catch (error) {
-            console.error('Ошибка при обработке 3D Secure URL:', error)
-            // Fallback - открываем URL напрямую если парсинг не удался
-            window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer')
+        if (paymentResponse.data.data.secure3DURL) {
+          // На мобильных устройствах показываем модалку, на десктопе - открываем новую вкладку
+          if (this.isMobile) {
+            this.secure3DURL = paymentResponse.data.data.secure3DURL;
+            this.showSecure3DModal = true;
+          } else {
+            window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer');
           }
         }
 
+
+        console.log(this.burialData)
         // 2. Создаем заказ через API с правильной структурой
         // Создаем заказ независимо от наличия burialData
         const orderRequestData = {
@@ -299,32 +214,20 @@ export default {
         console.log('Order request data:', orderRequestData)
         const orderResponse = await createOrder(orderRequestData)
 
-        // Подтверждаем платеж заказа только если нет 3D Secure
-        // Если есть 3D Secure, подтверждение произойдет после прохождения аутентификации
-        if (!requires3DSecure && transactionId && orderResponse?.data?.id) {
+        // Получаем transaction_id из ответа платежа
+        const transactionId = paymentResponse.data.data.paymentInfo.id
+
+        // Подтверждаем платеж заказа
+        if (transactionId && orderResponse?.data?.id) {
           console.log('Confirming order payment...')
           await confirmOrderPayment(orderResponse.data.id, transactionId)
           console.log('Order payment confirmed')
-        } else if (requires3DSecure && transactionId && orderResponse?.data?.id) {
-          console.log('3D Secure required, payment confirmation will be handled by backend after authentication')
-          // Платеж будет подтвержден бэкендом после успешного прохождения 3D Secure
         }
 
 
-        // 3. Обрабатываем результат
-        if (requires3DSecure) {
-          // При 3D Secure не закрываем модалку сразу - пользователь завершит оплату в popup
-          // После прохождения 3D Secure бэкенд перенаправит на страницу результата
-          // Можно показать сообщение пользователю
-          const { $toast } = useNuxtApp()
-          $toast.info('Пожалуйста, завершите аутентификацию 3D Secure в открывшемся окне')
-          // Не закрываем модалку, чтобы пользователь мог видеть процесс
-          // Модалка закроется после успешного прохождения 3D Secure через страницу результата
-        } else {
-          // Если нет 3D Secure, закрываем модалку и сообщаем об успехе
-          this.$emit('close')
-          this.$emit('success')
-        }
+        // 3. Закрываем модалку и сообщаем о успешной оплате
+        this.$emit('close')
+        this.$emit('success')
 
       } catch (error) {
         console.error('Payment process failed:', error)
@@ -478,25 +381,70 @@ export default {
   .payment-form {
     padding: 24px;
   }
-  
+
   .title {
     font-size: 20px;
     margin-bottom: 20px;
   }
-  
+
   .order-summary {
     padding: 16px;
     margin-bottom: 20px;
   }
-  
+
   .form-row {
     flex-direction: column;
     gap: 0;
   }
-  
+
   .modal-content {
     margin: 16px;
     width: calc(100% - 32px);
   }
+}
+
+.secure3d-modal {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.secure3d-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.secure3d-description {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  padding: 0 16px;
+}
+
+.secure3d-button {
+  display: inline-block;
+  width: 100%;
+  padding: 16px;
+  background-color: #339B38;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.secure3d-button:hover {
+  background-color: #2d8530;
+}
+
+.secure3d-button:active {
+  background-color: #256b29;
 }
 </style>

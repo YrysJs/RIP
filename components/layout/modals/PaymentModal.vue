@@ -3,7 +3,22 @@
     <div class="modal-content" @click.stop>
       <div class="payment-form">
         <h2 class="title">{{ $t('payment.cardPayment') }}</h2>
-        
+
+        <!-- Модалка 3D Secure для мобильных устройств -->
+        <div v-if="showSecure3DModal" class="secure3d-modal">
+          <h3 class="secure3d-title">{{ $t('payment.secure3DTitle') }}</h3>
+          <p class="secure3d-description">{{ $t('payment.secure3DDescription') }}</p>
+          <a 
+            :href="secure3DURL" 
+            target="_blank" 
+            class="secure3d-button"
+          >
+            {{ $t('payment.secure3DPayButton') }}
+          </a>
+        </div>
+
+        <template v-else>
+
         <!-- Информация о сумме и количестве могил -->
         <div class="payment-info">
           <div class="info-row">
@@ -23,22 +38,22 @@
         <div class="form-group">
           <label class="label">{{ $t('payment.cardNumber') }}</label>
           <input
-            v-model="cardNumber"
-            type="text"
-            class="input"
-            :placeholder="$t('payment.cardNumberPlaceholder')"
-            maxlength="19"
-            @input="formatCardNumber"
+              v-model="cardNumber"
+              type="text"
+              class="input"
+              :placeholder="$t('payment.cardNumberPlaceholder')"
+              maxlength="19"
+              @input="formatCardNumber"
           />
         </div>
 
         <div class="form-group">
           <label class="label">{{ $t('payment.email') }}</label>
           <input
-            v-model="email"
-            type="email"
-            class="input"
-            :placeholder="$t('payment.emailPlaceholder')"
+              v-model="email"
+              type="email"
+              class="input"
+              :placeholder="$t('payment.emailPlaceholder')"
           />
         </div>
 
@@ -46,34 +61,35 @@
           <div class="form-group half">
             <label class="label">{{ $t('payment.expiryDate') }}</label>
             <input
-              v-model="expiryDate"
-              type="text"
-              class="input"
-              :placeholder="$t('payment.expiryPlaceholder')"
-              maxlength="5"
-              @input="formatExpiryDate"
+                v-model="expiryDate"
+                type="text"
+                class="input"
+                :placeholder="$t('payment.expiryPlaceholder')"
+                maxlength="5"
+                @input="formatExpiryDate"
             />
           </div>
 
           <div class="form-group half">
             <label class="label">{{ $t('payment.cvv') }}</label>
             <input
-              v-model="cvcCode"
-              type="password"
-              class="input"
-              :placeholder="$t('payment.cvvPlaceholder')"
-              maxlength="3"
+                v-model="cvcCode"
+                type="password"
+                class="input"
+                :placeholder="$t('payment.cvvPlaceholder')"
+                maxlength="3"
             />
           </div>
         </div>
 
         <button
-          class="pay-button"
-          @click="processPayment"
-          :disabled="isProcessing"
+            class="pay-button"
+            @click="processPayment"
+            :disabled="isProcessing"
         >
           {{ isProcessing ? $t('payment.processing') : $t('payment.pay') }}
         </button>
+        </template>
       </div>
     </div>
   </div>
@@ -114,26 +130,32 @@ export default {
       email: "",
       cvcCode: "",
       isProcessing: false,
+      showSecure3DModal: false,
+      secure3DURL: "",
     };
   },
   computed: {
+    isMobile() {
+      if (typeof window === 'undefined') return false;
+      return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    },
     // Подсчет количества могил (основная + дополнительные)
     gravesCount() {
       let count = 1; // Основная могила всегда есть
-      
+
       // Добавляем дополнительные могилы
       if (this.burialData?.adjacent_graves && this.burialData.adjacent_graves.length > 0) {
         count += this.burialData.adjacent_graves.length;
       }
-      
+
       // Если есть только ID дополнительных мест
       if (this.burialData?.adjacent_grave_ids && this.burialData.adjacent_grave_ids.length > 0) {
         count += this.burialData.adjacent_grave_ids.length;
       }
-      
+
       return count;
     },
-    
+
     // Расчет итоговой стоимости с учетом количества могил
     totalAmount() {
       const basePrice = this.burialData.burial_price || 100;
@@ -143,6 +165,8 @@ export default {
   methods: {
     closeModal() {
       if (!this.isProcessing) {
+        this.showSecure3DModal = false;
+        this.secure3DURL = "";
         this.$emit("close");
       }
     },
@@ -170,89 +194,6 @@ export default {
         this.expiryDate = value;
       }
     },
-    async parse3DSecureFromURL(secure3DURL) {
-      // Делаем запрос на URL чтобы получить HTML форму
-      const { $axios } = useNuxtApp()
-      try {
-        const response = await $axios.get(secure3DURL, {
-          responseType: 'text'
-        })
-        
-        // Создаем временный DOM элемент для парсинга HTML
-        const parser = new DOMParser()
-        const doc = parser.parseFromString(response.data, 'text/html')
-        
-        // Ищем форму на странице
-        const form = doc.querySelector('form')
-        if (!form) {
-          throw new Error('Форма не найдена на странице 3D Secure')
-        }
-        
-        // Извлекаем action формы
-        const action = form.action || secure3DURL
-        
-        // Извлекаем значения полей из формы
-        const paReqInput = form.querySelector('input[name="PaReq"], input[name="paReq"]')
-        const mdInput = form.querySelector('input[name="MD"], input[name="md"]')
-        const termUrlInput = form.querySelector('input[name="TermUrl"], input[name="termUrl"]')
-        
-        return {
-          action: action,
-          paReq: paReqInput ? paReqInput.value : '',
-          md: mdInput ? mdInput.value : '',
-          termUrl: termUrlInput ? termUrlInput.value : ''
-        }
-      } catch (error) {
-        console.error('Ошибка при парсинге 3D Secure URL:', error)
-        throw error
-      }
-    },
-    open3DSecureForm(action, paReq, md, termUrl) {
-      // Создать форму динамически
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = action
-      form.style.display = 'none'
-      
-      // Добавить скрытые поля
-      const paReqInput = document.createElement('input')
-      paReqInput.type = 'hidden'
-      paReqInput.name = 'PaReq'
-      paReqInput.value = paReq
-      form.appendChild(paReqInput)
-      
-      const mdInput = document.createElement('input')
-      mdInput.type = 'hidden'
-      mdInput.name = 'MD'
-      mdInput.value = md
-      form.appendChild(mdInput)
-      
-      const termUrlInput = document.createElement('input')
-      termUrlInput.type = 'hidden'
-      termUrlInput.name = 'TermUrl'
-      termUrlInput.value = termUrl
-      form.appendChild(termUrlInput)
-      
-      document.body.appendChild(form)
-      
-      // Открыть в новом окне/popup
-      const popup = window.open('', '3DSecure', 'width=600,height=600,scrollbars=yes')
-      form.target = '3DSecure'
-      form.submit()
-      
-      // Отслеживать закрытие popup
-      const checkPopup = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(checkPopup)
-          console.log('3D Secure popup closed')
-        }
-      }, 500)
-      
-      // Удалить форму после отправки
-      setTimeout(() => form.remove(), 100)
-      
-      return popup
-    },
     async waitForPaymentConfirmation(burialId, paymentId) {
       return new Promise((resolve, reject) => {
         const checkPayment = async () => {
@@ -268,7 +209,7 @@ export default {
 
         // Проверяем каждые 5 секунд
         const intervalId = setInterval(checkPayment, 5000);
-        
+
         // Таймаут через 5 минут
         setTimeout(() => {
           clearInterval(intervalId);
@@ -298,44 +239,21 @@ export default {
         const burialId = this.$route.params.id;
         const paymentId = paymentResponse.data.data.paymentInfo.id;
 
-        // Проверяем, требуется ли 3D Secure
-        if (paymentResponse.data.data.requires3DSecure && paymentResponse.data.data.secure3D) {
-          // Новый формат API - данные уже в JSON
-          const { paReq, md, action } = paymentResponse.data.data.secure3D
-          const termUrl = paymentResponse.data.data.termUrl
-          
-          // Открываем 3D Secure форму
-          this.open3DSecureForm(action, paReq, md, termUrl)
-          
-          // Ждем подтверждения оплаты через интервал
-          await this.waitForPaymentConfirmation(burialId, paymentId)
-        } else if (paymentResponse.data.data.secure3DURL) {
-          // Старый формат API - получаем URL, парсим HTML и извлекаем данные
-          try {
-            // Парсим URL и извлекаем данные формы
-            const secure3DData = await this.parse3DSecureFromURL(paymentResponse.data.data.secure3DURL)
-            
-            // Открываем 3D Secure форму с извлеченными данными
-            this.open3DSecureForm(
-              secure3DData.action,
-              secure3DData.paReq,
-              secure3DData.md,
-              secure3DData.termUrl
-            )
-            
+        if (paymentResponse.data.data.secure3DURL) {
+          // На мобильных устройствах показываем модалку, на десктопе - открываем новую вкладку
+          if (this.isMobile) {
+            this.secure3DURL = paymentResponse.data.data.secure3DURL;
+            this.showSecure3DModal = true;
             // Ждем подтверждения оплаты через интервал
-            await this.waitForPaymentConfirmation(burialId, paymentId)
-          } catch (error) {
-            console.error('Ошибка при обработке 3D Secure URL:', error)
-            // Fallback - открываем URL напрямую если парсинг не удался
-            window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer')
-            
+            await this.waitForPaymentConfirmation(burialId, paymentId);
+          } else {
+            window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer');
             // Ждем подтверждения оплаты через интервал
-            await this.waitForPaymentConfirmation(burialId, paymentId)
+            await this.waitForPaymentConfirmation(burialId, paymentId);
           }
         } else {
           // Если нет 3D Secure, подтверждаем платеж сразу
-          await confirmBurialPayment(burialId, paymentId)
+          await confirmBurialPayment(burialId, paymentId);
         }
 
         // 2. Обновляем данные захоронения (дата и время)
@@ -540,5 +458,50 @@ export default {
     margin: 16px;
     width: calc(100% - 32px);
   }
+}
+
+.secure3d-modal {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.secure3d-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.secure3d-description {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  padding: 0 16px;
+}
+
+.secure3d-button {
+  display: inline-block;
+  width: 100%;
+  padding: 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.secure3d-button:hover {
+  background-color: #45a049;
+}
+
+.secure3d-button:active {
+  background-color: #3d8b40;
 }
 </style>
