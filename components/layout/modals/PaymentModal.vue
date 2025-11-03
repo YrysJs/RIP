@@ -240,42 +240,65 @@ export default {
         const paymentId = paymentResponse.data.data.paymentInfo.id;
 
         if (paymentResponse.data.data.secure3DURL) {
-          // На мобильных устройствах показываем модалку, на десктопе - открываем новую вкладку
-          if (this.isMobile) {
-            this.secure3DURL = paymentResponse.data.data.secure3DURL;
-            this.showSecure3DModal = true;
-            // Ждем подтверждения оплаты через интервал
-            await this.waitForPaymentConfirmation(burialId, paymentId);
-          } else {
+          // Показываем модалку с ссылкой 3D Secure (для всех устройств)
+          this.secure3DURL = paymentResponse.data.data.secure3DURL;
+          this.showSecure3DModal = true;
+          
+          // На десктопе дополнительно открываем в новой вкладке
+          if (!this.isMobile) {
             window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer');
-            // Ждем подтверждения оплаты через интервал
-            await this.waitForPaymentConfirmation(burialId, paymentId);
           }
+          
+          // Ждем подтверждения оплаты через интервал
+          await this.waitForPaymentConfirmation(burialId, paymentId);
+          
+          // После подтверждения обновляем данные и закрываем модалку
+          // 2. Обновляем данные захоронения (дата и время)
+          if (this.burialData?.burial_date || this.burialData?.burial_time) {
+            const burialUpdateData = {
+              death_date: this.deathDate + "T00:00:00Z",
+              burial_date: `${this.burialData.burial_date}T${this.burialData.burial_time}:00Z`,
+              burial_time: this.burialData.burial_time,
+            };
+            if (this.deathCertificateFile && this.burialData?.deceased?.id) {
+              const response = await uploadDeceasedDeathCertificate(
+                  this.burialData.deceased.id,
+                  this.deathCertificateFile
+              );
+              burialUpdateData.death_cert_url = response?.data?.files?.[0]?.fileUrl || ""
+            }
+            await updateBurialRequestData(this.burialData.id, burialUpdateData);
+          }
+
+          // Закрываем модалку и сообщаем о успешной оплате
+          this.showSecure3DModal = false;
+          this.$emit("close");
+          this.$emit("success");
         } else {
           // Если нет 3D Secure, подтверждаем платеж сразу
           await confirmBurialPayment(burialId, paymentId);
-        }
 
-        // 2. Обновляем данные захоронения (дата и время)
-        if (this.burialData?.burial_date || this.burialData?.burial_time) {
-          const burialUpdateData = {
-            death_date: this.deathDate + "T00:00:00Z",
-            burial_date: `${this.burialData.burial_date}T${this.burialData.burial_time}:00Z`,
-            burial_time: this.burialData.burial_time,
-          };
-          if (this.deathCertificateFile && this.burialData?.deceased?.id) {
-            const response = await uploadDeceasedDeathCertificate(
-                this.burialData.deceased.id,
-                this.deathCertificateFile
-            );
-            burialUpdateData.death_cert_url = response?.data?.files?.[0]?.fileUrl || ""
+          // 2. Обновляем данные захоронения (дата и время)
+          if (this.burialData?.burial_date || this.burialData?.burial_time) {
+            const burialUpdateData = {
+              death_date: this.deathDate + "T00:00:00Z",
+              burial_date: `${this.burialData.burial_date}T${this.burialData.burial_time}:00Z`,
+              burial_time: this.burialData.burial_time,
+            };
+            if (this.deathCertificateFile && this.burialData?.deceased?.id) {
+              const response = await uploadDeceasedDeathCertificate(
+                  this.burialData.deceased.id,
+                  this.deathCertificateFile
+              );
+              burialUpdateData.death_cert_url = response?.data?.files?.[0]?.fileUrl || ""
+            }
+            await updateBurialRequestData(this.burialData.id, burialUpdateData);
           }
-          await updateBurialRequestData(this.burialData.id, burialUpdateData);
-        }
 
-        // 5. Закрываем модалку и сообщаем о успешной оплате
-        this.$emit("close");
-        this.$emit("success");
+          // Закрываем модалку и сообщаем о успешной оплате
+          this.$emit("close");
+          this.$emit("success");
+        }
       } catch (error) {
         console.log(error)
         console.error("Payment process failed:", error);

@@ -134,6 +134,29 @@ export default {
         this.$emit('close')
       }
     },
+    async waitForOrderPaymentConfirmation(orderId, transactionId) {
+      return new Promise((resolve, reject) => {
+        const checkPayment = async () => {
+          try {
+            await confirmOrderPayment(orderId, transactionId);
+            clearInterval(intervalId);
+            resolve();
+          } catch (error) {
+            // Если ошибка - продолжаем попытки
+            console.log('Ожидание подтверждения оплаты заказа...');
+          }
+        };
+
+        // Проверяем каждые 5 секунд
+        const intervalId = setInterval(checkPayment, 5000);
+
+        // Таймаут через 5 минут
+        setTimeout(() => {
+          clearInterval(intervalId);
+          reject(new Error('Таймаут ожидания подтверждения оплаты'));
+        }, 300000);
+      });
+    },
     formatCardNumber(event) {
       let value = event.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '')
       let matches = value.match(/\d{4,16}/g)
@@ -178,56 +201,88 @@ export default {
         // 1. Выполняем платеж (закомментировано для тестирования)
         const paymentResponse = await processCardPayment(paymentData)
 
-        if (paymentResponse.data.data.secure3DURL) {
-          // На мобильных устройствах показываем модалку, на десктопе - открываем новую вкладку
-          if (this.isMobile) {
-            this.secure3DURL = paymentResponse.data.data.secure3DURL;
-            this.showSecure3DModal = true;
-          } else {
-            window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer');
-          }
-        }
-
-
-        console.log(this.burialData)
-        // 2. Создаем заказ через API с правильной структурой
-        // Создаем заказ независимо от наличия burialData
-        const orderRequestData = {
-          // Данные захоронения (если есть)
-          ...(this.burialData && {
-            burial_date: this.burialData.burial_date,
-            burial_order_id: this.burialData.id,
-            burial_time: this.burialData.burial_time,
-            cemetery_id: this.burialData.cemetery_id,
-            deceased_id: this.burialData.deceased_id,
-            grave_id: this.burialData.grave_id,
-          }),
-          // Товары заказа
-          order_items: this.orderData.cartItems?.map(item => ({
-            delivery_arrival_time: item.delivery_arrival_time || "2025-05-17T09:00:00Z",
-            delivery_destination_address: item.delivery_destination_address || "Алматы, ул. Еревагская 157",
-            product_id: item.product_id,
-            quantity: item.quantity
-          })) || []
-        }
-
-        console.log('Order request data:', orderRequestData)
-        const orderResponse = await createOrder(orderRequestData)
-
         // Получаем transaction_id из ответа платежа
         const transactionId = paymentResponse.data.data.paymentInfo.id
 
-        // Подтверждаем платеж заказа
-        if (transactionId && orderResponse?.data?.id) {
-          console.log('Confirming order payment...')
-          await confirmOrderPayment(orderResponse.data.id, transactionId)
-          console.log('Order payment confirmed')
+        if (paymentResponse.data.data.secure3DURL) {
+          // Показываем модалку с ссылкой 3D Secure (для всех устройств)
+          this.secure3DURL = paymentResponse.data.data.secure3DURL;
+          this.showSecure3DModal = true;
+          
+          // На десктопе дополнительно открываем в новой вкладке
+          if (!this.isMobile) {
+            window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer');
+          }
+
+          // Сначала создаем заказ
+          console.log(this.burialData)
+          const orderRequestData = {
+            // Данные захоронения (если есть)
+            ...(this.burialData && {
+              burial_date: this.burialData.burial_date,
+              burial_order_id: this.burialData.id,
+              burial_time: this.burialData.burial_time,
+              cemetery_id: this.burialData.cemetery_id,
+              deceased_id: this.burialData.deceased_id,
+              grave_id: this.burialData.grave_id,
+            }),
+            // Товары заказа
+            order_items: this.orderData.cartItems?.map(item => ({
+              delivery_arrival_time: item.delivery_arrival_time || "2025-05-17T09:00:00Z",
+              delivery_destination_address: item.delivery_destination_address || "Алматы, ул. Еревагская 157",
+              product_id: item.product_id,
+              quantity: item.quantity
+            })) || []
+          }
+
+          console.log('Order request data:', orderRequestData)
+          const orderResponse = await createOrder(orderRequestData)
+
+          // Ждем подтверждения платежа через интервал
+          if (transactionId && orderResponse?.data?.id) {
+            await this.waitForOrderPaymentConfirmation(orderResponse.data.id, transactionId);
+          }
+
+          // После подтверждения закрываем модалку
+          this.showSecure3DModal = false;
+          this.$emit('close')
+          this.$emit('success')
+        } else {
+          // Если нет 3D Secure, создаем заказ и подтверждаем платеж сразу
+          console.log(this.burialData)
+          const orderRequestData = {
+            // Данные захоронения (если есть)
+            ...(this.burialData && {
+              burial_date: this.burialData.burial_date,
+              burial_order_id: this.burialData.id,
+              burial_time: this.burialData.burial_time,
+              cemetery_id: this.burialData.cemetery_id,
+              deceased_id: this.burialData.deceased_id,
+              grave_id: this.burialData.grave_id,
+            }),
+            // Товары заказа
+            order_items: this.orderData.cartItems?.map(item => ({
+              delivery_arrival_time: item.delivery_arrival_time || "2025-05-17T09:00:00Z",
+              delivery_destination_address: item.delivery_destination_address || "Алматы, ул. Еревагская 157",
+              product_id: item.product_id,
+              quantity: item.quantity
+            })) || []
+          }
+
+          console.log('Order request data:', orderRequestData)
+          const orderResponse = await createOrder(orderRequestData)
+
+          // Подтверждаем платеж заказа
+          if (transactionId && orderResponse?.data?.id) {
+            console.log('Confirming order payment...')
+            await confirmOrderPayment(orderResponse.data.id, transactionId)
+            console.log('Order payment confirmed')
+          }
+
+          // Закрываем модалку и сообщаем о успешной оплате
+          this.$emit('close')
+          this.$emit('success')
         }
-
-
-        // 3. Закрываем модалку и сообщаем о успешной оплате
-        this.$emit('close')
-        this.$emit('success')
 
       } catch (error) {
         console.error('Payment process failed:', error)
