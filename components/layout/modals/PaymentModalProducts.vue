@@ -205,17 +205,7 @@ export default {
         const transactionId = paymentResponse.data.data.paymentInfo.id
 
         if (paymentResponse.data.data.secure3DURL) {
-          // Показываем модалку с ссылкой 3D Secure (для всех устройств)
-          this.secure3DURL = paymentResponse.data.data.secure3DURL;
-          this.showSecure3DModal = true;
-          
-          // На десктопе дополнительно открываем в новой вкладке
-          if (!this.isMobile) {
-            window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer');
-          }
-
           // Сначала создаем заказ
-          console.log(this.burialData)
           const orderRequestData = {
             // Данные захоронения (если есть)
             ...(this.burialData && {
@@ -238,15 +228,33 @@ export default {
           console.log('Order request data:', orderRequestData)
           const orderResponse = await createOrder(orderRequestData)
 
-          // Ждем подтверждения платежа через интервал
-          if (transactionId && orderResponse?.data?.id) {
-            await this.waitForOrderPaymentConfirmation(orderResponse.data.id, transactionId);
-          }
+          if (this.isMobile) {
+            // На мобильных устройствах показываем модалку с ссылкой 3D Secure
+            this.secure3DURL = paymentResponse.data.data.secure3DURL;
+            this.showSecure3DModal = true;
 
-          // После подтверждения закрываем модалку
-          this.showSecure3DModal = false;
-          this.$emit('close')
-          this.$emit('success')
+            // Ждем подтверждения платежа через интервал
+            if (transactionId && orderResponse?.data?.id) {
+              await this.waitForOrderPaymentConfirmation(orderResponse.data.id, transactionId);
+            }
+
+            // После подтверждения закрываем модалку
+            this.showSecure3DModal = false;
+            this.$emit('close')
+            this.$emit('success')
+          } else {
+            // На десктопе только открываем новую вкладку
+            window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer');
+
+            // Ждем подтверждения платежа через интервал
+            if (transactionId && orderResponse?.data?.id) {
+              await this.waitForOrderPaymentConfirmation(orderResponse.data.id, transactionId);
+            }
+
+            // После подтверждения закрываем модалку
+            this.$emit('close')
+            this.$emit('success')
+          }
         } else {
           // Если нет 3D Secure, создаем заказ и подтверждаем платеж сразу
           console.log(this.burialData)
