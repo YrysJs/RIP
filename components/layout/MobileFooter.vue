@@ -46,7 +46,7 @@
       <li>
         <button
           class="footer-btn w-full flex flex-col items-center gap-1 py-2"
-          @click="go('/client/history')"
+          @click="go('/services')"
           :class="
             isActive('/services').value ? 'text-[#E9B949]' : 'text-[#222]'
           "
