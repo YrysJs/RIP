@@ -4,17 +4,16 @@
       <div class="payment-form">
         <h2 class="title">{{ $t('payment.cardPayment') }}</h2>
 
-        <!-- Модалка 3D Secure для мобильных устройств -->
+        <!-- Iframe для 3D Secure на мобильных устройствах -->
         <div v-if="showSecure3DModal" class="secure3d-modal">
           <h3 class="secure3d-title">{{ $t('payment.secure3DTitle') }}</h3>
           <p class="secure3d-description">{{ $t('payment.secure3DDescription') }}</p>
-          <a 
-            :href="secure3DURL" 
-            target="_blank" 
-            class="secure3d-button"
-          >
-            {{ $t('payment.secure3DPayButton') }}
-          </a>
+          <iframe
+            ref="secure3DIframe"
+            name="3ds-iframe"
+            class="secure3d-iframe"
+            frameborder="0"
+          ></iframe>
         </div>
 
         <template v-else>
@@ -131,7 +130,9 @@ export default {
       cvcCode: "",
       isProcessing: false,
       showSecure3DModal: false,
-      secure3DURL: "",
+      secure3DData: null,
+      termUrl: "",
+      paymentId: null,
     };
   },
   computed: {
@@ -162,13 +163,124 @@ export default {
       return basePrice * this.gravesCount;
     }
   },
+  mounted() {
+    // Добавляем обработчик сообщений от popup с результатом 3DS
+    this.handlePaymentMessage = (event) => {
+      if (event.data && event.data.type === 'payment_result') {
+        // Результат получен из popup, можно обработать если нужно
+        console.log('Payment result from 3DS:', event.data);
+      }
+    };
+    window.addEventListener('message', this.handlePaymentMessage);
+  },
+  beforeUnmount() {
+    // Удаляем обработчик при размонтировании компонента
+    if (this.handlePaymentMessage) {
+      window.removeEventListener('message', this.handlePaymentMessage);
+    }
+  },
   methods: {
     closeModal() {
       if (!this.isProcessing) {
         this.showSecure3DModal = false;
-        this.secure3DURL = "";
+        this.secure3DData = null;
+        this.termUrl = "";
         this.$emit("close");
       }
+    },
+    open3DSecureForm(action, paReq, md, termUrl) {
+      // Создаем форму динамически
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = action;
+      form.style.display = 'none';
+      
+      // Добавляем скрытые поля
+      const paReqInput = document.createElement('input');
+      paReqInput.type = 'hidden';
+      paReqInput.name = 'PaReq';
+      paReqInput.value = paReq;
+      form.appendChild(paReqInput);
+      
+      const mdInput = document.createElement('input');
+      mdInput.type = 'hidden';
+      mdInput.name = 'MD';
+      mdInput.value = md;
+      form.appendChild(mdInput);
+      
+      const termUrlInput = document.createElement('input');
+      termUrlInput.type = 'hidden';
+      termUrlInput.name = 'TermUrl';
+      termUrlInput.value = termUrl;
+      form.appendChild(termUrlInput);
+      
+      document.body.appendChild(form);
+      
+      if (this.isMobile) {
+        // На мобильных устройствах используем iframe
+        form.target = '3ds-iframe';
+        this.$nextTick(() => {
+          form.submit();
+        });
+      } else {
+        // На десктопе открываем popup
+        const popup = window.open('', '3DSecure', 'width=600,height=600,scrollbars=yes');
+        if (popup) {
+          form.target = '3DSecure';
+          form.submit();
+          
+          // Отслеживаем закрытие popup
+          const checkPopup = setInterval(() => {
+            if (popup.closed) {
+              clearInterval(checkPopup);
+              // Проверяем статус платежа после закрытия popup
+              this.checkPaymentStatusAfter3DS();
+            }
+          }, 500);
+        } else {
+          // Если popup заблокирован, используем iframe
+          this.showSecure3DModal = true;
+          form.target = '3ds-iframe';
+          this.$nextTick(() => {
+            form.submit();
+          });
+        }
+      }
+      
+      // Удаляем форму после отправки
+      setTimeout(() => form.remove(), 100);
+    },
+    async checkPaymentStatusAfter3DS() {
+      if (!this.paymentId) return;
+      
+      // Ждем немного, чтобы бэкенд обработал результат 3DS
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Проверяем статус платежа через API
+      const burialId = this.$route.params.id;
+      await this.waitForPaymentConfirmation(burialId, this.paymentId);
+      
+      // После подтверждения обновляем данные
+      if (this.burialData?.burial_date || this.burialData?.burial_time) {
+        const burialUpdateData = {
+          death_date: this.deathDate + "T00:00:00Z",
+          burial_date: `${this.burialData.burial_date}T${this.burialData.burial_time}:00Z`,
+          burial_time: this.burialData.burial_time,
+        };
+        if (this.deathCertificateFile && this.burialData?.deceased?.id) {
+          const response = await uploadDeceasedDeathCertificate(
+              this.burialData.deceased.id,
+              this.deathCertificateFile
+          );
+          burialUpdateData.death_cert_url = response?.data?.files?.[0]?.fileUrl || ""
+        }
+        await updateBurialRequestData(this.burialData.id, burialUpdateData);
+      }
+
+      // Закрываем модалку и сообщаем о успешной оплате
+      this.showSecure3DModal = false;
+      this.$emit("close");
+      this.$emit("success");
     },
     formatCardNumber(event) {
       let value = event.target.value.replace(/\s/g, "").replace(/[^0-9]/gi, "");
@@ -238,13 +350,24 @@ export default {
 
         const burialId = this.$route.params.id;
         const paymentId = paymentResponse.data.data.paymentInfo.id;
+        this.paymentId = paymentId;
 
-        if (paymentResponse.data.data.secure3DURL) {
+        // Проверяем требуется ли 3D Secure
+        if (paymentResponse.data.data.requires3DSecure && paymentResponse.data.data.secure3D) {
+          const { paReq, md, action } = paymentResponse.data.data.secure3D;
+          const termUrl = paymentResponse.data.data.termUrl;
+          this.termUrl = termUrl;
+          
+          // Показываем iframe на мобильных устройствах
           if (this.isMobile) {
-            // На мобильных устройствах показываем модалку с ссылкой 3D Secure
-            this.secure3DURL = paymentResponse.data.data.secure3DURL;
             this.showSecure3DModal = true;
-            
+          }
+          
+          // Открываем форму 3D Secure
+          this.open3DSecureForm(action, paReq, md, termUrl);
+          
+          // На мобильных устройствах ждем завершения в iframe и проверяем статус
+          if (this.isMobile) {
             // Ждем подтверждения оплаты через интервал
             await this.waitForPaymentConfirmation(burialId, paymentId);
             
@@ -270,35 +393,8 @@ export default {
             this.showSecure3DModal = false;
             this.$emit("close");
             this.$emit("success");
-          } else {
-            // На десктопе только открываем новую вкладку
-            window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer');
-            
-            // Ждем подтверждения оплаты через интервал
-            await this.waitForPaymentConfirmation(burialId, paymentId);
-            
-            // После подтверждения обновляем данные и закрываем модалку
-            // 2. Обновляем данные захоронения (дата и время)
-            if (this.burialData?.burial_date || this.burialData?.burial_time) {
-              const burialUpdateData = {
-                death_date: this.deathDate + "T00:00:00Z",
-                burial_date: `${this.burialData.burial_date}T${this.burialData.burial_time}:00Z`,
-                burial_time: this.burialData.burial_time,
-              };
-              if (this.deathCertificateFile && this.burialData?.deceased?.id) {
-                const response = await uploadDeceasedDeathCertificate(
-                    this.burialData.deceased.id,
-                    this.deathCertificateFile
-                );
-                burialUpdateData.death_cert_url = response?.data?.files?.[0]?.fileUrl || ""
-              }
-              await updateBurialRequestData(this.burialData.id, burialUpdateData);
-            }
-
-            // Закрываем модалку и сообщаем о успешной оплате
-            this.$emit("close");
-            this.$emit("success");
           }
+          // На десктопе popup сам обработает результат, проверка статуса будет в checkPaymentStatusAfter3DS
         } else {
           // Если нет 3D Secure, подтверждаем платеж сразу
           await confirmBurialPayment(burialId, paymentId);
@@ -528,28 +624,17 @@ export default {
   padding: 0 16px;
 }
 
-.secure3d-button {
-  display: inline-block;
+.secure3d-iframe {
   width: 100%;
-  padding: 16px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
+  min-height: 500px;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  text-decoration: none;
-  text-align: center;
-  box-sizing: border-box;
+  background-color: white;
 }
 
-.secure3d-button:hover {
-  background-color: #45a049;
-}
-
-.secure3d-button:active {
-  background-color: #3d8b40;
+@media (max-width: 480px) {
+  .secure3d-iframe {
+    min-height: 400px;
+  }
 }
 </style>
