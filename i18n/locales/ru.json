@@ -863,7 +863,13 @@
     "orderDetails": "Детали заказа",
     "totalToPay": "Итого к оплате",
     "cardNumber": "Номер карты",
+    "cardNumberPlaceholder": "2340 0330 0022 1331",
+    "email": "E-mail",
+    "emailPlaceholder": "example@test.com",
     "expiryDate": "Срок действия",
+    "expiryPlaceholder": "01/25",
+    "cvv": "CVC код",
+    "cvvPlaceholder": "234",
     "cvcCode": "CVC код"
   },
   "cart": {

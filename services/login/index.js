@@ -163,11 +163,12 @@ function getSupplier(params) {
     })
 }
 
-function getCurrentUser() {
+function getCurrentUser(params) {
     const { $axios } = useNuxtApp()
     return $axios({
         method: 'GET',
         url: useRuntimeConfig().public.apiBaseUrl + '/api/v2/user/current',
+        params: params || {}
     })
 }
 

@@ -51,7 +51,6 @@
               placeholder="01/25"
               maxlength="5"
               @input="formatExpiryDate"
-              @paste="handleExpiryDatePaste"
               @change="handleExpiryDateChange"
             />
           </div>
@@ -105,19 +104,6 @@ export default {
       isProcessing: false
     }
   },
-  watch: {
-    expiryDate(newVal) {
-      // Автоматически форматируем дату при любом изменении (включая автозаполнение)
-      if (newVal && !newVal.includes('/')) {
-        const cleanValue = newVal.replace(/\D/g, '')
-        if (cleanValue.length >= 2) {
-          this.$nextTick(() => {
-            this.expiryDate = cleanValue.substring(0, 2) + '/' + cleanValue.substring(2, 4)
-          })
-        }
-      }
-    }
-  },
   methods: {
     closeModal() {
       if (!this.isProcessing) {
@@ -148,23 +134,15 @@ export default {
         this.expiryDate = value
       }
     },
-    handleExpiryDatePaste(event) {
-      // Обработка вставки через Ctrl+V или правый клик
-      event.preventDefault()
-      const pastedData = (event.clipboardData || window.clipboardData).getData('text')
-      const cleanValue = pastedData.replace(/\D/g, '')
-      if (cleanValue.length >= 2) {
-        this.expiryDate = cleanValue.substring(0, 2) + '/' + cleanValue.substring(2, 4)
-      } else {
-        this.expiryDate = cleanValue
-      }
-    },
     handleExpiryDateChange(event) {
       // Обработка изменения значения (включая автозаполнение браузера)
-      const value = event.target.value.replace(/\D/g, '')
-      if (value.length >= 2 && !value.includes('/')) {
-        this.expiryDate = value.substring(0, 2) + '/' + value.substring(2, 4)
-      }
+      // Используем setTimeout чтобы не мешать автозаполнению
+      setTimeout(() => {
+        const value = event.target.value.replace(/\D/g, '')
+        if (value.length >= 2 && !value.includes('/')) {
+          this.expiryDate = value.substring(0, 2) + '/' + value.substring(2, 4)
+        }
+      }, 100)
     },
     async parse3DSecureFromURL(secure3DURL) {
       // Делаем запрос на URL чтобы получить HTML форму
