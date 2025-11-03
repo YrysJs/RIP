@@ -205,6 +205,8 @@ export default {
         const transactionId = paymentResponse.data.data.paymentInfo.id
 
         if (paymentResponse.data.data.secure3DURL) {
+          alert('zawel')
+          alert(aymentResponse.data.data.secure3DURL)
           // Сначала создаем заказ
           const orderRequestData = {
             // Данные захоронения (если есть)
@@ -229,10 +231,11 @@ export default {
           const orderResponse = await createOrder(orderRequestData)
 
           if (this.isMobile) {
+            alert('mobile')
             // На мобильных устройствах показываем модалку с ссылкой 3D Secure
             this.secure3DURL = paymentResponse.data.data.secure3DURL;
             this.showSecure3DModal = true;
-
+            alert(this.showSecure3DModal)
             // Ждем подтверждения платежа через интервал
             if (transactionId && orderResponse?.data?.id) {
               await this.waitForOrderPaymentConfirmation(orderResponse.data.id, transactionId);
@@ -293,6 +296,7 @@ export default {
         }
 
       } catch (error) {
+        alert(error)
         console.error('Payment process failed:', error)
       } finally {
         this.isProcessing = false
