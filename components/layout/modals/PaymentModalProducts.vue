@@ -51,7 +51,6 @@
               placeholder="01/25"
               maxlength="5"
               @input="formatExpiryDate"
-              @change="handleExpiryDateChange"
             />
           </div>
           
@@ -133,16 +132,6 @@ export default {
       } else {
         this.expiryDate = value
       }
-    },
-    handleExpiryDateChange(event) {
-      // Обработка изменения значения (включая автозаполнение браузера)
-      // Используем setTimeout чтобы не мешать автозаполнению
-      setTimeout(() => {
-        const value = event.target.value.replace(/\D/g, '')
-        if (value.length >= 2 && !value.includes('/')) {
-          this.expiryDate = value.substring(0, 2) + '/' + value.substring(2, 4)
-        }
-      }, 100)
     },
     async parse3DSecureFromURL(secure3DURL) {
       // Делаем запрос на URL чтобы получить HTML форму
