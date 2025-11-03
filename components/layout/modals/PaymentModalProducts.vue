@@ -51,6 +51,8 @@
               placeholder="01/25"
               maxlength="5"
               @input="formatExpiryDate"
+              @paste="handleExpiryDatePaste"
+              @change="handleExpiryDateChange"
             />
           </div>
           
@@ -103,6 +105,19 @@ export default {
       isProcessing: false
     }
   },
+  watch: {
+    expiryDate(newVal) {
+      // Автоматически форматируем дату при любом изменении (включая автозаполнение)
+      if (newVal && !newVal.includes('/')) {
+        const cleanValue = newVal.replace(/\D/g, '')
+        if (cleanValue.length >= 2) {
+          this.$nextTick(() => {
+            this.expiryDate = cleanValue.substring(0, 2) + '/' + cleanValue.substring(2, 4)
+          })
+        }
+      }
+    }
+  },
   methods: {
     closeModal() {
       if (!this.isProcessing) {
@@ -133,6 +148,108 @@ export default {
         this.expiryDate = value
       }
     },
+    handleExpiryDatePaste(event) {
+      // Обработка вставки через Ctrl+V или правый клик
+      event.preventDefault()
+      const pastedData = (event.clipboardData || window.clipboardData).getData('text')
+      const cleanValue = pastedData.replace(/\D/g, '')
+      if (cleanValue.length >= 2) {
+        this.expiryDate = cleanValue.substring(0, 2) + '/' + cleanValue.substring(2, 4)
+      } else {
+        this.expiryDate = cleanValue
+      }
+    },
+    handleExpiryDateChange(event) {
+      // Обработка изменения значения (включая автозаполнение браузера)
+      const value = event.target.value.replace(/\D/g, '')
+      if (value.length >= 2 && !value.includes('/')) {
+        this.expiryDate = value.substring(0, 2) + '/' + value.substring(2, 4)
+      }
+    },
+    async parse3DSecureFromURL(secure3DURL) {
+      // Делаем запрос на URL чтобы получить HTML форму
+      const { $axios } = useNuxtApp()
+      try {
+        const response = await $axios.get(secure3DURL, {
+          responseType: 'text'
+        })
+        
+        // Создаем временный DOM элемент для парсинга HTML
+        const parser = new DOMParser()
+        const doc = parser.parseFromString(response.data, 'text/html')
+        
+        // Ищем форму на странице
+        const form = doc.querySelector('form')
+        if (!form) {
+          throw new Error('Форма не найдена на странице 3D Secure')
+        }
+        
+        // Извлекаем action формы
+        const action = form.action || secure3DURL
+        
+        // Извлекаем значения полей из формы
+        const paReqInput = form.querySelector('input[name="PaReq"], input[name="paReq"]')
+        const mdInput = form.querySelector('input[name="MD"], input[name="md"]')
+        const termUrlInput = form.querySelector('input[name="TermUrl"], input[name="termUrl"]')
+        
+        return {
+          action: action,
+          paReq: paReqInput ? paReqInput.value : '',
+          md: mdInput ? mdInput.value : '',
+          termUrl: termUrlInput ? termUrlInput.value : ''
+        }
+      } catch (error) {
+        console.error('Ошибка при парсинге 3D Secure URL:', error)
+        throw error
+      }
+    },
+    open3DSecureForm(action, paReq, md, termUrl) {
+      // Создать форму динамически
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = action
+      form.style.display = 'none'
+      
+      // Добавить скрытые поля
+      const paReqInput = document.createElement('input')
+      paReqInput.type = 'hidden'
+      paReqInput.name = 'PaReq'
+      paReqInput.value = paReq
+      form.appendChild(paReqInput)
+      
+      const mdInput = document.createElement('input')
+      mdInput.type = 'hidden'
+      mdInput.name = 'MD'
+      mdInput.value = md
+      form.appendChild(mdInput)
+      
+      const termUrlInput = document.createElement('input')
+      termUrlInput.type = 'hidden'
+      termUrlInput.name = 'TermUrl'
+      termUrlInput.value = termUrl
+      form.appendChild(termUrlInput)
+      
+      document.body.appendChild(form)
+      
+      // Открыть в новом окне/popup
+      const popup = window.open('', '3DSecure', 'width=600,height=600,scrollbars=yes')
+      form.target = '3DSecure'
+      form.submit()
+      
+      // Отслеживать закрытие popup
+      const checkPopup = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkPopup)
+          // Проверить статус платежа через API можно здесь
+          console.log('3D Secure popup closed')
+        }
+      }, 500)
+      
+      // Удалить форму после отправки
+      setTimeout(() => form.remove(), 100)
+      
+      return popup
+    },
     async processPayment() {
       if (this.isProcessing) return
       
@@ -150,16 +267,47 @@ export default {
           terminalType: 'shop'
         }
 
-        // 1. Выполняем платеж (закомментировано для тестирования)
+        // 1. Выполняем платеж
         const paymentResponse = await processCardPayment(paymentData)
 
-        if (paymentResponse.data.data.secure3DURL) {
-          // Открываем ссылку в новой вкладке (работает на всех устройствах)
-          window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer');
+        // Получаем transaction_id из ответа платежа
+        const transactionId = paymentResponse.data.data.paymentInfo.id
+        let requires3DSecure = false
+
+        // Проверяем, требуется ли 3D Secure
+        if (paymentResponse.data.data.requires3DSecure && paymentResponse.data.data.secure3D) {
+          // Новый формат API - данные уже в JSON
+          requires3DSecure = true
+          const { paReq, md, action } = paymentResponse.data.data.secure3D
+          const termUrl = paymentResponse.data.data.termUrl
+          
+          // Открываем 3D Secure форму
+          this.open3DSecureForm(action, paReq, md, termUrl)
+          
+          // Примечание: после прохождения 3D Secure пользователь будет перенаправлен на страницу результата
+          // Бэкенд обработает результат и подтвердит платеж автоматически
+        } else if (paymentResponse.data.data.secure3DURL) {
+          // Старый формат API - получаем URL, парсим HTML и извлекаем данные
+          requires3DSecure = true
+          
+          try {
+            // Парсим URL и извлекаем данные формы
+            const secure3DData = await this.parse3DSecureFromURL(paymentResponse.data.data.secure3DURL)
+            
+            // Открываем 3D Secure форму с извлеченными данными
+            this.open3DSecureForm(
+              secure3DData.action,
+              secure3DData.paReq,
+              secure3DData.md,
+              secure3DData.termUrl
+            )
+          } catch (error) {
+            console.error('Ошибка при обработке 3D Secure URL:', error)
+            // Fallback - открываем URL напрямую если парсинг не удался
+            window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer')
+          }
         }
 
-
-        console.log(this.burialData)
         // 2. Создаем заказ через API с правильной структурой
         // Создаем заказ независимо от наличия burialData
         const orderRequestData = {
@@ -184,20 +332,32 @@ export default {
         console.log('Order request data:', orderRequestData)
         const orderResponse = await createOrder(orderRequestData)
 
-        // Получаем transaction_id из ответа платежа
-        const transactionId = paymentResponse.data.data.paymentInfo.id
-
-        // Подтверждаем платеж заказа
-        if (transactionId && orderResponse?.data?.id) {
+        // Подтверждаем платеж заказа только если нет 3D Secure
+        // Если есть 3D Secure, подтверждение произойдет после прохождения аутентификации
+        if (!requires3DSecure && transactionId && orderResponse?.data?.id) {
           console.log('Confirming order payment...')
           await confirmOrderPayment(orderResponse.data.id, transactionId)
           console.log('Order payment confirmed')
+        } else if (requires3DSecure && transactionId && orderResponse?.data?.id) {
+          console.log('3D Secure required, payment confirmation will be handled by backend after authentication')
+          // Платеж будет подтвержден бэкендом после успешного прохождения 3D Secure
         }
 
 
-        // 3. Закрываем модалку и сообщаем о успешной оплате
-        this.$emit('close')
-        this.$emit('success')
+        // 3. Обрабатываем результат
+        if (requires3DSecure) {
+          // При 3D Secure не закрываем модалку сразу - пользователь завершит оплату в popup
+          // После прохождения 3D Secure бэкенд перенаправит на страницу результата
+          // Можно показать сообщение пользователю
+          const { $toast } = useNuxtApp()
+          $toast.info('Пожалуйста, завершите аутентификацию 3D Secure в открывшемся окне')
+          // Не закрываем модалку, чтобы пользователь мог видеть процесс
+          // Модалка закроется после успешного прохождения 3D Secure через страницу результата
+        } else {
+          // Если нет 3D Secure, закрываем модалку и сообщаем об успехе
+          this.$emit('close')
+          this.$emit('success')
+        }
 
       } catch (error) {
         console.error('Payment process failed:', error)

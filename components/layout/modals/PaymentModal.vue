@@ -52,6 +52,8 @@
               :placeholder="$t('payment.expiryPlaceholder')"
               maxlength="5"
               @input="formatExpiryDate"
+              @paste="handleExpiryDatePaste"
+              @change="handleExpiryDateChange"
             />
           </div>
 
@@ -116,6 +118,19 @@ export default {
       isProcessing: false,
     };
   },
+  watch: {
+    expiryDate(newVal) {
+      // Автоматически форматируем дату при любом изменении (включая автозаполнение)
+      if (newVal && !newVal.includes('/')) {
+        const cleanValue = newVal.replace(/\D/g, '')
+        if (cleanValue.length >= 2) {
+          this.$nextTick(() => {
+            this.expiryDate = cleanValue.substring(0, 2) + '/' + cleanValue.substring(2, 4)
+          })
+        }
+      }
+    }
+  },
   computed: {
     // Подсчет количества могил (основная + дополнительные)
     gravesCount() {
@@ -170,6 +185,107 @@ export default {
         this.expiryDate = value;
       }
     },
+    handleExpiryDatePaste(event) {
+      // Обработка вставки через Ctrl+V или правый клик
+      event.preventDefault()
+      const pastedData = (event.clipboardData || window.clipboardData).getData('text')
+      const cleanValue = pastedData.replace(/\D/g, '')
+      if (cleanValue.length >= 2) {
+        this.expiryDate = cleanValue.substring(0, 2) + '/' + cleanValue.substring(2, 4)
+      } else {
+        this.expiryDate = cleanValue
+      }
+    },
+    handleExpiryDateChange(event) {
+      // Обработка изменения значения (включая автозаполнение браузера)
+      const value = event.target.value.replace(/\D/g, '')
+      if (value.length >= 2 && !value.includes('/')) {
+        this.expiryDate = value.substring(0, 2) + '/' + value.substring(2, 4)
+      }
+    },
+    async parse3DSecureFromURL(secure3DURL) {
+      // Делаем запрос на URL чтобы получить HTML форму
+      const { $axios } = useNuxtApp()
+      try {
+        const response = await $axios.get(secure3DURL, {
+          responseType: 'text'
+        })
+        
+        // Создаем временный DOM элемент для парсинга HTML
+        const parser = new DOMParser()
+        const doc = parser.parseFromString(response.data, 'text/html')
+        
+        // Ищем форму на странице
+        const form = doc.querySelector('form')
+        if (!form) {
+          throw new Error('Форма не найдена на странице 3D Secure')
+        }
+        
+        // Извлекаем action формы
+        const action = form.action || secure3DURL
+        
+        // Извлекаем значения полей из формы
+        const paReqInput = form.querySelector('input[name="PaReq"], input[name="paReq"]')
+        const mdInput = form.querySelector('input[name="MD"], input[name="md"]')
+        const termUrlInput = form.querySelector('input[name="TermUrl"], input[name="termUrl"]')
+        
+        return {
+          action: action,
+          paReq: paReqInput ? paReqInput.value : '',
+          md: mdInput ? mdInput.value : '',
+          termUrl: termUrlInput ? termUrlInput.value : ''
+        }
+      } catch (error) {
+        console.error('Ошибка при парсинге 3D Secure URL:', error)
+        throw error
+      }
+    },
+    open3DSecureForm(action, paReq, md, termUrl) {
+      // Создать форму динамически
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = action
+      form.style.display = 'none'
+      
+      // Добавить скрытые поля
+      const paReqInput = document.createElement('input')
+      paReqInput.type = 'hidden'
+      paReqInput.name = 'PaReq'
+      paReqInput.value = paReq
+      form.appendChild(paReqInput)
+      
+      const mdInput = document.createElement('input')
+      mdInput.type = 'hidden'
+      mdInput.name = 'MD'
+      mdInput.value = md
+      form.appendChild(mdInput)
+      
+      const termUrlInput = document.createElement('input')
+      termUrlInput.type = 'hidden'
+      termUrlInput.name = 'TermUrl'
+      termUrlInput.value = termUrl
+      form.appendChild(termUrlInput)
+      
+      document.body.appendChild(form)
+      
+      // Открыть в новом окне/popup
+      const popup = window.open('', '3DSecure', 'width=600,height=600,scrollbars=yes')
+      form.target = '3DSecure'
+      form.submit()
+      
+      // Отслеживать закрытие popup
+      const checkPopup = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkPopup)
+          console.log('3D Secure popup closed')
+        }
+      }, 500)
+      
+      // Удалить форму после отправки
+      setTimeout(() => form.remove(), 100)
+      
+      return popup
+    },
     async waitForPaymentConfirmation(burialId, paymentId) {
       return new Promise((resolve, reject) => {
         const checkPayment = async () => {
@@ -215,15 +331,44 @@ export default {
         const burialId = this.$route.params.id;
         const paymentId = paymentResponse.data.data.paymentInfo.id;
 
-        if (paymentResponse.data.data.secure3DURL) {
-          // Открываем ссылку в новой вкладке (работает на всех устройствах)
-          window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer');
+        // Проверяем, требуется ли 3D Secure
+        if (paymentResponse.data.data.requires3DSecure && paymentResponse.data.data.secure3D) {
+          // Новый формат API - данные уже в JSON
+          const { paReq, md, action } = paymentResponse.data.data.secure3D
+          const termUrl = paymentResponse.data.data.termUrl
+          
+          // Открываем 3D Secure форму
+          this.open3DSecureForm(action, paReq, md, termUrl)
           
           // Ждем подтверждения оплаты через интервал
-          await this.waitForPaymentConfirmation(burialId, paymentId);
+          await this.waitForPaymentConfirmation(burialId, paymentId)
+        } else if (paymentResponse.data.data.secure3DURL) {
+          // Старый формат API - получаем URL, парсим HTML и извлекаем данные
+          try {
+            // Парсим URL и извлекаем данные формы
+            const secure3DData = await this.parse3DSecureFromURL(paymentResponse.data.data.secure3DURL)
+            
+            // Открываем 3D Secure форму с извлеченными данными
+            this.open3DSecureForm(
+              secure3DData.action,
+              secure3DData.paReq,
+              secure3DData.md,
+              secure3DData.termUrl
+            )
+            
+            // Ждем подтверждения оплаты через интервал
+            await this.waitForPaymentConfirmation(burialId, paymentId)
+          } catch (error) {
+            console.error('Ошибка при обработке 3D Secure URL:', error)
+            // Fallback - открываем URL напрямую если парсинг не удался
+            window.open(paymentResponse.data.data.secure3DURL, '_blank', 'noopener,noreferrer')
+            
+            // Ждем подтверждения оплаты через интервал
+            await this.waitForPaymentConfirmation(burialId, paymentId)
+          }
         } else {
           // Если нет 3D Secure, подтверждаем платеж сразу
-          await confirmBurialPayment(burialId, paymentId);
+          await confirmBurialPayment(burialId, paymentId)
         }
 
         // 2. Обновляем данные захоронения (дата и время)
