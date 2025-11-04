@@ -333,25 +333,25 @@ function createMemorial(data) {
     
     if (data.photos) {
         if (Array.isArray(data.photos)) {
-            data.photos.forEach(photo => formData.append('photos', photo))
+            data.photos.forEach(photo => formData.append('photos[]', photo))
         } else {
-            formData.append('photos', data.photos)
+            formData.append('photos[]', data.photos)
         }
     }
     
     if (data.achievements) {
         if (Array.isArray(data.achievements)) {
-            data.achievements.forEach(achievement => formData.append('achievements', achievement))
+            data.achievements.forEach(achievement => formData.append('achievements[]', achievement))
         } else {
-            formData.append('achievements', data.achievements)
+            formData.append('achievements[]', data.achievements)
         }
     }
     
     if (data.video_urls) {
         if (Array.isArray(data.video_urls)) {
-            data.video_urls.forEach(url => formData.append('video_urls', url))
+            data.video_urls.forEach(url => formData.append('video_urls[]', url))
         } else {
-            formData.append('video_urls', data.video_urls)
+            formData.append('video_urls[]', data.video_urls)
         }
     }
     
@@ -365,41 +365,50 @@ function createMemorial(data) {
 function updateMemorial(id, data) {
     const { $axios } = useNuxtApp()
 
-    // Всегда используем FormData
-    const formData = new FormData()
+    // Если data уже FormData, используем его напрямую, иначе создаем новый
+    let formData
+    if (data instanceof FormData) {
+        formData = data
+    } else {
+        formData = new FormData()
+        
+        if (data.id) formData.append('id', data.id)
+        if (data.deceased_id) formData.append('deceased_id', data.deceased_id)
+        if (data.epitaph) formData.append('epitaph', data.epitaph)
+        if (data.about_person) formData.append('about_person', data.about_person)
+        if (data.is_public !== undefined) formData.append('is_public', data.is_public)
 
-    if (data.deceased_id) formData.append('deceased_id', data.deceased_id)
-    if (data.epitaph) formData.append('epitaph', data.epitaph)
-    if (data.about_person) formData.append('about_person', data.about_person)
-    if (data.is_public !== undefined) formData.append('is_public', data.is_public)
+        if (data.photos) {
+            if (Array.isArray(data.photos)) {
+                data.photos.forEach(photo => formData.append('photos[]', photo))
+            } else {
+                formData.append('photos[]', data.photos)
+            }
+        }
 
-    if (data.photos) {
-        if (Array.isArray(data.photos)) {
-            data.photos.forEach(photo => formData.append('photos', photo))
-        } else {
-            formData.append('photos', data.photos)
+        if (data.achievements) {
+            if (Array.isArray(data.achievements)) {
+                data.achievements.forEach(achievement => formData.append('achievements[]', achievement))
+            } else {
+                formData.append('achievements[]', data.achievements)
+            }
+        }
+
+        if (data.video_urls) {
+            if (Array.isArray(data.video_urls)) {
+                data.video_urls.forEach(url => formData.append('video_urls[]', url))
+            } else {
+                formData.append('video_urls[]', data.video_urls)
+            }
         }
     }
 
-    if (data.achievements) {
-        if (Array.isArray(data.achievements)) {
-            data.achievements.forEach(achievement => formData.append('achievements', achievement))
-        } else {
-            formData.append('achievements', data.achievements)
-        }
-    }
-
-    if (data.video_urls) {
-        if (Array.isArray(data.video_urls)) {
-            data.video_urls.forEach(url => formData.append('video_urls', url))
-        } else {
-            formData.append('video_urls', data.video_urls)
-        }
-    }
+    // Используем переданный id или id из data
+    const memorialId = id || data.id
 
     return $axios({
         method: 'PUT',
-        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/memorials/' + data.id,
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/memorials/' + memorialId,
         data: formData,
     })
 }

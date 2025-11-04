@@ -321,8 +321,6 @@ const handleImageUpload = (event) => {
   const files = Array.from(event.target.files || []);
 
   files.forEach((file) => {
-    if (!file.type.startsWith("image/")) return;
-
     if (file && file.type.startsWith("image/")) {
       selectedImages.value.push(file);
 
@@ -337,7 +335,6 @@ const handleImageUpload = (event) => {
       };
       reader.readAsDataURL(file);
     }
-    e.target.value = "";
   });
 
   // Очищаем input для возможности повторной загрузки
@@ -464,10 +461,10 @@ const submitMemorial = async () => {
       fd.append("about_person", aboutPerson.value || "");
       fd.append("is_public", String(!!isPublic.value));
       video_urls.forEach((u) => fd.append("video_urls[]", u));
-      selectedImages.value.forEach((f) => fd.append("photos", f));
+      selectedImages.value.forEach((f) => fd.append("photos[]", f));
       achievementPhotos.value
         .filter((p) => !p.isExisting)
-        .forEach((p) => fd.append("achievements", p.file));
+        .forEach((p) => fd.append("achievements[]", p.file));
       payload = fd;
     } else {
       payload = {
@@ -896,22 +893,22 @@ async function shareMemorial() {
           <h3 class="text-[18px] mb-1">{{ $t('memorialCreate.videoMaterials') }}</h3>
 
           <!-- Кнопка добавления видео -->
-          <div
-            v-if="!showVideoInput"
-            @click="showVideoInputField"
-            class="upload-area rounded-lg transition-colors py-4 flex flex-col"
-          >
-            <div class="flex justify-center mb-2">
-              <img src="/icons/upload-video.svg" alt="" class="w-6 h-6" />
-            </div>
-            <p class="text-base text-[#3F474F]">
-              <span class="font-medium text-[#E9B949]">{{ $t('memorialCreate.uploadFiles') }}</span>
-              {{ $t('memorialCreate.orDrag') }}
-            </p>
-          </div>
+<!--          <div-->
+<!--            v-if="!showVideoInput"-->
+<!--            @click="showVideoInputField"-->
+<!--            class="upload-area rounded-lg transition-colors py-4 flex flex-col"-->
+<!--          >-->
+<!--            <div class="flex justify-center mb-2">-->
+<!--              <img src="/icons/upload-video.svg" alt="" class="w-6 h-6" />-->
+<!--            </div>-->
+<!--            <p class="text-base text-[#3F474F]">-->
+<!--              <span class="font-medium text-[#E9B949]">{{ $t('memorialCreate.uploadFiles') }}</span>-->
+<!--              {{ $t('memorialCreate.orDrag') }}-->
+<!--            </p>-->
+<!--          </div>-->
 
           <!-- Поле ввода ссылки -->
-          <div v-if="showVideoInput" class="video-input-container">
+          <div class="video-input-container">
             <div class="flex gap-2 mb-4">
               <input
                 v-model="videoUrl"
