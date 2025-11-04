@@ -460,11 +460,11 @@ const submitMemorial = async () => {
       fd.append("epitaph", epitaph.value || "");
       fd.append("about_person", aboutPerson.value || "");
       fd.append("is_public", String(!!isPublic.value));
-      video_urls.forEach((u) => fd.append("video_urls[]", u));
-      selectedImages.value.forEach((f) => fd.append("photos[]", f));
+      video_urls.forEach((u) => fd.append("video_urls", u));
+      selectedImages.value.forEach((f) => fd.append("photos", f));
       achievementPhotos.value
         .filter((p) => !p.isExisting)
-        .forEach((p) => fd.append("achievements[]", p.file));
+        .forEach((p) => fd.append("achievements", p.file));
       payload = fd;
     } else {
       payload = {
