@@ -229,51 +229,41 @@ function openAchievement(url, filename) {
 
           <!-- Верхняя сетка: галерея + инфобокс -->
           <div class="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4 mt-4">
-            <!-- Левая часть: галерея изображений -->
-            <div v-if="images.length > 0" class="grid grid-cols-2 grid-rows-2 gap-4">
-              <!-- Большая картинка на всю высоту слева -->
-              <div
-                v-if="images[0]"
-                class="row-span-2 rounded-xl overflow-hidden bg-[#F3F4F6] place-items-center"
+            <!-- Левая часть: галерея изображений (карусель) -->
+            <div v-if="images.length > 0" class="swiper-container">
+              <Swiper
+                :modules="[Navigation]"
+                :navigation="{
+                  nextEl: '.swiper-button-next',
+                  prevEl: '.swiper-button-prev',
+                }"
+                :slides-per-view="1"
+                :space-between="10"
+                class="memorial-gallery-swiper"
               >
-                <img
-                  :src="images[0].url"
-                  alt=""
-                  class="w-[360px] h-[250px] object-cover"
-                />
-              </div>
-
-              <!-- Верхняя маленькая -->
-              <div
-                v-if="images[1]"
-                class="rounded-xl overflow-hidden bg-[#F3F4F6] place-items-center"
-              >
-                <img
-                  :src="images[1].url"
-                  alt=""
-                  class="w-[223px] h-[120px] object-cover"
-                />
-              </div>
-
-              <!-- Нижняя маленькая -->
-              <div
-                v-if="images[2]"
-                class="rounded-xl overflow-hidden bg-[#F3F4F6] place-items-center"
-              >
-                <img
-                  :src="images[2].url"
-                  alt=""
-                  class="w-[223px] h-[120px] object-cover"
-                />
-              </div>
+                <SwiperSlide
+                  v-for="(image, index) in images"
+                  :key="image.id"
+                  class="swiper-slide"
+                >
+                  <div class="image-container rounded-xl overflow-hidden bg-[#F3F4F6] flex items-center justify-center">
+                    <img
+                      :src="image.url"
+                      :alt="`${$t('memorialPage.photo')} ${index + 1}`"
+                      class="gallery-image object-contain"
+                    />
+                  </div>
+                </SwiperSlide>
+              </Swiper>
+              <!-- Кнопки навигации -->
+              <div class="swiper-button-prev"></div>
+              <div class="swiper-button-next"></div>
             </div>
 
             <!-- Если нет изображений, показываем заглушку -->
-            <div v-else class="grid grid-cols-2 grid-rows-2 gap-4">
-              <div class="row-span-2 rounded-xl bg-[#F3F4F6] flex items-center justify-center">
-                <div class="text-center text-gray-500">
-                  <p class="text-sm">{{ $t('memorial.noImages') }}</p>
-                </div>
+            <div v-else class="rounded-xl bg-[#F3F4F6] flex items-center justify-center min-h-[400px]">
+              <div class="text-center text-gray-500">
+                <p class="text-sm">{{ $t('memorial.noImages') }}</p>
               </div>
             </div>
 
@@ -444,6 +434,76 @@ function openAchievement(url, filename) {
 .btn-next img {
   box-shadow: 8px 19px 38px 14px rgba(8, 9, 10, 0.08);
   border-radius: 50%;
+}
+
+/* Стили для карусели галереи */
+.swiper-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+}
+
+.memorial-gallery-swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  width: 100%;
+  height: 100%;
+}
+
+.image-container {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+}
+
+.gallery-image {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Кнопки навигации карусели */
+.swiper-button-prev,
+.swiper-button-next {
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  margin-top: -22px;
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.swiper-button-prev {
+  left: 10px;
+}
+
+.swiper-button-next {
+  right: 10px;
+}
+
+@media (max-width: 1024px) {
+  .swiper-container {
+    height: 300px;
+  }
+  
+  .image-container {
+    min-height: 300px;
+  }
 }
 
 /* Стили для видео компонентов */
