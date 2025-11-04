@@ -440,16 +440,36 @@ const submitMemorial = async () => {
   try {
     isSubmitting.value = true;
 
-    const video_urls = uniqueUrls(videos.value.map((v) => v.url));
+    const currentVideoUrls = uniqueUrls(videos.value.map((v) => v.url));
+    
+    // Для режима редактирования: получаем оригинальные URL видео
+    let originalVideoUrls = [];
+    if (isEditMode.value && memorial.value?.video_urls) {
+      const rawList = [];
+      (memorial.value.video_urls || []).forEach((v) => {
+        const parts = typeof v === "string" ? v.split(",") : [v];
+        parts.forEach((p) => rawList.push(p.trim()));
+      });
+      originalVideoUrls = uniqueUrls(rawList);
+    }
+    
+    // Проверяем, изменились ли видео URL (только для режима редактирования)
+    const videoUrlsChanged = isEditMode.value 
+      ? JSON.stringify(currentVideoUrls.sort()) !== JSON.stringify(originalVideoUrls.sort())
+      : currentVideoUrls.length > 0; // Для создания отправляем если есть видео
+    
+    const video_urls = videoUrlsChanged ? currentVideoUrls : undefined;
+    
     const memorialId = memorial.value?.id || route.params.id; // ← всегда есть id
     if (!memorialId) {
       $toast.error(t('memorialCreate.missingId'));
       return;
     }
 
-    const hasFiles =
-      selectedImages.value.length ||
-      achievementPhotos.value.some((p) => !p.isExisting);
+    // Проверяем наличие новых файлов (не существующих)
+    const hasNewPhotos = selectedImages.value.length > 0;
+    const hasNewAchievements = achievementPhotos.value.some((p) => !p.isExisting);
+    const hasFiles = hasNewPhotos || hasNewAchievements;
 
     let payload;
 
@@ -460,11 +480,20 @@ const submitMemorial = async () => {
       fd.append("epitaph", epitaph.value || "");
       fd.append("about_person", aboutPerson.value || "");
       fd.append("is_public", String(!!isPublic.value));
-      video_urls.forEach((u) => fd.append("video_urls", u));
-      selectedImages.value.forEach((f) => fd.append("photos", f));
-      achievementPhotos.value
-        .filter((p) => !p.isExisting)
-        .forEach((p) => fd.append("achievements", p.file));
+      // Отправляем video_urls только если они изменились
+      if (video_urls && video_urls.length > 0) {
+        video_urls.forEach((u) => fd.append("video_urls[]", u));
+      }
+      // Отправляем только новые фото (не существующие)
+      if (hasNewPhotos) {
+        selectedImages.value.forEach((f) => fd.append("photos[]", f));
+      }
+      // Отправляем только новые достижения (не существующие)
+      if (hasNewAchievements) {
+        achievementPhotos.value
+          .filter((p) => !p.isExisting)
+          .forEach((p) => fd.append("achievements[]", p.file));
+      }
       payload = fd;
     } else {
       payload = {
@@ -475,8 +504,11 @@ const submitMemorial = async () => {
         epitaph: epitaph.value,
         about_person: aboutPerson.value,
         is_public: isPublic.value,
-        video_urls,
       };
+      // Добавляем video_urls только если они изменились
+      if (video_urls && video_urls.length > 0) {
+        payload.video_urls = video_urls;
+      }
     }
 
     // ВАЖНО: передай id отдельным аргументом
