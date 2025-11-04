@@ -435,6 +435,37 @@ const removeAchievementPhoto = (index) => {
   achievementPhotos.value.splice(index, 1);
 };
 
+// Функция для скачивания файла по URL и преобразования в File
+const downloadFileFromUrl = async (url, fileName) => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch file: ${response.statusText}`);
+    }
+    const blob = await response.blob();
+    // Определяем MIME тип из ответа или по расширению файла
+    const mimeType = response.headers.get('content-type') || blob.type || 'image/jpeg';
+    // Создаем File объект из Blob
+    const file = new File([blob], fileName || `file-${Date.now()}`, { type: mimeType });
+    return file;
+  } catch (error) {
+    console.error(`Error downloading file from ${url}:`, error);
+    throw error;
+  }
+};
+
+// Функция для получения имени файла из URL
+const getFileNameFromUrl = (url) => {
+  try {
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname;
+    const fileName = pathname.split('/').pop() || `file-${Date.now()}.jpg`;
+    return fileName;
+  } catch {
+    return `file-${Date.now()}.jpg`;
+  }
+};
+
 // Функция создания/обновления мемориала
 const submitMemorial = async () => {
   try {
@@ -466,34 +497,73 @@ const submitMemorial = async () => {
       return;
     }
 
-    // Проверяем наличие новых файлов (не существующих)
+    // Проверяем наличие файлов (новых или существующих для переотправки)
+    // Важно: удаленные пользователем файлы уже отсутствуют в массивах,
+    // поэтому они не попадут в отправку
     const hasNewPhotos = selectedImages.value.length > 0;
+    const existingPhotos = imagePreviews.value.filter((p) => p.isExisting);
+    const hasExistingPhotos = existingPhotos.length > 0;
+    
     const hasNewAchievements = achievementPhotos.value.some((p) => !p.isExisting);
-    const hasFiles = hasNewPhotos || hasNewAchievements;
+    const existingAchievements = achievementPhotos.value.filter((p) => p.isExisting);
+    const hasExistingAchievements = existingAchievements.length > 0;
+    
+    const hasFiles = hasNewPhotos || hasExistingPhotos || hasNewAchievements || hasExistingAchievements;
 
     let payload;
 
     if (hasFiles) {
       const fd = new FormData();
-      // id НУЖЕН, если ваш сервис читает его из body
-      fd.append("id", String(memorialId)); // ← добавили
+      fd.append("id", String(memorialId));
       fd.append("epitaph", epitaph.value || "");
       fd.append("about_person", aboutPerson.value || "");
       fd.append("is_public", String(!!isPublic.value));
+      
       // Отправляем video_urls только если они изменились
       if (video_urls && video_urls.length > 0) {
         video_urls.forEach((u) => fd.append("video_urls[]", u));
       }
-      // Отправляем только новые фото (не существующие)
+      
+      // Отправляем новые фото
       if (hasNewPhotos) {
         selectedImages.value.forEach((f) => fd.append("photos[]", f));
       }
-      // Отправляем только новые достижения (не существующие)
+      
+      // Скачиваем и отправляем только те существующие фото, которые еще есть в массиве
+      // (удаленные пользователем файлы уже отсутствуют в existingPhotos)
+      if (hasExistingPhotos) {
+        for (const photo of existingPhotos) {
+          try {
+            const file = await downloadFileFromUrl(photo.url, getFileNameFromUrl(photo.url));
+            fd.append("photos[]", file);
+          } catch (error) {
+            console.warn(`Не удалось скачать фото ${photo.url}:`, error);
+            // Продолжаем работу даже если не удалось скачать одно фото
+          }
+        }
+      }
+      
+      // Отправляем новые достижения
       if (hasNewAchievements) {
         achievementPhotos.value
           .filter((p) => !p.isExisting)
           .forEach((p) => fd.append("achievements[]", p.file));
       }
+      
+      // Скачиваем и отправляем только те существующие достижения, которые еще есть в массиве
+      // (удаленные пользователем файлы уже отсутствуют в existingAchievements)
+      if (hasExistingAchievements) {
+        for (const achievement of existingAchievements) {
+          try {
+            const file = await downloadFileFromUrl(achievement.url, getFileNameFromUrl(achievement.url));
+            fd.append("achievements[]", file);
+          } catch (error) {
+            console.warn(`Не удалось скачать достижение ${achievement.url}:`, error);
+            // Продолжаем работу даже если не удалось скачать одно достижение
+          }
+        }
+      }
+      
       payload = fd;
     } else {
       payload = {
