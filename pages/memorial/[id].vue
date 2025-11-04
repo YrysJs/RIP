@@ -100,7 +100,10 @@ onMounted(async () => {
     }
 
     // фото
-    images.value = (data.photo_urls || []).map((url, i) => ({ id: i, url }));
+    images.value = (data.photo_urls || []).map((url, i) => ({ 
+      id: i, 
+      url: url
+    }));
 
     // видео
     const rawVideo = Array.isArray(data.video_urls)
@@ -243,14 +246,15 @@ function openAchievement(url, filename) {
               >
                 <SwiperSlide
                   v-for="(image, index) in images"
-                  :key="image.id"
+                  :key="image.id || index"
                   class="swiper-slide"
                 >
                   <div class="image-container rounded-xl overflow-hidden bg-[#F3F4F6] flex items-center justify-center">
                     <img
                       :src="image.url"
                       :alt="`${$t('memorialPage.photo')} ${index + 1}`"
-                      class="gallery-image object-contain"
+                      class="gallery-image"
+                      loading="lazy"
                     />
                   </div>
                 </SwiperSlide>
@@ -448,15 +452,26 @@ function openAchievement(url, filename) {
   height: 100%;
 }
 
+.memorial-gallery-swiper :deep(.swiper-wrapper) {
+  height: 100%;
+}
+
 .swiper-slide {
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .image-container {
   width: 100%;
   height: 100%;
   min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
 }
 
 .gallery-image {
@@ -464,6 +479,8 @@ function openAchievement(url, filename) {
   height: 100%;
   max-width: 100%;
   max-height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 /* Кнопки навигации карусели */
