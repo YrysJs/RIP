@@ -333,25 +333,25 @@ function createMemorial(data) {
 
   if (data.photos) {
     if (Array.isArray(data.photos)) {
-      data.photos.forEach(photo => formData.append('photos[]', photo))
+      data.photos.forEach(photo => formData.append('photos', photo))
     } else {
-      formData.append('photos[]', data.photos)
+      formData.append('photos', data.photos)
     }
   }
 
   if (data.achievements) {
     if (Array.isArray(data.achievements)) {
-      data.achievements.forEach(achievement => formData.append('achievements[]', achievement))
+      data.achievements.forEach(achievement => formData.append('achievements', achievement))
     } else {
-      formData.append('achievements[]', data.achievements)
+      formData.append('achievements', data.achievements)
     }
   }
 
   if (data.video_urls) {
     if (Array.isArray(data.video_urls)) {
-      data.video_urls.forEach(url => formData.append('video_urls[]', url))
+      data.video_urls.forEach(url => formData.append('video_urls', url))
     } else {
-      formData.append('video_urls[]', data.video_urls)
+      formData.append('video_urls', data.video_urls)
     }
   }
 
@@ -380,25 +380,25 @@ function updateMemorial(id, data) {
 
     if (data.photos) {
       if (Array.isArray(data.photos)) {
-        data.photos.forEach(photo => formData.append('photos[]', photo))
+        data.photos.forEach(photo => formData.append('photos', photo))
       } else {
-        formData.append('photos[]', data.photos)
+        formData.append('photos', data.photos)
       }
     }
 
     if (data.achievements) {
       if (Array.isArray(data.achievements)) {
-        data.achievements.forEach(achievement => formData.append('achievements[]', achievement))
+        data.achievements.forEach(achievement => formData.append('achievements', achievement))
       } else {
-        formData.append('achievements[]', data.achievements)
+        formData.append('achievements', data.achievements)
       }
     }
 
     if (data.video_urls) {
       if (Array.isArray(data.video_urls)) {
-        data.video_urls.forEach(url => formData.append('video_urls[]', url))
+        data.video_urls.forEach(url => formData.append('video_urls', url))
       } else {
-        formData.append('video_urls[]', data.video_urls)
+        formData.append('video_urls', data.video_urls)
       }
     }
   }
