@@ -58,7 +58,10 @@
     "from": "от",
     "day": "день",
     "days": "дня",
-    "daysPlural": "дней"
+    "daysPlural": "дней",
+    "open": "Открыть",
+    "previous": "Предыдущая",
+    "next": "Следующая"
   },
   "cities": {
     "almaty": "Алматы",

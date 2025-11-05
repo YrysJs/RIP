@@ -58,7 +58,10 @@
         "from": "бастап",
         "day": "күн",
         "days": "күн",
-        "daysPlural": "күн"
+        "daysPlural": "күн",
+        "open": "Ашу",
+        "previous": "Алдыңғы",
+        "next": "Келесі"
     },
     "cities": {
         "almaty": "Алматы",

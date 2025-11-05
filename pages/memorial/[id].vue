@@ -107,12 +107,6 @@ onMounted(async () => {
       id: i, 
       url: url
     }));
-    
-    // Обновляем Swiper после загрузки изображений
-    await nextTick();
-    if (gallerySwiper.value) {
-      gallerySwiper.value.update();
-    }
 
     // видео
     const rawVideo = Array.isArray(data.video_urls)
@@ -244,16 +238,19 @@ function openAchievement(url, filename) {
             <!-- Левая часть: галерея изображений (карусель) -->
             <div v-if="images.length > 0" class="swiper-container">
               <Swiper
-                :key="`gallery-${images.length}`"
+                :key="`gallery-${images.length}-${isLoading ? 'loading' : 'loaded'}`"
                 :modules="[Navigation]"
-                :navigation="{
+                :navigation="images.length > 1 ? {
                   nextEl: '.memorial-gallery-button-next',
                   prevEl: '.memorial-gallery-button-prev',
-                }"
+                } : false"
                 :slides-per-view="1"
+                :slides-per-group="1"
                 :space-between="10"
+                :loop="false"
+                :watch-slides-progress="true"
                 class="memorial-gallery-swiper"
-                @swiper="gallerySwiper = $event"
+                @swiper="(swiper) => { gallerySwiper = swiper; swiper.update(); }"
               >
                 <SwiperSlide
                   v-for="(image, index) in images"
