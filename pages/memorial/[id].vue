@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, nextTick } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
@@ -20,6 +20,9 @@ const videos = ref([]);
 const achievements = ref([]);
 const epitaph = ref("");
 const aboutPerson = ref("");
+
+// Ref для Swiper
+const gallerySwiper = ref(null);
 
 const isLoading = ref(true);
 const errorMsg = ref("");
@@ -235,18 +238,23 @@ function openAchievement(url, filename) {
             <!-- Левая часть: галерея изображений (карусель) -->
             <div v-if="images.length > 0" class="swiper-container">
               <Swiper
+                :key="`gallery-${images.length}-${isLoading ? 'loading' : 'loaded'}`"
                 :modules="[Navigation]"
-                :navigation="{
-                  nextEl: '.swiper-button-next',
-                  prevEl: '.swiper-button-prev',
-                }"
+                :navigation="images.length > 1 ? {
+                  nextEl: '.memorial-gallery-button-next',
+                  prevEl: '.memorial-gallery-button-prev',
+                } : false"
                 :slides-per-view="1"
+                :slides-per-group="1"
                 :space-between="10"
+                :loop="false"
+                :watch-slides-progress="true"
                 class="memorial-gallery-swiper"
+                @swiper="(swiper) => { gallerySwiper = swiper; swiper.update(); }"
               >
                 <SwiperSlide
                   v-for="(image, index) in images"
-                  :key="image.id || index"
+                  :key="`image-${image.id || index}-${image.url}`"
                   class="swiper-slide"
                 >
                   <div class="image-container rounded-xl overflow-hidden bg-[#F3F4F6] flex items-center justify-center">
@@ -255,13 +263,22 @@ function openAchievement(url, filename) {
                       :alt="`${$t('memorialPage.photo')} ${index + 1}`"
                       class="gallery-image"
                       loading="lazy"
+                      @error="console.error('Ошибка загрузки изображения:', image.url)"
                     />
                   </div>
                 </SwiperSlide>
               </Swiper>
               <!-- Кнопки навигации -->
-              <div class="swiper-button-prev"></div>
-              <div class="swiper-button-next"></div>
+              <button 
+                v-if="images.length > 1"
+                class="memorial-gallery-button-prev swiper-button-prev"
+                :aria-label="$t('common.previous')"
+              ></button>
+              <button 
+                v-if="images.length > 1"
+                class="memorial-gallery-button-next swiper-button-next"
+                :aria-label="$t('common.next')"
+              ></button>
             </div>
 
             <!-- Если нет изображений, показываем заглушку -->
@@ -445,6 +462,7 @@ function openAchievement(url, filename) {
   position: relative;
   width: 100%;
   height: 400px;
+  overflow: hidden;
 }
 
 .memorial-gallery-swiper {
@@ -484,33 +502,49 @@ function openAchievement(url, filename) {
 }
 
 /* Кнопки навигации карусели */
-.swiper-button-prev,
-.swiper-button-next {
+.memorial-gallery-button-prev,
+.memorial-gallery-button-next {
   color: #fff;
   background-color: rgba(0, 0, 0, 0.5);
   width: 44px;
   height: 44px;
   border-radius: 50%;
   margin-top: -22px;
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.swiper-button-prev::after,
-.swiper-button-next::after {
+.memorial-gallery-button-prev::after,
+.memorial-gallery-button-next::after {
   font-size: 20px;
   font-weight: bold;
+  color: #fff;
 }
 
-.swiper-button-prev:hover,
-.swiper-button-next:hover {
+.memorial-gallery-button-prev:hover,
+.memorial-gallery-button-next:hover {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-.swiper-button-prev {
+.memorial-gallery-button-prev {
   left: 10px;
 }
 
-.swiper-button-next {
+.memorial-gallery-button-next {
   right: 10px;
+}
+
+.memorial-gallery-button-prev.swiper-button-disabled,
+.memorial-gallery-button-next.swiper-button-disabled {
+  opacity: 0.35;
+  cursor: auto;
+  pointer-events: none;
 }
 
 @media (max-width: 1024px) {
