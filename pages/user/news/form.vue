@@ -138,6 +138,7 @@
         v-if="showSuccessModal"
         :title="isEdit ? $t('user.news.changesSaved') : $t('user.news.newsPublished')"
         :text="$t('common.close')"
+        :button-link="'/user/news'"
         :show-button="true"
         @close="closeSuccessModal"
       />

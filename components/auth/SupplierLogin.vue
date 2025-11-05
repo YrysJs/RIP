@@ -364,9 +364,9 @@ const otpCheck = async () => {
           Войти как поставщик услуг
         </h3>
         <p class="text-lg max-lg:text-base">
-          Введите номер мобильного телефона:
+          {{ $t('auth.login.enterPhone') }}
         </p>
-        <input v-model="phone_number" v-mask="'+7 (###) ###-##-##'" class="border-2 border-[#AFB5C166] mb-[32px] px-3 py-[18px] text-base rounded-lg h-14 max-lg:py-[14px] max-lg:mb-6" type="text" :placeholder="$t('auth.enterPhone')">
+        <input v-model="phone_number" v-mask="'+7 (###) ###-##-##'" class="border-2 border-[#AFB5C166] mb-[32px] px-3 py-[18px] text-base rounded-lg h-14 max-lg:py-[14px] max-lg:mb-6" type="text" :placeholder="$t('auth.login.phonePlaceholder')">
         <button class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#000] font-medium max-lg:py-[15px]" :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }" @click="loginWhatsapp">{{ $t('auth.getCodeWhatsApp') }}</button>
         <button class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#17212A] font-medium my-4 max-lg:py-[15px] max-lg:mt-2 max-lg:mb-4" :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }" @click="login">{{ $t('auth.getCodeSMS') }}</button>
       </div>

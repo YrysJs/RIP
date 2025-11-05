@@ -3,9 +3,17 @@ import { defineProps } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
-defineProps(['grave', 'visible', 'images'])
+const router = useRouter();
+const props = defineProps(['grave', 'visible', 'images', 'memorial'])
 
 const emit = defineEmits(['close'])
+
+const goToMemorial = () => {
+  if (props.memorial?.id) {
+    router.push(`/memorial/${props.memorial.id}`);
+    emit('close');
+  }
+}
 
 function removeEscapedQuotes(str) {
   if (str && str.length) return str.replace(/\\"/g, '');
@@ -104,6 +112,15 @@ const closeModal = () => {
             >
               {{ $t('modalsGrave.graveDetail.openDocument') }}
             </a>
+          </div>
+          <div v-if="memorial?.id" class="mt-3">
+            <p class="text-sm text-gray-600 mb-1">{{ $t('memorial.memorial') }}</p>
+            <button 
+              @click="goToMemorial"
+              class="text-blue-600 hover:text-blue-800 underline text-sm cursor-pointer bg-transparent border-none p-0 text-left"
+            >
+              {{ $t('common.open') || 'Открыть' }} → /memorial/{{ memorial.id }}
+            </button>
           </div>
         </div>
 

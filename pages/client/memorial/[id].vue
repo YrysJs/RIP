@@ -6,13 +6,16 @@ import {
   getMemorialById,
   getDeceasedById,
   updateMemorial,
+  uploadMemorialFiles,
 } from "~/services/client";
 import { useI18n } from 'vue-i18n';
+import { useUserStore } from "~/store/user.js";
 
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const { $toast } = useNuxtApp();
+const userStore = useUserStore();
 
 const normalizeYouTubeUrl = (raw) => {
   if (!raw) return "";
@@ -435,6 +438,37 @@ const removeAchievementPhoto = (index) => {
   achievementPhotos.value.splice(index, 1);
 };
 
+// Функция для скачивания файла по URL и преобразования в File
+const downloadFileFromUrl = async (url, fileName) => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch file: ${response.statusText}`);
+    }
+    const blob = await response.blob();
+    // Определяем MIME тип из ответа или по расширению файла
+    const mimeType = response.headers.get('content-type') || blob.type || 'image/jpeg';
+    // Создаем File объект из Blob
+    const file = new File([blob], fileName || `file-${Date.now()}`, { type: mimeType });
+    return file;
+  } catch (error) {
+    console.error(`Error downloading file from ${url}:`, error);
+    throw error;
+  }
+};
+
+// Функция для получения имени файла из URL
+const getFileNameFromUrl = (url) => {
+  try {
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname;
+    const fileName = pathname.split('/').pop() || `file-${Date.now()}.jpg`;
+    return fileName;
+  } catch {
+    return `file-${Date.now()}.jpg`;
+  }
+};
+
 // Функция создания/обновления мемориала
 const submitMemorial = async () => {
   try {
@@ -442,77 +476,95 @@ const submitMemorial = async () => {
 
     const currentVideoUrls = uniqueUrls(videos.value.map((v) => v.url));
     
-    // Для режима редактирования: получаем оригинальные URL видео
-    let originalVideoUrls = [];
-    if (isEditMode.value && memorial.value?.video_urls) {
-      const rawList = [];
-      (memorial.value.video_urls || []).forEach((v) => {
-        const parts = typeof v === "string" ? v.split(",") : [v];
-        parts.forEach((p) => rawList.push(p.trim()));
-      });
-      originalVideoUrls = uniqueUrls(rawList);
-    }
-    
-    // Проверяем, изменились ли видео URL (только для режима редактирования)
-    const videoUrlsChanged = isEditMode.value 
-      ? JSON.stringify(currentVideoUrls.sort()) !== JSON.stringify(originalVideoUrls.sort())
-      : currentVideoUrls.length > 0; // Для создания отправляем если есть видео
-    
-    const video_urls = videoUrlsChanged ? currentVideoUrls : undefined;
-    
-    const memorialId = memorial.value?.id || route.params.id; // ← всегда есть id
+    const memorialId = memorial.value?.id || route.params.id;
     if (!memorialId) {
       $toast.error(t('memorialCreate.missingId'));
       return;
     }
 
-    // Проверяем наличие новых файлов (не существующих)
-    const hasNewPhotos = selectedImages.value.length > 0;
-    const hasNewAchievements = achievementPhotos.value.some((p) => !p.isExisting);
-    const hasFiles = hasNewPhotos || hasNewAchievements;
+    // Получаем телефон пользователя из store
+    const userPhone = userStore.user?.phone;
+    if (!userPhone) {
+      $toast.error('Телефон пользователя не найден');
+      return;
+    }
 
-    let payload;
+    // Массивы для хранения URL-ов
+    let photoUrls = [];
+    let achievementUrls = [];
 
-    if (hasFiles) {
-      const fd = new FormData();
-      // id НУЖЕН, если ваш сервис читает его из body
-      fd.append("id", String(memorialId)); // ← добавили
-      fd.append("epitaph", epitaph.value || "");
-      fd.append("about_person", aboutPerson.value || "");
-      fd.append("is_public", String(!!isPublic.value));
-      // Отправляем video_urls только если они изменились
-      if (video_urls && video_urls.length > 0) {
-        video_urls.forEach((u) => fd.append("video_urls[]", u));
+    // Собираем существующие URL-ы (те, что остались в списке)
+    const existingPhotos = imagePreviews.value.filter((p) => p.isExisting);
+    existingPhotos.forEach((photo) => {
+      if (photo.url) {
+        photoUrls.push(photo.url);
       }
-      // Отправляем только новые фото (не существующие)
-      if (hasNewPhotos) {
-        selectedImages.value.forEach((f) => fd.append("photos[]", f));
+    });
+
+    const existingAchievements = achievementPhotos.value.filter((p) => p.isExisting);
+    existingAchievements.forEach((achievement) => {
+      if (achievement.url) {
+        achievementUrls.push(achievement.url);
       }
-      // Отправляем только новые достижения (не существующие)
-      if (hasNewAchievements) {
-        achievementPhotos.value
-          .filter((p) => !p.isExisting)
-          .forEach((p) => fd.append("achievements[]", p.file));
-      }
-      payload = fd;
-    } else {
-      payload = {
-        id: memorialId, // ← есть и в JSON-ветке
-        deceased_id: isEditMode.value
-          ? undefined
-          : +burial.value?.deceased?.id || undefined,
-        epitaph: epitaph.value,
-        about_person: aboutPerson.value,
-        is_public: isPublic.value,
-      };
-      // Добавляем video_urls только если они изменились
-      if (video_urls && video_urls.length > 0) {
-        payload.video_urls = video_urls;
+    });
+
+    // Загружаем новые основные фото (если есть)
+    const newPhotos = imagePreviews.value.filter((p) => !p.isExisting && p.file);
+    if (newPhotos.length > 0) {
+      try {
+        const photoFiles = newPhotos.map((preview) => preview.file).filter(Boolean);
+        if (photoFiles.length > 0) {
+          const uploadResponse = await uploadMemorialFiles(userPhone, photoFiles, false);
+          // Извлекаем URL-ы из ответа: response.data.files[].fileUrl
+          if (uploadResponse?.data?.files && Array.isArray(uploadResponse.data.files)) {
+            const uploadedUrls = uploadResponse.data.files.map(file => file.fileUrl).filter(Boolean);
+            photoUrls = [...photoUrls, ...uploadedUrls];
+          }
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке фото:', error);
+        $toast.error(t('memorialCreate.errorUploadingPhotos') || 'Ошибка при загрузке фотографий');
+        throw error;
       }
     }
 
-    // ВАЖНО: передай id отдельным аргументом
-    await updateMemorial(memorialId, payload); // ← см. сервис ниже
+    // Загружаем новые фото достижений (если есть)
+    const newAchievements = achievementPhotos.value.filter((p) => !p.isExisting && p.file);
+    if (newAchievements.length > 0) {
+      try {
+        const achievementFiles = newAchievements.map((photo) => photo.file).filter(Boolean);
+        if (achievementFiles.length > 0) {
+          const uploadResponse = await uploadMemorialFiles(userPhone, achievementFiles, true);
+          // Извлекаем URL-ы из ответа: response.data.files[].fileUrl
+          if (uploadResponse?.data?.files && Array.isArray(uploadResponse.data.files)) {
+            const uploadedUrls = uploadResponse.data.files.map(file => file.fileUrl).filter(Boolean);
+            achievementUrls = [...achievementUrls, ...uploadedUrls];
+          }
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке достижений:', error);
+        $toast.error(t('memorialCreate.errorUploadingAchievements') || 'Ошибка при загрузке достижений');
+        throw error;
+      }
+    }
+
+    // Подготавливаем данные для обновления мемориала с URL-ами
+    const payload = {
+      id: memorialId,
+      epitaph: epitaph.value || '',
+      about_person: aboutPerson.value || '',
+      is_public: isPublic.value,
+      photo_urls: photoUrls,
+      achievement_urls: achievementUrls,
+      video_urls: currentVideoUrls,
+    };
+
+    // Если это не режим редактирования, добавляем deceased_id
+    if (!isEditMode.value && burial.value?.deceased_id) {
+      payload.deceased_id = +burial.value.deceased_id;
+    }
+
+    await updateMemorial(memorialId, payload);
 
     router.push("/client/memorial");
   } catch (e) {

@@ -13,28 +13,28 @@ const closeModal = () => {
 const servicesData = computed(() => [
   {
     id: 0,
-    title: t('services.burialSearch.title'),
-    description: t('services.burialSearch.description')
+    title: t('mainPage.services.searchBurial.title'),
+    description: t('mainPage.services.searchBurial.description')
   },
   {
     id: 1,
-    title: t('services.improvement.title'),
-    description: t('services.improvement.description')
+    title: t('mainPage.services.improvement.title'),
+    description: t('mainPage.services.improvement.description')
   },
   {
     id: 2,
-    title: t('services.digitalMemorial.title'),
-    description: t('services.digitalMemorial.description')
+    title: t('mainPage.services.digitalMemorial.title'),
+    description: t('mainPage.services.digitalMemorial.description')
   },
   {
     id: 3,
-    title: t('services.ritualServices.title'),
-    description: t('services.ritualServices.description')
+    title: t('mainPage.services.ritualServices.title'),
+    description: t('mainPage.services.ritualServices.description')
   },
   {
     id: 4,
-    title: t('services.ritualGoods.title'),
-    description: t('services.ritualGoods.description')
+    title: t('mainPage.services.ritualGoods.title'),
+    description: t('mainPage.services.ritualGoods.description')
   }
 ])
 
