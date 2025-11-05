@@ -321,86 +321,74 @@ function searchDeceased(data) {
     })
 }
 
-function createMemorial(data) {
+function uploadMemorialFiles(userPhone, files, isAchievement = false) {
     const { $axios } = useNuxtApp()
 
     const formData = new FormData()
 
-    if (data.deceased_id) formData.append('deceased_id', data.deceased_id)
-    if (data.epitaph) formData.append('epitaph', data.epitaph)
-    if (data.about_person) formData.append('about_person', data.about_person)
-    if (data.is_public !== undefined) formData.append('is_public', data.is_public)
+    // Добавляем флаг достижения (преобразуем boolean в строку)
+    formData.append('is_achievement', String(isAchievement))
 
-    if (data.photos) {
-        if (Array.isArray(data.photos)) {
-            data.photos.forEach(photo => formData.append('photos', photo))
-        } else {
-            formData.append('photos', data.photos)
-        }
+    // Добавляем файлы
+    if (Array.isArray(files)) {
+        files.forEach(file => {
+            formData.append('files', file)
+        })
+    } else {
+        formData.append('files', files)
     }
 
-    if (data.achievements) {
-        if (Array.isArray(data.achievements)) {
-            data.achievements.forEach(achievement => formData.append('achievements', achievement))
-        } else {
-            formData.append('achievements', data.achievements)
+    return $axios({
+        method: 'POST',
+        url: `http://194.32.140.103:8093/api/v1/products/memorial/${userPhone}`,
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data'
         }
-    }
+    })
+}
 
-    if (data.video_urls) {
-        if (Array.isArray(data.video_urls)) {
-            data.video_urls.forEach(url => formData.append('video_urls', url))
-        } else {
-            formData.append('video_urls', data.video_urls)
-        }
+function createMemorial(data) {
+    const { $axios } = useNuxtApp()
+
+    // Теперь принимаем URL-ы вместо файлов
+    const payload = {
+        deceased_id: data.deceased_id,
+        epitaph: data.epitaph || '',
+        about_person: data.about_person || '',
+        is_public: data.is_public !== undefined ? data.is_public : false,
+        photo_urls: data.photo_urls || [],
+        achievement_urls: data.achievement_urls || [],
+        video_urls: data.video_urls || []
     }
 
     return $axios({
         method: 'POST',
         url: 'http://194.32.140.103:8090/api/v1/memorials',
-        data: formData,
+        data: payload,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
 }
 
 function updateMemorial(id, data) {
     const { $axios } = useNuxtApp()
 
-    // Если data уже FormData, используем его напрямую, иначе создаем новый
-    let formData
-    if (data instanceof FormData) {
-        formData = data
-    } else {
-        formData = new FormData()
-        
-        if (data.id) formData.append('id', data.id)
-        if (data.deceased_id) formData.append('deceased_id', data.deceased_id)
-        if (data.epitaph) formData.append('epitaph', data.epitaph)
-        if (data.about_person) formData.append('about_person', data.about_person)
-        if (data.is_public !== undefined) formData.append('is_public', data.is_public)
+    // Теперь принимаем URL-ы вместо файлов
+    const payload = {
+        id: id || data.id,
+        epitaph: data.epitaph || '',
+        about_person: data.about_person || '',
+        is_public: data.is_public !== undefined ? data.is_public : false,
+        photo_urls: data.photo_urls || [],
+        achievement_urls: data.achievement_urls || [],
+        video_urls: data.video_urls || []
+    }
 
-        if (data.photos) {
-            if (Array.isArray(data.photos)) {
-                data.photos.forEach(photo => formData.append('photos', photo))
-            } else {
-                formData.append('photos', data.photos)
-            }
-        }
-
-        if (data.achievements) {
-            if (Array.isArray(data.achievements)) {
-                data.achievements.forEach(achievement => formData.append('achievements', achievement))
-            } else {
-                formData.append('achievements', data.achievements)
-            }
-        }
-
-        if (data.video_urls) {
-            if (Array.isArray(data.video_urls)) {
-                data.video_urls.forEach(url => formData.append('video_urls', url))
-            } else {
-                formData.append('video_urls', data.video_urls)
-            }
-        }
+    // Добавляем deceased_id если он есть
+    if (data.deceased_id !== undefined) {
+        payload.deceased_id = data.deceased_id
     }
 
     // Используем переданный id или id из data
@@ -409,7 +397,10 @@ function updateMemorial(id, data) {
     return $axios({
         method: 'PUT',
         url: 'http://194.32.140.103:8090/api/v1/memorials/' + memorialId,
-        data: formData,
+        data: payload,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
 }
 
@@ -456,5 +447,6 @@ export {
     createRequest,
     updateMemorial,
     getMyAppeals,
-    updateCartCount
+    updateCartCount,
+    uploadMemorialFiles
 }

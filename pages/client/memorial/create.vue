@@ -1,11 +1,13 @@
 <script setup>
 import { ref } from "vue";
-import { createMemorial, getBurialRequestById } from "~/services/client";
+import { createMemorial, getBurialRequestById, uploadMemorialFiles } from "~/services/client";
 import { useI18n } from 'vue-i18n';
+import { useUserStore } from "~/store/user.js";
 
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
+const userStore = useUserStore();
 
 // Данные захоронения
 const burial = ref(null);
@@ -144,18 +146,67 @@ const removeAchievementPhoto = (index) => {
 const submitMemorial = async () => {
   try {
     isSubmitting.value = true;
-    // Подготавливаем данные для отправки
-    const formData = {
+    
+    // Получаем телефон пользователя из store
+    const userPhone = userStore.user?.phone;
+    if (!userPhone) {
+      throw new Error('Телефон пользователя не найден');
+    }
+
+    // Массивы для хранения URL-ов загруженных файлов
+    let photoUrls = [];
+    let achievementUrls = [];
+
+    // Загружаем основные фото (если есть)
+    if (imagePreviews.value.length > 0) {
+      try {
+        // Извлекаем файлы из превью
+        const photoFiles = imagePreviews.value.map((preview) => preview.file).filter(Boolean);
+        if (photoFiles.length === 0) {
+          throw new Error('Файлы не найдены');
+        }
+        const uploadResponse = await uploadMemorialFiles(userPhone, photoFiles, false);
+        // Извлекаем URL-ы из ответа: response.data.files[].fileUrl
+        if (uploadResponse?.data?.files && Array.isArray(uploadResponse.data.files)) {
+          photoUrls = uploadResponse.data.files.map(file => file.fileUrl).filter(Boolean);
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке фото:', error);
+        const { $toast } = useNuxtApp();
+        $toast.error(t('memorialCreate.errorUploadingPhotos') || 'Ошибка при загрузке фотографий');
+        throw error;
+      }
+    }
+
+    // Загружаем фото достижений (если есть)
+    if (achievementPhotos.value.length > 0) {
+      try {
+        const achievementFiles = achievementPhotos.value.map((photo) => photo.file);
+        const uploadResponse = await uploadMemorialFiles(userPhone, achievementFiles, true);
+        // Извлекаем URL-ы из ответа: response.data.files[].fileUrl
+        if (uploadResponse?.data?.files && Array.isArray(uploadResponse.data.files)) {
+          achievementUrls = uploadResponse.data.files.map(file => file.fileUrl).filter(Boolean);
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке достижений:', error);
+        const { $toast } = useNuxtApp();
+        $toast.error(t('memorialCreate.errorUploadingAchievements') || 'Ошибка при загрузке достижений');
+        throw error;
+      }
+    }
+
+    // Подготавливаем данные для создания мемориала с URL-ами
+    const memorialData = {
       deceased_id: +burial.value.deceased_id,
       epitaph: epitaph.value,
       about_person: aboutPerson.value,
       is_public: isPublic.value,
-      photos: selectedImages.value, // основные фото мемориала
-      achievements: achievementPhotos.value.map((photo) => photo.file), // фото достижений
+      photo_urls: photoUrls, // URL-ы основных фото
+      achievement_urls: achievementUrls, // URL-ы фото достижений
       video_urls: videos.value.map((video) => video.url), // URL видео
     };
 
-    const response = await createMemorial(formData);
+    const response = await createMemorial(memorialData);
 
     // Успешно создано
     useState("burial").value = burial.value;
@@ -173,9 +224,6 @@ const submitMemorial = async () => {
       // fallback — если сервер не вернул id
       router.push("/client/memorial");
     }
-
-    // Можно перенаправить пользователя
-    // await navigateTo('/client/memorials')
   } catch (error) {
     const { $toast } = useNuxtApp()
     $toast.error(t('memorialCreate.errorCreating') +

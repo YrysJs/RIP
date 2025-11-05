@@ -432,7 +432,8 @@ async function onOccupiedGraveClicked(data) {
         graveModalData.value = {
           grave: graveData,
           deceased: deceased,
-          images: images
+          images: images,
+          memorial: deceased?.memorial || null // Добавляем данные мемориала если есть
         };
         // Очищаем таймер, так как модальное окно не закрывается автоматически
         if (tooltipTimeout) {
@@ -1316,7 +1317,8 @@ function openWhatsApp(phone) {
     <GraveDetailModal 
       :visible="showGraveModal" 
       :grave="graveModalData?.grave" 
-      :images="graveModalData?.images" 
+      :images="graveModalData?.images"
+      :memorial="graveModalData?.memorial"
       @close="showGraveModal = false" 
     />
   </main>

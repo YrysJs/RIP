@@ -184,6 +184,11 @@ function login(type) {
 
 function logout() {
   token.value = null; // useCookie сам удалит cookie
+  Cookies.remove("token");
+  Cookies.remove("role");
+  userInfo.value = null;
+  userStore.logout(); // Очищаем store
+  localStorage.removeItem("user_id");
   open.value = false;
   router.push("/");
 }
@@ -223,12 +228,42 @@ const handleScroll = () => {
 };
 
 async function loadUser() {
-  if (!Cookies.get("token")) return;
-  const { data } = await getCurrentUser({
-    id: localStorage.getItem("user_id"),
-  });
-  userInfo.value = data;
-  userStore.setUser(data);
+  try {
+    const tokenValue = Cookies.get("token");
+    if (!tokenValue) {
+      // Если токена нет, очищаем данные пользователя
+      userInfo.value = null;
+      userStore.setUser(null);
+      userStore.setToken('');
+      return;
+    }
+    
+    // Восстанавливаем токен в store
+    userStore.setToken(tokenValue);
+    
+    // Получаем данные пользователя (getCurrentUser не принимает параметры, использует токен из headers)
+    const response = await getCurrentUser();
+    const userData = response?.data?.data || response?.data;
+    
+    if (userData) {
+      userInfo.value = userData;
+      userStore.setUser(userData);
+      // Сохраняем user_id в localStorage если нужно
+      if (userData.id) {
+        localStorage.setItem("user_id", userData.id);
+      }
+    }
+  } catch (error) {
+    console.error("Ошибка при загрузке данных пользователя:", error);
+    // Если ошибка 401, очищаем данные
+    if (error?.response?.status === 401) {
+      userInfo.value = null;
+      userStore.setUser(null);
+      userStore.setToken('');
+      Cookies.remove("token");
+      Cookies.remove("role");
+    }
+  }
 }
 
 onMounted(() => {
@@ -240,6 +275,14 @@ onMounted(() => {
 
   handleScroll();
   window.addEventListener("scroll", handleScroll, { passive: true });
+  
+  // Восстанавливаем токен в store из cookies
+  const tokenValue = Cookies.get("token");
+  if (tokenValue) {
+    userStore.setToken(tokenValue);
+  }
+  
+  // Загружаем данные пользователя
   loadUser();
 });
 

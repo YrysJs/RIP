@@ -4,8 +4,8 @@
       <h3>{{ $t('footer.contacts') }}</h3>
       <p>{{ $t('footer.consultationHours') }}</p>
       <ul class="contacts__list">
-        <li>{{ $t('footer.address') }}</li>
         <li>
+          <img src="/icons/whatsapp1.svg" alt="Whatsapp icon" />
           <a class="underlined" href="http://wa.me/77758100110" target="_blank">+7 (775) 810-01-10</a>
         </li>
         <li>
@@ -130,10 +130,14 @@ const getLinkHref = (anchor) => {
     color: #201001;
     border-bottom: 1px solid #2010011f;
 
-    li:first-child {
-      max-width: 248px;
-      @media (max-width: 540px) {
-        max-width: unset;
+    li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      
+      img {
+        width: 24px;
+        height: 24px;
       }
     }
 
