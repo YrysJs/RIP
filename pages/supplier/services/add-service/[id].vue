@@ -2,6 +2,7 @@
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { updateProduct, getProductById, getCategories, loadProductFiles } from '~/services/supplier'
+import { getCities } from '~/services/admin'
 import { useUserStore } from '~/store/user'
 import { useLoadingStore } from '~/store/loading'
 import AppLoader from '~/components/loader/AppLoader.vue'
@@ -32,6 +33,7 @@ const existingPhotos = ref([])    // существующие [{ url, id }]
 const fileInput = ref(null)
 const loading = ref(false)
 const categories = ref([])
+const cities = ref([])
 const isLoadingProduct = ref(true)
 const product = ref(null)
 
@@ -274,9 +276,21 @@ async function loadProduct(){
   }
 }
 
+// Функция для загрузки городов
+async function loadCities() {
+  try {
+    const response = await getCities();
+    const citiesData = response?.data?.data ?? response?.data ?? [];
+    cities.value = Array.isArray(citiesData) ? citiesData : [];
+  } catch (error) {
+    console.error('Ошибка при загрузке городов:', error);
+    cities.value = [];
+  }
+}
+
 onMounted(async () => {
   try{
-    const [catRes] = await Promise.all([ getCategories(), loadProduct() ])
+    const [catRes] = await Promise.all([ getCategories(), loadProduct(), loadCities() ])
     categories.value = catRes.data || []
   } catch (e){
     console.error('Ошибка при загрузке данных:', e)
@@ -441,7 +455,7 @@ onMounted(async () => {
             <label class="label">{{ $t('supplier.services.addService.city') }}</label>
             <div class="select-shell">
               <select v-model="form.city" class="control control--select">
-                <option value="Алматы">Алматы</option>
+                <option v-for="city in cities" :key="city.id" :value="city.name">{{ city.name }}</option>
               </select>
               <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
