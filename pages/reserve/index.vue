@@ -111,6 +111,13 @@ const pickCity = (item) => {
   showInfoMobile.value = false;
 };
 
+// Закрытие списка городов при клике вне его
+const handleClickOutside = (event) => {
+  if (cityListState.value && !event.target.closest('.reserve__city')) {
+    cityListState.value = false;
+  }
+};
+
 async function getCemeteriesReq() {
   try {
     const params = {};
@@ -257,6 +264,9 @@ async function loadCities() {
 }
 
 onMounted(async () => {
+  updateIsMobile();
+  window.addEventListener("resize", updateIsMobile);
+  document.addEventListener('click', handleClickOutside);
   await loadCities();
   await getCemeteriesReq();
 });
@@ -300,13 +310,9 @@ function updateIsMobile() {
   isMobile.value = window.matchMedia("(max-width: 640px)").matches;
 }
 
-onMounted(() => {
-  updateIsMobile();
-  window.addEventListener("resize", updateIsMobile);
-});
-
 onBeforeUnmount(() => {
   window.removeEventListener("resize", updateIsMobile);
+  document.removeEventListener('click', handleClickOutside);
 });
 
 function selectCemetery(item) {
@@ -572,8 +578,11 @@ function openWhatsApp(phone) {
             >
               <h3 class="font-foglihten text-fluid">{{ $t('reserve.pageTitle') }}</h3>
 
-              <div class="reserve__city flex justify-between items-center">
-                <div class="flex justify-between items-center">
+              <div class="reserve__city relative">
+                <div 
+                  class="flex items-center cursor-pointer"
+                  @click="cityListState = !cityListState"
+                >
                   <span class="text-base text-[#050202] mr-[15px]">{{ $t('reserve.city') }}</span>
                   <template v-if="selectedCity">
                     <img
@@ -585,28 +594,25 @@ function openWhatsApp(phone) {
                       {{ selectedCity }}</span
                     >
                   </template>
-                  <template v-else> {{ $t('reserve.notSelected') }} </template>
+                  <template v-else> 
+                    <span class="text-sm text-[#999999]">{{ $t('reserve.notSelected') }}</span>
+                  </template>
                 </div>
-                <button
-                  class="bg-[#224C4F26] text-[#224C4F] font-bold py-[8px] px-[12px] rounded-lg"
-                  @click="cityListState = true"
-                >
-                  {{ $t('common.select') }}
-                </button>
-              </div>
 
-              <div
-                v-if="cityListState"
-                class="absolute bg-white top-0 left-0 w-full p-[20px] flex flex-col gap-[8px] z-10"
-              >
-                <p
-                  v-for="item of sities"
-                  :key="item"
-                  class="text-base text-[#222222] cursor-pointer"
-                  @click="pickCity(item)"
+                <div
+                  v-if="cityListState"
+                  class="absolute top-full left-0 mt-1 bg-white border border-[#EEEEEE] rounded-lg shadow-lg z-20 max-h-[200px] overflow-y-auto w-full min-w-[200px]"
                 >
-                  {{ item }}
-                </p>
+                  <div
+                    v-for="item of sities"
+                    :key="item"
+                    class="px-3 py-2 text-sm text-[#222222] cursor-pointer hover:bg-[#F4F0E7] transition-colors"
+                    :class="{ 'bg-[#F4E4BE]': selectedCity === item }"
+                    @click="pickCity(item)"
+                  >
+                    {{ item }}
+                  </div>
+                </div>
               </div>
 
               <select
