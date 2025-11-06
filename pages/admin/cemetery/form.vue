@@ -1,36 +1,16 @@
 <script setup>
 
 import FormMap from "~/components/map/FormMap.vue";
-import { CreateCemetery } from '~/services/admin'
+import { CreateCemetery, getCities } from '~/services/admin'
 import SuccessModal from "~/components/layout/modals/SuccessModal.vue";
-import {ref, reactive} from "vue";
+import {ref, reactive, onMounted} from "vue";
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
 const showSuccessModal = ref(false)
 
-const cities = [
-  'Алматы',
-  'Нур-Султан',
-  'Шымкент',
-  'Караганда',
-  'Тараз',
-  'Павлодар',
-  'Усть-Каменогорск',
-  'Семей',
-  'Актобе',
-  'Костанай',
-  'Кызылорда',
-  'Талдыкорган',
-  'Тараз',
-  'Павлодар',
-  'Усть-Каменогорск',
-  'Семей',
-  'Актобе',
-  'Костанай',
-  'Кызылорда'
-]
+const cities = ref([])
 
 definePageMeta({
   middleware: ['auth', 'admin'],
@@ -80,6 +60,22 @@ const create = async () => {
     console.log(err)
   }
 }
+
+// Функция для загрузки городов
+async function loadCities() {
+  try {
+    const response = await getCities();
+    const citiesData = response?.data?.data ?? response?.data ?? [];
+    cities.value = Array.isArray(citiesData) ? citiesData : [];
+  } catch (error) {
+    console.error('Ошибка при загрузке городов:', error);
+    cities.value = [];
+  }
+}
+
+onMounted(async () => {
+  await loadCities();
+})
 
 </script>
 
@@ -131,7 +127,7 @@ const create = async () => {
       <div>
         <label class="block text-sm mb-1">{{ $t('cemeteryForm.city') }}</label>
         <select v-model="form.city" class="input">
-          <option v-for="city in cities" :key="city" :value="city">{{city}}</option>
+          <option v-for="city in cities" :key="city.id" :value="city.name">{{city.name}}</option>
         </select>
       </div>
 

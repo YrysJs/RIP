@@ -15,7 +15,7 @@
         <div class="flex justify-between items-center mt-4">
           <div class="booking-info">
             <span class="badge">{{ $t('akimatList.phoneLabel') }}: <span class="font-medium">{{ formatPhoneNumber(akimat.phone) }}</span></span>
-            <span class="badge">{{ $t('akimatList.addressLabel') }}: <span class="font-medium ml-1">{{ cities[akimat.cityId - 1] }}, {{ akimat.address }}</span></span>
+            <span class="badge">{{ $t('akimatList.addressLabel') }}: <span class="font-medium ml-1">{{ cities.find(c => c.id === akimat.cityId)?.name || '' }}, {{ akimat.address }}</span></span>
           </div>
           <a :href="akimat.mapUrl" target="_blank">
             <button class="details-btn">{{ $t('akimatList.onMap') }}</button>
@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { getAkimats } from '~/services/admin'
+import { getAkimats, getCities } from '~/services/admin'
 import {ref} from "vue";
 
 const router = useRouter();
@@ -37,27 +37,7 @@ definePageMeta({
   middleware: ['auth', 'admin'],
 });
 
-const cities = [
-  'Алматы',
-  'Нур-Султан',
-  'Шымкент',
-  'Караганда',
-  'Тараз',
-  'Павлодар',
-  'Усть-Каменогорск',
-  'Семей',
-  'Актобе',
-  'Костанай',
-  'Кызылорда',
-  'Талдыкорган',
-  'Тараз',
-  'Павлодар',
-  'Усть-Каменогорск',
-  'Семей',
-  'Актобе',
-  'Костанай',
-  'Кызылорда'
-]
+const cities = ref([])
 
 const akimats = ref([])
 
@@ -67,7 +47,20 @@ function formatPhoneNumber(phone) {
   return `+${phone[0]} (${phone.slice(1, 4)}) ${phone.slice(4, 7)} ${phone.slice(7, 9)} ${phone.slice(9, 11)}`;
 }
 
+// Функция для загрузки городов
+async function loadCities() {
+  try {
+    const response = await getCities();
+    const citiesData = response?.data?.data ?? response?.data ?? [];
+    cities.value = Array.isArray(citiesData) ? citiesData : [];
+  } catch (error) {
+    console.error('Ошибка при загрузке городов:', error);
+    cities.value = [];
+  }
+}
+
 onMounted((async () => {
+  await loadCities();
   try {
     const response = await getAkimats()
     akimats.value = response.data

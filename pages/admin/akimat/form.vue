@@ -11,27 +11,7 @@ definePageMeta({
   middleware: ['auth', 'admin'],
 });
 
-const cities = [
-  'Алматы',
-  'Нур-Султан',
-  'Шымкент',
-  'Караганда',
-  'Тараз',
-  'Павлодар',
-  'Усть-Каменогорск',
-  'Семей',
-  'Актобе',
-  'Костанай',
-  'Кызылорда',
-  'Талдыкорган',
-  'Тараз',
-  'Павлодар',
-  'Усть-Каменогорск',
-  'Семей',
-  'Актобе',
-  'Костанай',
-  'Кызылорда'
-]
+const cities = ref([])
 
 const form = reactive({
   address: '',
@@ -82,8 +62,20 @@ const create = async () => {
   }
 }
 
+// Функция для загрузки городов
+async function loadCities() {
+  try {
+    const response = await getCities();
+    const citiesData = response?.data?.data ?? response?.data ?? [];
+    cities.value = Array.isArray(citiesData) ? citiesData : [];
+  } catch (error) {
+    console.error('Ошибка при загрузке городов:', error);
+    cities.value = [];
+  }
+}
+
 onMounted(async () => {
-  await getCities()
+  await loadCities()
 })
 
 </script>
@@ -121,7 +113,7 @@ onMounted(async () => {
       <div>
         <label class="block text-sm mb-1">{{ $t('common.city') }}</label>
         <select v-model="form.cityId" class="input select">
-          <option v-for="(city, index) in cities" :key="city" :value="index + 1">{{city}}</option>
+          <option v-for="city in cities" :key="city.id" :value="city.id">{{city.name}}</option>
         </select>
       </div>
 
