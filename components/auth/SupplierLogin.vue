@@ -12,8 +12,9 @@ import {
   signupSupplierWhatsapp,
   pkbGetJurData
 } from '~/services/login/index.js'
+import { getCities } from '~/services/admin'
 import Cookies from 'js-cookie';
-import {ref, defineEmits, watch, onBeforeUnmount} from "vue";
+import {ref, defineEmits, watch, onBeforeUnmount, onMounted} from "vue";
 import {useLoadingStore} from "~/store/loading.js";
 import { useI18n } from 'vue-i18n';
 
@@ -49,27 +50,7 @@ function close() {
 
 const loadingStore = useLoadingStore()
 
-const cities = [
-  'Алматы',
-  'Нур-Султан',
-  'Шымкент',
-  'Караганда',
-  'Тараз',
-  'Павлодар',
-  'Усть-Каменогорск',
-  'Семей',
-  'Актобе',
-  'Костанай',
-  'Кызылорда',
-  'Талдыкорган',
-  'Тараз',
-  'Павлодар',
-  'Усть-Каменогорск',
-  'Семей',
-  'Актобе',
-  'Костанай',
-  'Кызылорда'
-]
+const cities = ref([])
 
 watch(bin, async (newValue) => {
   if (newValue.length !== 12) return;
@@ -354,6 +335,22 @@ const otpCheck = async () => {
   // }, 5000);
 }
 
+// Функция для загрузки городов
+async function loadCities() {
+  try {
+    const response = await getCities();
+    const citiesData = response?.data?.data ?? response?.data ?? [];
+    cities.value = Array.isArray(citiesData) ? citiesData : [];
+  } catch (error) {
+    console.error('Ошибка при загрузке городов:', error);
+    cities.value = [];
+  }
+}
+
+onMounted(async () => {
+  await loadCities();
+})
+
 </script>
 
 <template>
@@ -436,7 +433,7 @@ const otpCheck = async () => {
         <div class="mt-[24px]">
           <p class="text-sm font-roboto text-[#222222]">{{ $t('supplierLogin.serviceCity') }}</p>
           <select v-model="cityId" class="input select">
-            <option v-for="(city, index) in cities" :key="city" :value="index + 1">{{city}}</option>
+            <option v-for="city in cities" :key="city.id" :value="city.id">{{city.name}}</option>
           </select>
         </div>
         <div class="mt-[24px]">

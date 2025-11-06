@@ -4,6 +4,7 @@ import MapSecond from "~/components/map/MapV2.vue";
 import { useCemeteryStore } from "~/store/cemetery.js";
 import { getCemeteries, getGraves, getGravesByCoords } from "~/services/cemetery";
 import { getGraveById } from "~/services/client";
+import { getCities } from "~/services/admin";
 import ShareCoordModal from "~/components/layout/modals/ShareCoordModal.vue";
 import GraveDetailModal from "~/components/layout/modals/GraveDetailModal.vue";
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
@@ -34,27 +35,7 @@ const router = useRouter();
 
 const shareCoordModalState = ref(false);
 const selectedReligios = ref("");
-const sities = [
-  "Алматы",
-  "Нур-Султан",
-  "Шымкент",
-  "Караганда",
-  "Тараз",
-  "Павлодар",
-  "Усть-Каменогорск",
-  "Семей",
-  "Актобе",
-  "Костанай",
-  "Кызылорда",
-  "Талдыкорган",
-  "Тараз",
-  "Павлодар",
-  "Усть-Каменогорск",
-  "Семей",
-  "Актобе",
-  "Костанай",
-  "Кызылорда",
-];
+const sities = ref([]);
 const religios = computed(() => [
   t('religions.islam'),
   t('religions.christianity'),
@@ -259,7 +240,24 @@ const mapMoved = async (coords) => {
   }
 }
 
+// Функция для загрузки городов
+async function loadCities() {
+  try {
+    const response = await getCities();
+    // Обрабатываем разные возможные структуры ответа
+    const citiesData = response?.data?.data ?? response?.data ?? [];
+    // Преобразуем массив объектов {id, name} в массив строк (только name)
+    sities.value = Array.isArray(citiesData) 
+      ? citiesData.map(city => city.name) 
+      : [];
+  } catch (error) {
+    console.error('Ошибка при загрузке городов:', error);
+    sities.value = [];
+  }
+}
+
 onMounted(async () => {
+  await loadCities();
   await getCemeteriesReq();
 });
 
