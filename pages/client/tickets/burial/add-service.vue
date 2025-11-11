@@ -1,7 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { getProducts, addToCart, getCart, removeFromCart, getProductById, getProductReviews, getBurialRequestById, updateCartCount } from '~/services/client'
+import { getProducts, addToCart, getCart, removeFromCart, getProductById, getProductReviews, getBurialRequestById, updateCartCount, createOrder } from '~/services/client'
 import { getSupplier } from '~/services/login'
+import { createInvoice, generateToken } from '~/services/payments'
 import PaymentModalProducts from '~/components/layout/modals/PaymentModalProducts.vue'
 import DeliveryModal from '~/components/layout/modals/DeliveryModal.vue'
 import ServiceDetailModal from '~/components/layout/modals/ServiceDetailModal.vue'
@@ -26,7 +27,9 @@ const serviceDelivery = ref({})
 const serviceReviews = ref([])
 const serviceSupplier = ref({})
 const burialData = ref(null)
+const orderResponse = ref(null)
 const route = useRoute()
+const router = useRouter()
 
 // Состояние пагинации
 const currentPage = ref(1)
@@ -172,6 +175,132 @@ const removeProductFromCart = async (productId) => {
     $toast.error(t('common.serverUnavailable'))
   } finally {
     removingFromCart.value = false
+  }
+}
+
+// Функция для создания объекта платежа для виджета Halyk
+const createPaymentObject = (auth, invoiceId, amount) => {
+  const config = useRuntimeConfig()
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
+  const currentPath = route.path
+  const apiBaseUrl = config.public.apiBaseUrl
+  
+  const paymentObject = {
+    invoiceId: invoiceId,
+    invoiceIdAlt: invoiceId,
+    backLink: `${baseUrl}${currentPath}?success=true`,
+    failureBackLink: `${baseUrl}${currentPath}?failure=true`,
+    postLink: `${apiBaseUrl}/api/v1/payments/mobile/callback`,
+    failurePostLink: `${apiBaseUrl}/api/v1/payments/mobile/callback`,
+    language: "RUS",
+    description: "Оплата дополнительных услуг",
+    accountId: "", // Можно получить из профиля пользователя, если нужно
+    terminal: "", // Можно получить из конфигурации, если нужно
+    amount: amount,
+    name: "", // Можно получить из профиля пользователя, если нужно
+    currency: "KZT",
+    data: JSON.stringify({
+      statement: {
+        invoiceID: invoiceId
+      }
+    }),
+    recurrent: false
+  }
+  
+  paymentObject.auth = auth
+  return paymentObject
+}
+
+// Функция для создания ордера
+const createOrderData = async () => {
+  try {
+    const orderRequestData = {
+      // Данные захоронения (если есть)
+      ...(burialData.value && {
+        burial_date: burialData.value.burial_date,
+        burial_order_id: burialData.value.id,
+        burial_time: burialData.value.burial_time,
+        cemetery_id: burialData.value.cemetery_id,
+        deceased_id: burialData.value.deceased_id,
+        grave_id: burialData.value.grave_id,
+      }),
+      // Товары заказа
+      order_items: cartItems.value?.map(item => ({
+        delivery_arrival_time: item.delivery_arrival_time || "2025-05-17T09:00:00Z",
+        delivery_destination_address: item.delivery_destination_address || "Алматы, ул. Еревагская 157",
+        product_id: item.product_id,
+        quantity: item.quantity
+      })) || []
+    }
+
+    console.log('Order request data:', orderRequestData)
+    orderResponse.value = await createOrder(orderRequestData)
+  } catch (error) {
+    console.error('Ошибка при создании ордера:', error)
+    const { $toast } = useNuxtApp()
+    $toast.error(t('common.serverUnavailable'))
+    throw error
+  }
+}
+
+const processPayment = async () => {
+  try {
+    await createOrderData();
+    
+    // Проверяем, что ордер создан успешно
+    if (orderResponse.value?.data?.id) {
+      const invoiceData = {
+        amount: cartTotal.value,
+        currency: "KZT",
+        description: "",
+        metadata: {
+          order_id: orderResponse.value.data.id,
+          service: burialData.value ? "burial" : "supplier"
+        }
+      }
+      
+      const invoiceResponse = await createInvoice(invoiceData)
+      console.log('Invoice created:', invoiceResponse)
+      
+      // Проверяем, что инвойс создан успешно
+      if (invoiceResponse?.data?.data?.invoiceId) {
+        const tokenData = {
+          amount: cartTotal.value,
+          invoiceID: invoiceResponse.data.data.invoiceId,
+          terminalType: burialData.value ? "burial" : "shop"
+        }
+        
+        const tokenResponse = await generateToken(tokenData)
+        console.log('Token generated:', tokenResponse)
+        
+        // Проверяем, что токен получен успешно
+        if (tokenResponse?.data?.data?.accessToken && typeof window !== 'undefined' && window.halyk) {
+          const auth = tokenResponse.data.data.accessToken
+          const invoiceId = invoiceResponse.data.data.invoiceId
+          const amount = cartTotal.value
+          
+          // Создаем объект платежа
+          const paymentObject = createPaymentObject(auth, invoiceId, amount)
+          
+          // Вызываем виджет оплаты
+          window.halyk.showPaymentWidget(paymentObject, (result) => {
+            console.log('Payment widget callback:', result)
+            if (result.success) {
+              // Обрабатываем успешную оплату
+              handlePaymentSuccess()
+            } else {
+              // Обрабатываем неудачную оплату
+              const { $toast } = useNuxtApp()
+              $toast.error(t('payment.paymentFailed'))
+            }
+          })
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Ошибка при обработке платежа:', error)
+    const { $toast } = useNuxtApp()
+    $toast.error(t('common.serverUnavailable'))
   }
 }
 
@@ -551,7 +680,7 @@ onMounted(async () => {
           class="text-sm md:text-base font-semibold font-roboto w-full h-[44px] md:h-[51px] rounded-lg text-white mt-[16px] md:mt-[24px] transition-colors"
           :class="hasCartItems ? 'bg-[#339B38] hover:bg-[#2d8530]' : 'bg-gray-400 cursor-not-allowed'"
           :disabled="!hasCartItems"
-          @click="openPaymentModal"
+          @click="processPayment"
         >
           {{ $t('services.pay') }}
         </button>

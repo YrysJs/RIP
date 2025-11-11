@@ -50,9 +50,39 @@ function getPaymentReceipt(receiptId) {
     })
 }
 
+function createInvoice(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/payments/create-invoice',
+        data: data,
+    })
+}
+
+function generateToken(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/payments/generate-token',
+        data: data,
+    })
+}
+
+function clientPayment(data) {
+    const { $axios } = useNuxtApp()
+    return $axios({
+        method: 'POST',
+        url: useRuntimeConfig().public.apiBaseUrl + '/api/v1/payments/mobile/callback',
+        data: data,
+    })
+}
+
 export {
     processCardPayment,
     confirmOrderPayment,
     confirmBurialPayment,
-    getPaymentReceipt
+    getPaymentReceipt,
+    createInvoice,
+    generateToken,
+    clientPayment
 } 
