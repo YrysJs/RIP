@@ -252,7 +252,7 @@ const processPayment = async () => {
       const invoiceData = {
         amount: cartTotal.value,
         currency: "KZT",
-        description: "",
+        description: "rip service",
         metadata: {
           order_id: orderResponse.value.data.id,
           service: burialData.value ? "burial" : "supplier"
