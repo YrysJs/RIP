@@ -274,13 +274,29 @@ const processPayment = async () => {
         console.log('Token generated:', tokenResponse)
         
         // Проверяем, что токен получен успешно
-        if (tokenResponse?.data?.data?.accessToken && typeof window !== 'undefined' && window.halyk) {
+        if (tokenResponse?.data?.data?.accessToken) {
+          // Ждем загрузки плагина halyk (если еще не загружен)
+          let attempts = 0
+          const maxAttempts = 10
+          while (typeof window === 'undefined' || !window.halyk) {
+            if (attempts >= maxAttempts) {
+              console.error('Halyk plugin not loaded')
+              const { $toast } = useNuxtApp()
+              $toast.error('Ошибка загрузки платежного виджета')
+              return
+            }
+            await new Promise(resolve => setTimeout(resolve, 100))
+            attempts++
+          }
+          
           const auth = tokenResponse.data.data.accessToken
           const invoiceId = invoiceResponse.data.data.invoiceId
           const amount = cartTotal.value
           
           // Создаем объект платежа
           const paymentObject = createPaymentObject(auth, invoiceId, amount)
+          
+          console.log('Calling halyk.showPaymentWidget with:', paymentObject)
           
           // Вызываем виджет оплаты
           window.halyk.showPaymentWidget(paymentObject, (result) => {

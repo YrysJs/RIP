@@ -1,3 +1,9 @@
+export default defineNuxtPlugin(() => {
+  // Инициализация halyk только на клиенте
+  if (typeof window === 'undefined') {
+    return
+  }
+
 var halyk;
 (function(halyk) {
     var isTest = false;
@@ -149,4 +155,5 @@ null != module && (module.exports = LZString);
 if (typeof window !== 'undefined') {
     window.halyk = halyk;
 }
+})
 
