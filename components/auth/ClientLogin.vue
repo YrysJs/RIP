@@ -517,13 +517,13 @@ const otpCheck = async () => {
             >
               Получить код в WhatsApp
             </button>
-            <button
+            <!-- <button
               class="bg-[#AFB5C133] py-[18px] rounded-lg text-[#17212A] font-medium my-4 max-lg:py-[15px] max-lg:mt-2 max-lg:mb-4"
               :class="{ '!bg-[#E9B949] text-white': phone_number.length >= 18 }"
               @click="login"
             >
               Получить код по СМС
-            </button>
+            </button> -->
           </div>
           <div v-if="step == 1" class="flex flex-col">
             <h3 class="text-2xl font-bold text-left text-[#222222] mb-[8px]">

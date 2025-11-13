@@ -46,6 +46,12 @@ const loading = ref(true);
 const error = ref(null);
 const showFilters = ref(false);
 
+// Пагинация
+const currentPage = ref(1);
+const pageSize = ref(10);
+const totalPages = ref(0);
+const totalCount = ref(0);
+
 // Фильтры
 const filters = ref({
   burial_order_id: "",
@@ -78,7 +84,10 @@ const fetchOrders = async () => {
     error.value = null;
 
     // Подготавливаем параметры для запроса
-    const params = {};
+    const params = {
+      page: currentPage.value,
+      limit: pageSize.value,
+    };
 
     if (filters.value.burial_order_id) {
       params.burial_order_id = filters.value.burial_order_id;
@@ -102,11 +111,16 @@ const fetchOrders = async () => {
 
     const response = await getOrders(params);
     orders.value = response.data?.items || [];
+    totalCount.value = response.data?.total_count || response.data?.total || 0;
+    totalPages.value = response.data?.total_pages || Math.ceil(totalCount.value / pageSize.value) || 0;
   } catch (err) {
     console.error(t('errors.fetchError'), err);
     error.value = t('errors.fetchError');
     const { $toast } = useNuxtApp()
     $toast.error(t('common.serverUnavailable'))
+    orders.value = [];
+    totalCount.value = 0;
+    totalPages.value = 0;
   } finally {
     loading.value = false;
   }
@@ -114,6 +128,7 @@ const fetchOrders = async () => {
 
 // Функция для применения фильтров
 const applyFilters = () => {
+  currentPage.value = 1; // Сбрасываем на первую страницу при применении фильтров
   fetchOrders();
 };
 
@@ -126,6 +141,7 @@ const resetFilters = () => {
     type: "",
     status: "",
   };
+  currentPage.value = 1; // Сбрасываем на первую страницу при сбросе фильтров
   fetchOrders();
 };
 
@@ -169,6 +185,56 @@ const getProductName = (order) => {
 //   }
 //   return null;
 // };
+
+// Функции для работы с пагинацией
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchOrders();
+    // Прокручиваем вверх при смене страницы
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    goToPage(currentPage.value + 1);
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    goToPage(currentPage.value - 1);
+  }
+};
+
+const changePageSize = (newSize) => {
+  pageSize.value = newSize;
+  currentPage.value = 1;
+  fetchOrders();
+};
+
+// Вычисляемые свойства для пагинации
+const hasNextPage = computed(() => currentPage.value < totalPages.value);
+const hasPrevPage = computed(() => currentPage.value > 1);
+
+// Функция для получения видимых страниц
+const getVisiblePages = () => {
+  const pages = [];
+  const maxVisible = 5;
+  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2));
+  let end = Math.min(totalPages.value, start + maxVisible - 1);
+  
+  if (end - start < maxVisible - 1) {
+    start = Math.max(1, end - maxVisible + 1);
+  }
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  
+  return pages;
+};
 
 // Загрузка данных при монтировании компонента
 onMounted(() => {
@@ -335,6 +401,78 @@ onMounted(() => {
 
         <div v-else class="orders-empty">{{ $t('supplierTickets.noActiveRequests') }}</div>
       </template>
+    </div>
+
+    <!-- Пагинация -->
+    <div
+      v-if="!loading && !error && totalCount > 0 && totalPages > 1"
+      class="pagination-wrapper"
+    >
+      <div class="pagination-info">
+        <span class="pagination-text">
+          Показано {{ totalCount ? (currentPage - 1) * pageSize + 1 : 0 }}–{{ totalCount ? Math.min(currentPage * pageSize, totalCount) : 0 }} из {{ totalCount }}
+        </span>
+        <select
+          :value="pageSize"
+          @change="changePageSize(Number($event.target.value))"
+          class="pagination-select"
+        >
+          <option value="5">5 на странице</option>
+          <option value="10">10 на странице</option>
+          <option value="20">20 на странице</option>
+          <option value="50">50 на странице</option>
+        </select>
+      </div>
+
+      <div class="pagination-controls">
+        <button
+          @click="prevPage"
+          :disabled="!hasPrevPage"
+          class="pagination-btn"
+          :class="{ 'pagination-btn--disabled': !hasPrevPage }"
+        >
+          Предыдущая
+        </button>
+
+        <div class="pagination-pages">
+          <button
+            v-if="currentPage > 3 && totalPages > 5"
+            @click="goToPage(1)"
+            class="pagination-page"
+          >
+            1
+          </button>
+          <span v-if="currentPage > 3 && totalPages > 5" class="pagination-dots">...</span>
+
+          <button
+            v-for="page in getVisiblePages()"
+            :key="page"
+            @click="goToPage(page)"
+            class="pagination-page"
+            :class="{ 'pagination-page--active': currentPage === page }"
+          >
+            {{ page }}
+          </button>
+
+          <span v-if="currentPage < totalPages - 2 && totalPages > 5" class="pagination-dots">...</span>
+          <button
+            v-if="currentPage < totalPages - 2 && totalPages > 5"
+            @click="goToPage(totalPages)"
+            class="pagination-page"
+          >
+            {{ totalPages }}
+          </button>
+        </div>
+
+        <button
+          @click="nextPage"
+          :disabled="!hasNextPage"
+          class="pagination-btn"
+          :class="{ 'pagination-btn--disabled': !hasNextPage }"
+        >
+          Следующая
+        </button>
+      </div>
     </div>
   </NuxtLayout>
 </template>
@@ -789,6 +927,169 @@ onMounted(() => {
   .chip--green {
     background: #E8F6EC;
     color: #2F9B3C;
+  }
+}
+
+/* Пагинация */
+.pagination-wrapper {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pagination-text {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.pagination-select {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.pagination-select:hover {
+  border-color: #d1d5db;
+}
+
+.pagination-select:focus {
+  border-color: #38949B;
+  ring: 2px;
+  ring-color: #38949B;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  padding: 8px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.pagination-btn:hover:not(.pagination-btn--disabled) {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.pagination-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pagination-page {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.pagination-page:hover:not(.pagination-page--active) {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.pagination-page--active {
+  background: #38949B;
+  color: #fff;
+  border-color: #38949B;
+}
+
+.pagination-dots {
+  padding: 0 8px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Адаптив для пагинации */
+@media (max-width: 768px) {
+  .pagination-wrapper {
+    margin: 16px;
+    padding: 16px;
+  }
+
+  .pagination-info {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pagination-text {
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .pagination-select {
+    width: 100%;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .pagination-controls {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pagination-btn {
+    width: 100%;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .pagination-pages {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .pagination-page {
+    min-width: 36px;
+    height: 36px;
+    font-size: 14px;
   }
 }
 </style>

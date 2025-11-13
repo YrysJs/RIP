@@ -772,6 +772,7 @@
       "description": "Введите номер мобильного телефона - мы пришлем код",
       "phonePlaceholder": "Введите номер телефона",
       "getCodeSMS": "Получить код по СМС",
+      "getCodeWhatsApp": "Получить код в WhatsApp",
       "confirmPhone": "Подтвердите номер",
       "enterCodeDescription": "Введлите код из СМС. Мы отправили его на номер",
       "codePlaceholder": "Введите код",

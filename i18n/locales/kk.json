@@ -771,6 +771,7 @@
             "description": "Мобильді телефон нөмірін енгізіңіз - біз код жібереміз",
             "phonePlaceholder": "Телефон нөмірін енгізіңіз",
             "getCodeSMS": "SMS арқылы код алу",
+            "getCodeWhatsApp": "WhatsApp-та код алу",
             "confirmPhone": "Нөмірді растаңыз",
             "enterCodeDescription": "SMS-тен кодты енгізіңіз. Біз оны нөмірге жібердік",
             "codePlaceholder": "Кодты енгізіңіз",
